@@ -34,3 +34,5 @@ CATEGORIES = [
     'GAME',
     'FAMILY'
 ]
+
+DOWNLOAD_FOLDER = 'apps'

@@ -56,4 +56,5 @@ def scrape_applist():
             data = get_json(data['next'])
 
 
-scrape_applist()
+if __name__ == '__main__':
+    scrape_applist()

@@ -1,2 +1,10 @@
 
 \.DS_Store
+
+all_apps\.csv
+
+\.idea/
+
+__pycache__/
+
+apps/
