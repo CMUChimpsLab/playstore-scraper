@@ -13,8 +13,5 @@ def clean_main_database():
                                       'comments', 'androidVersionText', 'contentRatingDescription',
                                       'installs'], axis=1)
 
-    # Add a column with unique filenames
-    main_data['filename'] = generator.generate_uuids(len(main_data))
-
     # Save to a new file
     cleaned_dataset.to_csv('cleaned_app_dataset.csv', index=False)
