@@ -8,3 +8,7 @@ all_apps\.csv
 __pycache__/
 
 apps/
+
+logs/
+
+package_names\.csv

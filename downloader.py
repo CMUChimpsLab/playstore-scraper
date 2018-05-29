@@ -4,27 +4,29 @@ import pandas as pd
 import os
 import logging
 
+logger = logging.getLogger(__name__)
+
 
 def download(apps_list):
     downloaded_apps = os.listdir(DOWNLOAD_FOLDER)
     for app in apps_list:
         if app[1] in downloaded_apps:
-            logging.info("App already downloaded - %s" % app[0])
+            logger.info("App already downloaded - %s" % app[0])
             continue
         try:
             downloader = gplaycli.GPlaycli()
             downloader.set_download_folder(DOWNLOAD_FOLDER)
-            logging.info("Downloading app - %s as %s" % app)
+            logger.info("Downloading app - %s as %s" % app)
             downloader.download([app])
             del downloader
         except:
-            logging.warning("Download failed - %s" % app[0])
+            logger.warning("Download failed - %s" % app[0])
 
 
 def main():
-    INPUT_FILE = None # Use 'cleaned_app_dataset.csv' by default
+    INPUT_FILE = None  # Use 'DATABASE_FILE' by default
     if INPUT_FILE is None:
-        logging.error("No input file specified")
+        logger.error("No input file specified")
         return
 
     app_data = pd.read_csv(INPUT_FILE)
@@ -35,6 +37,4 @@ def main():
 
 
 if __name__ == '__main__':
-    logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
-                        level=logging.INFO)
     main()
