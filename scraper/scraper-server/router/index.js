@@ -1,7 +1,7 @@
 'use strict';
 
 const Express = require('express');
-const gplay = require('google-play-scraper');
+const gplay = require('../index');
 const path = require('path');
 const qs = require('querystring');
 
