@@ -30,7 +30,6 @@ def remove_unwanted_columns(df):
 
 
 def scrape_metadata_for_apps(apps):
-    logger.info("Collecting metadata for - %s" % apps)
     urls = ["http://localhost:3000/api/apps/%s" % app for app in apps]
     meta_data = helper.get_app_information(urls)
     if len(meta_data) <= 0:
