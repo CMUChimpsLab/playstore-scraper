@@ -8,6 +8,8 @@ logger = logging.getLogger(__name__)
 
 
 def download(apps_list):
+    if not os.path.exists(DOWNLOAD_FOLDER):
+        os.makedirs(DOWNLOAD_FOLDER)
     downloaded_apps = os.listdir(DOWNLOAD_FOLDER)
     for app in apps_list:
         if app[1] in downloaded_apps:
