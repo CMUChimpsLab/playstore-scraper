@@ -1,6 +1,8 @@
 import requests
 import json
 import logging
+import subprocess
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -29,3 +31,18 @@ def get_data_from_server(url):
 def get_permissions_list(url):
     data = get_data_from_server(url)['results']
     return [x['permission'] for x in data]
+
+
+def start_scraper_server():
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    server_dir = '/'.join([dir_path,'scraper-server'])
+    logger.info("Starting up scraper server")
+    proc = subprocess.Popen(['npm', 'start'], cwd=server_dir)
+    return proc
+
+
+def stop_scraper_server(proc):
+    logger.info("Shutting down scraper server")
+    proc.terminate()
+    code = proc.wait()
+    logger.info("Server shut down completed with code %s" % code)

@@ -1,7 +1,7 @@
 'use strict';
 
 const Express = require('express');
-const router = require('./lib');
+const router = require('./router');
 
 const app = Express();
 const port = process.env.PORT || 3000;
