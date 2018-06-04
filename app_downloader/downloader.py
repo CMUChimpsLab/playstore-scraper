@@ -23,7 +23,7 @@ class Downloader:
 
     def download(self, apps_list, force_download=False):
         if self.__use_database:
-            apps_list = self._database_helper.get_filename_mappings(apps_list)
+            apps_list = self.__database_helper.get_filename_mappings(apps_list)
 
         downloaded_apps = os.listdir(self.__download_folder)
 
@@ -60,5 +60,5 @@ def main():
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s [%(name)-12.12s] %(levelname)-8s %(message)s',
-                       level=logging.INFO)
+                        level=logging.INFO)
     main()
