@@ -54,8 +54,7 @@ class Downloader:
 
 
 def main():
-    d = Downloader(use_database=False, download_folder='downloaded_apps')
-    d.download([['com.facebook.katana']])
+    logging.info("Command line feature still in development")
     return
 
 
