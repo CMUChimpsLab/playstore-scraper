@@ -1,3 +1,5 @@
+import time
+
 import app_downloader.gplaycli.gplaycli as gplaycli
 from constants import DOWNLOAD_FOLDER, DATABASE_FILE
 import database_helper.helper as dbhelper
@@ -43,6 +45,7 @@ class Downloader:
             apps_list = self.__database_helper.get_filename_mappings(apps_list)
 
         downloaded_apps = os.listdir(self.__download_folder)
+        download_completion_time = []
 
         for index, app in enumerate(apps_list):
             if isinstance(app, str):
@@ -55,12 +58,14 @@ class Downloader:
                 downloader = gplaycli.GPlaycli(config_file=self.__config_file)
                 downloader.set_download_folder(self.__download_folder)
                 logger.info("Downloading app - {} as {}".format(app[0], app[1]))
-                # TODO return a list of timestamps
-                downloader.download([app])
+                return_value = downloader.download([app])
+                download_completion_time.append(time.time() if return_value else None)
                 del downloader
             except Exception as e:
                 logger.error("Download failed - %s" % app[0])
                 logger.error(e)
+                download_completion_time.append(None)
+            return download_completion_time
 
     def download_apps_from_file(self, filename):
         """
@@ -73,11 +78,15 @@ class Downloader:
         if not os.path.exists(filename):
             logger.error("File to download apps from, could not be found.")
             return
-        # TODO Exception handling for reading the CSV
-        df = pd.read_csv(filename)
+        # TODO Add feature to read file names with package names
+        try:
+            df = pd.read_csv(filename)
+        except KeyError as e:
+            logger.error("Incorrect keys in the file")
+            logger.error(e)
+            return [None]
         apps = df['package_name'].tolist()
-        # TODO return a list of timestamps
-        self.download(apps)
+        return self.download(apps)
 
 
 def main():
