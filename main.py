@@ -15,7 +15,7 @@ def main(logger):
         logger.error("Cannot find the provided input file")
         return
     proc = helper.start_scraper_server()
-    s = scraper.Scraper(INPUT_FILE=INPUT_FILE, DATABASE_FILE=DATABASE_FILE)
+    s = scraper.Scraper(input_file=INPUT_FILE, database_file=DATABASE_FILE)
     s.full_scrape_metadata_for_apps()
     helper.stop_scraper_server(proc)
 
