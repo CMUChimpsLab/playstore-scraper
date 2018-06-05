@@ -1,1 +1,1 @@
-from gplaycli.gplaycli import GPlaycli
+from app_downloader.gplaycli.gplaycli import GPlaycli
