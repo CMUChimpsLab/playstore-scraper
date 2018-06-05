@@ -20,12 +20,14 @@ class TestDownloader(TestCase):
         self.assertTrue(os.path.isdir(self.__download_folder))
 
     def test_download_without_filename(self):
-        self.__downloader.download([self.__test_app_name])
+        return_value = self.__downloader.download([self.__test_app_name])
         self.assertTrue(os.path.exists(self.__download_folder + '/com.facebook.katana.apk'))
+        self.assertEqual(len(return_value), 1)
 
     def test_download_with_filename(self):
-        self.__downloader.download([[self.__test_app_name, 'test.apk']])
+        return_value = self.__downloader.download([[self.__test_app_name, 'test.apk']])
         self.assertTrue(os.path.exists(self.__download_folder + '/test.apk'))
+        self.assertEqual(len(return_value), 1)
 
     def test_download_apps_from_properly_formatted_file(self):
         lines = ['package_name\n', self.__test_app_name]
@@ -34,3 +36,7 @@ class TestDownloader(TestCase):
 
         self.__downloader.download_apps_from_file(self.__test_csv_file)
         self.assertTrue(os.path.exists(self.__download_folder + '/com.facebook.katana.apk'))
+
+    def test_unknown_app_name(self):
+        return_value = self.__downloader.download(['sdublsn'])
+        self.assertEqual(return_value[0], None)

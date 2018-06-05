@@ -65,7 +65,7 @@ class Downloader:
                 logger.error("Download failed - %s" % app[0])
                 logger.error(e)
                 download_completion_time.append(None)
-            return download_completion_time
+        return download_completion_time
 
     def download_apps_from_file(self, filename):
         """
