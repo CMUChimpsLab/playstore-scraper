@@ -12,3 +12,6 @@ apps/
 logs/
 
 package_names\.csv
+
+info_logs\.log
+scraper/scraper-server/node_modules
