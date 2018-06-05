@@ -5,7 +5,6 @@ import scraper.server_helper as helper
 import scraper.uuid_generator as uuid_generator
 import time
 from constants import DATABASE_FILE
-import database_helper as db_helper
 
 logger = logging.getLogger(__name__)
 
@@ -18,12 +17,12 @@ class Scraper():
         if package_names is None:
             if INPUT_FILE is None:
                 raise Exception('Invalid, need input file or package name list')
-            self.package_names = db_helper.df_from_file(INPUT_FILE, names=['package_name'])['package_name']
+            self.package_names = pd.read_csv(INPUT_FILE, names=['package_name'])['package_name']
         else:
             self.package_names = package_names
 
     def get_downloaded_app_counts(self):
-        main_data = db_helper.df_from_file(self.DATABASE_FILE)
+        main_data = pd.read_csv(self.DATABASE_FILE)
         logger.info("\n" + str(main_data['genreId'].value_counts()))
         counts = [0] * len(CATEGORIES)
         downloaded_app_counts = pd.Series(counts, index=CATEGORIES)
@@ -44,7 +43,7 @@ class Scraper():
             maindf = maindf.append(df, sort=False)
         maindf = remove_unwanted_columns(maindf) #do again on whole db
         if write_file:
-            db_helper.df_to_file(maindf, self.DATABASE_FILE, index=False)
+            maindf.to_csv(self.DATABASE_FILE, index=False)
         if return_dataframe:
             return maindf
 
@@ -63,7 +62,6 @@ class Scraper():
         #logger.info("Saved metadata to file - %s" % new_rows['appId'].tolist())
 
 
-    #!NOT TESTED YET!
     def scrape_top_free_from_categories(self):
         downloaded_app_counts = self.get_downloaded_app_counts()
         #CATEGORY list incomplete
@@ -85,7 +83,7 @@ class Scraper():
 
                 apps = helper.get_app_information(app_urls)
                 new_rows = remove_unwanted_columns(pd.DataFrame(apps))
-                df.append(new_rows, sort=False)
+                df = df.append(new_rows, sort=False)
 
                 logger.info("Category: {}\tRank:{}".format(category, start))
                 start += 1
@@ -93,7 +91,7 @@ class Scraper():
                     break
                 data = helper.get_data_from_server(data['next'])
 
-        db_helper.df_to_file(df, self.DATABASE_FILE, index=False)
+        df.to_csv(self.DATABASE_FILE, index=False)
 
 
 def remove_unwanted_columns(df):
