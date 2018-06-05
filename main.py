@@ -26,7 +26,7 @@ if __name__ == '__main__':
     logFormatter = logging.Formatter()
     rootLogger = logging.getLogger(__name__)
 
-    fileHandler = logging.FileHandler("info_logs.log", mode='a+')
+    fileHandler = logging.FileHandler("debug.log", mode='a+')
     rootLogger.addHandler(fileHandler)
 
     main(rootLogger)
