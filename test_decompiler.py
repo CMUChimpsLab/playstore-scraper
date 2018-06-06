@@ -7,7 +7,7 @@ import os
 import shutil
 import logging
 
-class TestDownloader(TestCase):
+class TestDecompiler(TestCase):
     def setUp(self):
         self.__download_folder = "test_download_folder"
         self.__decompile_folder = "test_decompile_folder"
