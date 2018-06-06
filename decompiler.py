@@ -5,6 +5,7 @@ import time
 from constants import DECOMPILE_FOLDER, DATABASE_FILE, DOWNLOAD_FOLDER
 import logging
 import database_helper.helper as dbhelper
+import pandas as pd
 
 logger = logging.getLogger(__name__)
 
@@ -98,7 +99,7 @@ class Decompiler:
             logger.error(e)
             return [None]
         apps = df['fileName'].tolist()
-        return self.download(apps)
+        return self.decompile(apps)
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s [%(name)-12.12s] %(levelname)-8s %(message)s',
