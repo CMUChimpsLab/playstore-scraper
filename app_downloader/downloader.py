@@ -66,7 +66,7 @@ class Downloader:
                     downloader = old_gplaycli.GPlaycli(config_file=self.__config_file)
                 else:
                     downloader = gplaycli.GPlaycli(config_file=self.__config_file)
-
+                print(downloader.get_doc_apk_details([app]))
                 downloader.set_download_folder(self.__download_folder)
                 logger.info("Downloading app - {} as {}".format(app[0], app[1]))
                 return_value = downloader.download([app])
