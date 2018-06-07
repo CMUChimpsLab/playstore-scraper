@@ -24,6 +24,8 @@ class Decompiler:
                  download_folder=DOWNLOAD_FOLDER):
         self.__decompile_folder = decompile_folder
         self.__download_folder = download_folder
+        local_directory = os.path.dirname(os.path.realpath(__file__))
+        self.__decompile_command = "/".join([local_directory, "apktool d {} -o {}"])
 
         if not os.path.isdir(self.__decompile_folder):
             os.makedirs(self.__decompile_folder)
@@ -68,7 +70,7 @@ class Decompiler:
             try:
                 app_file_path = '/'.join([self.__download_folder, fname])
                 decompile_destination_path = '/'.join([self.__decompile_folder, fname[:-len(app_extension)]])
-                cmd = "apktool d {} -o {}".format(app_file_path, decompile_destination_path)
+                cmd = self.__decompile_command.format(app_file_path, decompile_destination_path)
                 with open(os.devnull, 'w') as fp:
                     p = subprocess.run(cmd.split(), stdout=fp, stderr=fp)
                 if not p or p.returncode != 0:

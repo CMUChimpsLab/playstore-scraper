@@ -1,5 +1,5 @@
 from unittest import TestCase
-from decompiler import Decompiler
+from decompiler.decompiler import Decompiler
 from app_downloader.downloader import Downloader
 from scraper.scraper import Scraper
 from scraper import server_helper as helper
