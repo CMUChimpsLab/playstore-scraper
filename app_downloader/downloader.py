@@ -52,7 +52,9 @@ class Downloader:
                 app = [app, app]
 
             # Quick fix for adding file extensions to downloaded apps
-            app[1] += ".apk"
+            app_extension = ".apk"
+            if not app[1].endswith(app_extension):
+                app[1] += ".apk"
 
             if not force_download and app[1] in downloaded_apps:
                 logger.info("App already downloaded - %s" % app[0])
