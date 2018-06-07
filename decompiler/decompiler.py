@@ -109,11 +109,4 @@ class Decompiler:
 if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s [%(name)-12.12s] %(levelname)-8s %(message)s',
                         level=logging.INFO)
-    logFormatter = logging.Formatter()
-    rootLogger = logging.getLogger(__name__)
-
-    fileHandler = logging.FileHandler("info_logs.log", mode='a+')
-    rootLogger.addHandler(fileHandler)
-    logger = rootLogger
-    d = Decompiler(use_database=False)
-    d.decompile(['com.metago.astro', 'com.androbaby.game2048'])
+    # TODO Add cli functionality (to be addressed later)
