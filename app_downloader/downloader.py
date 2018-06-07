@@ -49,7 +49,10 @@ class Downloader:
 
         for index, app in enumerate(apps_list):
             if isinstance(app, str):
-                app = [app, app + '.apk']
+                app = [app, app]
+
+            # Quick fix for adding file extensions to downloaded apps
+            app[1] += ".apk"
 
             if not force_download and app[1] in downloaded_apps:
                 logger.info("App already downloaded - %s" % app[0])

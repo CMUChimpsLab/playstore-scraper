@@ -25,7 +25,7 @@ class TestDownloader(TestCase):
         self.assertEqual(len(return_value), 1)
 
     def test_download_with_filename(self):
-        return_value = self.__downloader.download([[self.__test_app_name, 'test.apk']])
+        return_value = self.__downloader.download([[self.__test_app_name, 'test']])
         self.assertTrue(os.path.exists(self.__download_folder + '/test.apk'))
         self.assertEqual(len(return_value), 1)
 
