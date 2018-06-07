@@ -1,7 +1,6 @@
 import time
 
 import app_downloader.gplaycli.gplaycli as gplaycli
-#import app_downloader.old_gplaycli.gplaycli as old_gplaycli
 from constants import DOWNLOAD_FOLDER, DATABASE_FILE
 import database_helper.helper as dbhelper
 import os
@@ -23,8 +22,7 @@ class Downloader:
     def __init__(self,
             use_database=True,
             database_file=DATABASE_FILE,
-            download_folder=DOWNLOAD_FOLDER,
-            old_info_format=False):
+            download_folder=DOWNLOAD_FOLDER):
         self.__download_folder = download_folder
         if not os.path.isdir(self.__download_folder):
             os.makedirs(self.__download_folder)
@@ -37,8 +35,6 @@ class Downloader:
         # This config file is used by the GPlaycli module to determine the authentication token
         # By default, no account information is provided and a token is downloaded from developer's API
         self.__config_file = os.path.dirname(os.path.realpath(__file__)) + '/gplaycli.conf'
-
-        self.__old_info_format = old_info_format
 
     def download(self, apps_list, force_download=False):
         """
@@ -62,11 +58,7 @@ class Downloader:
                 logger.info("App already downloaded - %s" % app[0])
                 continue
             try:
-                if self.__old_info_format:
-                    downloader = old_gplaycli.GPlaycli(config_file=self.__config_file)
-                else:
-                    downloader = gplaycli.GPlaycli(config_file=self.__config_file)
-                print(downloader.get_doc_apk_details([app]))
+                downloader = gplaycli.GPlaycli(config_file=self.__config_file)
                 downloader.set_download_folder(self.__download_folder)
                 logger.info("Downloading app - {} as {}".format(app[0], app[1]))
                 return_value = downloader.download([app])
