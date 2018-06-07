@@ -15,3 +15,10 @@ package_names\.csv
 
 info_logs\.log
 scraper/scraper-server/node_modules
+
+*.pyc
+*.log
+apps_decompiled
+decompiler/apktool
+
+decompiler/apktool\.jar

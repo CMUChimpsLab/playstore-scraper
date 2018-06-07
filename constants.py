@@ -37,3 +37,4 @@ CATEGORIES = [
 
 DOWNLOAD_FOLDER = 'apps'
 DATABASE_FILE = 'cleaned_app_dataset.csv'
+DECOMPILE_FOLDER = 'apps_decompiled'
