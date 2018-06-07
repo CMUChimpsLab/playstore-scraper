@@ -5,7 +5,7 @@ from scraper.scraper import Scraper
 from scraper import server_helper as helper
 import os
 import shutil
-import logging
+
 
 class TestDecompiler(TestCase):
     def setUp(self):
@@ -13,11 +13,10 @@ class TestDecompiler(TestCase):
         self.__decompile_folder = "test_decompile_folder"
         self.__test_app_name = 'com.facebook.katana'
         self.__downloader = Downloader(use_database=False, download_folder=self.__download_folder)
-        self.__decompiler = Decompiler(use_database=False, download_folder=self.__download_folder, decompile_folder=self.__decompile_folder)
+        self.__decompiler = Decompiler(use_database=False, download_folder=self.__download_folder,
+                                       decompile_folder=self.__decompile_folder)
         self.__test_csv_file = 'test_file'
-        logging.basicConfig(format='%(asctime)s [%(name)-12.12s] %(levelname)-8s %(message)s',
-                            level=logging.INFO)
-        
+
     def tearDown(self):
         shutil.rmtree(self.__download_folder)
         shutil.rmtree(self.__decompile_folder)
@@ -25,7 +24,7 @@ class TestDecompiler(TestCase):
             os.remove(self.__test_csv_file)
         if os.path.exists('test_data.csv'):
             os.remove('test_data.csv')
-    
+
     def test_decompile_folder_creation(self):
         self.assertTrue(os.path.isdir(self.__decompile_folder))
 
@@ -34,7 +33,7 @@ class TestDecompiler(TestCase):
         return_value = self.__decompiler.decompile([self.__test_app_name])
         self.assertTrue(os.path.isdir(self.__decompile_folder + '/com.facebook.katana'))
         self.assertEqual(len(return_value), 1)
-    
+
     def test_decompile_with_extension(self):
         self.__downloader.download([[self.__test_app_name, 'test.apk']])
         return_value = self.__decompiler.decompile(['test.apk'])
@@ -62,8 +61,7 @@ class TestDecompiler(TestCase):
         helper.stop_scraper_server(proc)
         new_downloader = Downloader(database_file='test_data.csv', download_folder=self.__download_folder)
         new_downloader.download(None)
-        new_decompiler = Decompiler(use_database=True, database_file='test_data.csv', download_folder=self.__download_folder, decompile_folder=self.__decompile_folder)
+        new_decompiler = Decompiler(use_database=True, database_file='test_data.csv',
+                                    download_folder=self.__download_folder, decompile_folder=self.__decompile_folder)
         new_decompiler.decompile(None)
         self.assertTrue(os.listdir(self.__decompile_folder) != [])
-
-
