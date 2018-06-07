@@ -9,8 +9,6 @@ import pandas as pd
 logger = logging.getLogger(__name__)
 
 
-# TODO Create a script for checking if apktool has been installed or not, and install it properly if required
-# Using a local version of apktool might be a better idea (inside the project as opposed to a system installation)
 class Decompiler:
     """
     Decompiles apps provided as parameters into folders with the same filename as the apps but without the extension
