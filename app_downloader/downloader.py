@@ -19,10 +19,11 @@ class Downloader:
     3. download_folder: The folder to write the downloaded apps to, existing files with the same filename will **not** be
                         overwritten unless explicitly specified
     """
+
     def __init__(self,
-            use_database=True,
-            database_file=DATABASE_FILE,
-            download_folder=DOWNLOAD_FOLDER):
+                 use_database=True,
+                 database_file=DATABASE_FILE,
+                 download_folder=DOWNLOAD_FOLDER):
         self.__download_folder = download_folder
         if not os.path.isdir(self.__download_folder):
             os.makedirs(self.__download_folder)
@@ -94,6 +95,7 @@ class Downloader:
     def get_doc_apk_details(self, packages):
         downloader = gplaycli.GPlaycli(config_file=self.__config_file)
         return downloader.get_doc_apk_details(packages)
+
 
 def main():
     # TODO Add command line functionality to the module
