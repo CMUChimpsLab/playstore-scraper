@@ -6,7 +6,6 @@ name = "pypi"
 [packages]
 pandas = "*"
 requests = "*"
-gpapi = "*"
 pyaxmlparser = "*"
 
 [dev-packages]

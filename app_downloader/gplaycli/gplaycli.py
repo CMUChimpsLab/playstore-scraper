@@ -27,9 +27,9 @@ from enum import IntEnum
 
 import requests
 
-from gpapi.googleplay import GooglePlayAPI
-from gpapi.googleplay import LoginError
-from gpapi.googleplay import RequestError
+from app_downloader.gpapidev.googleplay import GooglePlayAPI
+from app_downloader.gpapidev.googleplay import LoginError
+from app_downloader.gpapidev.googleplay import RequestError
 from google.protobuf.message import DecodeError
 from pkg_resources import get_distribution, DistributionNotFound
 from pyaxmlparser import APK
@@ -189,6 +189,13 @@ class GPlaycli:
         self.gsfid = gsfid
         self.write_cached_token(token, gsfid)
         return token, gsfid
+
+    @hooks.connected
+    def get_doc_apk_details(self, pkg_todownload):
+        details = []
+        for pkg in pkg_todownload:
+            details.append(self.api.deprecated_details(pkg))
+        return details
 
     @hooks.connected
     def download(self, pkg_todownload):
