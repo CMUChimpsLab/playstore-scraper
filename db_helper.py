@@ -51,3 +51,14 @@ class Db_Helper:
             logger.error("Expected one document to be matched, instead %s was" % str(res.matched_count))
         else:
             logger.info("Updated entry with uuid {0}".format(d['uuid']))
+
+    def get_app_to_downlaod(self):
+        """
+        Returns [package_name, uuid] of next app that needs to be downloaded
+        Ordered by order inserted into the database
+        Responsibility of downloader/caller to update date_downloaded for
+        entries downloaded
+        """
+        s = self.__apk_info.find({'date_downloaded': None})
+        d = s.next()
+        return [d['package_name'], d['uuid']]

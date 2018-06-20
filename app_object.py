@@ -32,5 +32,6 @@ class App:
     def __setattr__(self, name, value):
         if name in self.__dict__['constants']:
             raise AttributeError("Cannot modify {}".format(name))
-        if name not in self.__dict__:
-            self.__dict__[name] = value
+        else:
+            super().__setattr__(name, value)
+
