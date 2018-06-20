@@ -6,7 +6,8 @@ import database_helper.helper as dbhelper
 import os
 import logging
 import pandas as pd
-
+from app_object import App
+import scraper.uuid_generator as uuid_generator
 logger = logging.getLogger(__name__)
 
 
@@ -97,9 +98,33 @@ class Downloader:
         apps = df['package_name'].tolist()
         return self.download(apps)
 
+    def translate_into_App(self, d, uuid):
+        """
+        Transaltes a dictionary with the corresponding fields into an App object
+        And adds the uuid, and date_last_scraped as current time
+        """
+        #translate some fields (contains_ads is empty string if it doesn't)
+        c_ads = len(d['containsAds']) > 0
+        
+        a = App(uuid, d['docId'], d['versionCode'], title=d['title'], \
+                developer_name=d['author'], \
+                installation_size= d['installationSize'], \
+                contains_ads=c_ads, category=d['category']['appCategory'], \
+                user_rating=d['aggregateRating'], permissions=d['permission'], \
+                date_last_scraped=time.time())  
+        return a
+
     def get_doc_apk_details(self, packages):
+        """
+        Returns list of App objects corresponding to package names in packages
+        """
         downloader = gplaycli.GPlaycli(config_file=self.__config_file)
-        return downloader.get_doc_apk_details(packages)
+        data = downloader.get_doc_apk_details(packages)
+        uuids = uuid_generator.generate_uuids(len(data))
+        # Zips uuids with dictionaries in data array then makes them Apps
+        # and returns that list of them
+        app_list = [self.translate_into_App(d, uuid) for (d, uuid) in zip(data,                                                             uuids)]
+        return app_list
 
 
 def main():

@@ -194,7 +194,7 @@ class GPlaycli:
     def get_doc_apk_details(self, pkg_todownload):
         details = []
         for pkg in pkg_todownload:
-            details.append(self.api.deprecated_details(pkg))
+            details.append(self.api.details(pkg))
         return details
 
     @hooks.connected
