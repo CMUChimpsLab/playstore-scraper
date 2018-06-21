@@ -1,13 +1,15 @@
 import time
 
-import app_downloader.gplaycli.gplaycli as gplaycli
-from constants import DOWNLOAD_FOLDER, DATABASE_FILE
-import database_helper.helper as dbhelper
+import dependencies.gplaycli.gplaycli as gplaycli
+from constants import DOWNLOAD_FOLDER
 import os
 import logging
 import pandas as pd
 from app_object import App
 import scraper.uuid_generator as uuid_generator
+from database_helper.helper import DbHelper
+from dependencies import GPLAYCLI_CONFIG_FILE_PATH
+
 logger = logging.getLogger(__name__)
 
 
@@ -21,22 +23,18 @@ class Downloader:
                         overwritten unless explicitly specified
     """
 
-    def __init__(self,
-                 use_database=True,
-                 database_file=DATABASE_FILE,
-                 download_folder=DOWNLOAD_FOLDER):
+    def __init__(self, use_database=True, download_folder=DOWNLOAD_FOLDER):
         self.__download_folder = download_folder
         if not os.path.isdir(self.__download_folder):
             os.makedirs(self.__download_folder)
 
         self.__use_database = use_database
         if self.__use_database:
-            self.__database_file = database_file
-            self.__database_helper = dbhelper.DatabaseHelper(self.__database_file)
+            self.__database_helper = DbHelper()
 
         # This config file is used by the GPlaycli module to determine the authentication token
         # By default, no account information is provided and a token is downloaded from developer's API
-        self.__config_file = os.path.dirname(os.path.realpath(__file__)) + '/gplaycli.conf'
+        self.__config_file = GPLAYCLI_CONFIG_FILE_PATH
 
     def download(self, apps_list, force_download=False):
         """
@@ -50,7 +48,8 @@ class Downloader:
             apps_list = self.__database_helper.get_filename_mappings(apps_list)
 
         downloaded_apps = os.listdir(self.__download_folder)
-        download_completion_time = []
+
+        downloaded_uuids = []
 
         for index, app in enumerate(apps_list):
             if isinstance(app, str):
@@ -58,6 +57,7 @@ class Downloader:
 
             # Quick fix for adding file extensions to downloaded apps
             app_extension = ".apk"
+            uuid = app[1]
             if not app[1].endswith(app_extension):
                 app[1] += ".apk"
 
@@ -65,17 +65,18 @@ class Downloader:
                 logger.info("App already downloaded - %s" % app[0])
                 continue
             try:
-                downloader = gplaycli.GPlaycli(config_file=self.__config_file)
-                downloader.set_download_folder(self.__download_folder)
+                api = gplaycli.GPlaycli(config_file=self.__config_file)
+                api.set_download_folder(self.__download_folder)
                 logger.info("Downloading app - {} as {}".format(app[0], app[1]))
-                return_value = downloader.download([app])
-                download_completion_time.append(time.time() if return_value else None)
-                del downloader
+                api.download([app])
+                downloaded_uuids.append(uuid)
+                download_completion_time = time.time()
+                self.__database_helper.set_download_date(uuid, download_completion_time)
+                del api
             except Exception as e:
                 logger.error("Download failed - %s" % app[0])
                 logger.error(e)
-                download_completion_time.append(None)
-        return download_completion_time
+        return downloaded_uuids
 
     def download_apps_from_file(self, filename):
         """
@@ -98,38 +99,12 @@ class Downloader:
         apps = df['package_name'].tolist()
         return self.download(apps)
 
-    def translate_into_App(self, d, uuid):
-        """
-        Transaltes a dictionary with the corresponding fields into an App object
-        And adds the uuid, and date_last_scraped as current time
-        """
-        #translate some fields (contains_ads is empty string if it doesn't)
-        c_ads = len(d['containsAds']) > 0
-        
-        a = App(uuid, d['docId'], d['versionCode'], title=d['title'], \
-                developer_name=d['author'], \
-                installation_size= d['installationSize'], \
-                contains_ads=c_ads, category=d['category']['appCategory'], \
-                user_rating=d['aggregateRating'], permissions=d['permission'], \
-                date_last_scraped=time.time())  
-        return a
-
-    def get_doc_apk_details(self, packages):
-        """
-        Returns list of App objects corresponding to package names in packages
-        """
-        downloader = gplaycli.GPlaycli(config_file=self.__config_file)
-        data = downloader.get_doc_apk_details(packages)
-        uuids = uuid_generator.generate_uuids(len(data))
-        # Zips uuids with dictionaries in data array then makes them Apps
-        # and returns that list of them
-        app_list = [self.translate_into_App(d, uuid) for (d, uuid) in zip(data,                                                             uuids)]
-        return app_list
-
 
 def main():
     # TODO Add command line functionality to the module
     logging.info("Command line feature still in development")
+    d = Downloader()
+    d.download(['com.facebook.katana', 'com.instagram.android', 'ddfndjkg'], force_download=True)
     return
 
 

@@ -57,7 +57,7 @@ class TestDecompiler(TestCase):
 
         self.__scraper = Scraper(database_file='test_data.csv', input_file=self.__test_csv_file)
         proc = helper.start_scraper_server()
-        self.__scraper.full_scrape_metadata_for_apps()
+        self.__scraper.scrape_metadata_for_apps()
         helper.stop_scraper_server(proc)
         new_downloader = Downloader(database_file='test_data.csv', download_folder=self.__download_folder)
         new_downloader.download(None)
