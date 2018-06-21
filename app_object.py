@@ -1,3 +1,6 @@
+import pandas as pd
+
+
 class App:
     def __init__(self, uuid, package_name, version_code,
                  title=None, developer_name=None, installation_size=None,
@@ -35,3 +38,29 @@ class App:
         else:
             super().__setattr__(name, value)
 
+    @staticmethod
+    def convert_to_App_Object(dictionary, uuid):
+        """
+        Translates a dictionary with the corresponding fields into an App object
+        And adds the uuid, and date_last_scraped as current time
+        """
+        # translate some fields (contains_ads is empty string if it doesn't)
+        c_ads = len(dictionary['containsAds']) > 0
+
+        app = App(uuid, dictionary['docId'], dictionary['versionCode'], title=dictionary['title'],
+                  developer_name=dictionary['author'],
+                  installation_size=dictionary['installationSize'],
+                  contains_ads=c_ads, category=dictionary['category']['appCategory'],
+                  user_rating=dictionary['aggregateRating'], permissions=dictionary['permission'],
+                  date_last_scraped=dictionary['date_last_scraped'])
+        return app
+
+    @staticmethod
+    def convert_Series_to_App_Object(s):
+        s = s.to_dict()
+        # uuid = s.pop('uuid', None)
+        return App(**s)
+
+    @staticmethod
+    def to_df(apps):
+        return pd.DataFrame([app.__dict__ for app in apps])

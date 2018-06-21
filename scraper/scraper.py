@@ -1,10 +1,13 @@
 import pandas as pd
-from constants import CATEGORIES
+
+from app_object import App
 import logging
-import scraper.server_helper as helper
 import scraper.uuid_generator as uuid_generator
 import time
-from constants import DATABASE_FILE
+from database_helper.helper import DbHelper
+from dependencies.gpapidev.googleplay import RequestError
+from dependencies.gplaycli import gplaycli
+from dependencies import GPLAYCLI_CONFIG_FILE_PATH
 
 logger = logging.getLogger(__name__)
 
@@ -16,101 +19,60 @@ class Scraper:
     return the dataframe as well)
     """
 
-    def __init__(self, database_file=DATABASE_FILE, input_file=None, package_names=None):
-        self.__database_file = database_file
+    def __init__(self, input_file=None):
+        self.__db_helper = DbHelper()
+        self.input_file = input_file
+        self.__config_file = GPLAYCLI_CONFIG_FILE_PATH
+
+    def scrape_metadata_for_apps(self, return_dataframe=False, write_to_database=True, package_names=None):
+        """
+            Function uses default input file to scrape all of the information for every app in the file
+            Essentially what main.py used to do, but can also return the dataframe if necessary (useful for updating)
+        """
         if package_names is None:
-            if input_file is None:
-                raise Exception('Invalid, need input file or package name list')
-            self.package_names = pd.read_csv(input_file, names=['package_name'])['package_name']
-        else:
-            self.package_names = package_names
+            if self.input_file is not None:
+                package_names = pd.read_csv(self.input_file, names=['package_name'])['package_name'].tolist()
+            else:
+                logger.error("An input file or a list of package names must be provided to scraper.")
+                return
 
-    def get_downloaded_app_counts(self):
-        main_data = pd.read_csv(self.__database_file)
-        logger.info("\n" + str(main_data['genreId'].value_counts()))
-        counts = [0] * len(CATEGORIES)
-        downloaded_app_counts = pd.Series(counts, index=CATEGORIES)
-        downloaded_app_counts.update(main_data['genreId'].value_counts())
-        return downloaded_app_counts
-
-    """
-    Function uses default input file to scrape all of the information for every app in the file
-    Essentially what main.py used to do, but can also return the dataframe if necessary (useful for updating)
-    """
-
-    def full_scrape_metadata_for_apps(self, return_dataframe=False, write_file=True):
-        chunks = [self.package_names[x:x + 10].tolist() for x in range(0, len(self.package_names), 10)]
-        maindf = pd.DataFrame()
-        for chunk in chunks:
-            df = self.scrape_metadata_for_apps(chunk)
-            if df is None:
-                break
-            maindf = maindf.append(df, sort=False)
-        maindf = remove_unwanted_columns(maindf)  # do again on whole db
-        if write_file:
-            maindf.to_csv(self.__database_file, index=False)
-        if return_dataframe:
-            return maindf
-
-    def scrape_metadata_for_apps(self, apps):
-        logger.info("Collecting metadata for - %s" % apps)
-        urls = ["http://localhost:3000/api/apps/%s" % app for app in apps]
-        meta_data = helper.get_app_information(urls)
-        if len(meta_data) <= 0:
-            return
-        new_rows = remove_unwanted_columns(pd.DataFrame(meta_data))
-        new_rows['fileName'] = uuid_generator.generate_uuids(len(new_rows))
-        new_rows['date_metadata_collected'] = time.time()
-        return new_rows
-        # new_rows.to_csv(self.DATABASE_FILE, mode='a', index=False, header=False)
-        # logger.info("Saved metadata to file - %s" % new_rows['appId'].tolist())
-
-    def scrape_top_free_from_categories(self):
-        downloaded_app_counts = self.get_downloaded_app_counts()
-        # CATEGORY list incomplete
         df = pd.DataFrame()
-        for category in CATEGORIES:
-            start = downloaded_app_counts[category]
-            if start > 500:
+        for package_name in package_names:
+            app = self.get_metadata_for_apps(package_name)[0]
+            if app is None:
                 continue
-            base_url = 'http://localhost:3000/api/apps?collection?topselling_free&start={}&num={}&category={}'.format(
-                start, 1, category)
-            data = helper.get_data_from_server(base_url)
+            df.append(App.to_df(app))
 
-            # Keep collecting meta-data till no more app links are available
-            while True:
-                if data is None:
-                    break
-                results = data['results']
-                app_urls = [x['url'] for x in results]
+            if write_to_database:
+                self.__db_helper.insert_app_into_db(app)
 
-                apps = helper.get_app_information(app_urls)
-                new_rows = remove_unwanted_columns(pd.DataFrame(apps))
-                df = df.append(new_rows, sort=False)
+        if return_dataframe:
+            return df
 
-                logger.info("Category: {}\tRank:{}".format(category, start))
-                start += 1
-                if 'next' not in data:
-                    break
-                data = helper.get_data_from_server(data['next'])
+    def get_metadata_for_apps(self, packages):
+        """
+        Returns list of App objects corresponding to package names in packages
+        """
+        api = gplaycli.GPlaycli(config_file=self.__config_file)
+        data = None
+        try:
+            logger.info("Scraping metadata for {}".format(packages))
+            data = api.get_doc_apk_details(packages)
+        except RequestError as e:
+            logger.error("Could not scrape {}. Reason - {}".format(packages, e.value))
 
-        df.to_csv(self.__database_file, index=False)
-
-
-def remove_unwanted_columns(df):
-    # Remove duplicate apps
-    df.drop_duplicates(subset=['appId', 'genreId', 'version'], inplace=True)
-    # Drop unnecessary columns from the data
-    df.drop(['descriptionHTML', 'histogram', 'developer', 'screenshots',
-             'reviews', 'scoreText', 'priceText', 'headerImage',
-             'url', 'similar', 'video', 'videoImage', 'recentChanges',
-             'comments', 'androidVersionText', 'contentRatingDescription',
-             'installs', 'currency', 'description'], axis=1, inplace=True, errors='ignore')
-    return df
+        # Zips uuids with dictionaries in data array then makes them Apps
+        # and returns that list of them
+        if data is not None:
+            for app in data:
+                app['date_last_scraped'] = time.time()
+            uuids = uuid_generator.generate_uuids(len(data))
+            app_list = [App.convert_to_App_Object(d, uuid) for (d, uuid) in zip(data, uuids)]
+            return app_list
 
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                         level=logging.INFO)
     s = Scraper()
-    s.scrape_top_free_from_categories()
+    s.scrape_metadata_for_apps(package_names=['kdjnslnfkljsls'])
