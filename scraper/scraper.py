@@ -38,13 +38,13 @@ class Scraper:
 
         df = pd.DataFrame()
         for package_name in package_names:
-            app = self.get_metadata_for_apps(package_name)[0]
+            app = self.get_metadata_for_apps([package_name])
             if app is None:
                 continue
             df.append(App.to_df(app))
 
             if write_to_database:
-                self.__db_helper.insert_app_into_db(app)
+                self.__db_helper.insert_app_into_db(app[0])
 
         if return_dataframe:
             return df
