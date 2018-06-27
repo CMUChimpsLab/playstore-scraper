@@ -19,7 +19,11 @@ def main_all(fname):
     c = Controller()
     c.down_all_apps(True)
 
+def scrape_test(fname):
+    s = Scraper(input_file=fname)
+    s.scrape_metadata_for_apps()
+
 if __name__=='__main__':
     logging.basicConfig(format='%(asctime)s [%(name)-12.12s] %(levelname)-8s %(message)s',
                         level=logging.INFO)
-    main_chunk('package_names.csv')
+    main_all('package_names.csv')
