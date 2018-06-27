@@ -12,7 +12,7 @@ def main_chunk(fname):
     for chunk in chunks:
         s.scrape_metadata_for_apps(package_names=chunk)
         c.down_all_apps(True)
-        logger.info("Finished this chunk")
+        # logger.info("Finished this chunk")
 
 def main_all(fname):
     s = Scraper(input_file=fname)
