@@ -24,7 +24,7 @@ def to_file_for_analysis(uuid_list):
 
 def legacy_analyses(uuid_list, dbhelper):
     fname = to_file_for_analysis(uuid_list)
-    subprocess.call(["python2.7", "pipeline/python_static_analyzer/main_LargeVM.py", "pipeline/python_static_analyzer/fake", "txt_files/"+fname])
+    subprocess.call(["python2", "pipeline/python_static_analyzer/main_LargeVM.py", "pipeline/python_static_analyzer/fake", "txt_files/"+fname])
     for uuid in uuid_list:
         # Pass dbhelper and client to avoid a large amount of open connections
         # to the database (still end up with ~30 though)
