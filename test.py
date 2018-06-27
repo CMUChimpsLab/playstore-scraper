@@ -12,6 +12,7 @@ def main_chunk(fname):
     for chunk in chunks:
         s.scrape_metadata_for_apps(package_names=chunk)
         c.down_all_apps(True)
+        logger.info("Finished this chunk")
 
 def main_all(fname):
     s = Scraper(input_file=fname)
@@ -26,4 +27,4 @@ def scrape_test(fname):
 if __name__=='__main__':
     logging.basicConfig(format='%(asctime)s [%(name)-12.12s] %(levelname)-8s %(message)s',
                         level=logging.INFO)
-    main_all('package_names.csv')
+    main_chunk('package_names.csv')
