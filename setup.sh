@@ -5,7 +5,7 @@ mkdir apps
 mkdir apps_decompiled
 pipenv install
 
-cd pipeline && git clone git@github.com:CMUChimpsLab/python_static_analyzer.git && cd python_static_analyzer && git checkout test
+cd pipeline && git clone https://aried02@github.com/CMUChimpsLab/python_static_analyzer.git && cd python_static_analyzer && git checkout test && pipenv install
 
 
 # Optional
