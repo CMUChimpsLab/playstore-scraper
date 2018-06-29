@@ -1,6 +1,5 @@
 # !/bin/bash
 
-git checkout Pooling
 mkdir apps
 mkdir apps_decompiled
 pipenv install
