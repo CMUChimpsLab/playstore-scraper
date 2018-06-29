@@ -1,7 +1,7 @@
 import subprocess
 import os
 import time
-from constants import DECOMPILE_FOLDER, DATABASE_FILE, DOWNLOAD_FOLDER
+from constants import DECOMPILE_FOLDER, DOWNLOAD_FOLDER
 import logging
 import database_helper.helper as dbhelper
 import pandas as pd
@@ -18,7 +18,7 @@ class Decompiler:
     4. download_folder: folder containing the apps to decompile
     """
 
-    def __init__(self, use_database=True, database_file=DATABASE_FILE, decompile_folder=DECOMPILE_FOLDER,
+    def __init__(self, use_database=True, decompile_folder=DECOMPILE_FOLDER,
                  download_folder=DOWNLOAD_FOLDER):
         self.__decompile_folder = decompile_folder
         self.__download_folder = download_folder
@@ -33,8 +33,8 @@ class Decompiler:
 
         self.__use_database = use_database
         if self.__use_database:
-            self.__database_file = database_file
-            self.__database_helper = dbhelper.DatabaseHelper(self.__database_file)
+            # self.__database_file = database_file
+            self.__database_helper = dbhelper.DbHelper()
 
     def decompile(self, file_names, force_decompile=False):
         """

@@ -3,7 +3,7 @@ from pymongo import MongoClient
 import pymongo
 
 from app_object import App
-from constants import DB_HOST, DB_PORT, APP_METADATA_DB
+from constants import DB_HOST, DB_PORT, APP_METADATA_DB, APP_ANALYSIS_DB
 import pandas as pd
 import logging
 
@@ -14,8 +14,14 @@ class DbHelper:
     def __init__(self):
         self.__client = MongoClient(host=DB_HOST, port=DB_PORT)
         self.__android_app_db = self.__client[APP_METADATA_DB]
+        self.__analysis_db = self.__client[APP_ANALYSIS_DB]
         self.__apk_info_collection = self.__android_app_db.apkInfo
 
+    def insert_analysis_into_db(self, uuid, value, collection_name):
+        collection = self.__analysis_db[collection_name]
+        collection.insert_one({'uuid': uuid, 'analysisResult': value})
+        logger.info("App with uuid {0} analyzed and put into {1}".format(uuid, collection_name))
+    
     def insert_app_into_db(self, app):
         """
         Inserts the metadata for an application into the database
@@ -67,6 +73,27 @@ class DbHelper:
         app = self.__apk_info_collection.find_one({'date_downloaded': None})
         return [app['package_name'], app['uuid']]
 
+    def update_analyses_done(self, uuid, new_analyses):
+        if list(self.__apk_info_collection.find({'uuid': uuid}, {'_id': 0, 'analyses_completed': 1}))[0]['analyses_completed'] is None:
+            self.__apk_info_collection.update(
+                {'uuid': uuid},
+                {'$set': {'analyses_completed': new_analyses}}
+            )
+            logger.info("set new analyses for %s " % uuid)
+        else:
+            self.__apk_info_collection.update(
+                {'uuid': uuid},
+                {'$addToSet': {'analyses_completed': {'$each': new_analyses}}}
+            )
+
+    def get_all_apps_to_download(self):
+        """
+        Returns a list of package_names for all of the apps that need to be
+        downloaded + anlayzed + decompiled
+        """
+        app = self.__apk_info_collection.find({'date_downloaded': None}, {'_id': 0, 'package_name': 1})
+        return [a['package_name'] for a in app]
+    
     def get_package_names_to_update(self, count=0):
         # Still needs sorting
         cursor = self.__apk_info_collection \
