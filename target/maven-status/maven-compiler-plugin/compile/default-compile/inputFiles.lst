@@ -1,0 +1,10 @@
+/home/abraham/token-dispenser/src/main/java/com/github/yeriomin/tokendispenser/PasswordsDbMongo.java
+/home/abraham/token-dispenser/src/main/java/com/github/yeriomin/tokendispenser/TokenAc2dmGsfIdResource.java
+/home/abraham/token-dispenser/src/main/java/com/github/yeriomin/tokendispenser/PasswordsDbFactory.java
+/home/abraham/token-dispenser/src/main/java/com/github/yeriomin/tokendispenser/PasswordsDbInterface.java
+/home/abraham/token-dispenser/src/main/java/com/github/yeriomin/tokendispenser/TokenAc2dmResource.java
+/home/abraham/token-dispenser/src/main/java/com/github/yeriomin/tokendispenser/Token.java
+/home/abraham/token-dispenser/src/main/java/com/github/yeriomin/tokendispenser/EmailResource.java
+/home/abraham/token-dispenser/src/main/java/com/github/yeriomin/tokendispenser/PasswordsDbPlaintext.java
+/home/abraham/token-dispenser/src/main/java/com/github/yeriomin/tokendispenser/OkHttpClientAdapter.java
+/home/abraham/token-dispenser/src/main/java/com/github/yeriomin/tokendispenser/TokenResource.java
