@@ -1,0 +1,11 @@
+com/github/yeriomin/tokendispenser/EmailResource.class
+com/github/yeriomin/tokendispenser/OkHttpClientAdapter.class
+com/github/yeriomin/tokendispenser/PasswordsDbInterface.class
+com/github/yeriomin/tokendispenser/TokenAc2dmResource.class
+com/github/yeriomin/tokendispenser/Token.class
+com/github/yeriomin/tokendispenser/PasswordsDbPlaintext.class
+com/github/yeriomin/tokendispenser/PasswordsDbMongo.class
+com/github/yeriomin/tokendispenser/TokenAc2dmGsfIdResource.class
+com/github/yeriomin/tokendispenser/TokenResource.class
+com/github/yeriomin/tokendispenser/OkHttpClientAdapter$1.class
+com/github/yeriomin/tokendispenser/PasswordsDbFactory.class

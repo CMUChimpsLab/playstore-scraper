@@ -71,7 +71,8 @@ class Downloader:
                 api.download([app])
                 downloaded_uuids.append(uuid)
                 download_completion_time = time.time()
-                self.__database_helper.set_download_date(uuid, download_completion_time)
+                if self.__use_database:
+                    self.__database_helper.set_download_date(uuid, download_completion_time)
                 del api
             except Exception as e:
                 logger.error("Download failed - %s" % app[0])

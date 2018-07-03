@@ -28,3 +28,5 @@ pipenv shell
 7. Put the package names you wish to run the full backend on in 'package_names.csv' and run the test.py file for quick setup
 
 7. (Alternate) Write individual test/main script using the scraper/Controller/everything
+
+Token authentication is a work in progress, you need to put user@gmail.com + space + pass in passwords/passwords.txt, but it appears they cannot be brand new accounts (creates malformed request errors for some reason). Still integrating this with the old token system to have it be more robust than before.

@@ -1,0 +1,3 @@
+[submodule "pipeline/python_static_analyzer"]
+	path = pipeline/python_static_analyzer
+	url = git@github.com:CMUChimpsLab/python_static_analyzer.git
