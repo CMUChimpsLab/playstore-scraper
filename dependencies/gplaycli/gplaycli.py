@@ -190,8 +190,6 @@ class GPlaycli:
             logger.error("Problem communicating with token server %s" % err)
             return "", ""
         token, gsfid = out.split(" ")
-        print(token)
-        print(gsfid)
         logger.info("Token: %s", token)
         logger.info("GSFId: %s", gsfid)
         self.token = token
