@@ -175,20 +175,13 @@ class GPlaycli:
             logger.info("Using cached token.")
             return token, gsfid
         logger.info("Retrieving token ...")
-        # response = requests.get(self.token_url)
-        # if response.text == 'Auth error':
-        #     logger.error('Token dispenser auth error, probably too many connections')
-        #     sys.exit(ERRORS.TOKEN_DISPENSER_AUTH_ERROR)
-        # elif response.text == "Server error":
-        #     logger.error('Token dispenser server error')
-        #     sys.exit(ERRORS.TOKEN_DISPENSER_SERVER_ERROR)
         proc = Popen(['java', '-jar', 'target/token-dispenser.jar']
                                 ,stdout=PIPE, stderr=PIPE)
         out, err = proc.communicate()
-        out = out.decode("utf-8")
         if err:
             logger.error("Problem communicating with token server %s" % err)
             return "", ""
+        out = out.decode("utf-8")
         token, gsfid = out.split(" ")
         logger.info("Token: %s", token)
         logger.info("GSFId: %s", gsfid)
