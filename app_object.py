@@ -6,7 +6,7 @@ class App:
                  title=None, developer_name=None, installation_size=None,
                  contains_ads=None, category=None, content_rating=None,
                  user_rating=None, permissions=None, date_downloaded=None, date_last_scraped=None,
-                 analyses_completed=None, other_info=None):
+                 analyses_completed=None, description_text=None, other_info=None):
 
         if any(variable is None for variable in [uuid, package_name, version_code]):
             raise AttributeError("The following cannot be None: uuid, package_name, version_code")
@@ -28,6 +28,7 @@ class App:
         self.date_downloaded = date_downloaded
         self.date_last_scraped = date_last_scraped
         self.analyses_completed = analyses_completed
+        self.description_text = description_text
 
         if other_info is not None:
             self.other_info = other_info
@@ -52,7 +53,8 @@ class App:
                   installation_size=dictionary['installationSize'],
                   contains_ads=c_ads, category=dictionary['category']['appCategory'],
                   user_rating=dictionary['aggregateRating'], permissions=dictionary['permission'],
-                  date_last_scraped=dictionary['date_last_scraped'])
+                  date_last_scraped=dictionary['date_last_scraped'],
+                  description_text=dictionary['description'])
         return app
 
     @staticmethod

@@ -3,16 +3,21 @@ from pymongo import MongoClient
 import pymongo
 
 from app_object import App
-from constants import DB_HOST, DB_PORT, APP_METADATA_DB, APP_ANALYSIS_DB
+from constants import DB_HOST, DB_PORT, APP_METADATA_DB, APP_ANALYSIS_DB, DB_ROOT_USER, DB_ROOT_PASS
 import pandas as pd
 import logging
+import json
+import os
 
 logger = logging.getLogger(__name__)
 
 
 class DbHelper:
     def __init__(self):
-        self.__client = MongoClient(host=DB_HOST, port=DB_PORT)
+        # Use username and password when running with mongod --auth,
+        # prevents unwanted changes to the database
+        # (also works if just running mongod normally no auth)
+        self.__client = MongoClient(host=DB_HOST, port=DB_PORT, username=DB_ROOT_USER, password=DB_ROOT_PASS)
         self.__android_app_db = self.__client[APP_METADATA_DB]
         self.__analysis_db = self.__client[APP_ANALYSIS_DB]
         self.__apk_info_collection = self.__android_app_db.apkInfo
@@ -122,3 +127,11 @@ class DbHelper:
             logger.info("Updated download time for {}".format(uuid))
         else:
             logger.warning("Failed to update download time for {}".format(uuid))
+    
+    def get_metadata_in_json(self, OUTPUT_FILE):
+        if not os.path.isfile(OUTPUT_FILE):
+            os.system("touch "+OUTPUT_FILE)
+        df = self.get_all_apps_from_database()
+        data = df.to_dict('records')
+        with open(OUTPUT_FILE, 'w') as f:
+            json.dump(data, f)
