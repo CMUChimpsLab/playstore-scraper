@@ -41,8 +41,9 @@ class Scraper:
             app = self.get_metadata_for_apps([package_name])
             if app is None:
                 continue
-            df.append(App.to_df(app))
-
+            if return_dataframe:
+                df = df.append(App.to_df(app))
+            
             if write_to_database:
                 self.__db_helper.insert_app_into_db(app[0])
 
