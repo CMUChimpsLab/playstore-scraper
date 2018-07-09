@@ -98,7 +98,11 @@ class DbHelper:
         """
         app = self.__apk_info_collection.find({'date_downloaded': None}, {'_id': 0, 'package_name': 1})
         return [a['package_name'] for a in app]
-    
+        
+    def get_all_apps_to_analyze(self):
+        app = self.__apk_info_collection.find({'analyses_completed': None}, {'_id': 0, 'uuid': 1})
+        return [a['uuid'] for a in app]
+
     def get_package_names_to_update(self, count=0):
         # Still needs sorting
         cursor = self.__apk_info_collection \
@@ -108,7 +112,14 @@ class DbHelper:
             .sort_values(by=['date_last_scraped'])\
             .drop_duplicates(subset=['package_name'], keep='last')
         return df
-
+    def is_app_version_in_db(self, pkg_name, version_code):
+        cursor = self.__apk_info_collection \
+            .find({"package_name": pkg_name, "version_code": version_code})
+        return len(list(cursor)) != 0
+    def is_app_in_db(self, pkg_name):
+        cursor = self.__apk_info_collection \
+            .find({"package_name": pkg_name})
+        return len(list(cursor)) != 0
     def get_filename_mappings(self, apps):
         query = {'package_name': {'$in': apps}, 'date_downloaded': None}
         projection = {'package_name': 1, 'uuid': 1, '_id': 0}

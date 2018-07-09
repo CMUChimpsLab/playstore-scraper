@@ -38,6 +38,9 @@ class Scraper:
         counter = 0
         df = pd.DataFrame()
         for package_name in package_names:
+            if self.__db_helper.is_app_in_db(package_name):
+                logger.info("%s already in database, skipping" % package_name)
+                continue
             app = self.get_metadata_for_apps([package_name])
             counter = counter + 1
             if app is None:
