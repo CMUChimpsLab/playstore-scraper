@@ -35,15 +35,17 @@ class Scraper:
             else:
                 logger.error("An input file or a list of package names must be provided to scraper.")
                 return
-
+        counter = 0
         df = pd.DataFrame()
         for package_name in package_names:
             app = self.get_metadata_for_apps([package_name])
+            counter = counter + 1
             if app is None:
                 continue
             if return_dataframe:
                 df = df.append(App.to_df(app))
-            
+            print("")
+            logger.info("%s apps down\n" % str(counter))
             if write_to_database:
                 self.__db_helper.insert_app_into_db(app[0])
 
@@ -56,12 +58,18 @@ class Scraper:
         """
         api = gplaycli.GPlaycli(config_file=self.__config_file)
         data = None
+        if packages[0] is None:
+            return
         try:
             logger.info("Scraping metadata for {}".format(packages))
             data = api.get_doc_apk_details(packages)
         except RequestError as e:
             logger.error("Could not scrape {}. Reason - {}".format(packages, e.value))
-
+        except Exception as e:
+            logger.error("Non Request-Error problem occurred for {}. Reason - {}. Sleeping for five seconds and continuing".format(packages, e))
+            time.sleep(5)
+            if data is None:
+                return self.get_metadata_for_apps(packages)
         # Zips uuids with dictionaries in data array then makes them Apps
         # and returns that list of them
         if data is not None:

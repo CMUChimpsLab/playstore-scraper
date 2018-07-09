@@ -10,16 +10,16 @@ def to_file_for_analysis(uuid_list):
     # Writes a file with appropriate format to feed to analysis pipeline
     # :param uuid_list: List of uuids to analyze (without apk extension)
     # Returns the file name of the file written to
-    
+
     fname = str(name_gen.uuid4())+'.txt'
-    local_directory = os.path.dirname(os.path.realpath(__file__))
-    local_directory = local_directory[:local_directory.index('playstore-scraper') + len('playstore-scraper')]
+    # local_directory = os.path.dirname(os.path.realpath(__file__))
+    # local_directory = local_directory[:local_directory.index('playstore-scraper') + len('playstore-scraper')]
     # print("/".join[local_directory, DOWNLOAD_FOLDER])
     with open("txt_files/"+fname, 'w') as f:
         for uuid in uuid_list:
             if not uuid.endswith('apk'):
                 uuid = uuid+'.apk'
-            f.write(uuid + ' ' + "/".join([local_directory, DOWNLOAD_FOLDER]))
+            f.write(uuid + ' ' + DOWNLOAD_FOLDER)
     return fname
 
 def legacy_analyses(uuid_list, dbhelper):
