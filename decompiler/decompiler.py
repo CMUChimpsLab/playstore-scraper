@@ -19,11 +19,12 @@ class Decompiler:
     """
 
     def __init__(self, use_database=True, decompile_folder=DECOMPILE_FOLDER,
-                 download_folder=DOWNLOAD_FOLDER):
+                 download_folder=DOWNLOAD_FOLDER, compress=False):
         self.__decompile_folder = decompile_folder
         self.__download_folder = download_folder
         local_directory = os.path.dirname(os.path.realpath(__file__))
         self.__decompile_command = "/".join([local_directory, "apktool d {} -o {}"])
+        self.__compress = compress
 
         if not os.path.isdir(self.__decompile_folder):
             os.makedirs(self.__decompile_folder)
@@ -77,6 +78,8 @@ class Decompiler:
                 else:
                     logger.info("Decompiled {} into {}".format(app_file_path, decompile_destination_path))
                     decompile_completion_time.append(time.time())
+                    if self.__compress:
+                        self.compress_smali([fname[:-len(app_extension)]])
             except Exception as e:
                 logger.error("Decompile failed - %s" % fname)
                 logger.error(e)
@@ -102,9 +105,26 @@ class Decompiler:
             logger.error("Incorrect keys in the file")
             logger.error(e)
             return [None]
-        apps = df['fileName'].tolist()
+        apps = df['package_name'].tolist()
         return self.decompile(apps)
-
+    
+    def compress_smali(self, file_names):
+        a = os.getcwd()
+        os.chdir(self.__decompile_folder)
+        if not os.path.isfile('rm.sh'):
+            #only works in sh file and not directly through os.system
+            #really messy I know I'm sorry
+            os.system('touch rm.sh')
+            os.system('echo "#!/bin/bash\nshopt -s extglob\nrm -rf !(smali*)" >> rm.sh')
+            os.system('chmod +x rm.sh')
+        for i in file_names:
+            os.chdir(i)
+            os.system('../rm.sh')
+            os.chdir('..')
+            os.system('zip -r '+i+'.zip '+i)
+            os.system('rm -rf '+i)
+        os.chdir(a)
+    
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s [%(name)-12.12s] %(levelname)-8s %(message)s',
