@@ -8,8 +8,8 @@ import shutil
 
 class TestPipeline(TestCase):
     def setUp(self):
-        self.__download_folder = "test_download_folder"
-        self.__decompile_folder = "test_decompile_folder"
+        self.__download_folder = "~/playstore_scraper/test_download_folder"
+        self.__decompile_folder = "~/playstore_scraper/test_decompile_folder"
         self.__test_app_name = 'com.facebook.katana'
         self.__downloader = Downloader(use_database=False, download_folder=self.__download_folder)
         self.__decompiler = Decompiler(use_database=False, download_folder=self.__download_folder,

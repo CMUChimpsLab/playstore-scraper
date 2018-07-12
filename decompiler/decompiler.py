@@ -62,7 +62,8 @@ class Decompiler:
             if not force_decompile and fname[:-len(app_extension)] in decompiled_apps:
                 logger.info("File %s already decompiled" % fname)
                 continue
-
+            if not force_decompile and (fname[:-len(app_extension)] + '.zip') in decompiled_apps:
+                logger.info("File %s already decompiled and compressed" % fname)
             if fname not in downloaded_apps:
                 logger.error("File %s not found" % fname)
                 continue
