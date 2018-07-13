@@ -45,6 +45,8 @@ class App:
         Translates a dictionary with the corresponding fields into an App object
         And adds the uuid, and date_last_scraped as current time
         """
+        if dictionary is None:
+            return None
         # translate some fields (contains_ads is empty string if it doesn't)
         c_ads = len(dictionary['containsAds']) > 0
 

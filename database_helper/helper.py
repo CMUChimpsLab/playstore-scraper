@@ -38,7 +38,7 @@ class DbHelper:
             logger.error("App with uuid {0} already exists".format(app['uuid']))
             return
         self.__apk_info_collection.insert_one(app)
-        logger.info("App with uuid {0} inserted into database".format(app['uuid']))
+        #logger.info("App with uuid {0} inserted into database".format(app['uuid']))
 
     def get_all_apps_from_database(self):
         """
