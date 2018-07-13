@@ -112,15 +112,17 @@ class Decompiler:
     def compress_smali(self, file_names):
         a = os.getcwd()
         os.chdir(self.__decompile_folder)
-        if not os.path.isfile('rm.sh'):
-            #only works in sh file and not directly through os.system
-            #really messy I know I'm sorry
-            os.system('touch rm.sh')
-            os.system('echo "#!/bin/bash\nshopt -s extglob\nrm -rf !(smali*)" >> rm.sh')
-            os.system('chmod +x rm.sh')
+        # if not os.path.isfile('rm.sh'):
+        #     #only works in sh file and not directly through os.system
+        #     #really messy I know I'm sorry
+        #     os.system('touch rm.sh')
+        #     os.system('echo "#!/bin/bash\nshopt -s extglob\nfind . | egrep -v \".smali|.xml\" " >> rm.sh')
+        #     os.system('chmod +x rm.sh')
+        #     os.system('cat rm.sh')
         for i in file_names:
             os.chdir(i)
-            os.system('../rm.sh')
+            os.system('find . | egrep -v \".smali|.xml\" | rm -f')
+            os.system('find . -empty -type d -delete')
             os.chdir('..')
             os.system('zip -r '+i+'.zip '+i)
             os.system('rm -rf '+i)
