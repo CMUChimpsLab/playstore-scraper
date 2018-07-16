@@ -18,6 +18,10 @@ class Controller:
 
     
     def down_and_decomp(self, package_names=None, use_down_db=True, download_folder=None, decompile_folder=None):
+        """
+        Downloads and decompiles+compresses all files needed from database
+        or package_names passed in
+        """
         if package_names is None and use_down_db:
             l = self.__dbhelper.get_all_apps_to_download()
         else:
@@ -31,6 +35,9 @@ class Controller:
         
         
     def down_no_analyze(self, isParallel=True):
+        """
+        Just downloads the apps from the database, but does not analyze
+        """
         l = self.__dbhelper.get_all_apps_to_download()
         if isParallel:
             pool = Pool(4)
@@ -58,12 +65,18 @@ class Controller:
         os.system("rm -r txt_files") #just to ensure it's cleaned
 
 def down(name):
+    """
+    Runs a simple download of the app name specified.
+    """
     downloader = Downloader()
     logger.info("Downloading App %s" % name)
     uuid_list = downloader.download([name])
     return name
 
 def down_and_decomp(name, use_down_db, download_folder=DOWNLOAD_FOLDER, decompile_folder=DECOMPILE_FOLDER):
+    """
+    Used with down_and_decomp above
+    """
     downloader = Downloader(use_down_db, download_folder=download_folder)
     logger.info("Downloading App %s" % name)
     uuid_list = downloader.download([name])

@@ -16,6 +16,7 @@ class Decompiler:
     2. database_file: file to grab file names from if provided
     3. decompile_folder: folder to decompile the apps into, existing decompiled apps will **not** be overwritten unless told to)
     4. download_folder: folder containing the apps to decompile
+    5. compress: if true, compress_smali will be used to compress each decompiled app after decompiling and store .zip instead.
     """
 
     def __init__(self, use_database=True, decompile_folder=DECOMPILE_FOLDER,
@@ -110,15 +111,13 @@ class Decompiler:
         return self.decompile(apps)
     
     def compress_smali(self, file_names):
+        """
+        This function takes the filenames, removes all files except the ones
+        with endings specified below (currently .xml and .smali), and then
+        zips them, all as a space-conserving mechanism. 
+        """
         a = os.getcwd()
         os.chdir(self.__decompile_folder)
-        # if not os.path.isfile('rm.sh'):
-        #     #only works in sh file and not directly through os.system
-        #     #really messy I know I'm sorry
-        #     os.system('touch rm.sh')
-        #     os.system('echo "#!/bin/bash\nshopt -s extglob\nfind . | egrep -v \".smali|.xml\" " >> rm.sh')
-        #     os.system('chmod +x rm.sh')
-        #     os.system('cat rm.sh')
         for i in file_names:
             os.chdir(i)
             os.system('find . | egrep -v \".smali|.xml\" | rm -f')
