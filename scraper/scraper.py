@@ -25,6 +25,12 @@ class Scraper:
         self.__config_file = GPLAYCLI_CONFIG_FILE_PATH
 
     def bulk_scrape(self, package_names=None):
+        """
+        Not many options here, just goes through and uses the bulk scraping
+        function to get 1000 apps metadata at a time instead of 1 app at a 
+        time. Will automatically insert into database if not already in the
+        database.
+        """
         if package_names is None:
             if self.input_file is not None:
                 package_names = pd.read_csv(self.input_file, names=['package_name'])['package_name'].tolist()
@@ -40,8 +46,8 @@ class Scraper:
 
     def bulk_scrape_metadata_for_apps(self, return_dataframe=False, write_to_database=True, package_names=None):
         """
-            Function uses default input file to scrape all of the information for every app in the file
-            Essentially what main.py used to do, but can also return the dataframe if necessary (useful for updating)
+        Uses the bulk scraping function. Does 1000 apps at a time then loops and
+        adds them all to the database if not already in the database.
         """
         if package_names is None:
             if self.input_file is not None:
@@ -70,8 +76,8 @@ class Scraper:
             
     def scrape_metadata_for_apps(self, return_dataframe=False, write_to_database=True, package_names=None):
         """
-            Function uses default input file to scrape all of the information for every app in the file
-            Essentially what main.py used to do, but can also return the dataframe if necessary (useful for updating)
+        Function uses default input file to scrape all of the information for every app in the file
+        Essentially what main.py used to do, but can also return the dataframe if necessary (useful for updating)
         """
         if package_names is None:
             if self.input_file is not None:
