@@ -40,7 +40,7 @@ class Scraper:
         package_names_two = [package_names[i:i+1000] for i in range(0, len(package_names), 1000)]
         cntr =0
         for package_name in package_names_two:
-            self.scrape_metadata_for_apps(package_names=package_name)
+            self.bulk_scrape_metadata_for_apps(package_names=package_name)
             cntr = cntr + 1000
             logger.info("%s apps down\n" % str(cntr))
 
@@ -97,7 +97,6 @@ class Scraper:
                 continue
             if return_dataframe:
                 df = df.append(App.to_df(app))
-            print("")
             logger.info("%s apps down\n" % str(counter))
             if write_to_database:
                 self.__db_helper.insert_app_into_db(app[0])
