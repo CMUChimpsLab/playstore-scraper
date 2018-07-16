@@ -5,6 +5,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 def scrape(s):
+    """
+    Takes an html page and scrapes it for all of the package_names it can
+    grab.
+    """
     res = []
     while 'data-docid' in s:
         i = s.index('data-docid=') + 12
@@ -14,6 +18,12 @@ def scrape(s):
     return list(set(res))
 
 def get_top_apps_list():
+    """
+    Iterates through all app store categories and gets the top (US) apps from
+    each one. Returns as a package_name list. For some reason, google play
+    store will not allow 'start' to be > 199 and will not allow num to be
+    > 320
+    """
     url = 'https://play.google.com/store/apps/category/{}/collection/topselling_{}?hl=en&gl=us&start={}&num={}'
     # have to get 0 -> 100 then 100 -> 199 then 199 -> 318 (google doesn't like
     # num to be > 120 and start to be > 199. Idk why.
