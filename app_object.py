@@ -2,6 +2,10 @@ import pandas as pd
 
 
 class App:
+    """
+    Represents a single app and metadata we want to store, with conversion
+    methods from the metadata we get from the app store
+    """ 
     def __init__(self, uuid, package_name, version_code,
                  title=None, developer_name=None, installation_size=None,
                  contains_ads=None, category=None, content_rating=None,

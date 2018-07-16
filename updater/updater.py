@@ -16,11 +16,17 @@ class Updater:
         self.__db_helper = DbHelper()
 
     def update_all_apps(self):
+        """
+        Updates all of the apps in the database
+        """
         df = self.__db_helper.get_package_names_to_update(0)
         for index, row in df.iterrows():
             self.__update_metadata_for_app(row)
 
     def __update_metadata_for_app(self, app):
+        """
+        Updates a single app, used by update_all_apps
+        """
         s = Scraper()
         new_metadata = s.get_metadata_for_apps([app['package_name']])[0]
         updated = new_metadata.version_code != app['version_code']

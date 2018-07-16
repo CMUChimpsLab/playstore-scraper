@@ -23,6 +23,12 @@ class DbHelper:
         self.__apk_info_collection = self.__android_app_db.apkInfo
 
     def insert_analysis_into_db(self, uuid, value, collection_name):
+        """
+        Inserts results of an analysis into the analysis database, under the 
+        collection identified by collection_name and the result for the app
+        with uuid passed in, with result being 'value' (as we do not know what
+        the type might be).
+        """
         collection = self.__analysis_db[collection_name]
         collection.insert_one({'uuid': uuid, 'analysisResult': value})
         logger.info("App with uuid {0} analyzed and put into {1}".format(uuid, collection_name))
@@ -79,6 +85,10 @@ class DbHelper:
         return [app['package_name'], app['uuid']]
 
     def update_analyses_done(self, uuid, new_analyses):
+        """
+        Updates which analyses have been done for app with uuid passed in,
+        with the analyses list in new_analyses
+        """
         if list(self.__apk_info_collection.find({'uuid': uuid}, {'_id': 0, 'analyses_completed': 1}))[0]['analyses_completed'] is None:
             self.__apk_info_collection.update(
                 {'uuid': uuid},
@@ -100,10 +110,20 @@ class DbHelper:
         return [a['package_name'] for a in app]
         
     def get_all_apps_to_analyze(self):
+        """
+        Finds the uuids for all of the apps we have yet to analyze at all
+        Perhaps add functionality for specific analyses later
+        """
         app = self.__apk_info_collection.find({'analyses_completed': None}, {'_id': 0, 'uuid': 1})
         return [a['uuid'] for a in app]
 
     def get_package_names_to_update(self, count=0):
+        """
+        Grabs a list of all unique package_names from the database, and keeps
+        the ones which have been most recently scraped to see if there are
+        any updates for these apps. Returned as a dataframe, mainly used by
+        Updater.
+        """
         # Still needs sorting
         cursor = self.__apk_info_collection \
             .find(None, {'package_name': 1, 'uuid': 1, 'date_last_scraped':1, 'version_code': 1, '_id': 0}) \
@@ -112,15 +132,29 @@ class DbHelper:
             .sort_values(by=['date_last_scraped'])\
             .drop_duplicates(subset=['package_name'], keep='last')
         return df
+
     def is_app_version_in_db(self, pkg_name, version_code):
+        """
+        Checks if the package_name and version_code combo is already in the db
+        or not
+        """
         cursor = self.__apk_info_collection \
             .find({"package_name": pkg_name, "version_code": version_code})
         return len(list(cursor)) != 0
+
     def is_app_in_db(self, pkg_name):
+        """
+        Just checks if the package_name has been inserted into the db yet
+        """
         cursor = self.__apk_info_collection \
             .find({"package_name": pkg_name})
         return len(list(cursor)) != 0
+
     def get_filename_mappings(self, apps):
+        """
+        Takes in a list of package_names and gets the uuids corresponding to 
+        those filenames
+        """
         query = {'package_name': {'$in': apps}, 'date_downloaded': None}
         projection = {'package_name': 1, 'uuid': 1, '_id': 0}
         cursor = self.__apk_info_collection \
@@ -130,6 +164,10 @@ class DbHelper:
         return [[x['package_name'], x['uuid']] for x in cursor]
 
     def set_download_date(self, uuid, download_completion_time):
+        """
+        When the downloader downloads an app, this sets the download time for
+        that app in seconds from epoch form
+        """
         res = self.__apk_info_collection.update(
             {'uuid': uuid},
             {'$set': {'date_downloaded': download_completion_time}}
@@ -140,6 +178,10 @@ class DbHelper:
             logger.warning("Failed to update download time for {}".format(uuid))
     
     def get_metadata_in_json(self, OUTPUT_FILE):
+        """
+        This dumps all of the metadata into a JSON file if you want an easy
+        sharing method for a bit of data.
+        """
         if not os.path.isfile(OUTPUT_FILE):
             os.system("touch "+OUTPUT_FILE)
         df = self.get_all_apps_from_database()
