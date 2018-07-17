@@ -38,6 +38,8 @@ class Updater:
         logger.info("Starting bulk update...")
         for chunk in apps_chunked:
             metadata = s.get_metadata_for_apps([a['package_name'] for a in chunk], bulk=True)
+            if metadata is None: # weird error I keep getting
+                continue
             num_updated = 0
             for app in chunk:
                 counter = counter + 1

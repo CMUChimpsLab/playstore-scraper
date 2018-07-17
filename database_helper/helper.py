@@ -74,8 +74,8 @@ class DbHelper:
             {'$set': {'date_last_scraped': date_last_scraped}})
         if res.matched_count != 1:
             logger.error("Expected one document to be matched, instead %s was" % str(res.matched_count))
-        else:
-            logger.info("Updated entry with uuid {0}".format(uuid))
+        #else:
+        #    logger.info("Updated entry with uuid {0}".format(uuid))
 
     def get_next_app_to_download(self):
         """
@@ -179,4 +179,12 @@ class DbHelper:
         new_top_list = crawler.get_top_apps_list()
         for name in new_top_list:
             self.__top_apps.update_one({'package_name': name}, {'$set': {'package_name': name, 'currently_top': True}}, upsert=True)
-        
+    
+    def get_top_apps(self):
+        """
+        Returns a list of top apps that need to be scraped (not in db yet)
+        Corresponds to main function
+        """
+        top_apps = self.__top_apps.find({}, {'_id': 0, 'package_name': 1})
+        return [a['package_name'] for a in top_apps]
+    
