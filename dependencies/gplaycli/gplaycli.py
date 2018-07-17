@@ -191,10 +191,13 @@ class GPlaycli:
         return token, gsfid
 
     @hooks.connected
-    def get_doc_apk_details(self, pkg_todownload):
+    def get_doc_apk_details(self, pkg_todownload, bulk=False):
         details = []
-        for pkg in pkg_todownload:
-            details.append(self.api.details(pkg))
+        if not bulk:
+            for pkg in pkg_todownload:
+                details.append(self.api.details(pkg))
+        else:
+            details = self.api.bulkDetails(pkg_todownload)
         return details
 
     @hooks.connected

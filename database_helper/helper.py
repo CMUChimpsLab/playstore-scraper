@@ -40,12 +40,10 @@ class DbHelper:
             return
         if self.is_app_top(app['package_name']) or not self.is_app_in_db(app['package_name']):
             self.__apk_info_collection.insert_one(app)
-            logger.info("App with uuid {0} inserted into database".format(app['uuid']))
         else:
             # Is in the database, but not a top app, so just update don't
             # insert a new entry
             self.__apk_info_collection.update_one({'package_name': app['package_name']}, {'$set': app})
-            logger.info("App with uuid {0} updated, older version removed".format(app['uuid']))
         
         
 
