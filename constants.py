@@ -69,3 +69,5 @@ APP_ANALYSIS_DB = 'staticAnalysis'
 
 DB_ROOT_USER = 'root'
 DB_ROOT_PASS = 'toor'
+
+TOP_APPS_COLL = 'topApps'
