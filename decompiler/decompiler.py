@@ -120,11 +120,16 @@ class Decompiler:
         os.chdir(self.__decompile_folder)
         for i in file_names:
             os.chdir(i)
-            os.system('find . | egrep -v \".smali|.xml\" | rm -f')
-            os.system('find . -empty -type d -delete')
-            os.chdir('..')
-            os.system('zip -r '+i+'.zip '+i)
-            os.system('rm -rf '+i)
+            with open(os.devnull, 'w') as fp:
+                cmd = 'find . | egrep -v \".smali|.xml\" | rm -f'
+                p = subprocess.run(cmd.split(), stdout=fp, stderr=fp)
+                cmd = 'find . -empty -type d -delete'
+                p = subprocess.run(cmd.split(), stdout=fp, stderr=fp)
+                os.chdir('..')
+                cmd = 'zip -r '+i+'.zip '+i
+                p = subprocess.run(cmd.split(), stdout=fp, stderr=fp)
+                cmd = 'rm -rf '+i
+                p = subprocess.run(cmd.split(), stdout=fp, stderr=fp)
         os.chdir(a)
     
 
