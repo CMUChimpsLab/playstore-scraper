@@ -31,7 +31,6 @@ def scrape_test(fname, package_names=None):
         s = Scraper()
         df = s.scrape_metadata_for_apps(package_names=package_names, write_to_database=False, return_dataframe=True)
         return df
-    
 
 def download_test(fname):
     d = Downloader(False)

@@ -16,14 +16,16 @@ class Decompiler:
     2. database_file: file to grab file names from if provided
     3. decompile_folder: folder to decompile the apps into, existing decompiled apps will **not** be overwritten unless told to)
     4. download_folder: folder containing the apps to decompile
+    5. compress: if true, compress_smali will be used to compress each decompiled app after decompiling and store .zip instead.
     """
 
     def __init__(self, use_database=True, decompile_folder=DECOMPILE_FOLDER,
-                 download_folder=DOWNLOAD_FOLDER):
+                 download_folder=DOWNLOAD_FOLDER, compress=False):
         self.__decompile_folder = decompile_folder
         self.__download_folder = download_folder
         local_directory = os.path.dirname(os.path.realpath(__file__))
         self.__decompile_command = "/".join([local_directory, "apktool d {} -o {}"])
+        self.__compress = compress
 
         if not os.path.isdir(self.__decompile_folder):
             os.makedirs(self.__decompile_folder)
@@ -61,7 +63,8 @@ class Decompiler:
             if not force_decompile and fname[:-len(app_extension)] in decompiled_apps:
                 logger.info("File %s already decompiled" % fname)
                 continue
-
+            if not force_decompile and (fname[:-len(app_extension)] + '.zip') in decompiled_apps:
+                logger.info("File %s already decompiled and compressed" % fname)
             if fname not in downloaded_apps:
                 logger.error("File %s not found" % fname)
                 continue
@@ -77,6 +80,8 @@ class Decompiler:
                 else:
                     logger.info("Decompiled {} into {}".format(app_file_path, decompile_destination_path))
                     decompile_completion_time.append(time.time())
+                    if self.__compress:
+                        self.compress_smali([fname[:-len(app_extension)]])
             except Exception as e:
                 logger.error("Decompile failed - %s" % fname)
                 logger.error(e)
@@ -102,9 +107,26 @@ class Decompiler:
             logger.error("Incorrect keys in the file")
             logger.error(e)
             return [None]
-        apps = df['fileName'].tolist()
+        apps = df['package_name'].tolist()
         return self.decompile(apps)
-
+    
+    def compress_smali(self, file_names):
+        """
+        This function takes the filenames, removes all files except the ones
+        with endings specified below (currently .xml and .smali), and then
+        zips them, all as a space-conserving mechanism. 
+        """
+        a = os.getcwd()
+        os.chdir(self.__decompile_folder)
+        for i in file_names:
+            os.chdir(i)
+            os.system('find . | egrep -v \".smali|.xml\" | rm -f')
+            os.system('find . -empty -type d -delete')
+            os.chdir('..')
+            os.system('zip -r '+i+'.zip '+i)
+            os.system('rm -rf '+i)
+        os.chdir(a)
+    
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s [%(name)-12.12s] %(levelname)-8s %(message)s',
