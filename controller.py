@@ -13,6 +13,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 class Controller:
+    """
+    Calls a lot of the other scripts and creates thread pools to do stuff
+    like download and analyze the apps.
+    """
     def __init__(self):
         self.__dbhelper = DbHelper()
 
@@ -50,6 +54,10 @@ class Controller:
                 logger.info("{} succeeded".format(uuid_list))
 
     def down_all_apps(self, isParallel=True):
+        """
+        Gets all apps that need to be downloaded, and downloads then analyzes
+        them.
+        """
         l = self.__dbhelper.get_all_apps_to_download()
         os.system("mkdir txt_files")
         
@@ -85,6 +93,10 @@ def down_and_decomp(name, use_down_db, download_folder=DOWNLOAD_FOLDER, decompil
     return name
 
 def down_and_analyze(name):
+    """
+    Called to by above to download and analyze each app
+    Used to decompile, but not enough space previously.
+    """
     downloader = Downloader()
     #decompiler = Decompiler(use_database=False)
     dbhelper = DbHelper()

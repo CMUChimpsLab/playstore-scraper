@@ -76,8 +76,9 @@ class Scraper:
             
     def scrape_metadata_for_apps(self, return_dataframe=False, write_to_database=True, package_names=None):
         """
-        Function uses default input file to scrape all of the information for every app in the file
-        Essentially what main.py used to do, but can also return the dataframe if necessary (useful for updating)
+        Function uses default input file to scrape all of the information for every app in the file. Can also input list of package_names
+        directly if you choose, or return a dataframe with the information.
+        Will write to database as default, but you can turn that off.
         """
         if package_names is None:
             if self.input_file is not None:

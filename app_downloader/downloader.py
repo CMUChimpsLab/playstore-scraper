@@ -33,7 +33,6 @@ class Downloader:
             self.__database_helper = DbHelper()
 
         # This config file is used by the GPlaycli module to determine the authentication token
-        # By default, no account information is provided and a token is downloaded from developer's API
         self.__config_file = GPLAYCLI_CONFIG_FILE_PATH
 
     def download_all_from_db(self):
@@ -116,7 +115,7 @@ def main():
     # TODO Add command line functionality to the module
     logging.info("Command line feature still in development")
     d = Downloader()
-    d.download(['com.facebook.katana', 'com.instagram.android', 'ddfndjkg'], force_download=True)
+    d.download(['com.playgendary.kickthebuddy'], force_download=True)
     return
 
 
