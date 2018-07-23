@@ -223,7 +223,7 @@ class DbHelper:
         Tells if uuid is in top 320 from each category or not
         """    
         pkg_name = list(self.__apk_info_collection.find({'uuid': uuid}))[0]['package_name']
-        return is_app_top(pkg_name)
+        return self.is_app_top(pkg_name)
         
     def get_current_top_apps(self):
         """

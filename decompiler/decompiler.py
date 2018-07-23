@@ -124,8 +124,9 @@ class Decompiler:
             with open(os.devnull, 'w') as fp:
                 cmd = 'find . | egrep -v \"'
                 cmd = cmd + '|'.join(suffix_to_keep)
-                cmd = cmd + '\" | rm -f'
-                p = subprocess.run(cmd.split(), stdout=fp, stderr=fp)
+                cmd = cmd + '\" | xargs rm -f'
+                os.system(cmd)
+                #p = subprocess.run(cmd.split())
                 cmd = 'find . -empty -type d -delete'
                 p = subprocess.run(cmd.split(), stdout=fp, stderr=fp)
                 os.chdir('..')
