@@ -93,3 +93,11 @@ if __name__ == '__main__':
         fname = sys.argv[2]
         bulk_scrape_file(fname)
     
+    else:
+        print("Usage: python main.py <opt> [additional args]")
+        print("Options:")
+        print("\'s\' - scrapes normally, must include filename after as well")
+        print("\'u\' - update apps using the updater")
+        print("\'down\' - just download the apps in db which have not been")
+        print("\'dd\' - download and decompile each app in db which hasn't been")
+        print("\'bs\' - bulk scrape, different scraping method than normal one must also include filename like \'s\'")
