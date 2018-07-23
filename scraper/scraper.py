@@ -61,7 +61,6 @@ class Scraper:
         for package_name in package_names:
             counter = counter + 1
             if self.__db_helper.is_app_in_db(package_name):
-                #logger.info("%s already in database, skipping" % package_name)
                 continue
             app = data[counter]
             if app is None:
@@ -138,7 +137,6 @@ class Scraper:
         if packages[0] is None:
             return
         try:
-            #logger.info("Scraping metadata for {}".format(packages))
             data = api.get_doc_apk_details(packages, bulk=bulk)
         except RequestError as e:
             logger.error("Could not scrape {}. Reason - {}".format(packages, e.value))

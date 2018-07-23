@@ -16,7 +16,7 @@ class Decompiler:
     2. database_file: file to grab file names from if provided
     3. decompile_folder: folder to decompile the apps into, existing decompiled apps will **not** be overwritten unless told to)
     4. download_folder: folder containing the apps to decompile
-    5. compress: if true, compress_smali will be used to compress each decompiled app after decompiling and store .zip instead.
+    5. compress: if true, compress_storage will be used to compress each decompiled app after decompiling and store .zip instead.
     """
 
     def __init__(self, use_database=True, decompile_folder=DECOMPILE_FOLDER,
@@ -82,7 +82,7 @@ class Decompiler:
                     logger.info("Decompiled {} into {}".format(app_file_path, decompile_destination_path))
                     decompile_completion_time.append(time.time())
                     if self.__compress:
-                        self.compress_smali([fname[:-len(app_extension)]])
+                        self.compress_storage([fname[:-len(app_extension)]])
             except Exception as e:
                 logger.error("Decompile failed - %s" % fname)
                 logger.error(e)
@@ -111,7 +111,7 @@ class Decompiler:
         apps = df['package_name'].tolist()
         return self.decompile(apps)
     
-    def compress_smali(self, file_names):
+    def compress_storage(self, file_names, suffix_to_keep=['.xml', '.smali']):
         """
         This function takes the filenames, removes all files except the ones
         with endings specified below (currently .xml and .smali), and then
@@ -122,7 +122,9 @@ class Decompiler:
         for i in file_names:
             os.chdir(i)
             with open(os.devnull, 'w') as fp:
-                cmd = 'find . | egrep -v \".smali|.xml\" | rm -f'
+                cmd = 'find . | egrep -v \"'
+                cmd = cmd + '|'.join(suffix_to_keep)
+                cmd = cmd + '\" | rm -f'
                 p = subprocess.run(cmd.split(), stdout=fp, stderr=fp)
                 cmd = 'find . -empty -type d -delete'
                 p = subprocess.run(cmd.split(), stdout=fp, stderr=fp)
