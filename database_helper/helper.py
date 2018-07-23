@@ -3,7 +3,7 @@ from pymongo import MongoClient
 import pymongo
 from scraper import crawler
 from app_object import App
-from constants import DB_HOST, DB_PORT, APP_METADATA_DB, APP_ANALYSIS_DB, DB_ROOT_USER, DB_ROOT_PASS, TOP_APPS_COLL
+from constants import DB_HOST, DB_PORT, APP_METADATA_DB, APP_ANALYSIS_DB, DB_ROOT_USER, DB_ROOT_PASS, TOP_APPS_COLL, DOWNLOAD_FOLDER, DECOMPILE_FOLDER
 import pandas as pd
 import logging
 import json
@@ -43,7 +43,13 @@ class DbHelper:
         else:
             # Is in the database, but not a top app, so just update don't
             # insert a new entry
+            old_uuid = list(self.__apk_info_collection.find({'package_name': app['package_name']}))[0]['uuid']
             self.__apk_info_collection.update_one({'package_name': app['package_name']}, {'$set': app})
+            # Remove old file
+            if os.path.isfile(DOWNLOAD_FOLDER + '/' + old_uuid+'.apk'):
+                os.remove(DOWNLOAD_FOLDER + '/' + old_uuid+'.apk')
+            if os.path.isfile(DECOMPILE_FOLDER + '/' + old_uuid + '.zip'):
+                os.remove(DECOMPILE_FOLDER + '/' + old_uuid + '.zip')
         
         
 
@@ -160,25 +166,25 @@ class DbHelper:
         or not
         """
         cursor = self.__top_apps \
-            .find({"package_name": pkg_name})
+            .find({"_id": pkg_name})
         return len(list(cursor)) != 0
     
     def get_current_top_apps(self):
         """
         Gets a list of all current top apps from each category
         """
-        cursor = self.__top_apps.find({"currently_top": True}, {"_id": 0, "package_name": 1})
+        cursor = self.__top_apps.find({"currently_top": True}, {"_id": 1})
         return list(cursor)
     
     def update_top_apps(self):
         """
         Update the list of top apps to include possible new ones, and change
-        the status of old ones
+        the status of old ones. _id is package_name, makes for faster querying
         """
         self.__top_apps.update_many({}, {'$set': {'currently_top': False}})
         new_top_list = crawler.get_top_apps_list()
         for name in new_top_list:
-            self.__top_apps.update_one({'package_name': name}, {'$set': {'package_name': name, 'currently_top': True}}, upsert=True)
+            self.__top_apps.update_one({'_id': name}, {'$set': {'_id': name, 'currently_top': True}}, upsert=True)
         # Also update top field in main db
         self.__apk_info_collection.update_many({package_name: {'$in': new_top_list}}, {'$set': {'has_been_top': True}})
     
