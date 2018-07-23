@@ -110,7 +110,7 @@ class Decompiler:
         apps = df['package_name'].tolist()
         return self.decompile(apps)
     
-    def compress_storage(self, file_names):
+    def compress_storage(self, file_names, suffix_to_keep=['.xml', '.smali']):
         """
         This function takes the filenames, removes all files except the ones
         with endings specified below (currently .xml and .smali), and then
@@ -121,7 +121,9 @@ class Decompiler:
         for i in file_names:
             os.chdir(i)
             with open(os.devnull, 'w') as fp:
-                cmd = 'find . | egrep -v \".smali|.xml\" | rm -f'
+                cmd = 'find . | egrep -v \"'
+                cmd = cmd + '|'.join(suffix_to_keep)
+                cmd = cmd + '\" | rm -f'
                 p = subprocess.run(cmd.split(), stdout=fp, stderr=fp)
                 cmd = 'find . -empty -type d -delete'
                 p = subprocess.run(cmd.split(), stdout=fp, stderr=fp)
