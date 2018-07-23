@@ -16,6 +16,14 @@ INPUT_FILE = 'package_names.csv'
 def download_all():
     d = Downloader()
     d.download_all_from_db()
+
+def bulk_scrape_file(fname):
+    s = Scraper(input_file=fname)
+    s.bulk_scrape()
+
+def bulk_scrape_names(package_names):
+    s = Scraper()
+    s.bulk_scrape(package_names=package_names)
     
 def scrape_names(package_names):
     s = Scraper()
@@ -74,11 +82,14 @@ if __name__ == '__main__':
     
     elif opt == 'down': #download
         download_all()
-    
-    elif opt == 'decom':
-        #TODO
-        pass
-    
+        
     elif opt == 'dd': #download and decompile
         download_and_decompile()
+    
+    elif opt == 'bs': #bulk scrape
+        if len(sys.argv) <= 2:
+            print("Must supply csv with package names for scraping")
+            sys.exit(1)
+        fname = sys.argv[2]
+        bulk_scrape_file(fname)
     
