@@ -48,9 +48,10 @@ class Decompiler:
         :return: list of decompile times and None entries for unsuccessful decompiles
         """
         if self.__use_database:
-            file_names = self.__database_helper.get_filename_mappings(file_names)
-            file_names = [x[1] for x in file_names]
-
+            # Here we want to only keep filenames which are top
+            fnames = [i for i in file_names if self.__database_helper.is_uuid_top(i)]
+            file_names = fnames
+        
         app_extension = '.apk'
         file_names = [f if f.endswith(app_extension) else f + app_extension for f in file_names]
 

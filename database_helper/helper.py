@@ -21,7 +21,10 @@ class DbHelper:
         self.__android_app_db = self.__client[APP_METADATA_DB]
         self.__analysis_db = self.__client[APP_ANALYSIS_DB]
         self.__apk_info_collection = self.__android_app_db.apkInfo
+        self.__package_names_list = self.__android_app_db.packageNames
         self.__top_apps = self.__android_app_db[TOP_APPS_COLL]
+        self.changed = False #check if names in db have changed
+
 
     def insert_analysis_into_db(self, uuid, value, collection_name):
         """
@@ -46,11 +49,17 @@ class DbHelper:
             return
         if self.is_app_top(app['package_name']) or not self.is_app_in_db(app['package_name']):
             self.__apk_info_collection.insert_one(app)
+            if not self.is_app_in_db(app['package_name']):
+                self.__package_names_list.insert_one({'_id': app['package_name']})
         else:
             # Is in the database, but not a top app, so just update don't
             # insert a new entry
-            old_uuid = list(self.__apk_info_collection.find({'package_name': app['package_name']}))[0]['uuid']
-            self.__apk_info_collection.update_one({'package_name': app['package_name']}, {'$set': app})
+            old_entry = list(self.__apk_info_collection.find({'package_name': app['package_name']}))[0]
+            old_uuid = old_entry['uuid']
+            old_id = old_entry['_id']
+            self.__apk_info_collection.insert_one(app)
+            # Remove old db entry
+            self.__apk_info_collection.delete_one({'_id': old_id})
             # Remove old file
             if os.path.isfile(DOWNLOAD_FOLDER + '/' + old_uuid+'.apk'):
                 os.remove(DOWNLOAD_FOLDER + '/' + old_uuid+'.apk')
@@ -150,17 +159,18 @@ class DbHelper:
         """
         Checks if the package_name and version_code combo is already in the db
         or not
+        Kinda useless now.
         """
         cursor = self.__apk_info_collection \
-            .find({"package_name": pkg_name, "version_code": version_code})
+            .find({'package_name': pkg_name, 'version_code': version_code})
         return len(list(cursor)) != 0
 
     def is_app_in_db(self, pkg_name):
         """
         Just checks if the package_name has been inserted into the db yet
         """
-        cursor = self.__apk_info_collection \
-            .find({"package_name": pkg_name})
+        cursor = self.__package_names_list \
+            .find({"_id": pkg_name})
         return len(list(cursor)) != 0
 
     def get_filename_mappings(self, apps):
@@ -207,10 +217,16 @@ class DbHelper:
         Function tells if a package name is in the top 320 from each category
         or not
         """
-        cursor = self.__top_apps \
-            .find({"_id": pkg_name})
+        cursor = self.__top_apps.find({'_id': pkg_name})
         return len(list(cursor)) != 0
     
+    def is_uuid_top(self, uuid):
+        """
+        Tells if uuid is in top 320 from each category or not
+        """    
+        pkg_name = list(self.__apk_info_collection.find({'uuid': uuid}))[0]['package_name']
+        return is_app_top(pkg_name)
+        
     def get_current_top_apps(self):
         """
         Gets a list of all current top apps from each category
@@ -228,13 +244,55 @@ class DbHelper:
         for name in new_top_list:
             self.__top_apps.update_one({'_id': name}, {'$set': {'_id': name, 'currently_top': True}}, upsert=True)
         # Also update top field in main db
-        self.__apk_info_collection.update_many({package_name: {'$in': new_top_list}}, {'$set': {'has_been_top': True}})
+        self.__apk_info_collection.update_many({'package_name': {'$in': new_top_list}}, {'$set': {'has_been_top': True}})
     
     def get_top_apps(self):
         """
         Returns a list of top apps that need to be scraped (not in db yet)
         Corresponds to main function
         """
-        top_apps = self.__top_apps.find({}, {'_id': 0, 'package_name': 1})
-        return [a['package_name'] for a in top_apps]
+        top_apps = self.__top_apps.find({}, {'_id': 1})
+        return [a['_id'] for a in top_apps]
     
+    def get_new_top_apps(self):
+        """
+        Same as above, but only returns the ones who arent already in the 
+        database
+        """
+        new_names = []
+        names = self.get_top_apps()
+        for i in names:
+            if not self.is_app_in_db(i):
+                new_names.append(i)
+        return new_names
+
+    def re_key(self):
+        """
+        Changes database to have _id be package_name+version_code instead
+        Kinda useless though.
+        """
+        c = 0
+        for i in self.__apk_info_collection.find():
+            c = c + 1
+            new_id = i['package_name'] + '_' + str(i['version_code'])
+            old_id = i['_id']
+            if list(self.__apk_info_collection.find({'_id': new_id})) != []:
+                if old_id != new_id:
+                    self.__apk_info_collection.delete_one({'_id': old_id})
+                print('skipping')
+                continue
+            
+            i['_id'] = new_id
+            self.__apk_info_collection.insert_one(i)
+            self.__apk_info_collection.delete_one({'_id': old_id})
+            if c % 100 == 0:
+                logger.info("%s down" % str(c))
+    
+    def update_list_of_names(self):
+        """
+        Meant for one-time use to update the packageNames collection
+        """
+        ls = self.__apk_info_collection.find({}, {'_id': 0, 'package_name': 1})
+        names = list(set(sorted([i['package_name'] for i in ls])))
+        names = [{'_id': i} for i in names if len(i) > 0]
+        self.__package_names_list.insert(names)

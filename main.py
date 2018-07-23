@@ -33,6 +33,10 @@ def scrape_file(fname):
     s = Scraper(input_file=fname)
     s.scrape_metadata_for_apps()
 
+def eff_scrape_file(fname):
+    s = Scraper(input_file=fname)
+    s.efficient_scrape()
+
 def update():
     u = Updater()
     u.update_apps_bulk()
@@ -40,8 +44,9 @@ def update():
 def download_and_decompile():
     # Downloads then decompiles each app (instead of download all -> decompile
     # all). If you wish to download all then decompile, use download_all and 
-    # decompile_all separately (but more difficult to do this)
-    dec = Decompiler(use_database=False, compress=True)
+    # decompile_all separately (but more difficult to do this). ONLY DECOMPILES
+    # THE TOP APPS
+    dec = Decompiler(use_database=True, compress=True)
     down = Downloader()
     helper = DbHelper()
     l = helper.get_all_apps_to_download()
@@ -92,4 +97,14 @@ if __name__ == '__main__':
             sys.exit(1)
         fname = sys.argv[2]
         bulk_scrape_file(fname)
+    
+    elif opt == 't': #update top list
+        update_top_list()
+    
+    elif opt == 'es': #efficient scrape
+        if len(sys.argv) <= 2:
+            print("Must supply csv with package names for scraping")
+            sys.exit(1)
+        fname = sys.argv[2]
+        eff_scrape_file(fname)
     
