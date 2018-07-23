@@ -86,9 +86,7 @@ class DbHelper:
             {'$set': {'date_last_scraped': date_last_scraped}})
         if res.matched_count != 1:
             logger.error("Expected one document to be matched, instead %s was" % str(res.matched_count))
-        #else:
-        #    logger.info("Updated entry with uuid {0}".format(uuid))
-
+            
     def get_next_app_to_download(self):
         """
         Returns [package_name, uuid] of next app that needs to be downloaded.
