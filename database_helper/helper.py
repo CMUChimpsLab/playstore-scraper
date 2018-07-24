@@ -1,9 +1,9 @@
 import time
 from pymongo import MongoClient
 import pymongo
-
+from scraper import crawler
 from app_object import App
-from constants import DB_HOST, DB_PORT, APP_METADATA_DB, APP_ANALYSIS_DB, DB_ROOT_USER, DB_ROOT_PASS
+from constants import DB_HOST, DB_PORT, APP_METADATA_DB, APP_ANALYSIS_DB, DB_ROOT_USER, DB_ROOT_PASS, TOP_APPS_COLL, DOWNLOAD_FOLDER, DECOMPILE_FOLDER
 import pandas as pd
 import logging
 import json
@@ -21,6 +21,7 @@ class DbHelper:
         self.__android_app_db = self.__client[APP_METADATA_DB]
         self.__analysis_db = self.__client[APP_ANALYSIS_DB]
         self.__apk_info_collection = self.__android_app_db.apkInfo
+        self.__top_apps = self.__android_app_db[TOP_APPS_COLL]
 
     def insert_analysis_into_db(self, uuid, value, collection_name):
         """
@@ -43,8 +44,20 @@ class DbHelper:
         if list(self.__apk_info_collection.find({'uuid': app['uuid']})):
             logger.error("App with uuid {0} already exists".format(app['uuid']))
             return
-        self.__apk_info_collection.insert_one(app)
-        logger.info("App with uuid {0} inserted into database".format(app['uuid']))
+        if self.is_app_top(app['package_name']) or not self.is_app_in_db(app['package_name']):
+            self.__apk_info_collection.insert_one(app)
+        else:
+            # Is in the database, but not a top app, so just update don't
+            # insert a new entry
+            old_uuid = list(self.__apk_info_collection.find({'package_name': app['package_name']}))[0]['uuid']
+            self.__apk_info_collection.update_one({'package_name': app['package_name']}, {'$set': app})
+            # Remove old file
+            if os.path.isfile(DOWNLOAD_FOLDER + '/' + old_uuid+'.apk'):
+                os.remove(DOWNLOAD_FOLDER + '/' + old_uuid+'.apk')
+            if os.path.isfile(DECOMPILE_FOLDER + '/' + old_uuid + '.zip'):
+                os.remove(DECOMPILE_FOLDER + '/' + old_uuid + '.zip')
+        
+        
 
     def get_all_apps_from_database(self):
         """
@@ -73,9 +86,7 @@ class DbHelper:
             {'$set': {'date_last_scraped': date_last_scraped}})
         if res.matched_count != 1:
             logger.error("Expected one document to be matched, instead %s was" % str(res.matched_count))
-        else:
-            logger.info("Updated entry with uuid {0}".format(uuid))
-
+            
     def get_next_app_to_download(self):
         """
         Returns [package_name, uuid] of next app that needs to be downloaded.
@@ -188,3 +199,40 @@ class DbHelper:
         data = df.to_dict('records')
         with open(OUTPUT_FILE, 'w') as f:
             json.dump(data, f)
+    
+    def is_app_top(self, pkg_name):
+        """
+        Function tells if a package name is in the top 320 from each category
+        or not
+        """
+        cursor = self.__top_apps \
+            .find({"_id": pkg_name})
+        return len(list(cursor)) != 0
+    
+    def get_current_top_apps(self):
+        """
+        Gets a list of all current top apps from each category
+        """
+        cursor = self.__top_apps.find({"currently_top": True}, {"_id": 1})
+        return list(cursor)
+    
+    def update_top_apps(self):
+        """
+        Update the list of top apps to include possible new ones, and change
+        the status of old ones. _id is package_name, makes for faster querying
+        """
+        self.__top_apps.update_many({}, {'$set': {'currently_top': False}})
+        new_top_list = crawler.get_top_apps_list()
+        for name in new_top_list:
+            self.__top_apps.update_one({'_id': name}, {'$set': {'_id': name, 'currently_top': True}}, upsert=True)
+        # Also update top field in main db
+        self.__apk_info_collection.update_many({package_name: {'$in': new_top_list}}, {'$set': {'has_been_top': True}})
+    
+    def get_top_apps(self):
+        """
+        Returns a list of top apps that need to be scraped (not in db yet)
+        Corresponds to main function
+        """
+        top_apps = self.__top_apps.find({}, {'_id': 0, 'package_name': 1})
+        return [a['package_name'] for a in top_apps]
+    

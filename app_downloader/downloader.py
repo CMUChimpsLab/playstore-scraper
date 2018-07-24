@@ -35,6 +35,17 @@ class Downloader:
         # This config file is used by the GPlaycli module to determine the authentication token
         self.__config_file = GPLAYCLI_CONFIG_FILE_PATH
 
+    def download_all_from_db(self):
+        """
+        Simple function that grabs all of the apps from the database that
+        haven't been downloaded, and downloads them.
+        """
+        apps = self.__database_helper.get_all_apps_to_download()
+        # If I don't chunk, it dies
+        apps_chunked = [apps[i:i+10] for i in range(0, len(apps), 10)]
+        for chunk in apps_chunked:
+            self.download(chunk)
+
     def download(self, apps_list, force_download=False):
         """
         Downloads the apps passed in as parameters

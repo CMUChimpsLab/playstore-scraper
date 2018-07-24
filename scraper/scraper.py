@@ -24,6 +24,55 @@ class Scraper:
         self.input_file = input_file
         self.__config_file = GPLAYCLI_CONFIG_FILE_PATH
 
+    def bulk_scrape(self, package_names=None):
+        """
+        Not many options here, just goes through and uses the bulk scraping
+        function to get 1000 apps metadata at a time instead of 1 app at a 
+        time. Will automatically insert into database if not already in the
+        database.
+        """
+        if package_names is None:
+            if self.input_file is not None:
+                package_names = pd.read_csv(self.input_file, names=['package_name'])['package_name'].tolist()
+            else:
+                logger.error("An input file or a list of package names must be provided to scraper.")
+                return
+        package_names_two = [package_names[i:i+1000] for i in range(0, len(package_names), 1000)]
+        cntr =0
+        for package_name in package_names_two:
+            self.bulk_scrape_metadata_for_apps(package_names=package_name)
+            cntr = cntr + 1000
+            logger.info("%s apps down\n" % str(cntr))
+
+    def bulk_scrape_metadata_for_apps(self, return_dataframe=False, write_to_database=True, package_names=None):
+        """
+        Uses the bulk scraping function. Does 1000 apps at a time then loops and
+        adds them all to the database if not already in the database.
+        """
+        if package_names is None:
+            if self.input_file is not None:
+                package_names = pd.read_csv(self.input_file, names=['package_name'])['package_name'].tolist()
+            else:
+                logger.error("An input file or a list of package names must be provided to scraper.")
+                return
+        counter = -1
+        df = pd.DataFrame()
+        data = self.get_metadata_for_apps(package_names, bulk=True)
+        for package_name in package_names:
+            counter = counter + 1
+            if self.__db_helper.is_app_in_db(package_name):
+                continue
+            app = data[counter]
+            if app is None:
+                continue
+            if return_dataframe:
+                df = df.append(App.to_df(app))
+            if write_to_database:
+                self.__db_helper.insert_app_into_db(app)
+
+        if return_dataframe:
+            return df
+            
     def scrape_metadata_for_apps(self, return_dataframe=False, write_to_database=True, package_names=None):
         """
         Function uses default input file to scrape all of the information for every app in the file. Can also input list of package_names
@@ -48,15 +97,14 @@ class Scraper:
                 continue
             if return_dataframe:
                 df = df.append(App.to_df(app))
-            print("")
             logger.info("%s apps down\n" % str(counter))
             if write_to_database:
                 self.__db_helper.insert_app_into_db(app[0])
 
         if return_dataframe:
             return df
-
-    def get_metadata_for_apps(self, packages):
+        
+    def get_metadata_for_apps(self, packages, bulk=False):
         """
         Returns list of App objects corresponding to package names in packages
         """
@@ -65,20 +113,20 @@ class Scraper:
         if packages[0] is None:
             return
         try:
-            logger.info("Scraping metadata for {}".format(packages))
-            data = api.get_doc_apk_details(packages)
+            data = api.get_doc_apk_details(packages, bulk=bulk)
         except RequestError as e:
             logger.error("Could not scrape {}. Reason - {}".format(packages, e.value))
         except Exception as e:
             logger.error("Non Request-Error problem occurred for {}. Reason - {}. Sleeping for five seconds and continuing".format(packages, e))
             time.sleep(5)
             if data is None:
-                return self.get_metadata_for_apps(packages)
+                return self.get_metadata_for_apps(packages, bulk=bulk)
         # Zips uuids with dictionaries in data array then makes them Apps
         # and returns that list of them
         if data is not None:
             for app in data:
-                app['date_last_scraped'] = time.time()
+                if app is not None:
+                    app['date_last_scraped'] = time.time()
             uuids = uuid_generator.generate_uuids(len(data))
             app_list = [App.convert_to_App_Object(d, uuid) for (d, uuid) in zip(data, uuids)]
             return app_list
