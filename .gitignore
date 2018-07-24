@@ -22,3 +22,5 @@ apps_decompiled
 decompiler/apktool
 
 decompiler/apktool\.jar
+
+secrets\.py
