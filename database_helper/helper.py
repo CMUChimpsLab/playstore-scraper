@@ -182,7 +182,9 @@ class DbHelper:
             .find(query, projection) \
             .sort([('date_last_scraped', pymongo.DESCENDING)])
         cursor = list(cursor)
-        return [[x['package_name'], x['uuid']] for x in cursor]
+        if cursor != []:
+            return [[[x['package_name'], x['uuid']] for x in cursor][0]]
+        return []
 
     def set_download_date(self, uuid, download_completion_time):
         """

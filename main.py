@@ -68,7 +68,7 @@ def put_top_apps_in_db():
     d = DbHelper()
     apps_list = d.get_new_top_apps()
     s = Scraper()
-    s.efficient_scrape(package_names=apps_list)
+    s.scrape_metadata_for_apps(package_names=apps_list)
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s [%(name)-12.12s] %(levelname)-8s %(message)s',
