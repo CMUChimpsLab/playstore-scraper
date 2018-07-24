@@ -221,8 +221,12 @@ class DbHelper:
     def is_uuid_top(self, uuid):
         """
         Tells if uuid is in top 320 from each category or not
-        """    
-        pkg_name = list(self.__apk_info_collection.find({'uuid': uuid}))[0]['package_name']
+        """
+        l = list(self.__apk_info_collection.find({'uuid': uuid}))
+        if l == []:
+            logger.error("App with uuid %s not found" % uuid)
+            return False
+        pkg_name = l[0]['package_name']
         return self.is_app_top(pkg_name)
         
     def get_current_top_apps(self):
@@ -254,7 +258,7 @@ class DbHelper:
     
     def get_new_top_apps(self):
         """
-        Same as above, but only returns the ones who arent already in the 
+        Same as above, but only returns the ones who aren't already in the 
         database
         """
         new_names = []
@@ -263,28 +267,6 @@ class DbHelper:
             if not self.is_app_in_db(i):
                 new_names.append(i)
         return new_names
-
-    def re_key(self):
-        """
-        Changes database to have _id be package_name+version_code instead
-        Kinda useless though.
-        """
-        c = 0
-        for i in self.__apk_info_collection.find():
-            c = c + 1
-            new_id = i['package_name'] + '_' + str(i['version_code'])
-            old_id = i['_id']
-            if list(self.__apk_info_collection.find({'_id': new_id})) != []:
-                if old_id != new_id:
-                    self.__apk_info_collection.delete_one({'_id': old_id})
-                print('skipping')
-                continue
-            
-            i['_id'] = new_id
-            self.__apk_info_collection.insert_one(i)
-            self.__apk_info_collection.delete_one({'_id': old_id})
-            if c % 100 == 0:
-                logger.info("%s down" % str(c))
     
     def update_list_of_names(self):
         """
