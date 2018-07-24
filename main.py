@@ -66,9 +66,9 @@ def update_top_list():
 
 def put_top_apps_in_db():
     d = DbHelper()
-    apps_list = d.get_top_apps()
+    apps_list = d.get_new_top_apps()
     s = Scraper()
-    s.scrape_metadata_for_apps(package_names=apps_list)
+    s.efficient_scrape(package_names=apps_list)
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s [%(name)-12.12s] %(levelname)-8s %(message)s',
@@ -100,11 +100,23 @@ if __name__ == '__main__':
     
     elif opt == 't': #update top list
         update_top_list()
-    
+
+    elif opt == 'pt': #put top apps into main db using scraper
+        put_top_apps_in_db()
+
     elif opt == 'es': #efficient scrape
         if len(sys.argv) <= 2:
             print("Must supply csv with package names for scraping")
             sys.exit(1)
         fname = sys.argv[2]
         eff_scrape_file(fname)
-    
+    else:
+        print("Usage: python main.py <opt> [additional args]")
+        print("Options:")
+        print("\'s\' - scrapes normally, must include filename after as well")
+        print("\'u\' - update apps using the updater")
+        print("\'down\' - just download the apps in db which have not been")
+        print("\'dd\' - download and decompile each app in db which hasn't been")
+        print("\'bs\' - bulk scrape, different scraping method than normal one must also include filename like \'s\'")
+        print("\'es\' - efficient scrape, also different, meant to be more efficient")
+        print("\'pt\' - put top apps in db, scrapes the top apps and adds to apkInfo")
