@@ -1,3 +1,5 @@
+from secrets import DB_USER, DB_PASS
+
 CATEGORIES= [
 'ANDROID_WEAR',
 'ART_AND_DESIGN',
@@ -67,7 +69,7 @@ DB_PORT = 27017
 APP_METADATA_DB = 'androidApp'
 APP_ANALYSIS_DB = 'staticAnalysis'
 
-DB_ROOT_USER = 'root'
-DB_ROOT_PASS = 'toor'
+DB_ROOT_USER = DB_USER
+DB_ROOT_PASS = DB_PASS
 
 TOP_APPS_COLL = 'topApps'

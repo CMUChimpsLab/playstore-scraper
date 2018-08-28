@@ -17,8 +17,11 @@ info_logs\.log
 scraper/scraper-server/node_modules
 
 *.pyc
+*.pytest*
 *.log
 apps_decompiled
 decompiler/apktool
 
 decompiler/apktool\.jar
+
+secrets\.py

@@ -38,6 +38,9 @@ def get_top_apps_list():
                 newurl = url.format(cat, f, start, num)
                 l = urllib.request.urlopen(newurl).read()
                 l = l.decode('utf-8')
+                p = scrape(l)
+                logger.info("Apps found for category {} is {}".format(cat, len(list(set(p)))))
+                
                 pkg_list = pkg_list + scrape(l)
             pkg_list = list(set(pkg_list))
         logger.info("Category %s done" % cat)

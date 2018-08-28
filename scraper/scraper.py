@@ -72,7 +72,31 @@ class Scraper:
 
         if return_dataframe:
             return df
-            
+    
+    def efficient_scrape(self, package_names=None):
+        """
+        Function will first bulk scrape then only call to normal scraping for 
+        the apps that were successfully found through bulk scraping. With old
+        package_name lists, this function is more efficient as it gets rid
+        of bad requests before they are made
+        """
+        if package_names is None:
+            if self.input_file is not None:
+                package_names = pd.read_csv(self.input_file, names=['package_name'])['package_name'].tolist()
+            else:
+                logger.error("An input file or a list of package names must be provided to scraper.")
+                return
+        package_names_two = [package_names[i:i+1000] for i in range(0, len(package_names), 1000)]
+        cntr =0
+        for chunk in package_names_two:
+            l = self.get_metadata_for_apps(packages=chunk, bulk=True)
+            cntr = cntr + 1000
+            logger.info("%s apps down for efficient_scrape bulk part\n" % str(cntr))
+            z = zip(chunk, l)
+            good_names = [i for (i,j) in z if j is not None]
+            logger.info("Scraping good apps from this chunk, there are %s" %str(len(good_names)))
+            self.scrape_metadata_for_apps(package_names=good_names)
+
     def scrape_metadata_for_apps(self, return_dataframe=False, write_to_database=True, package_names=None):
         """
         Function uses default input file to scrape all of the information for every app in the file. Can also input list of package_names

@@ -33,6 +33,10 @@ def scrape_file(fname):
     s = Scraper(input_file=fname)
     s.scrape_metadata_for_apps()
 
+def eff_scrape_file(fname):
+    s = Scraper(input_file=fname)
+    s.efficient_scrape()
+
 def update():
     u = Updater()
     u.update_apps_bulk()
@@ -40,8 +44,9 @@ def update():
 def download_and_decompile():
     # Downloads then decompiles each app (instead of download all -> decompile
     # all). If you wish to download all then decompile, use download_all and 
-    # decompile_all separately (but more difficult to do this)
-    dec = Decompiler(use_database=False, compress=True)
+    # decompile_all separately (but more difficult to do this). ONLY DECOMPILES
+    # THE TOP APPS
+    dec = Decompiler(use_database=True, compress=True)
     down = Downloader()
     helper = DbHelper()
     l = helper.get_all_apps_to_download()
@@ -61,7 +66,7 @@ def update_top_list():
 
 def put_top_apps_in_db():
     d = DbHelper()
-    apps_list = d.get_top_apps()
+    apps_list = d.get_new_top_apps()
     s = Scraper()
     s.scrape_metadata_for_apps(package_names=apps_list)
 
@@ -93,6 +98,18 @@ if __name__ == '__main__':
         fname = sys.argv[2]
         bulk_scrape_file(fname)
     
+    elif opt == 't': #update top list
+        update_top_list()
+
+    elif opt == 'pt': #put top apps into main db using scraper
+        put_top_apps_in_db()
+
+    elif opt == 'es': #efficient scrape
+        if len(sys.argv) <= 2:
+            print("Must supply csv with package names for scraping")
+            sys.exit(1)
+        fname = sys.argv[2]
+        eff_scrape_file(fname)
     else:
         print("Usage: python main.py <opt> [additional args]")
         print("Options:")
@@ -101,3 +118,5 @@ if __name__ == '__main__':
         print("\'down\' - just download the apps in db which have not been")
         print("\'dd\' - download and decompile each app in db which hasn't been")
         print("\'bs\' - bulk scrape, different scraping method than normal one must also include filename like \'s\'")
+        print("\'es\' - efficient scrape, also different, meant to be more efficient")
+        print("\'pt\' - put top apps in db, scrapes the top apps and adds to apkInfo")
