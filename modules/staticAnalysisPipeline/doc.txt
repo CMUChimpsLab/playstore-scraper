@@ -1,0 +1,284 @@
+receiving incremental file list
+>f+++++++++ eb80a8887bbe4e4f889da44e80143dff
+              0   0%    0.00kB/s    0:00:00       16,997,189 100%   19.48MB/s    0:00:00 (xfr#1, to-chk=0/1)
+/home/alexyu0/new_pipeline/new_apks.txt
+[({'fileDir': '/home/alexyu0/new_pipeline/temp', 'packageName': 'eb80a8887bbe4e4f889da44e80143dff'}, '/home/alexyu0/new_pipeline/staticAnalysis/201807012227')]
+/home/alexyu0/new_pipeline/temp/eb80a8887bbe4e4f889da44e80143dff
+checking connection
+None
+connecting
+search?c=3&q=firefox
+details?doc=se.appfamily.dinoadventure
+docid: "se.appfamily.dinoadventure"
+backendDocid: "se.appfamily.dinoadventure"
+docType: 1
+backendId: 3
+title: "Kids Dino Adventure Game - Free Game for Children"
+creator: "App Family Kids - Games for boys and girls"
+descriptionHtml: "This is a simple game for toddlers. You dig for dinosaur bones by rubbing the screen on the marked spots. While digging, you find dinosaur bones and random items, and when you have found all the bones, the dinosaur comes alive!<br><br>As you play the game all dinos and items that you find are collected in two separate galleries. <br><br>In this free version there are 3 kinds of dinosaurs with 9 different color combinations, and 30 random items. Want more dinos? Unlock the full version with a single IAP!<br><br><b>Key info</b><br>- Recommended age group is kids aged 2-4 year old<br>- No ads!<br>- Train hand-eye coordination<br>- We use Google Analytics to collect anonymous statistics to help us improve the game. <br><br>Credits:<br>- Music: Kevin Macleod<br>- Sound: Freesound.org"
+offer {
+  micros: 0
+  currencyCode: "USD"
+  formattedAmount: ""
+  checkoutFlowRequired: false
+  offerType: 1
+}
+availability {
+  restriction: 1
+}
+image {
+  imageType: 4
+  imageUrl: "https://lh3.googleusercontent.com/wo2XB-94t0r6Jmhxs2mAOn_X7YdLR2qcvgtL0ERJZDhtTjFMWLZ0_yZv4QraR2T-VOzM"
+  supportsFifeUrlOptions: true
+}
+image {
+  imageType: 3
+  imageUrl: "https://www.youtube.com/watch?v=IiIis7onmLQ"
+}
+image {
+  imageType: 13
+  imageUrl: "https://i.ytimg.com/vi/IiIis7onmLQ/hqdefault.jpg"
+  supportsFifeUrlOptions: false
+}
+image {
+  imageType: 2
+  imageUrl: "https://lh5.ggpht.com/5Ma4Mw_w3xO9fgaDm-7oq8f2TEOVEt1N1Ya1SKChtqHFffncBoQreXUTd8nSidUox17e"
+  supportsFifeUrlOptions: true
+}
+image {
+  imageType: 1
+  Dimension {
+    width: 1280
+    height: 800
+  }
+  imageUrl: "https://lh6.ggpht.com/Wie1k_GuM7qASygpTvC75FEZ8OkSjAteWfDqY36AjgqA8rPjztZaoRgFB0DQT2GnN5w"
+  supportsFifeUrlOptions: true
+}
+image {
+  imageType: 1
+  Dimension {
+    width: 1280
+    height: 800
+  }
+  imageUrl: "https://lh6.ggpht.com/H93vWeM2mPLyRL2d8IfEfi33EjWXEOubvHZUmnP3CgLPb46sUx2CiFuRuk5cF-JhkZkZ"
+  supportsFifeUrlOptions: true
+}
+image {
+  imageType: 1
+  Dimension {
+    width: 1280
+    height: 800
+  }
+  imageUrl: "https://lh6.ggpht.com/H2BxfLDc8uIUutJ5b6bIcIMONHW1wrgKT79ffJwK04YQbfKbwlA5g7DFm91sVSChcw"
+  supportsFifeUrlOptions: true
+}
+image {
+  imageType: 1
+  Dimension {
+    width: 1280
+    height: 800
+  }
+  imageUrl: "https://lh4.ggpht.com/2vpwBMfBR4sdQQB1cvPkD-s7eL0bY6SjX_l2Y6VhfTUXVV7uQg20w-U2H253CcFBiEM"
+  supportsFifeUrlOptions: true
+}
+image {
+  imageType: 1
+  Dimension {
+    width: 1280
+    height: 800
+  }
+  imageUrl: "https://lh5.ggpht.com/HDg8ylqEVQ_4P6wEbPARW1sl9mQB2mMHQKvGOLllnjFwOKvV4DkJTCz5H-kDCj05s7YV"
+  supportsFifeUrlOptions: true
+}
+image {
+  imageType: 1
+  Dimension {
+    width: 1280
+    height: 800
+  }
+  imageUrl: "https://lh3.ggpht.com/MAG-C5bPfN1paZphdH2_r3mRsckJctt3nX8pQlFLsIJT6HSnciyO_xIPgx3M5M5Ug6s5"
+  supportsFifeUrlOptions: true
+}
+image {
+  imageType: 1
+  Dimension {
+    width: 1280
+    height: 800
+  }
+  imageUrl: "https://lh5.ggpht.com/iZXcMvASJNgYUk385yc9QATQeS7574U4oG-YCp5vbASp0jeP1GTg4FumujthMMxj16Qh"
+  supportsFifeUrlOptions: true
+}
+image {
+  imageType: 1
+  Dimension {
+    width: 1280
+    height: 800
+  }
+  imageUrl: "https://lh5.ggpht.com/dz2d88L8bGUY5GPFTL11_sArtEZb1SzmAaTdZ-7yT3daFuHolrvUJiv5y_nCuvMYTkqy"
+  supportsFifeUrlOptions: true
+}
+image {
+  imageType: 1
+  Dimension {
+    width: 1280
+    height: 800
+  }
+  imageUrl: "https://lh5.ggpht.com/5HA6x3jqObdXSsfvUkpiE6BfNx3FtHwLLdNrgK0n48FDLc6nhwUQQcH4_R0k4vVUONM"
+  supportsFifeUrlOptions: true
+}
+image {
+  imageType: 1
+  Dimension {
+    width: 1280
+    height: 800
+  }
+  imageUrl: "https://lh3.ggpht.com/-sQ0xeMyfvPb--4eON9SwQS1Fq3NA4OcwNr49VjO0TRMjm4xVYJPmfaF5bz_4Tdnvfc"
+  supportsFifeUrlOptions: true
+}
+image {
+  imageType: 1
+  Dimension {
+    width: 1280
+    height: 800
+  }
+  imageUrl: "https://lh5.ggpht.com/kPgtF9j-enmsFjithwPmvkfrf8XbshhuzH_YLunIaCEJzzYm3l4Bah6PplfJlVxtS_U"
+  supportsFifeUrlOptions: true
+}
+image {
+  imageType: 1
+  Dimension {
+    width: 1280
+    height: 800
+  }
+  imageUrl: "https://lh4.ggpht.com/tzWMg_eVQHbBNPeXLgUkjWZqJbUTMkW_4UdKrnnFDhx5XtM7oc2ETVKG29zxRLNxZgQ"
+  supportsFifeUrlOptions: true
+}
+image {
+  imageType: 1
+  Dimension {
+    width: 1280
+    height: 800
+  }
+  imageUrl: "https://lh5.ggpht.com/qhsA9nyIlNULSOU4Q6Z8yJgvVq6Xmq0VmqKfSgy_PbQgVPd3Ui2x1mr4gR9BlEucd38"
+  supportsFifeUrlOptions: true
+}
+image {
+  imageType: 1
+  Dimension {
+    width: 1280
+    height: 800
+  }
+  imageUrl: "https://lh6.ggpht.com/KBVu0SFPB-3KXFOc16-WDqhkVPLzIGMsGbmiewjcpC_SIfEvZhs0LPWqfnOONI_g2BY"
+  supportsFifeUrlOptions: true
+}
+image {
+  imageType: 1
+  Dimension {
+    width: 1280
+    height: 800
+  }
+  imageUrl: "https://lh4.ggpht.com/Ja6hxkUTMQz4miuQ806bsY4Zyu0RwKRG6FZN5ZrebTPyD9zIOgi8-M8o0ak-TFKmubQ"
+  supportsFifeUrlOptions: true
+}
+details {
+  appDetails {
+    developerName: "App Family Kids - Games for boys and girls"
+    versionCode: 150
+    versionString: "15.0"
+    installationSize: 16997189
+    permission: "android.permission.INTERNET"
+    permission: "com.android.vending.BILLING"
+    developerEmail: "per.haglund@appfamily.se"
+    developerWebsite: "http://www.facebook.com/appfamily"
+    numDownloads: "5,000,000+ downloads"
+    packageName: "se.appfamily.dinoadventure"
+    recentChangesHtml: "Bugfix. If you enjoy the game, please rate it 5 stars to spread the love :)"
+    uploadDate: "7 Dec 2017"
+    file {
+      fileType: 0
+      versionCode: 150
+      size: 16997189
+    }
+    appType: "GAME"
+    unstable: false
+    containsAds: "Contains ads"
+    dependencies {
+      unknown1: 2
+      unknown2: 16997189
+      unknown3: 25
+    }
+  }
+}
+aggregateRating {
+  type: 2
+  starRating: 3.68681645393
+  ratingsCount: 24781
+  oneStarRatings: 3946
+  twoStarRatings: 2256
+  threeStarRatings: 3016
+  fourStarRatings: 3958
+  fiveStarRatings: 11605
+  commentCount: 3326
+}
+relatedLinks {
+  privacyPolicyUrl: "http://www.appfamily.se/index.php?page=terms"
+  youMightAlsoLike {
+    label: "You might also like"
+    url1: "cluster?ecp=wgYkCiAKGnNlLmFwcGZhbWlseS5kaW5vYWR2ZW50dXJlEAEYAxgD&n=21&ds=1"
+    url2: "browseCluster?ecp=wgYkCiAKGnNlLmFwcGZhbWlseS5kaW5vYWR2ZW50dXJlEAEYAxgD&n=21"
+  }
+  rated {
+    label: "Everyone"
+    image {
+      imageType: 6
+      Dimension {
+        width: 512
+        height: 512
+      }
+      imageUrl: "https://lh3.ggpht.com/fDrMd6BZDQGe1-ND2uyWviZx2O_Tqssk8pvmVEvXdJRvYtMz4c-LFPfB6C5qdAC-mCqFN4Iptr_Fv54e"
+      supportsFifeUrlOptions: true
+    }
+    learnMoreHtmlLink: "Digital purchases<br/><a href=\"https://support.google.com/googleplay?p=appgame_ratings\">Learn More</a>"
+  }
+  categoryInfo {
+    appType: "GAME"
+    appCategory: "GAME_CASUAL"
+  }
+}
+detailsUrl: "details?doc=se.appfamily.dinoadventure"
+shareUrl: "https://play.google.com/store/apps/details?id=se.appfamily.dinoadventure"
+reviewsUrl: "rev?doc=se.appfamily.dinoadventure&n=20&o=0"
+detailsReusable: true
+unknown25 {
+  item {
+    label: "In-app purchases"
+    container {
+      value: "$3.49 per item"
+    }
+  }
+  item {
+    label: "Offered by"
+    container {
+      value: "Google LLC"
+    }
+  }
+  item {
+    label: "Developer email"
+    container {
+      value: "per.haglund@appfamily.se"
+    }
+  }
+  item {
+    label: "Developer address"
+    container {
+      value: "M\303\245nstorpsv\303\244gen 23<br/>26332 H\303\266gan\303\244s<br/>Sweden"
+    }
+  }
+  item {
+    label: "Released on"
+    container {
+      value: "5 Mar 2012"
+    }
+  }
+}
+
