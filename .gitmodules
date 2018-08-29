@@ -1,3 +1,9 @@
 [submodule "pipeline/python_static_analyzer"]
 	path = pipeline/python_static_analyzer
 	url = git@github.com:CMUChimpsLab/python_static_analyzer.git
+[submodule "dependencies/python_static_analyzer"]
+	path = dependencies/python_static_analyzer
+	url = git@github.com:CMUChimpsLab/python_static_analyzer.git
+[submodule "dependencies/privacyRating"]
+	path = dependencies/privacyRating
+	url = git@github.com:CMUChimpsLab/privacyRating.git
