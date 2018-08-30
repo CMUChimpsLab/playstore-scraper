@@ -4,6 +4,8 @@
 [submodule "dependencies/python_static_analyzer"]
 	path = dependencies/python_static_analyzer
 	url = git@github.com:CMUChimpsLab/python_static_analyzer.git
+	branch = alex/debug_new_pipeline
 [submodule "dependencies/privacyRating"]
 	path = dependencies/privacyRating
 	url = git@github.com:CMUChimpsLab/privacyRating.git
+	branch = master
