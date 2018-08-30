@@ -4,9 +4,12 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+numpy = "*"
 
 [dev-packages]
 pymongo = "*"
+mysqlclient = "*"
+pandas = "*"
 
 [requires]
 python_version = "2.7"

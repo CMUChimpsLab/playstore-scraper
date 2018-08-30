@@ -9,3 +9,7 @@
 	path = dependencies/privacyRating
 	url = git@github.com:CMUChimpsLab/privacyRating.git
 	branch = master
+[submodule "dependencies/privacyGradePrediction"]
+	path = dependencies/privacyGradePrediction
+	url = git@github.com:CMUChimpsLab/privacyGradePrediction.git
+	branch = master
