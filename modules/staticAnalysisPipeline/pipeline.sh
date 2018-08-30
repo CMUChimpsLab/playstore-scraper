@@ -57,8 +57,8 @@ echo "copying updatedApkList to privacyRating data folder completed at `date`" >
 # extract permission and purpose, then give scores & grades based on grading model in `privacyRating/src/rateApp.py`
 echo "this step"
 python $DEP_DIR/privacyRating/src/extractApp.py \
+    $DEP_DIR \
     $DEP_DIR/privacyRating/data/updatedApkList/updatedApkList_$Now \
-    $DEP_DIR/privacyRating/data/hist/hist_$Now.csv
 echo "completed at rating apps at `date`" >> $LOG_DIR/pipeline_$Now
 
 #Remember to backup mongodb database: androidApp, staticAnalysis, privacygrading, after you finish one round of updating

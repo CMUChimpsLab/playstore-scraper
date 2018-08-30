@@ -8,7 +8,7 @@
 [submodule "dependencies/privacyRating"]
 	path = dependencies/privacyRating
 	url = git@github.com:CMUChimpsLab/privacyRating.git
-	branch = master
+	branch = alex/debug_new_pipeline
 [submodule "dependencies/privacyGradePrediction"]
 	path = dependencies/privacyGradePrediction
 	url = git@github.com:CMUChimpsLab/privacyGradePrediction.git
