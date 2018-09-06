@@ -1,7 +1,8 @@
 import time
 import logging
-from scraper.scraper import Scraper
-from database_helper.helper import DbHelper
+
+from modules.scraper.scraper import Scraper
+from modules.database_helper.helper import DbHelper
 
 logger = logging.getLogger(__name__)
 
@@ -25,11 +26,11 @@ class Updater:
         apps = [app for i,app in df.iterrows()]
         apps_chunked = [apps[i:i+1000] for i in range(0, len(apps), 1000)]
         counter = -1
-        # So this is kinda messy with a lot of types so I am gonna break it 
+        # So this is kinda messy with a lot of types so I am gonna break it
         # down. We get a bunch of dictionaries representing each app and its
         # current version code and uuid and stuff, and that is the list apps
         # of dictionaries. We then split it into lists of 1000 to bulk scrape
-        # called apps_chunked. Then, for each chunk, we scrape the data and 
+        # called apps_chunked. Then, for each chunk, we scrape the data and
         # put it into a list called metadata (list of app OBJECTS now).
         # We then, for each original app from chunk, check against the new
         # app object from metadata. if the version code is updated, we use
@@ -61,7 +62,7 @@ class Updater:
                     self.__db_helper.update_date_last_scraped_for_app(app['uuid'], time.time())
             logger.info("Finished updating this chunk... "+str(counter)+" apps down")
             print("\n\n\n\n "+str(num_updated)+" apps updated this chunk \n\n\n\n")
-        
+
     def update_all_apps(self):
         """
         Updates all of the apps in the database

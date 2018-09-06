@@ -1,10 +1,10 @@
 import pandas as pd
 
-from app_object import App
+from dependencies.app_object import App
 import logging
-import scraper.uuid_generator as uuid_generator
+from .uuid_generator import generate_uuids
 import time
-from database_helper.helper import DbHelper
+from modules.database_helper.helper import DbHelper
 from dependencies.gpapidev.googleplay import RequestError
 from dependencies.gplaycli import gplaycli
 from dependencies import GPLAYCLI_CONFIG_FILE_PATH
@@ -27,7 +27,7 @@ class Scraper:
     def bulk_scrape(self, package_names=None):
         """
         Not many options here, just goes through and uses the bulk scraping
-        function to get 1000 apps metadata at a time instead of 1 app at a 
+        function to get 1000 apps metadata at a time instead of 1 app at a
         time. Will automatically insert into database if not already in the
         database.
         """
@@ -72,10 +72,10 @@ class Scraper:
 
         if return_dataframe:
             return df
-    
+
     def efficient_scrape(self, package_names=None):
         """
-        Function will first bulk scrape then only call to normal scraping for 
+        Function will first bulk scrape then only call to normal scraping for
         the apps that were successfully found through bulk scraping. With old
         package_name lists, this function is more efficient as it gets rid
         of bad requests before they are made
@@ -127,7 +127,7 @@ class Scraper:
 
         if return_dataframe:
             return df
-        
+
     def get_metadata_for_apps(self, packages, bulk=False):
         """
         Returns list of App objects corresponding to package names in packages
@@ -151,7 +151,7 @@ class Scraper:
             for app in data:
                 if app is not None:
                     app['date_last_scraped'] = time.time()
-            uuids = uuid_generator.generate_uuids(len(data))
+            uuids = generate_uuids(len(data))
             app_list = [App.convert_to_App_Object(d, uuid) for (d, uuid) in zip(data, uuids)]
             return app_list
 

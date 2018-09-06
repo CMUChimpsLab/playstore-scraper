@@ -1,8 +1,8 @@
 from pymongo import MongoClient
-from database_helper.helper import DbHelper
+from modules.database_helper.helper import DbHelper
 
 def fix(uuid, helper=None, client=None):
-    if helper is None: 
+    if helper is None:
         helper = DbHelper()
     if client is None:
         d = MongoClient()

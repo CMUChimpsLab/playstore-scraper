@@ -4,8 +4,7 @@ import uuid as name_gen
 import os
 import logging
 
-from constants import DOWNLOAD_FOLDER, DECOMPILE_FOLDER
-
+from dependencies.constants import DOWNLOAD_FOLDER, DECOMPILE_FOLDER
 from modules.db_fixer.dbfixer import fix
 from modules.database_helper.helper import DbHelper
 from modules.app_downloader.downloader import Downloader
@@ -22,7 +21,7 @@ class Controller:
     def __init__(self):
         self.__dbhelper = DbHelper()
 
-    
+
     def down_and_decomp(self, package_names=None, use_down_db=True, download_folder=None, decompile_folder=None):
         """
         Downloads and decompiles+compresses all files needed from database
@@ -38,8 +37,8 @@ class Controller:
             else:
                 down_and_decomp(i, use_down_db)
             logger.info("%s completed" % i)
-        
-        
+
+
     def down_no_analyze(self, isParallel=True):
         """
         Just downloads the apps from the database, but does not analyze
@@ -62,8 +61,8 @@ class Controller:
         """
         l = self.__dbhelper.get_all_apps_to_download()
         os.system("mkdir txt_files")
-        
-        # Idea is create a pool, have a list of names to analyze and do the names in 
+
+        # Idea is create a pool, have a list of names to analyze and do the names in
         # parallel
         if isParallel:
             pool = Pool(4)
@@ -105,11 +104,11 @@ def down_and_analyze(name):
 
     logger.info("Downloading App %s" % name)
     uuid_list = downloader.download([name])
-    
+
     # Now decompile them (For future use, look into adding decompile flag)
     # logger.info("Decompiling App %s" % name)
     # decompiler.decompile(uuid_list)
-    
+
     # Take a uuid, then write to a file
     logger.info("Ready to analyze %s" % name)
     analyze(uuid_list, dbhelper)
@@ -122,7 +121,7 @@ def main():
                         level=logging.INFO)
     p = Controller()
     p.down_all_apps()
-    
+
 
 if __name__ == '__main__':
     main()

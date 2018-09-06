@@ -1,13 +1,14 @@
 import time
 from pymongo import MongoClient
 import pymongo
-from scraper import crawler
-from app_object import App
-from constants import DB_HOST, DB_PORT, APP_METADATA_DB, APP_ANALYSIS_DB, DB_ROOT_USER, DB_ROOT_PASS, TOP_APPS_COLL, DOWNLOAD_FOLDER, DECOMPILE_FOLDER
 import pandas as pd
 import logging
 import json
 import os
+
+from modules.scraper import crawler
+from dependencies.app_object import App
+from dependencies.constants import DB_HOST, DB_PORT, APP_METADATA_DB, APP_ANALYSIS_DB, DB_ROOT_USER, DB_ROOT_PASS, TOP_APPS_COLL, DOWNLOAD_FOLDER, DECOMPILE_FOLDER
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +29,7 @@ class DbHelper:
 
     def insert_analysis_into_db(self, uuid, value, collection_name):
         """
-        Inserts results of an analysis into the analysis database, under the 
+        Inserts results of an analysis into the analysis database, under the
         collection identified by collection_name and the result for the app
         with uuid passed in, with result being 'value' (as we do not know what
         the type might be).
@@ -36,7 +37,7 @@ class DbHelper:
         collection = self.__analysis_db[collection_name]
         collection.insert_one({'uuid': uuid, 'analysisResult': value})
         logger.info("App with uuid {0} analyzed and put into {1}".format(uuid, collection_name))
-    
+
     def insert_app_into_db(self, app):
         """
         Inserts the metadata for an application into the database
@@ -65,8 +66,8 @@ class DbHelper:
                 os.remove(DOWNLOAD_FOLDER + '/' + old_uuid+'.apk')
             if os.path.isfile(DECOMPILE_FOLDER + '/' + old_uuid + '.zip'):
                 os.remove(DECOMPILE_FOLDER + '/' + old_uuid + '.zip')
-        
-        
+
+
 
     def get_all_apps_from_database(self):
         """
@@ -95,7 +96,7 @@ class DbHelper:
             {'$set': {'date_last_scraped': date_last_scraped}})
         if res.matched_count != 1:
             logger.error("Expected one document to be matched, instead %s was" % str(res.matched_count))
-            
+
     def get_next_app_to_download(self):
         """
         Returns [package_name, uuid] of next app that needs to be downloaded.
@@ -128,7 +129,7 @@ class DbHelper:
         """
         app = self.__apk_info_collection.find({'date_downloaded': None}, {'_id': 0, 'package_name': 1})
         return [a['package_name'] for a in app]
-        
+
     def get_all_apps_to_analyze(self):
         """
         Finds the uuids for all of the apps we have yet to analyze at all
@@ -173,7 +174,7 @@ class DbHelper:
 
     def get_filename_mappings(self, apps):
         """
-        Takes in a list of package_names and gets the uuids corresponding to 
+        Takes in a list of package_names and gets the uuids corresponding to
         those filenames
         """
         query = {'package_name': {'$in': apps}, 'date_downloaded': None}
@@ -199,7 +200,7 @@ class DbHelper:
             logger.info("Updated download time for {}".format(uuid))
         else:
             logger.warning("Failed to update download time for {}".format(uuid))
-    
+
     def get_metadata_in_json(self, OUTPUT_FILE):
         """
         This dumps all of the metadata into a JSON file if you want an easy
@@ -211,7 +212,7 @@ class DbHelper:
         data = df.to_dict('records')
         with open(OUTPUT_FILE, 'w') as f:
             json.dump(data, f)
-    
+
     def is_app_top(self, pkg_name):
         """
         Function tells if a package name is in the top 320 from each category
@@ -219,7 +220,7 @@ class DbHelper:
         """
         cursor = self.__top_apps.find({'_id': pkg_name})
         return len(list(cursor)) != 0
-    
+
     def is_uuid_top(self, uuid):
         """
         Tells if uuid is in top 320 from each category or not
@@ -230,14 +231,14 @@ class DbHelper:
             return False
         pkg_name = l[0]['package_name']
         return self.is_app_top(pkg_name)
-        
+
     def get_current_top_apps(self):
         """
         Gets a list of all current top apps from each category
         """
         cursor = self.__top_apps.find({"currently_top": True}, {"_id": 1})
         return list(cursor)
-    
+
     def update_top_apps(self):
         """
         Update the list of top apps to include possible new ones, and change
@@ -249,7 +250,7 @@ class DbHelper:
             self.__top_apps.update_one({'_id': name}, {'$set': {'_id': name, 'currently_top': True}}, upsert=True)
         # Also update top field in main db
         self.__apk_info_collection.update_many({'package_name': {'$in': new_top_list}}, {'$set': {'has_been_top': True}})
-    
+
     def get_top_apps(self):
         """
         Returns a list of top apps that need to be scraped (not in db yet)
@@ -257,10 +258,10 @@ class DbHelper:
         """
         top_apps = self.__top_apps.find({}, {'_id': 1})
         return [a['_id'] for a in top_apps]
-    
+
     def get_new_top_apps(self):
         """
-        Same as above, but only returns the ones who aren't already in the 
+        Same as above, but only returns the ones who aren't already in the
         database
         """
         new_names = []
@@ -269,7 +270,7 @@ class DbHelper:
             if not self.is_app_in_db(i):
                 new_names.append(i)
         return new_names
-    
+
     def update_list_of_names(self):
         """
         Meant for one-time use to update the packageNames collection

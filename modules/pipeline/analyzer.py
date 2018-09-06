@@ -1,9 +1,10 @@
-from dbfixer import fix
 import logging
 import uuid as name_gen
 import os
-from constants import DOWNLOAD_FOLDER
 import subprocess
+
+from dependencies.constants import DOWNLOAD_FOLDER
+from modules.db_fixer.dbfixer import fix
 
 logger  = logging.getLogger(__name__)
 def to_file_for_analysis(uuid_list):

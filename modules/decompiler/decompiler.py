@@ -1,10 +1,11 @@
 import subprocess
 import os
 import time
-from constants import DECOMPILE_FOLDER, DOWNLOAD_FOLDER
 import logging
-import database_helper.helper as dbhelper
 import pandas as pd
+
+import modules.database_helper.helper as dbhelper
+from dependencies.constants import DECOMPILE_FOLDER, DOWNLOAD_FOLDER
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +52,7 @@ class Decompiler:
             # Here we want to only keep filenames which are top
             fnames = [i for i in file_names if self.__database_helper.is_uuid_top(i)]
             file_names = fnames
-        
+
         app_extension = '.apk'
         file_names = [f if f.endswith(app_extension) else f + app_extension for f in file_names]
 
@@ -110,12 +111,12 @@ class Decompiler:
             return [None]
         apps = df['package_name'].tolist()
         return self.decompile(apps)
-    
+
     def compress_storage(self, file_names, suffix_to_keep=['.xml', '.smali']):
         """
         This function takes the filenames, removes all files except the ones
         with endings specified below (currently .xml and .smali), and then
-        zips them, all as a space-conserving mechanism. 
+        zips them, all as a space-conserving mechanism.
         """
         a = os.getcwd()
         os.chdir(self.__decompile_folder)
@@ -135,7 +136,7 @@ class Decompiler:
                 cmd = 'rm -rf '+i
                 p = subprocess.run(cmd.split(), stdout=fp, stderr=fp)
         os.chdir(a)
-    
+
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s [%(name)-12.12s] %(levelname)-8s %(message)s',

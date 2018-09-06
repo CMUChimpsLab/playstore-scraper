@@ -1,6 +1,7 @@
-from constants import CATEGORIES
 import urllib.request
 import logging
+
+from dependencies.constants import CATEGORIES
 
 logger = logging.getLogger(__name__)
 
@@ -40,11 +41,11 @@ def get_top_apps_list():
                 l = l.decode('utf-8')
                 p = scrape(l)
                 logger.info("Apps found for category {} is {}".format(cat, len(list(set(p)))))
-                
+
                 pkg_list = pkg_list + scrape(l)
             pkg_list = list(set(pkg_list))
         logger.info("Category %s done" % cat)
     return pkg_list
-    
 
-            
+
+

@@ -1,13 +1,13 @@
 import time
-
-import dependencies.gplaycli.gplaycli as gplaycli
-from constants import DOWNLOAD_FOLDER
 import os
 import logging
 import pandas as pd
-from app_object import App
-import scraper.uuid_generator as uuid_generator
-from database_helper.helper import DbHelper
+
+import dependencies.gplaycli.gplaycli as gplaycli
+from dependencies.constants import DOWNLOAD_FOLDER
+from dependencies.app_object import App
+import modules.scraper.uuid_generator as uuid_generator
+from modules.database_helper.helper import DbHelper
 from dependencies import GPLAYCLI_CONFIG_FILE_PATH
 
 logger = logging.getLogger(__name__)

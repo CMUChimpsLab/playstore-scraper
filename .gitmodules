@@ -1,12 +1,12 @@
 [submodule "dependencies/python_static_analyzer"]
 	path = dependencies/python_static_analyzer
-	url = git@github.com:CMUChimpsLab/python_static_analyzer.git
+	url = https://github.com/CMUChimpsLab/python_static_analyzer.git
 	branch = alex/debug_new_pipeline
 [submodule "dependencies/privacyRating"]
 	path = dependencies/privacyRating
-	url = git@github.com:CMUChimpsLab/privacyRating.git
+	url = https://github.com/CMUChimpsLab/privacyRating.git
 	branch = alex/debug_new_pipeline
 [submodule "dependencies/privacyGradePrediction"]
 	path = dependencies/privacyGradePrediction
-	url = git@github.com:CMUChimpsLab/privacyGradePrediction.git
+	url = https://github.com/CMUChimpsLab/privacyGradePrediction.git
 	branch = master
