@@ -1,14 +1,14 @@
 import os, sys
 import logging
-from scraper.scraper import Scraper
+from modules.scraper.scraper import Scraper
 from controller import Controller
 import pandas as pd
-from app_downloader.downloader import Downloader
-from decompiler.decompiler import Decompiler
-from scraper import crawler
-from database_helper.helper import DbHelper
-from updater.updater import Updater
-from constants import DOWNLOAD_FOLDER, DECOMPILE_FOLDER
+from modules.app_downloader.downloader import Downloader
+from modules.decompiler.decompiler import Decompiler
+from modules.scraper import crawler
+from modules.database_helper.helper import DbHelper
+from modules.updater.updater import Updater
+from dependencies.constants import DOWNLOAD_FOLDER, DECOMPILE_FOLDER
 
 INPUT_FILE = 'package_names.csv'
 
@@ -58,7 +58,7 @@ def download_and_decompile():
     
 
 def crawler_test():
-    pkg_list = crawler.get_top_apps_list()
+    crawler.get_top_apps_list()
 
 def update_top_list():
     d = DbHelper()
