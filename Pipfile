@@ -4,6 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+pylint = "*"
+pytest = "*"
 pandas = "*"
 gpapi = "*"
 requests = "*"
@@ -13,4 +15,4 @@ pymongo = "*"
 [dev-packages]
 
 [requires]
-python_version = "3.7"
+python_version = "3.6"

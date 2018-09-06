@@ -25,3 +25,5 @@ decompiler/apktool
 decompiler/apktool\.jar
 
 secrets\.py
+.vscode
+

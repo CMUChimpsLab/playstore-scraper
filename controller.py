@@ -1,14 +1,16 @@
 from multiprocessing import Pool
-from database_helper.helper import DbHelper
-from app_downloader.downloader import Downloader
-from decompiler.decompiler import Decompiler
-from constants import DOWNLOAD_FOLDER, DECOMPILE_FOLDER
-from dbfixer import fix
-from pipeline.analyzer import analyze
 import time
 import uuid as name_gen
 import os
 import logging
+
+from constants import DOWNLOAD_FOLDER, DECOMPILE_FOLDER
+
+from modules.db_fixer.dbfixer import fix
+from modules.database_helper.helper import DbHelper
+from modules.app_downloader.downloader import Downloader
+from modules.decompiler.decompiler import Decompiler
+from modules.pipeline.analyzer import analyze
 
 logger = logging.getLogger(__name__)
 
