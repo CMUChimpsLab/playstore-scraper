@@ -61,8 +61,8 @@ CATEGORIES= [
 'FAMILY_PRETEND'
 ]
 
-DOWNLOAD_FOLDER = 'apps'
-DECOMPILE_FOLDER = 'apps_decompiled'
+DOWNLOAD_FOLDER = '/home/privacy/nas/apps'
+DECOMPILE_FOLDER = '/home/privacy/nas/apps_decompiled'
 
 DB_HOST = 'localhost'
 DB_PORT = 27017
