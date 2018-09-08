@@ -8,7 +8,7 @@ import os
 
 from modules.scraper import crawler
 from dependencies.app_object import App
-from dependencies.constants import DB_HOST, DB_PORT, APP_METADATA_DB, APP_ANALYSIS_DB, DB_ROOT_USER, DB_ROOT_PASS, TOP_APPS_COLL, DOWNLOAD_FOLDER, DECOMPILE_FOLDER
+import dependencies.constants as constants
 
 logger = logging.getLogger(__name__)
 
@@ -18,14 +18,20 @@ class DbHelper:
         # Use username and password when running with mongod --auth,
         # prevents unwanted changes to the database
         # (also works if just running mongod normally no auth)
-        self.__client = MongoClient(host=DB_HOST, port=DB_PORT, username=DB_ROOT_USER, password=DB_ROOT_PASS)
-        self.__android_app_db = self.__client[APP_METADATA_DB]
-        self.__analysis_db = self.__client[APP_ANALYSIS_DB]
+        self.__client = MongoClient(host=constants.DB_HOST,
+            port=constants.DB_PORT,
+            username=constants.constants.DB_ROOT_USER,
+            password=constants.constants.DB_ROOT_PASS)
+        self.__android_app_db = self.__client[constants.APP_METADATA_DB]
+        self.__static_analysis_db = self.__client[constants.STATIC_ANALYSIS_DB]
         self.__apk_info_collection = self.__android_app_db.apkInfo
         self.__package_names_list = self.__android_app_db.packageNames
-        self.__top_apps = self.__android_app_db[TOP_APPS_COLL]
+        self.__top_apps = self.__android_app_db[constants.TOP_APPS_COLL]
         self.changed = False #check if names in db have changed
 
+    def app_uuid_to_name(self, uuid):
+        cursor = self.__apk_info_collection.find({"uuid": uuid})
+        return cursor[0]["package_name"] # uuid should always correlate to an app
 
     def insert_analysis_into_db(self, uuid, value, collection_name):
         """
@@ -34,7 +40,7 @@ class DbHelper:
         with uuid passed in, with result being 'value' (as we do not know what
         the type might be).
         """
-        collection = self.__analysis_db[collection_name]
+        collection = self.__static_analysis_db[collection_name]
         collection.insert_one({'uuid': uuid, 'analysisResult': value})
         logger.info("App with uuid {0} analyzed and put into {1}".format(uuid, collection_name))
 
@@ -62,12 +68,10 @@ class DbHelper:
             # Remove old db entry
             self.__apk_info_collection.delete_one({'_id': old_id})
             # Remove old file
-            if os.path.isfile(DOWNLOAD_FOLDER + '/' + old_uuid+'.apk'):
-                os.remove(DOWNLOAD_FOLDER + '/' + old_uuid+'.apk')
-            if os.path.isfile(DECOMPILE_FOLDER + '/' + old_uuid + '.zip'):
-                os.remove(DECOMPILE_FOLDER + '/' + old_uuid + '.zip')
-
-
+            if os.path.isfile(constants.DOWNLOAD_FOLDER + '/' + old_uuid+'.apk'):
+                os.remove(constants.DOWNLOAD_FOLDER + '/' + old_uuid+'.apk')
+            if os.path.isfile(constants.DECOMPILE_FOLDER + '/' + old_uuid + '.zip'):
+                os.remove(constants.DECOMPILE_FOLDER + '/' + old_uuid + '.zip')
 
     def get_all_apps_from_database(self):
         """
@@ -279,3 +283,46 @@ class DbHelper:
         names = list(set(sorted([i['package_name'] for i in ls])))
         names = [{'_id': i} for i in names if len(i) > 0]
         self.__package_names_list.insert(names)
+
+    def getManiFestPermissions(self, packagename):
+        return self.__apk_info_collection.find_one({'package_name': packagename}, {'permissions':1})['permissions']
+
+    def insert3rdPartyPackageInfo (self, packagename, filename, externalpackagename, category):
+        self.__static_analysis_db.Test_3rd_party_packages.insert({
+            'packagename': packagename,
+            'filename': filename,
+            'externalpackagename': externalpackagename,
+            'category': category
+        })
+        #print "Rows affected after inserting 3rdpartypackage - " + str (rows_affected)
+         
+    def insertPermissionInfo (self, packagename, filename, permission, is_external, dest, externalpackagename, src):
+        self.__static_analysis_db.Test_permissionlist.insert({
+            'packagename': packagename,
+            'filename': filename,
+            'permission': permission,
+            'is_external': is_external,
+            'dest': dest,
+            'externalpackagename':externalpackagename,
+            'src': src
+        })
+        #print "Rows affected after inserting permission - " + str (rows_affected)
+        
+    def insertLinkInfo (self, packagename, filename, link_url, is_external, triggered_by_code, externalpackagename):
+        if type(link_url) != unicode:
+            link_url = link_url.decode('UTF-8', 'ignore')
+        self.__static_analysis_db.Test_linkurl.insert({
+            'packagename': packagename,
+            'filename': filename,
+            'link_url': link_url,
+            'is_external': is_external,
+            'triggered_by_code': triggered_by_code,
+            'externalpackagename': externalpackagename
+        })
+        #print "Rows affected after inserting permission - " + str (rows_affected)
+        
+    def deleteEntry (self, packagename):
+       self.__static_analysis_db.Test_linkurl.remove({'packagename': packagename})
+       self.__static_analysis_db.Test_permissionlist.remove({'packagename': packagename})
+       self.__static_analysis_db.Test_3rd_party_packages.remove({'packagename': packagename})
+        

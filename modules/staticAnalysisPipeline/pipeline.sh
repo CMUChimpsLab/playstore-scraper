@@ -45,7 +45,7 @@ echo "$filename /home/privacy/nas/apps" > $NEW_APKS
 # Static analysis of all apks
 # TODO parallelize this again
 mkdir -p $OUTPUT_PATH
-python $DEP_DIR/python_static_analyzer/main_LargeVM.py $OUTPUT_PATH $NEW_APKS
+python analyzer.py $OUTPUT_PATH $NEW_APKS
 echo "static analysis completed at `date`" >> $LOG_DIR/pipeline_$Now
 cat $OUTPUT_PATH/filelist.txt
 
