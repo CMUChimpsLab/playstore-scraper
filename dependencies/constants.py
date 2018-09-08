@@ -67,7 +67,7 @@ DECOMPILE_FOLDER = '/home/privacy/nas/apps_decompiled'
 DB_HOST = 'localhost'
 DB_PORT = 27017
 APP_METADATA_DB = 'androidApp'
-APP_ANALYSIS_DB = 'staticAnalysis'
+STATIC_ANALYSIS_DB = 'staticAnalysis'
 
 DB_ROOT_USER = DB_USER
 DB_ROOT_PASS = DB_PASS
