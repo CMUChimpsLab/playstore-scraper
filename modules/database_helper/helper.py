@@ -20,8 +20,8 @@ class DbHelper:
         # (also works if just running mongod normally no auth)
         self.__client = MongoClient(host=constants.DB_HOST,
             port=constants.DB_PORT,
-            username=constants.constants.DB_ROOT_USER,
-            password=constants.constants.DB_ROOT_PASS)
+            username=constants.DB_ROOT_USER,
+            password=constants.DB_ROOT_PASS)
         self.__android_app_db = self.__client[constants.APP_METADATA_DB]
         self.__static_analysis_db = self.__client[constants.STATIC_ANALYSIS_DB]
         self.__apk_info_collection = self.__android_app_db.apkInfo

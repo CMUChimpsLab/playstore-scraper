@@ -1,13 +1,15 @@
-import dependencies.python_static_analyzer.namespaceanalyzer
-import dependencies.python_static_analyzer.permission
-import dependencies.python_static_analyzer.SearchIntents
-from dependencies.python_static_analyzer.androguard.core.bytecodes import apk
-from dependencies.python_static_analyzer.androguard.core.bytecodes import dvm
-from dependencies.python_static_analyzer.androguard.core.analysis.analysis import *
-from modules.database_helper.helper import DbHelper
+import python_static_analyzer.namespaceanalyzer
+import python_static_analyzer.permission
+import python_static_analyzer.SearchIntents
+from python_static_analyzer.androguard.core.bytecodes import apk
+from python_static_analyzer.androguard.core.bytecodes import dvm
+from python_static_analyzer.androguard.core.analysis.analysis import *
+from ..modules.database_helper.helper import DbHelper
 
 import logging
+import datetime
 import sys
+import os
 from multiprocessing import Pool, get_logger
 
 def staticAnalysis((apkEntry, outputPath)):
@@ -59,8 +61,16 @@ def staticAnalysis((apkEntry, outputPath)):
 Runs the pipeline static analyses on uuid_list and uses dbhelper to insert 
 results in the database
 """
-def analyzer(outputPath, uuid_list):
-    #in case the crawler breaks, append to the list.
+def analyzer(uuid_list):
+    # set up path constants
+    # now = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M")
+    now - "DEBUG_NEW" # TEMP, TODO REMOVE
+    logPath = "log/staticAnalysis-" + now + ".log"
+    outputPath = "staticAnalysis/" + now
+    if not os.path.exists(outputPath):
+        os.makedirs(outputPath)
+
+    # in case the crawler breaks, append to the list.
     analyzedApkFile = open(outputPath + '/' + 'filelist.txt', 'a+')
 
     '''
@@ -70,11 +80,12 @@ def analyzer(outputPath, uuid_list):
     dbHelper.insertLinkInfo('testpackage', 'testfilename', 'testlink', True, 'testdest', 'testexternalpackagename')
     '''
     logger = get_logger()
-    logFileHandler = logging.FileHandler(outputPath + '/exceptions.log')
+    logFileHandler = logging.FileHandler(logPath)
     logFormat = logging.Formatter("%(levelname)s %(asctime)s %(funcName)s %(lineno)d %(message)s")
     logFileHandler.setLevel(logging.DEBUG)
     logFileHandler.setFormatter(logFormat)
     logger.addHandler(logFileHandler)
+    logger.info(datetime.datetime.now())
 
     apkList = []
     apkList_f = open(apkListFile)
@@ -84,6 +95,7 @@ def analyzer(outputPath, uuid_list):
         apkList.append({'uuid': pair[0], "fileDir": pair[1]})
     apkList_f.close()
 
+    # run static analysis pipeline
     apkList = [(entry, outputPath) for entry in apkList]
     numberOfProcess = 4
     pool = Pool(numberOfProcess)
@@ -92,11 +104,13 @@ def analyzer(outputPath, uuid_list):
             analyzedApkFile.write(package_name + '\n')
             analyzedApkFile.flush()
 
+    # run privacyRating code
+
+
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        print "Usage: python main_LargeVM.py output_dir apk_uuid_list_file"
+    if len(sys.argv) < 2:
+        print "Usage: python main_LargeVM.py apk_uuid_list_file"
         sys.exit(1)
 
-    outputPath = sys.argv[1]
-    uuidListFile = sys.argv[2]
+    uuidListFile = sys.argv[1]
     analyzer(outputPath, uuidListFile)
