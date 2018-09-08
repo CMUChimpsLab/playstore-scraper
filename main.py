@@ -1,12 +1,15 @@
 import os, sys
 import logging
+import pandas as pd
+import subprocess
+
 from modules.scraper.scraper import Scraper
 from controller import Controller
-import pandas as pd
 from modules.app_downloader.downloader import Downloader
 from modules.decompiler.decompiler import Decompiler
 from modules.scraper import crawler
 from modules.database_helper.helper import DbHelper
+from modules.db_fixer.dbfixer import fix
 from modules.updater.updater import Updater
 from dependencies.constants import DOWNLOAD_FOLDER, DECOMPILE_FOLDER
 
@@ -24,7 +27,7 @@ def bulk_scrape_file(fname):
 def bulk_scrape_names(package_names):
     s = Scraper()
     s.bulk_scrape(package_names=package_names)
-    
+
 def scrape_names(package_names):
     s = Scraper()
     s.scrape_metadata_for_apps(package_names=package_names)
@@ -43,7 +46,7 @@ def update():
 
 def download_and_decompile():
     # Downloads then decompiles each app (instead of download all -> decompile
-    # all). If you wish to download all then decompile, use download_all and 
+    # all). If you wish to download all then decompile, use download_all and
     # decompile_all separately (but more difficult to do this). ONLY DECOMPILES
     # THE TOP APPS
     dec = Decompiler(use_database=True, compress=True)
@@ -85,13 +88,13 @@ def to_file_for_analysis(uuid_list):
 
 def analyze(uuid_list):
     dbhelper = DbHelper()
-    
+
     os.chdir("modules/staticAnalysisPipeline")
     fname = to_file_for_analysis(uuid_list)
-    subprocess.call(["pipenv", "install"])
+    subprocess.call(["pipenv", "install", "--dev"])
     subprocess.call(["pipenv", "run", "python", "analyzer.py", fname])
     os.chdir("../..")
-
+    sys.exit(0)
     for uuid in uuid_list:
         # Pass dbhelper and client to avoid a large amount of open connections
         # to the database (still end up with ~30 though)
@@ -104,7 +107,7 @@ if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s [%(name)-12.12s] %(levelname)-8s %(message)s',
                         level=logging.INFO)
     logger = logging.getLogger(__name__)
-    
+
     opt = sys.argv[1]
     if opt == 's': #scrape
         if len(sys.argv) < 3:
@@ -129,7 +132,7 @@ if __name__ == '__main__':
     elif opt == 'pt': #put top apps into main db using scraper
         put_top_apps_in_db()
     elif opt == 'es': #efficient scrape
-        if len(sys.argv) < 3
+        if len(sys.argv) < 3:
             print("Must supply csv with package names for scraping")
             sys.exit(1)
         fname = sys.argv[2]
@@ -138,7 +141,7 @@ if __name__ == '__main__':
         if len(sys.argv) < 2:
             print("Must supply file with list of app UUIDs")
         analyze(sys.argv[1])
-        
+
     else:
         print("Usage: python main.py <opt> [additional args]")
         print("Options:")

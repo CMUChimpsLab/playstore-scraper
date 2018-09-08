@@ -17,6 +17,7 @@ info_logs\.log
 scraper/scraper-server/node_modules
 
 *.pyc
+*.swp
 *.pytest*
 *.log
 apps_decompiled

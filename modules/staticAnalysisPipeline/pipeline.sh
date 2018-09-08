@@ -17,10 +17,14 @@ Now="DEBUG_NEW"
 
 # important variables
 CURR_DIR=$(pwd)
-DEP_DIR="$(dirname $(dirname $CURR_DIR))/dependencies"
+REPO_DIR="$(dirname $(dirname $CURR_DIR))"
+DEP_DIR="$REPO_DIR/dependencies"
 LOG_DIR="$CURR_DIR/log" # Where log of this script goes
 OUTPUT_PATH="$CURR_DIR/staticAnalysis/$Now" # where static analysis file list goes
 NEW_APKS="$CURR_DIR/new_apks.txt" # where apks to analyze are listed
+
+PYTHONPATH=$PATH:$REPO_DIR
+export PYTHONPATH
 
 # cleans up from broken update or killed program
 clean_up () {

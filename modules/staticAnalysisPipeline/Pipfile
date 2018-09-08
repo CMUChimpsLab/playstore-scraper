@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 numpy = "*"
+staticanalysisdependencies = {path = "./dependencies"}
 
 [dev-packages]
 pymongo = "*"

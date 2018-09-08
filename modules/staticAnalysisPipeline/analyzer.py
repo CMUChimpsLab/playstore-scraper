@@ -1,3 +1,9 @@
+import logging
+import datetime
+import sys
+import os
+from multiprocessing import Pool, get_logger
+print sys.path
 import python_static_analyzer.namespaceanalyzer
 import python_static_analyzer.permission
 import python_static_analyzer.SearchIntents
@@ -5,12 +11,6 @@ from python_static_analyzer.androguard.core.bytecodes import apk
 from python_static_analyzer.androguard.core.bytecodes import dvm
 from python_static_analyzer.androguard.core.analysis.analysis import *
 from ..modules.database_helper.helper import DbHelper
-
-import logging
-import datetime
-import sys
-import os
-from multiprocessing import Pool, get_logger
 
 def staticAnalysis((apkEntry, outputPath)):
     try:
@@ -25,7 +25,7 @@ def staticAnalysis((apkEntry, outputPath)):
         outFileName = '/package.txt'
         outFileName = outputPath + outFileName
         instance = namespaceanalyzer.NameSpaceMgr()
-    
+
         try:
           a = apk.APK(filename, zipmodule=1)
         except:
@@ -35,17 +35,17 @@ def staticAnalysis((apkEntry, outputPath)):
 
         #remove old db entry in static analysis db
         dbHelper.deleteEntry(apkEntry['package_name'])
-    
+
         packages = instance.execute (filename, outFileName, dbHelper, fileName, category, a, d, dx)
-                
+
         outfile_perm = '/permissions.txt'
         outfile_perm = outputPath + outfile_perm
         permission.StaticAnalyzer (filename, outfile_perm, packages, dbHelper, fileName, a, d, dx)
-                
+
         outfile_links = '/links.txt'
         outfile_links = outputPath + outfile_links
         SearchIntents.Intents(filename, outfile_links, packages, dbHelper, fileName, a, d, dx)
-        dbHelper.androidAppDB.apkInfo.update({'package_name':apkEntry['package_name']}, 
+        dbHelper.androidAppDB.apkInfo.update({'package_name':apkEntry['package_name']},
             {'$set': {'isApkUpdated': False}})
 
         print "FileName Analyzed :"  + fileName
@@ -58,7 +58,7 @@ def staticAnalysis((apkEntry, outputPath)):
         return ""
 
 """
-Runs the pipeline static analyses on uuid_list and uses dbhelper to insert 
+Runs the pipeline static analyses on uuid_list and uses dbhelper to insert
 results in the database
 """
 def analyzer(uuid_list):
