@@ -3,14 +3,18 @@ import datetime
 import sys
 import os
 from multiprocessing import Pool, get_logger
-print sys.path
-import python_static_analyzer.namespaceanalyzer
-import python_static_analyzer.permission
-import python_static_analyzer.SearchIntents
-from python_static_analyzer.androguard.core.bytecodes import apk
-from python_static_analyzer.androguard.core.bytecodes import dvm
-from python_static_analyzer.androguard.core.analysis.analysis import *
+
+import pythonStaticAnalyzer.namespaceanalyzer as namespaceanalyzer
+import pythonStaticAnalyzer.permission as permission
+import pythonStaticAnalyzer.SearchIntents as SearchIntents
+import privacyRating.extractApp as extractApp
+import privacyRating.rateApp as rateApp
+
+from dependencies.pythonStaticAnalyzer.androguard.core.bytecodes import apk
+from dependencies.pythonStaticAnalyzer.androguard.core.bytecodes import dvm
+from dependencies.pythonStaticAnalyzer.androguard.core.analysis.analysis import *
 from ..modules.database_helper.helper import DbHelper
+
 
 def staticAnalysis((apkEntry, outputPath)):
     try:
@@ -64,9 +68,9 @@ results in the database
 def analyzer(uuid_list):
     # set up path constants
     # now = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M")
-    now - "DEBUG_NEW" # TEMP, TODO REMOVE
-    logPath = "log/staticAnalysis-" + now + ".log"
-    outputPath = "staticAnalysis/" + now
+    now = "DEBUG_NEW" # TEMP, TODO REMOVE
+    logPath = "log/staticAnalysisRun-" + now + ".log"
+    outputPath = "staticAnalysisRuns/" + now
     if not os.path.exists(outputPath):
         os.makedirs(outputPath)
 
@@ -95,7 +99,7 @@ def analyzer(uuid_list):
         apkList.append({'uuid': pair[0], "fileDir": pair[1]})
     apkList_f.close()
 
-    # run static analysis pipeline
+    # run static analysis part
     apkList = [(entry, outputPath) for entry in apkList]
     numberOfProcess = 4
     pool = Pool(numberOfProcess)
@@ -104,8 +108,19 @@ def analyzer(uuid_list):
             analyzedApkFile.write(package_name + '\n')
             analyzedApkFile.flush()
 
-    # run privacyRating code
-
+    # run rating part
+    updatedApkList = []
+    with f as open(analyzedApkFile):
+        for line in f:
+            updatedApkList.append(line.rstrip("\n"))
+    
+    extractApp.extractPackagePair(updatedApkList)
+    rateApp.transRateToLevel()
+    
+    histFileName = "hist_" + now + ".csv"
+    outputHistogramFile = open(outputPath + "/data/hist/" + histFileName, 'w')
+    rateApp.generateHistData(200, outputHistogramFile)
+    outputHistogramFile.close()
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:

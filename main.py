@@ -87,21 +87,23 @@ def to_file_for_analysis(uuid_list):
     return fname
 
 def analyze(uuid_list):
-    dbhelper = DbHelper()
-
+    # static analysis
     os.chdir("modules/staticAnalysisPipeline")
     fname = to_file_for_analysis(uuid_list)
     subprocess.call(["pipenv", "install", "--dev"])
     subprocess.call(["pipenv", "run", "python", "analyzer.py", fname])
     os.chdir("../..")
     sys.exit(0)
+
+    # fix database schemas
+    dbhelper = DbHelper()
     for uuid in uuid_list:
         # Pass dbhelper and client to avoid a large amount of open connections
         # to the database (still end up with ~30 though)
         fix(uuid, helper=dbhelper, client=dbhelper._DbHelper__client)
         logger.info("%s fixed" % uuid)
-        dbhelper.update_analyses_done(uuid, ['3rd_party_packages', 'linkurl',       'permissionlist'])
-    subprocess.call(["rm", "txt_files/"+fname])
+        dbhelper.update_analyses_done(uuid, ['3rd_party_packages', 'linkurl', 'permissionlist'])
+    subprocess.call(["rm", fname])
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s [%(name)-12.12s] %(levelname)-8s %(message)s',

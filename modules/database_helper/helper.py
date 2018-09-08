@@ -28,6 +28,9 @@ class DbHelper:
         self.__package_names_list = self.__android_app_db.packageNames
         self.__top_apps = self.__android_app_db[constants.TOP_APPS_COLL]
         self.changed = False #check if names in db have changed
+    
+    def close(self):
+        self.__client.close()
 
     def app_uuid_to_name(self, uuid):
         cursor = self.__apk_info_collection.find({"uuid": uuid})

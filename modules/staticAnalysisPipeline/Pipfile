@@ -11,6 +11,7 @@ staticanalysisdependencies = {path = "./dependencies"}
 pymongo = "*"
 mysqlclient = "*"
 pandas = "*"
+staticanalysisdependencies = {path = "./dependencies"}
 
 [requires]
 python_version = "2.7"
