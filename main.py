@@ -86,8 +86,13 @@ def to_file_for_analysis(uuid_list):
 
     return fname
 
-def analyze(uuid_list):
+def analyze(uuidListFile):
     # static analysis
+    uuid_list = []
+    with open(uuidListFile) as f:
+        for line in f:
+            uuid_list.append(line.rstrip("\n"))
+
     os.chdir("modules/staticAnalysisPipeline")
     fname = to_file_for_analysis(uuid_list)
     subprocess.call(["pipenv", "install", "--dev"])
@@ -140,9 +145,10 @@ if __name__ == '__main__':
         fname = sys.argv[2]
         eff_scrape_file(fname)
     elif opt == 'analyze': # static analysis of apks provided in file
-        if len(sys.argv) < 2:
+        if len(sys.argv) < 3:
             print("Must supply file with list of app UUIDs")
-        analyze(sys.argv[1])
+            sys.exit(1)
+        analyze(sys.argv[2])
 
     else:
         print("Usage: python main.py <opt> [additional args]")

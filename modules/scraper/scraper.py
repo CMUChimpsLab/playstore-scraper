@@ -1,9 +1,9 @@
 import pandas as pd
+import logging
+import time
 
 from dependencies.app_object import App
-import logging
 from .uuid_generator import generate_uuids
-import time
 from modules.database_helper.helper import DbHelper
 from dependencies.gpapidev.googleplay import RequestError
 from dependencies.gplaycli import gplaycli
@@ -133,6 +133,7 @@ class Scraper:
         Returns list of App objects corresponding to package names in packages
         """
         api = gplaycli.GPlaycli(config_file=self.__config_file)
+        print(bulk)
         data = None
         if packages[0] is None:
             return
@@ -145,12 +146,14 @@ class Scraper:
             time.sleep(5)
             if data is None:
                 return self.get_metadata_for_apps(packages, bulk=bulk)
+        sys.exit(1)
         # Zips uuids with dictionaries in data array then makes them Apps
         # and returns that list of them
         if data is not None:
             for app in data:
                 if app is not None:
                     app['date_last_scraped'] = time.time()
+                    app["updatedTimestamp"] = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
             uuids = generate_uuids(len(data))
             app_list = [App.convert_to_App_Object(d, uuid) for (d, uuid) in zip(data, uuids)]
             return app_list

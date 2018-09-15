@@ -4,14 +4,13 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-numpy = "*"
-staticanalysisdependencies = {path = "./dependencies"}
 
 [dev-packages]
 pymongo = "*"
 mysqlclient = "*"
 pandas = "*"
-staticanalysisdependencies = {path = "./dependencies"}
+numpy = "*"
+requests = "*"
 
 [requires]
 python_version = "2.7"

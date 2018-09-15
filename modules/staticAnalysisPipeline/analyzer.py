@@ -1,30 +1,39 @@
 import logging
 import datetime
-import sys
 import os
 from multiprocessing import Pool, get_logger
+import traceback
 
-import pythonStaticAnalyzer.namespaceanalyzer as namespaceanalyzer
-import pythonStaticAnalyzer.permission as permission
-import pythonStaticAnalyzer.SearchIntents as SearchIntents
-import privacyRating.extractApp as extractApp
-import privacyRating.rateApp as rateApp
+# sys path hacking to import from other repos
+import sys
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/python_static_analyzer")
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/privacyRating")
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/privacyGradePrediction")
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(
+    os.path.realpath(__file__)))))
 
-from dependencies.pythonStaticAnalyzer.androguard.core.bytecodes import apk
-from dependencies.pythonStaticAnalyzer.androguard.core.bytecodes import dvm
-from dependencies.pythonStaticAnalyzer.androguard.core.analysis.analysis import *
-from ..modules.database_helper.helper import DbHelper
+import python_static_analyzer.namespaceanalyzer as namespaceanalyzer
+import python_static_analyzer.permission as permission
+import python_static_analyzer.SearchIntents as SearchIntents
+import privacyRating.src.extractApp as extractApp
+import privacyRating.src.rateApp as rateApp
+
+from python_static_analyzer.androguard.core.bytecodes import apk
+from python_static_analyzer.androguard.core.bytecodes import dvm
+from python_static_analyzer.androguard.core.analysis.analysis import *
+from modules.database_helper.helper import DbHelper
 
 
 def staticAnalysis((apkEntry, outputPath)):
+    logger = get_logger()
+    dbHelper = DbHelper()
+    packageName = dbHelper.app_uuid_to_name(apkEntry['uuid'])
     try:
-        dbHelper = DbHelper()
-
         outputPath = outputPath + '/'
-        fileName = dbHelper.app_uuid_to_name(apkEntry['uuid']) + '.apk'
+        fileName = apkEntry["uuid"] + '.apk'
         path = apkEntry['fileDir']
         tokens = namespaceanalyzer.NameSpaceMgr.GetTokensStatic (path, '/')
-        category =  tokens [len (tokens) - 1]
+        category =  tokens[len (tokens) - 1]
         filename = path + '/' + fileName
         outFileName = '/package.txt'
         outFileName = outputPath + outFileName
@@ -38,7 +47,7 @@ def staticAnalysis((apkEntry, outputPath)):
         dx = uVMAnalysis (d)
 
         #remove old db entry in static analysis db
-        dbHelper.deleteEntry(apkEntry['package_name'])
+        dbHelper.deleteEntry(packageName)
 
         packages = instance.execute (filename, outFileName, dbHelper, fileName, category, a, d, dx)
 
@@ -49,25 +58,24 @@ def staticAnalysis((apkEntry, outputPath)):
         outfile_links = '/links.txt'
         outfile_links = outputPath + outfile_links
         SearchIntents.Intents(filename, outfile_links, packages, dbHelper, fileName, a, d, dx)
-        dbHelper.androidAppDB.apkInfo.update({'package_name':apkEntry['package_name']},
-            {'$set': {'isApkUpdated': False}})
+        dbHelper.apk_info_update_with_doc({'$set': {'isApkUpdated': False}}, packageName)
 
-        print "FileName Analyzed :"  + fileName
-        return apkEntry['package_name']
+        logger.info("FileName Analyzed :"  + fileName)
+        return packageName
     except:
+        e = traceback.format_exc()
+        logger.error("Main : Exception occured for " + packageName)
+        logger.error(e)
         logger.error("\n")
-        logger.error("=======================================================================")
-        logger.error("\n")
-        logger.exception("Main : Exception occured for " + apkEntry['package_name'])
         return ""
 
 """
 Runs the pipeline static analyses on uuid_list and uses dbhelper to insert
 results in the database
 """
-def analyzer(uuid_list):
+def analyzer(uuidListFile):
     # set up path constants
-    # now = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M")
+    # now = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
     now = "DEBUG_NEW" # TEMP, TODO REMOVE
     logPath = "log/staticAnalysisRun-" + now + ".log"
     outputPath = "staticAnalysisRuns/" + now
@@ -75,7 +83,8 @@ def analyzer(uuid_list):
         os.makedirs(outputPath)
 
     # in case the crawler breaks, append to the list.
-    analyzedApkFile = open(outputPath + '/' + 'filelist.txt', 'a+')
+    analyzedApkFilePath = outputPath + '/' + 'filelist.txt'
+    analyzedApkFile = open(analyzedApkFilePath, 'a+')
 
     '''
     Example of how the various entrie are made into the database
@@ -85,18 +94,17 @@ def analyzer(uuid_list):
     '''
     logger = get_logger()
     logFileHandler = logging.FileHandler(logPath)
-    logFormat = logging.Formatter("%(levelname)s %(asctime)s %(funcName)s %(lineno)d %(message)s")
+    logFormat = logging.Formatter("%(levelname)s - %(asctime)s %(funcName)s - %(message)s")
     logFileHandler.setLevel(logging.DEBUG)
     logFileHandler.setFormatter(logFormat)
     logger.addHandler(logFileHandler)
-    logger.info(datetime.datetime.now())
+    logger.setLevel(logging.DEBUG)
 
     apkList = []
-    apkList_f = open(apkListFile)
+    apkList_f = open(uuidListFile)
     for line in apkList_f:
         pair = line.rstrip('\n').split(' ')
-        print line
-        apkList.append({'uuid': pair[0], "fileDir": pair[1]})
+        apkList.append({'uuid': pair[0].rstrip(".apk"), "fileDir": pair[1]})
     apkList_f.close()
 
     # run static analysis part
@@ -104,21 +112,27 @@ def analyzer(uuid_list):
     numberOfProcess = 4
     pool = Pool(numberOfProcess)
     for package_name in pool.imap(staticAnalysis, apkList):
+        print package_name
         if package_name != "":
             analyzedApkFile.write(package_name + '\n')
             analyzedApkFile.flush()
 
     # run rating part
+    analyzedApkFile.close()
     updatedApkList = []
-    with f as open(analyzedApkFile):
+    with open(analyzedApkFilePath) as f:
         for line in f:
             updatedApkList.append(line.rstrip("\n"))
-    
-    extractApp.extractPackagePair(updatedApkList)
+
+    print os.getcwd()
+    extractApp.extractPackagePair(updatedApkList, os.getcwd())
     rateApp.transRateToLevel()
-    
+
     histFileName = "hist_" + now + ".csv"
-    outputHistogramFile = open(outputPath + "/data/hist/" + histFileName, 'w')
+    histFileDir = outputPath + "/data/hist"
+    if not os.path.exists(histFileDir):
+        os.makedirs(histFileDir)
+    outputHistogramFile = open(histFileDir + "/" + histFileName, 'w')
     rateApp.generateHistData(200, outputHistogramFile)
     outputHistogramFile.close()
 
@@ -128,4 +142,4 @@ if __name__ == "__main__":
         sys.exit(1)
 
     uuidListFile = sys.argv[1]
-    analyzer(outputPath, uuidListFile)
+    analyzer(uuidListFile)

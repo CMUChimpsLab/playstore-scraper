@@ -1,5 +1,11 @@
-import urllib.request
 import logging
+
+# fix import error for when being imported by analyzer that uses 2.7
+try:
+    import urllib.request
+except ImportError:
+    import urllib
+
 
 from dependencies.constants import CATEGORIES
 

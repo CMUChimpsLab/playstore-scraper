@@ -28,13 +28,26 @@ class DbHelper:
         self.__package_names_list = self.__android_app_db.packageNames
         self.__top_apps = self.__android_app_db[constants.TOP_APPS_COLL]
         self.changed = False #check if names in db have changed
-    
+
     def close(self):
+        """
+        Close the current client (convenient so don't get too many open connections)
+        """
         self.__client.close()
 
     def app_uuid_to_name(self, uuid):
-        cursor = self.__apk_info_collection.find({"uuid": uuid})
+        """
+        Convert uuid for an app to its package name
+        """
+        cursor = self.__apk_info_collection.find({"uuid": str(uuid)})
         return cursor[0]["package_name"] # uuid should always correlate to an app
+
+    def apk_info_update_with_doc(self, doc, packageName):
+        """
+        Uses the given doc to update a document with the given package name in
+        the apkInfo collection
+        """
+        self.__apk_info_collection.update({"package_name": packageName}, doc)
 
     def insert_analysis_into_db(self, uuid, value, collection_name):
         """
@@ -298,7 +311,7 @@ class DbHelper:
             'category': category
         })
         #print "Rows affected after inserting 3rdpartypackage - " + str (rows_affected)
-         
+
     def insertPermissionInfo (self, packagename, filename, permission, is_external, dest, externalpackagename, src):
         self.__static_analysis_db.Test_permissionlist.insert({
             'packagename': packagename,
@@ -310,7 +323,7 @@ class DbHelper:
             'src': src
         })
         #print "Rows affected after inserting permission - " + str (rows_affected)
-        
+
     def insertLinkInfo (self, packagename, filename, link_url, is_external, triggered_by_code, externalpackagename):
         if type(link_url) != unicode:
             link_url = link_url.decode('UTF-8', 'ignore')
@@ -323,9 +336,9 @@ class DbHelper:
             'externalpackagename': externalpackagename
         })
         #print "Rows affected after inserting permission - " + str (rows_affected)
-        
+
     def deleteEntry (self, packagename):
        self.__static_analysis_db.Test_linkurl.remove({'packagename': packagename})
        self.__static_analysis_db.Test_permissionlist.remove({'packagename': packagename})
        self.__static_analysis_db.Test_3rd_party_packages.remove({'packagename': packagename})
-        
+
