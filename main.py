@@ -86,12 +86,10 @@ def to_file_for_analysis(uuid_list):
 
     return fname
 
-def analyze(uuidListFile):
+def analyze():
     # static analysis
-    uuid_list = []
-    with open(uuidListFile) as f:
-        for line in f:
-            uuid_list.append(line.rstrip("\n"))
+    helper = DbHelper()
+    uuid_list = helper.get_all_apps_to_analyze()
 
     os.chdir("modules/staticAnalysisPipeline")
     fname = to_file_for_analysis(uuid_list)
@@ -145,10 +143,7 @@ if __name__ == '__main__':
         fname = sys.argv[2]
         eff_scrape_file(fname)
     elif opt == 'analyze': # static analysis of apks provided in file
-        if len(sys.argv) < 3:
-            print("Must supply file with list of app UUIDs")
-            sys.exit(1)
-        analyze(sys.argv[2])
+        analyze()
 
     else:
         print("Usage: python main.py <opt> [additional args]")

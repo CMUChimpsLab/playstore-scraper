@@ -12,6 +12,8 @@ requests = "*"
 pyaxmlparser = "*"
 pymongo = "*"
 pprint = "*"
+docker = "*"
+airflow = "*"
 
 [dev-packages]
 

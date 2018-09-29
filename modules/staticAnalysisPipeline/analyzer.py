@@ -9,18 +9,22 @@ import sys
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/python_static_analyzer")
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/privacyRating")
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/privacyGradePrediction")
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/playstoreAnalysis")
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/crowdAnalysis")
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(
     os.path.realpath(__file__)))))
 
 import python_static_analyzer.namespaceanalyzer as namespaceanalyzer
 import python_static_analyzer.permission as permission
 import python_static_analyzer.SearchIntents as SearchIntents
-import privacyRating.src.extractApp as extractApp
-import privacyRating.src.rateApp as rateApp
-
 from python_static_analyzer.androguard.core.bytecodes import apk
 from python_static_analyzer.androguard.core.bytecodes import dvm
 from python_static_analyzer.androguard.core.analysis.analysis import *
+import privacyRating.src.extractApp as extractApp
+import privacyRating.src.rateApp as rateApp
+import playstoreAnalysis.src.analyze as analyze
+import crowdAnalysis.topApps.getSensitivePairs as getSensitivePairs
+import crowdAnalysis.topApps.getSummedScore as getSummedScore
 from modules.database_helper.helper import DbHelper
 
 
@@ -136,9 +140,17 @@ def analyzer(uuidListFile):
     rateApp.generateHistData(200, outputHistogramFile)
     outputHistogramFile.close()
 
+    # run playstore analysis part
+    analyze.main(analyzedApkFile)
+
+    # run crowd analysis part
+    getSensitivePairs.main(now)
+    getSummedScore.main(now)
+
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print "Usage: python main_LargeVM.py apk_uuid_list_file"
+        print "Usage: python analyzer.py < apk_uuid_list_file >"
         sys.exit(1)
 
     uuidListFile = sys.argv[1]
