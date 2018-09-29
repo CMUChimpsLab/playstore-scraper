@@ -10,3 +10,9 @@
 	path = modules/staticAnalysisPipeline/privacyGradePrediction
 	url = https://github.com/CMUChimpsLab/privacyGradePrediction.git
 	branch = master
+[submodule "modules/staticAnalysisPipeline/crowdAnalysis"]
+	path = modules/staticAnalysisPipeline/crowdAnalysis
+	url = git@github.com:CMUChimpsLab/crowdAnalysis.git
+[submodule "modules/staticAnalysisPipeline/playstoreAnalysis"]
+	path = modules/staticAnalysisPipeline/playstoreAnalysis
+	url = git@github.com:CMUChimpsLab/playstoreAnalysis.git
