@@ -12,7 +12,7 @@
 	branch = master
 [submodule "modules/staticAnalysisPipeline/crowdAnalysis"]
 	path = modules/staticAnalysisPipeline/crowdAnalysis
-	url = git@github.com:CMUChimpsLab/crowdAnalysis.git
+	url = https://github.com/CMUChimpsLab/crowdAnalysis.git
 [submodule "modules/staticAnalysisPipeline/playstoreAnalysis"]
 	path = modules/staticAnalysisPipeline/playstoreAnalysis
-	url = git@github.com:CMUChimpsLab/playstoreAnalysis.git
+	url = https://github.com/CMUChimpsLab/playstoreAnalysis.git
