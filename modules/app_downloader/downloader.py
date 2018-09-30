@@ -57,10 +57,7 @@ class Downloader:
         if self.__use_database:
             apps_list = self.__database_helper.get_filename_mappings(apps_list)
 
-        downloaded_apps = os.listdir(self.__download_folder)
-
         downloaded_uuids = []
-
         for index, app in enumerate(apps_list):
             if isinstance(app, str):
                 app = [app, app]
@@ -71,12 +68,15 @@ class Downloader:
             if not app[1].endswith(app_extension):
                 app[1] += ".apk"
 
+            app_dir = uuid[0] + "/" + uuid[1]
+            downloaded_apps = os.listdir(self.__download_folder + "/" + app_dir)
             if not force_download and app[1] in downloaded_apps:
                 logger.info("App already downloaded - %s" % app[0])
+                downloaded_uuids.append(uuid)
                 continue
             try:
                 api = gplaycli.GPlaycli(config_file=self.__config_file)
-                api.set_download_folder(self.__download_folder)
+                api.set_download_folder(self.__download_folder + "/" + app_dir)
                 logger.info("Downloading app - {} as {}".format(app[0], app[1]))
                 api.download([app])
                 downloaded_uuids.append(uuid)

@@ -2,6 +2,7 @@ import os, sys
 import logging
 import pandas as pd
 import subprocess
+import multiprocessing
 
 from modules.scraper.scraper import Scraper
 from controller import Controller
@@ -11,7 +12,7 @@ from modules.scraper import crawler
 from modules.database_helper.helper import DbHelper
 from modules.db_fixer.dbfixer import fix
 from modules.updater.updater import Updater
-from dependencies.constants import DOWNLOAD_FOLDER, DECOMPILE_FOLDER
+from dependencies.constants import DOWNLOAD_FOLDER
 
 INPUT_FILE = 'package_names.csv'
 
@@ -44,20 +45,27 @@ def update():
     u = Updater()
     u.update_apps_bulk()
 
+def download_decompile_apk(name):
+    dec = Decompiler(use_database=True, compress=True)
+    down = Downloader()
+    logger = multiprocessing.get_logger()
+    logger.info("Downloading %s" % name)
+    uuid_list = down.download(apps_list=[name])
+    decomp_time = dec.decompile(uuid_list)
+    if len(decomp_time) > 0 and decomp_time[0] is not None:
+        logger.info("{} decompiled at {}".format(name, decomp_time))
+
 def download_and_decompile():
     # Downloads then decompiles each app (instead of download all -> decompile
     # all). If you wish to download all then decompile, use download_all and
     # decompile_all separately (but more difficult to do this). ONLY DECOMPILES
     # THE TOP APPS
-    dec = Decompiler(use_database=True, compress=True)
-    down = Downloader()
     helper = DbHelper()
-    l = helper.get_all_apps_to_download()
-    for name in l:
-        logger.info("Downloading %s" % name)
-        uuid_list = down.download(apps_list=[name])
-        decomp_time = dec.decompile(uuid_list)
-        logger.info("{} decompiled at {}".format(name, decomp_time))
+    l = list(helper.get_all_apps_to_download())
+    process_no = 2
+    pool = multiprocessing.Pool(process_no)
+    for a in pool.imap(download_decompile_apk, l):
+        continue
 
 def crawler_test():
     crawler.get_top_apps_list()
@@ -82,7 +90,7 @@ def to_file_for_analysis(uuid_list):
         for uuid in uuid_list:
             if not uuid.endswith('apk'):
                 uuid = uuid+'.apk'
-            f.write(uuid + ' ' + DOWNLOAD_FOLDER)
+            f.write(uuid + ' ' + DOWNLOAD_FOLDER + "/" + uuid[0] + "/" + uuid[1])
 
     return fname
 

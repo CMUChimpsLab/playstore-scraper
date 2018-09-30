@@ -48,31 +48,41 @@ class Decompiler:
         appears in "decompile_folder"
         :return: list of decompile times and None entries for unsuccessful decompiles
         """
-        if self.__use_database:
-            # Here we want to only keep filenames which are top
-            fnames = [i for i in file_names if self.__database_helper.is_uuid_top(i)]
-            file_names = fnames
-
         app_extension = '.apk'
         file_names = [f if f.endswith(app_extension) else f + app_extension for f in file_names]
 
-        decompiled_apps = os.listdir(self.__decompile_folder)
-        downloaded_apps = os.listdir(self.__download_folder)
-        decompile_completion_time = []
-        logger.info("Decompiling into - %s" % self.__decompile_folder)
+        top_apps = set()
+        if self.__use_database:
+            # Here we want to only keep filenames which are top
+            top_apps = set([i for i in file_names if self.__database_helper.is_uuid_top(i[:-len(app_extension)])])
 
-        for fname in file_names:
-            if not force_decompile and fname[:-len(app_extension)] in decompiled_apps:
-                logger.info("File %s already decompiled" % fname)
-                continue
-            if not force_decompile and (fname[:-len(app_extension)] + '.zip') in decompiled_apps:
-                logger.info("File %s already decompiled and compressed" % fname)
-            if fname not in downloaded_apps:
-                logger.error("File %s not found" % fname)
-                continue
-            try:
-                app_file_path = '/'.join([self.__download_folder, fname])
-                decompile_destination_path = '/'.join([self.__decompile_folder, fname[:-len(app_extension)]])
+        decompile_completion_time = []
+        try:
+            for fname in file_names:
+                app_dir = "/" + fname[0] + "/" + fname[1]
+                decompiled_apps = os.listdir(self.__decompile_folder + "/" + fname[0])
+                downloaded_apps = os.listdir(self.__download_folder + app_dir)
+                if fname not in top_apps:
+                    logger.info("File {} not a top app, not decompiling".format(fname))
+                    decompile_completion_time.append(None)
+                    continue
+                elif not force_decompile and fname[:-len(app_extension)] in decompiled_apps:
+                    logger.info("File %s already decompiled" % fname)
+                    decompile_completion_time.append(None)
+                    continue
+                elif not force_decompile and (fname[:-len(app_extension)] + '.zip') in decompiled_apps:
+                    logger.info("File %s already decompiled and compressed" % fname)
+                    decompile_completion_time.append(None)
+                    continue
+                elif fname not in downloaded_apps:
+                    logger.error("File %s not found" % fname)
+                    decompile_completion_time.append(None)
+                    continue
+
+                logger.info("Decompiling into - %s" % self.__decompile_folder + "/" + fname[0])
+                app_file_path = '/'.join([self.__download_folder + app_dir, fname])
+                decompile_destination_path = '/'.join([self.__decompile_folder,
+                    fname[0], fname[:-len(app_extension)]])
                 cmd = self.__decompile_command.format(app_file_path, decompile_destination_path)
                 with open(os.devnull, 'w') as fp:
                     p = subprocess.run(cmd.split(), stdout=fp, stderr=fp)
@@ -84,10 +94,10 @@ class Decompiler:
                     decompile_completion_time.append(time.time())
                     if self.__compress:
                         self.compress_storage([fname[:-len(app_extension)]])
-            except Exception as e:
-                logger.error("Decompile failed - %s" % fname)
-                logger.error(e)
-                decompile_completion_time.append(None)
+        except Exception as e:
+            logger.error("Decompile failed - %s" % fname)
+            logger.error(e)
+            decompile_completion_time.append(None)
 
         return decompile_completion_time
 
@@ -121,7 +131,7 @@ class Decompiler:
         a = os.getcwd()
         os.chdir(self.__decompile_folder)
         for i in file_names:
-            os.chdir(i)
+            os.chdir(i[0] + "/" + i)
             with open(os.devnull, 'w') as fp:
                 cmd = 'find . | egrep -v \"'
                 cmd = cmd + '|'.join(suffix_to_keep)

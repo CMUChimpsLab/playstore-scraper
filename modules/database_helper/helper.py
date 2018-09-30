@@ -47,7 +47,14 @@ class DbHelper:
         Uses the given doc to update a document with the given package name in
         the apkInfo collection
         """
-        self.__apk_info_collection.update({"package_name": packageName}, doc)
+        self.__apk_info_collection.update_one({"package_name": packageName}, doc)
+
+    def get_uuids_to_analyze(self):
+        """
+        Gets a list of UUIDs that need static analysis
+        """
+        cursor = self.__apk_info_collection.find({"analyses_completed": None})
+        return [entry["uuid"] for entry in cursor]
 
     def insert_analysis_into_db(self, uuid, value, collection_name):
         """
@@ -83,11 +90,16 @@ class DbHelper:
             self.__apk_info_collection.insert_one(app)
             # Remove old db entry
             self.__apk_info_collection.delete_one({'_id': old_id})
+
             # Remove old file
-            if os.path.isfile(constants.DOWNLOAD_FOLDER + '/' + old_uuid+'.apk'):
-                os.remove(constants.DOWNLOAD_FOLDER + '/' + old_uuid+'.apk')
-            if os.path.isfile(constants.DECOMPILE_FOLDER + '/' + old_uuid + '.zip'):
-                os.remove(constants.DECOMPILE_FOLDER + '/' + old_uuid + '.zip')
+            app_path = "/" + old_uuid[0] + "/" + old_uuid[1] + "/" + old_uuid + ".apk"
+            if os.path.isfile(constants.DOWNLOAD_FOLDER + app_path):
+                os.remove(constants.DOWNLOAD_FOLDER + app_path)
+
+
+            zip_path = "/" + old_uuid[0] + "/" + old_uuid + ".zip"
+            if os.path.isfile(constants.DECOMPILE_FOLDER + zip_path):
+                os.remove(constants.DECOMPILE_FOLDER + zip_path)
 
     def get_all_apps_from_database(self):
         """
@@ -131,13 +143,13 @@ class DbHelper:
         with the analyses list in new_analyses
         """
         if list(self.__apk_info_collection.find({'uuid': uuid}, {'_id': 0, 'analyses_completed': 1}))[0]['analyses_completed'] is None:
-            self.__apk_info_collection.update(
+            self.__apk_info_collection.update_one(
                 {'uuid': uuid},
                 {'$set': {'analyses_completed': new_analyses}}
             )
             logger.info("set new analyses for %s " % uuid)
         else:
-            self.__apk_info_collection.update(
+            self.__apk_info_collection.update_one(
                 {'uuid': uuid},
                 {'$addToSet': {'analyses_completed': {'$each': new_analyses}}}
             )
@@ -212,11 +224,11 @@ class DbHelper:
         When the downloader downloads an app, this sets the download time for
         that app in seconds from epoch form
         """
-        res = self.__apk_info_collection.update(
+        res = self.__apk_info_collection.update_one(
             {'uuid': uuid},
             {'$set': {'date_downloaded': download_completion_time}}
         )
-        if res['nModified'] > 0:
+        if res.modified_count > 0:
             logger.info("Updated download time for {}".format(uuid))
         else:
             logger.warning("Failed to update download time for {}".format(uuid))

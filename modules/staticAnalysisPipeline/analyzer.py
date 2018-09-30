@@ -77,7 +77,7 @@ def staticAnalysis((apkEntry, outputPath)):
 Runs the pipeline static analyses on uuid_list and uses dbhelper to insert
 results in the database
 """
-def analyzer(uuidListFile):
+def analyzer(apkList):
     # set up path constants
     # now = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
     now = "DEBUG_NEW" # TEMP, TODO REMOVE
@@ -104,16 +104,9 @@ def analyzer(uuidListFile):
     logger.addHandler(logFileHandler)
     logger.setLevel(logging.DEBUG)
 
-    apkList = []
-    apkList_f = open(uuidListFile)
-    for line in apkList_f:
-        pair = line.rstrip('\n').split(' ')
-        apkList.append({'uuid': pair[0].rstrip(".apk"), "fileDir": pair[1]})
-    apkList_f.close()
-
     # run static analysis part
     apkList = [(entry, outputPath) for entry in apkList]
-    numberOfProcess = 4
+    numberOfProcess = 1
     pool = Pool(numberOfProcess)
     for package_name in pool.imap(staticAnalysis, apkList):
         print package_name
@@ -141,17 +134,51 @@ def analyzer(uuidListFile):
     outputHistogramFile.close()
 
     # run playstore analysis part
-    analyze.main(analyzedApkFile)
+    analyze.main(analyzedApkFilePath)
 
-    # run crowd analysis part
-    getSensitivePairs.main(now)
+    # run crowd analysis part for top apps
+    getSensitivePairs.main(now,
+      os.path.dirname(getSensitivePairs.__file__) + "/",
+      os.getcwd() + "/")
     getSummedScore.main(now)
 
+"""
+Gets a list of APKs from a file of APK UUIDs
+"""
+def getUuidsFromFile(uuidListFile):
+    apkList = []
+    apkList_f = open(uuidListFile)
+    for line in apkList_f:
+        pair = line.rstrip('\n').split(' ')
+        apkList.append({'uuid': pair[0].rstrip(".apk"), "fileDir": pair[1]})
+    apkList_f.close()
+
+    return apkList
+
+"""
+Gets a list of APKs from a file of APK UUIDs
+"""
+def getUuidsFromDb():
+    dbHelper = DbHelper()
+
+    return dbHelper.get_uuids_to_analyze()
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print "Usage: python analyzer.py < apk_uuid_list_file >"
-        sys.exit(1)
+    """
+    Usage: python analyzer.py < apk_uuid_list_file >
+            OR
+           python analyzer.py
+    """
 
-    uuidListFile = sys.argv[1]
-    analyzer(uuidListFile)
+    if len(sys.argv) >= 2:
+        uuidListFile = sys.argv[1]
+        uuidList = getUuidsFromFile(uuidListFile)
+    else:
+        uuidList = []
+        for uuid in getUuidsFromDb():
+            uuidList.append({
+                "uuid": str(uuid) + ".apk",
+                "fileDir": "/home/privacy/nas/apps"
+            })
+
+    analyzer(uuidList)
