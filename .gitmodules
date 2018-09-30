@@ -13,10 +13,8 @@
 [submodule "modules/staticAnalysisPipeline/crowdAnalysis"]
 	path = modules/staticAnalysisPipeline/crowdAnalysis
 	url = https://github.com/CMUChimpsLab/crowdAnalysis.git
+	branch = alex/debug_new_pipeline
 [submodule "modules/staticAnalysisPipeline/playstoreAnalysis"]
 	path = modules/staticAnalysisPipeline/playstoreAnalysis
 	url = https://github.com/CMUChimpsLab/playstoreAnalysis.git
-[submodule "modules.staticAnaloysisPipeline/playstoreAnalysis"]
-	branch = alex/debug_new_pipeline
-[submodule "modules.staticAnaloysisPipeline/crowdAnalysis"]
 	branch = alex/debug_new_pipeline
