@@ -1,4 +1,4 @@
-import time
+import datetime
 import os
 import logging
 import pandas as pd
@@ -80,7 +80,7 @@ class Downloader:
                 logger.info("Downloading app - {} as {}".format(app[0], app[1]))
                 api.download([app])
                 downloaded_uuids.append(uuid)
-                download_completion_time = time.time()
+                download_completion_time = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
                 if self.__use_database:
                     self.__database_helper.set_download_date(uuid, download_completion_time)
                 del api

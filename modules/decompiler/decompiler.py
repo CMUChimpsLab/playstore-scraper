@@ -1,6 +1,6 @@
 import subprocess
 import os
-import time
+import datetime
 import logging
 import pandas as pd
 
@@ -91,7 +91,7 @@ class Decompiler:
                     decompile_completion_time.append(None)
                 else:
                     logger.info("Decompiled {} into {}".format(app_file_path, decompile_destination_path))
-                    decompile_completion_time.append(time.time())
+                    decompile_completion_time.append(datetime.datetime.utcnow().strftime("%Y%m%dT%H%M"))
                     if self.__compress:
                         self.compress_storage([fname[:-len(app_extension)]])
         except Exception as e:

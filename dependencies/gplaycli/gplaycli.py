@@ -195,7 +195,7 @@ class GPlaycli:
         details = []
         if not bulk:
             for pkg in pkg_todownload:
-                details.append(self.api.details(pkg))
+                details.append(self.api.deprecated_details(pkg))
         else:
             details = self.api.bulkDetails(pkg_todownload)
         return details

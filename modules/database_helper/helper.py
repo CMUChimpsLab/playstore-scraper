@@ -25,6 +25,8 @@ class DbHelper:
         self.__android_app_db = self.__client[constants.APP_METADATA_DB]
         self.__static_analysis_db = self.__client[constants.STATIC_ANALYSIS_DB]
         self.__apk_info_collection = self.__android_app_db.apkInfo
+        self.__apk_frontend_info_collection = self.__android_app_db.frontendApkInfo
+        self.__apk_details_collection = self.__android_app_db.apkDetails
         self.__package_names_list = self.__android_app_db.packageNames
         self.__top_apps = self.__android_app_db[constants.TOP_APPS_COLL]
         self.changed = False #check if names in db have changed
@@ -67,7 +69,7 @@ class DbHelper:
         collection.insert_one({'uuid': uuid, 'analysisResult': value})
         logger.info("App with uuid {0} analyzed and put into {1}".format(uuid, collection_name))
 
-    def insert_app_into_db(self, app):
+    def insert_app_into_db(self, app, app_info=None, app_details=None, insert_frontend=False):
         """
         Inserts the metadata for an application into the database
         :param app: An object of class App
@@ -78,28 +80,51 @@ class DbHelper:
             logger.error("App with uuid {0} already exists".format(app['uuid']))
             return
         if self.is_app_top(app['package_name']) or not self.is_app_in_db(app['package_name']):
-            self.__apk_info_collection.insert_one(app)
+            # only want to maintain multiple versions for top apps
+            new_id = self.__apk_info_collection.insert_one(app)
             if not self.is_app_in_db(app['package_name']):
                 self.__package_names_list.insert_one({'_id': app['package_name']})
+
+            # insert into apkFrontendInfo and appDetails
+            app_info["_id"] = new_id
+            app_details["_id"] = new_id
+            self.insert_info_details(app["package_name"], app_info, app_details, False)
         else:
-            # Is in the database, but not a top app, so just update don't
-            # insert a new entry
+            # Is in the database, but not a top app, so just update
             old_entry = list(self.__apk_info_collection.find({'package_name': app['package_name']}))[0]
             old_uuid = old_entry['uuid']
-            old_id = old_entry['_id']
-            self.__apk_info_collection.insert_one(app)
+            new_id = self.__apk_info_collection.update_one(app)
+            
             # Remove old db entry
-            self.__apk_info_collection.delete_one({'_id': old_id})
+            # self.__apk_info_collection.delete_one({'_id': old_entry["_id"]})
 
-            # Remove old file
+            # Remove old files
             app_path = "/" + old_uuid[0] + "/" + old_uuid[1] + "/" + old_uuid + ".apk"
             if os.path.isfile(constants.DOWNLOAD_FOLDER + app_path):
                 os.remove(constants.DOWNLOAD_FOLDER + app_path)
-
-
             zip_path = "/" + old_uuid[0] + "/" + old_uuid + ".zip"
             if os.path.isfile(constants.DECOMPILE_FOLDER + zip_path):
                 os.remove(constants.DECOMPILE_FOLDER + zip_path)
+
+            # update apkFrontendInfo and appDetails
+            app_info["_id"] = new_id
+            app_details["_id"] = new_id
+            self.insert_info_details(app["package_name"], app_info, app_details, True)
+
+    def insert_info_details(self, package_name, app_info, app_detail, update=False):
+        """
+        Inserts the metadata for an application into the frontendApkInfo and apkDetails collections
+        :param appInfo: dictionary of apk info compatible with PrivacyGrade web app
+        :param appDetails: dictionary of all details for the apk
+        """
+        if not update:
+            self.__apk_frontend_info_collection.insert_one(app_info)
+            self.__apk_details_collection.insert_one(app_detail)
+        else:
+            self.__apk_frontend_info_collection.update_one(app_info)
+            self.__apk_details_collection.update_one(app_detail)
+
+        # handle appDetails
 
     def get_all_apps_from_database(self):
         """

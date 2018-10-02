@@ -1,4 +1,4 @@
-import time
+import datetime
 import logging
 
 from modules.scraper.scraper import Scraper
@@ -59,7 +59,8 @@ class Updater:
                     num_updated = num_updated + 1
                     logger.info("Inserting %s into db (updated)" % app['package_name'])
                 else:
-                    self.__db_helper.update_date_last_scraped_for_app(app['uuid'], time.time())
+                    self.__db_helper.update_date_last_scraped_for_app(app['uuid'],
+                        datetime.datetime.utcnow().strftime("%Y%m%dT%H%M"))
             logger.info("Finished updating this chunk... "+str(counter)+" apps down")
             print("\n\n\n\n "+str(num_updated)+" apps updated this chunk \n\n\n\n")
 
@@ -81,7 +82,8 @@ class Updater:
         if updated:
             self.__db_helper.insert_app_into_db(new_metadata)
         else:
-            self.__db_helper.update_date_last_scraped_for_app(app['uuid'], time.time())
+            self.__db_helper.update_date_last_scraped_for_app(app['uuid'],
+                datetime.datetime.utcnow().strftime("%Y%m%dT%H%M"))
 
 
 if __name__ == '__main__':

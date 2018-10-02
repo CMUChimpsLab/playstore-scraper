@@ -10,7 +10,7 @@ class App:
                  title=None, developer_name=None, installation_size=None,
                  contains_ads=None, category=None, content_rating=None,
                  user_rating=None, permissions=None, date_downloaded=None, date_last_scraped=None,
-                 analyses_completed=None, description_text=None, other_info=None):
+                 analyses_completed=None, description_text=None, other_info=None, frontend_dict=None):
 
         if any(variable is None for variable in [uuid, package_name, version_code]):
             raise AttributeError("The following cannot be None: uuid, package_name, version_code")
@@ -36,6 +36,9 @@ class App:
 
         if other_info is not None:
             self.other_info = other_info
+
+        # old structure to remain compatible with frontend
+        self.frontend_dict = frontend_dict
 
     def __setattr__(self, name, value):
         if name in self.__dict__['constants']:

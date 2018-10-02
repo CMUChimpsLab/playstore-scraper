@@ -1,5 +1,6 @@
 import pandas as pd
 import logging
+import datetime
 import time
 
 from dependencies.app_object import App
@@ -57,7 +58,7 @@ class Scraper:
                 return
         counter = -1
         df = pd.DataFrame()
-        data = self.get_metadata_for_apps(package_names, bulk=True)
+        data = self.get_metadata_for_apps(package_names, bulk=True)[0] # first item is one from bulk
         for package_name in package_names:
             counter = counter + 1
             if self.__db_helper.is_app_in_db(package_name):
@@ -87,9 +88,9 @@ class Scraper:
                 logger.error("An input file or a list of package names must be provided to scraper.")
                 return
         package_names_two = [package_names[i:i+1000] for i in range(0, len(package_names), 1000)]
-        cntr =0
+        cntr = 0
         for chunk in package_names_two:
-            l = self.get_metadata_for_apps(packages=chunk, bulk=True)
+            l = self.get_metadata_for_apps(packages=chunk, bulk=True)[0]
             cntr = cntr + 1000
             logger.info("%s apps down for efficient_scrape bulk part\n" % str(cntr))
             z = zip(chunk, l)
@@ -99,8 +100,8 @@ class Scraper:
 
     def scrape_metadata_for_apps(self, return_dataframe=False, write_to_database=True, package_names=None):
         """
-        Function uses default input file to scrape all of the information for every app in the file. Can also input list of package_names
-        directly if you choose, or return a dataframe with the information.
+        Function uses default input file to scrape all of the information for every app in the file.
+        Can also input list of package_names directly if you choose, or return a dataframe with the information.
         Will write to database as default, but you can turn that off.
         """
         if package_names is None:
@@ -115,7 +116,7 @@ class Scraper:
             if self.__db_helper.is_app_in_db(package_name):
                 logger.info("%s already in database, skipping" % package_name)
                 continue
-            app = self.get_metadata_for_apps([package_name])
+            app = self.get_metadata_for_apps([package_name])[0]
             counter = counter + 1
             if app is None:
                 continue
@@ -124,6 +125,7 @@ class Scraper:
             logger.info("%s apps down\n" % str(counter))
             if write_to_database:
                 self.__db_helper.insert_app_into_db(app[0])
+                self.__db_helper.insert_info_details(app[1], app[2])
 
         if return_dataframe:
             return df
@@ -133,30 +135,40 @@ class Scraper:
         Returns list of App objects corresponding to package names in packages
         """
         api = gplaycli.GPlaycli(config_file=self.__config_file)
-        print(bulk)
-        data = None
+        detail_data = None
         if packages[0] is None:
             return
         try:
-            data = api.get_doc_apk_details(packages, bulk=bulk)
+            detail_data = api.get_doc_apk_details(packages, bulk=bulk)
         except RequestError as e:
             logger.error("Could not scrape {}. Reason - {}".format(packages, e.value))
         except Exception as e:
             logger.error("Non Request-Error problem occurred for {}. Reason - {}. Sleeping for five seconds and continuing".format(packages, e))
             time.sleep(5)
-            if data is None:
+            if detail_data is None:
                 return self.get_metadata_for_apps(packages, bulk=bulk)
-        sys.exit(1)
-        # Zips uuids with dictionaries in data array then makes them Apps
-        # and returns that list of them
-        if data is not None:
-            for app in data:
+
+        # convert data array into arrays of frontend apk info, apk info and apk details
+        if detail_data is not None:
+            frontend_data = []
+            info_data = []
+            if not bulk:
+                for app_details in info_data:
+                    frontend_data.append(app_details.details.appDetails)
+                    info_data.append(app_details.docV2)
+            else:
+                info_data = detail_data
+
+            # Zips uuids with dictionaries in data array then makes them Apps
+            # and returns that list of them
+            for app in info_data:
                 if app is not None:
-                    app['date_last_scraped'] = time.time()
+                    app['date_last_scraped'] = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
                     app["updatedTimestamp"] = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
-            uuids = generate_uuids(len(data))
-            app_list = [App.convert_to_App_Object(d, uuid) for (d, uuid) in zip(data, uuids)]
-            return app_list
+            uuids = generate_uuids(len(info_data))
+            app_list = [App.convert_to_App_Object(d, uuid) for (d, uuid) in zip(info_data, uuids)]
+            
+            return [app_list, frontend_data, detail_data]
 
 
 if __name__ == '__main__':
