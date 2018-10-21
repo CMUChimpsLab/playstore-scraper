@@ -7,6 +7,7 @@ from dependencies.app_object import App
 from .uuid_generator import generate_uuids
 from modules.database_helper.helper import DbHelper
 from dependencies.gpapidev.googleplay import RequestError
+import dependencies.gpapidev.utils as utils
 from dependencies.gplaycli import gplaycli
 from dependencies import GPLAYCLI_CONFIG_FILE_PATH
 
@@ -116,7 +117,8 @@ class Scraper:
             if self.__db_helper.is_app_in_db(package_name):
                 logger.info("%s already in database, skipping" % package_name)
                 continue
-            app = self.get_metadata_for_apps([package_name])[0]
+            app_details = self.get_metadata_for_apps([package_name])
+            app = app_details[0]
             counter = counter + 1
             if app is None:
                 continue
@@ -124,8 +126,10 @@ class Scraper:
                 df = df.append(App.to_df(app))
             logger.info("%s apps down\n" % str(counter))
             if write_to_database:
-                self.__db_helper.insert_app_into_db(app[0])
-                self.__db_helper.insert_info_details(app[1], app[2])
+                self.__db_helper.insert_app_into_db(app[0],
+                    app_details[1][0],
+                    app_details[2][0],
+                    True)
 
         if return_dataframe:
             return df
@@ -153,9 +157,9 @@ class Scraper:
             frontend_data = []
             info_data = []
             if not bulk:
-                for app_details in info_data:
+                for app_details in detail_data:
                     frontend_data.append(app_details.details.appDetails)
-                    info_data.append(app_details.docV2)
+                    info_data.append(utils.fromDocToDictionary(app_details))
             else:
                 info_data = detail_data
 
@@ -167,7 +171,7 @@ class Scraper:
                     app["updatedTimestamp"] = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
             uuids = generate_uuids(len(info_data))
             app_list = [App.convert_to_App_Object(d, uuid) for (d, uuid) in zip(info_data, uuids)]
-            
+
             return [app_list, frontend_data, detail_data]
 
 

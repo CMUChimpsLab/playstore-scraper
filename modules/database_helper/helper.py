@@ -86,15 +86,14 @@ class DbHelper:
                 self.__package_names_list.insert_one({'_id': app['package_name']})
 
             # insert into apkFrontendInfo and appDetails
-            app_info["_id"] = new_id
-            app_details["_id"] = new_id
-            self.insert_info_details(app["package_name"], app_info, app_details, False)
+            if insert_frontend:
+                self.insert_info_details(app["package_name"], app_info, app_details, False)
         else:
             # Is in the database, but not a top app, so just update
             old_entry = list(self.__apk_info_collection.find({'package_name': app['package_name']}))[0]
             old_uuid = old_entry['uuid']
             new_id = self.__apk_info_collection.update_one(app)
-            
+
             # Remove old db entry
             # self.__apk_info_collection.delete_one({'_id': old_entry["_id"]})
 
@@ -107,9 +106,8 @@ class DbHelper:
                 os.remove(constants.DECOMPILE_FOLDER + zip_path)
 
             # update apkFrontendInfo and appDetails
-            app_info["_id"] = new_id
-            app_details["_id"] = new_id
-            self.insert_info_details(app["package_name"], app_info, app_details, True)
+            if insert_frontend:
+                self.insert_info_details(app["package_name"], app_info, app_details, True)
 
     def insert_info_details(self, package_name, app_info, app_detail, update=False):
         """
@@ -118,6 +116,8 @@ class DbHelper:
         :param appDetails: dictionary of all details for the apk
         """
         if not update:
+            print(app_info)
+            print(dict(app_info))
             self.__apk_frontend_info_collection.insert_one(app_info)
             self.__apk_details_collection.insert_one(app_detail)
         else:

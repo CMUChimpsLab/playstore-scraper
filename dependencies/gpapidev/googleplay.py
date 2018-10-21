@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/bin/python
 
 
 from Crypto.Util import asn1
@@ -599,7 +599,7 @@ class GooglePlayAPI(object):
         """ Get app details from apackage in format used for MongoDB"""
         path = "details?doc=%s" % requests.utils.quote(packageName)
         data = self.executeRequestApi2(path)
-        return data.payload.detailsResponse
+        return data.payload.detailsResponse.docV2
 
     def download(self, packageName, versionCode=None, offerType=1, expansion_files=False):
         """Download an app and return its raw data (APK file). Free apps need
