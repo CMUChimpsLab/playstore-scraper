@@ -9,7 +9,7 @@ import os
 from modules.scraper import crawler
 from dependencies.app_object import App
 import dependencies.constants as constants
-from util import detadetails_to_dict
+from modules.database_helper.util import details_to_dict
 
 logger = logging.getLogger(__name__)
 
