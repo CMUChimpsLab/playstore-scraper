@@ -9,6 +9,7 @@ import os
 from modules.scraper import crawler
 from dependencies.app_object import App
 import dependencies.constants as constants
+from util import detadetails_to_dict
 
 logger = logging.getLogger(__name__)
 
@@ -115,9 +116,9 @@ class DbHelper:
         """
         print(app_detail)
         if not update:
-            self.__apk_details_collection.insert_one(app_detail)
+            self.__apk_details_collection.insert_one(details_to_dict(app_detail))
         else:
-            self.__apk_details_collection.update_one(app_detail)
+            self.__apk_details_collection.update_one(details_to_dict(app_detail))
 
         # handle appDetails
 
