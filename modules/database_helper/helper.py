@@ -25,7 +25,6 @@ class DbHelper:
         self.__android_app_db = self.__client[constants.APP_METADATA_DB]
         self.__static_analysis_db = self.__client[constants.STATIC_ANALYSIS_DB]
         self.__apk_info_collection = self.__android_app_db.apkInfo
-        self.__apk_frontend_info_collection = self.__android_app_db.frontendApkInfo
         self.__apk_details_collection = self.__android_app_db.apkDetails
         self.__package_names_list = self.__android_app_db.packageNames
         self.__top_apps = self.__android_app_db[constants.TOP_APPS_COLL]
@@ -87,7 +86,7 @@ class DbHelper:
 
             # insert into apkFrontendInfo and appDetails
             if insert_frontend:
-                self.insert_info_details(app["package_name"], app_info, app_details, False)
+                self.insert_info_details(app["package_name"], app_details, False)
         else:
             # Is in the database, but not a top app, so just update
             old_entry = list(self.__apk_info_collection.find({'package_name': app['package_name']}))[0]
@@ -107,21 +106,17 @@ class DbHelper:
 
             # update apkFrontendInfo and appDetails
             if insert_frontend:
-                self.insert_info_details(app["package_name"], app_info, app_details, True)
+                self.insert_info_details(app["package_name"], app_details, True)
 
-    def insert_info_details(self, package_name, app_info, app_detail, update=False):
+    def insert_info_details(self, package_name, app_detail, update=False):
         """
-        Inserts the metadata for an application into the frontendApkInfo and apkDetails collections
-        :param appInfo: dictionary of apk info compatible with PrivacyGrade web app
+        Inserts the metadata for an application into apkDetails collections
         :param appDetails: dictionary of all details for the apk
         """
+        print(app_detail)
         if not update:
-            print(app_info)
-            print(dict(app_info))
-            self.__apk_frontend_info_collection.insert_one(app_info)
             self.__apk_details_collection.insert_one(app_detail)
         else:
-            self.__apk_frontend_info_collection.update_one(app_info)
             self.__apk_details_collection.update_one(app_detail)
 
         # handle appDetails

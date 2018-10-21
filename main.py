@@ -40,7 +40,7 @@ def bulk_scrape_file(args):
     s.bulk_scrape()
 
 def scrape_file(args):
-    s = Scraper(input_file=fname)
+    s = Scraper(input_file=args.fname)
     s.scrape_metadata_for_apps()
 
 def eff_scrape_file(args):
