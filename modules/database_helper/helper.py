@@ -114,7 +114,6 @@ class DbHelper:
         Inserts the metadata for an application into apkDetails collections
         :param appDetails: dictionary of all details for the apk
         """
-        print(app_detail)
         if not update:
             self.__apk_details_collection.insert_one(details_to_dict(app_detail))
         else:

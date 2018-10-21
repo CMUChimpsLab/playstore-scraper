@@ -7,13 +7,7 @@ def details_to_dict(app_details):
         "title": app_details.title,
         "creator": app_details.creator,
         "descriptionHtml": app_details.descriptionHtml,
-        "offer": {
-            "micros": app_details.offer.micros,
-            "currencyCode": app_details.offer.currencyCode,
-            "formattedAmount": app_details.offer.formattedAmount,
-            "checkoutFlowRequired": app_details.offer.checkoutFlowRequired,
-            "offerType": app_details.offer.offerType,
-        },
+        "offer": [],
         "availability": {
             "restriction": app_details.availability.restriction,
         },
@@ -31,11 +25,7 @@ def details_to_dict(app_details):
                 "packageName": app_details.details.appDetails.packageName,
                 "recentChangesHtml": app_details.details.appDetails.recentChangesHtml,
                 "uploadDate": app_details.details.appDetails.uploadDate,
-                "file": {
-                    "fileType": app_details.details.appDetails.file.fileType,
-                    "versionCode": app_details.details.appDetails.file.versionCode,
-                    "size": app_details.details.appDetails.file.size,
-                },
+                "file": [],
                 "appType": app_details.details.appDetails.appType,
                 "unstable": app_details.details.appDetails.unstable,
                 "containsAds": app_details.details.appDetails.containsAds,
@@ -50,6 +40,15 @@ def details_to_dict(app_details):
         }
     }
 
+    for offer in app_details.offer:
+        result_dict["offer"].append({
+            "micros": offer.micros,
+            "currencyCode": offer.currencyCode,
+            "formattedAmount": offer.formattedAmount,
+            "checkoutFlowRequired": offer.checkoutFlowRequired,
+            "offerType": offer.offerType,
+        })
+
     for image in app_details.image:
         result_dict["images"].append({
             "imageType": image.imageType,
@@ -60,6 +59,13 @@ def details_to_dict(app_details):
     for perm in app_details.details.appDetails.permission:
         result_dict["details"]["appDetails"]["permissions"].append(perm)
 
+    for f in app_details.details.appDetails.file:
+        result_dict["details"]["appDetails"]["file"].append({
+            "fileType": f.fileType,
+            "versionCode": f.versionCode,
+            "size": f.size,
+        })
+
     for dep in app_details.details.appDetails.dependencies.dependency:
         result_dict["details"]["appDetails"]["dependencies"]["dependency"].append({
             "packageName": dep.packageName,
@@ -67,3 +73,4 @@ def details_to_dict(app_details):
         })
 
     return result_dict
+
