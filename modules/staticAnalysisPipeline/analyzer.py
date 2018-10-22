@@ -26,7 +26,7 @@ import playstoreAnalysis.src.analyze as analyze
 import crowdAnalysis.topApps.getSensitivePairs as getSensitivePairs
 import crowdAnalysis.topApps.getSummedScore as getSummedScore
 from modules.database_helper.helper import DbHelper
-from dependencies.constants import PROCESS_NO
+from dependencies.constants import PROCESS_NO, LOG_FOLDER
 
 def staticAnalysis((apkEntry, outputPath)):
     logger = get_logger()
@@ -81,7 +81,10 @@ def analyzer(apkList):
     # set up path constants
     # now = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
     now = "DEBUG_NEW" # TEMP, TODO REMOVE
-    logPath = "log/staticAnalysisRun-" + now + ".log"
+    logPath = LOG_FOLDER + "/staticAnalysisRuns/staticAnalysisRun-" + now + ".log"
+    if not os.path.exists(os.path.dirname(logPath)):
+        os.makedirs(os.path.dirname(logPath))
+
     outputPath = "staticAnalysisRuns/" + now
     if not os.path.exists(outputPath):
         os.makedirs(outputPath)

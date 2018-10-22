@@ -1,5 +1,6 @@
 from secrets import DB_USER, DB_PASS
 
+# app categories
 CATEGORIES= [
 'ANDROID_WEAR',
 'ART_AND_DESIGN',
@@ -61,8 +62,10 @@ CATEGORIES= [
 'FAMILY_PRETEND'
 ]
 
+# various import paths
 DOWNLOAD_FOLDER = '/home/privacy/nas/apps'
 DECOMPILE_FOLDER = '/home/privacy/nas/apps_decompiled'
+LOG_FOLDER = "/home/privacy/logs"
 
 DB_HOST = 'localhost'
 DB_PORT = 27017

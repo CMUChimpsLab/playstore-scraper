@@ -172,7 +172,7 @@ class GPlaycli:
 		"""
         token, gsfid = self.get_cached_token()
         if token is not None and not force_new:
-            logger.info("Using cached token.")
+            # logger.info("Using cached token.")
             return token, gsfid
         logger.info("Retrieving token ...")
         proc = Popen(['java', '-jar', 'target/token-dispenser.jar']
@@ -414,8 +414,10 @@ class GPlaycli:
         else:
             if self.token_passed:
                 logger.info("Using passed token to connect to API")
-            else:
-                logger.info("Using auto retrieved token to connect to API")
+
+            # commented out b/c spams logs but left as a reference    
+            # else:
+            #     logger.info("Using auto retrieved token to connect to API")
             authsub_token = self.token
             gsfid = int(self.gsfid, 16)
         with warnings.catch_warnings():

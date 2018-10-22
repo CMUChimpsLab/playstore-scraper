@@ -5,6 +5,7 @@ import subprocess
 from concurrent.futures import ThreadPoolExecutor
 import argparse
 import threading
+import datetime
 
 from modules.scraper.scraper import Scraper
 from controller import Controller
@@ -14,7 +15,7 @@ from modules.scraper import crawler
 from modules.database_helper.helper import DbHelper
 from modules.db_fixer.dbfixer import fix
 from modules.updater.updater import Updater
-from dependencies.constants import DOWNLOAD_FOLDER, THREAD_NO
+from dependencies.constants import DOWNLOAD_FOLDER, THREAD_NO, LOG_FOLDER
 
 # ***************** #
 # DEPRECATED/UNUSED
@@ -167,7 +168,10 @@ parser = argparse.ArgumentParser(prog="PROG",
     description="App Analysis",
     usage="python main.py",
     formatter_class=formatter)
-subparsers = parser.add_subparsers(title="Commands", metavar="python main.py <command>")
+subparsers = parser.add_subparsers(
+    title="Commands",
+    metavar="python main.py <command>",
+    dest="subparser_name")
 
 # download all apps not downloaded in the database
 d_parser = subparsers.add_parser("download",
@@ -251,5 +255,12 @@ if __name__ == '__main__':
     logger = logging.getLogger(__name__)
 
     args = parser.parse_args()
-    print(args)
+    subparser = args.pop("subparser_name")
+    # now = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
+    now = "DEBUG_NEW" # TEMP, TODO REMOVE
+    logPath = "{}/{}/{}-{}.log".format(LOG_FOLDER, subparser, subparser, now)
+    if not os.path.exists(logPath):
+        os.makedirs(logPath)
+    logFileHandler = logging.FileHandler(logPath)
+
     args.func(args)
