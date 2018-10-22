@@ -259,9 +259,28 @@ if __name__ == '__main__':
         os.makedirs(os.path.dirname(logPath))
     #logFileHandler = logging.FileHandler(logPath)
     #logger.addHandler(logFileHandler)
-    logging.basicConfig(format='%(asctime)s [%(name)-12.12s] %(levelname)-8s %(message)s',
-                        level=logging.INFO,
-                        filename=logPath)
+    logging.config.dictConfig({
+        "version": 1,
+        "handlers": {
+            "file": {
+                "class": "logging.FileHandler",
+                "filename": logPath,
+                "mode": "w",
+                "level": "INFO",
+                "formatter": "simpleFormatter",
+            }
+        },
+        "formatters": {
+            "simpleFormatter": {
+                "format": "%(asctime)s [%(name)-12.12s] %(levelname)-8s %(message)s",
+                "datefmt": "%d/%m/%Y %H:%M:%S",
+            }
+        },
+        "root": {
+            "level": "INFO",
+            "handlers": ["console", "file"],
+        },
+    })
     logger = logging.getLogger(__name__)
 
     args.func(args)
