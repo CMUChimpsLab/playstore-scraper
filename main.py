@@ -2,8 +2,9 @@ import os, sys
 import logging
 import pandas as pd
 import subprocess
-import _thread
+from concurrent.futures import ThreadPoolExecutor
 import argparse
+import threading
 
 from modules.scraper.scraper import Scraper
 from controller import Controller
@@ -15,7 +16,9 @@ from modules.db_fixer.dbfixer import fix
 from modules.updater.updater import Updater
 from dependencies.constants import DOWNLOAD_FOLDER, THREAD_NO
 
-# *************** DEPRECATED/UNUSED *************** #
+# ***************** #
+# DEPRECATED/UNUSED
+# ***************** #
 def bulk_scrape_names(args):
     s = Scraper()
     s.bulk_scrape_apps(package_names=args.package_names)
@@ -26,7 +29,6 @@ def scrape_names(args):
 
 def crawler_test():
     crawler.get_top_apps_list()
-# ************************************************* #
 
 # ***************** #
 # helper functions
@@ -41,10 +43,11 @@ def download_decompile_apk(name):
         logger.info("{} decompiled at {}".format(name, decomp_time))
 
 def to_file_for_analysis(uuid_list):
-    # Writes a file with appropriate format to feed to analysis pipeline
-    # :param uuid_list: List of uuids to analyze (without apk extension)
-    # Returns the file name of the file written to
-
+    """
+    Writes a file with appropriate format to feed to analysis pipeline
+    :param uuid_list: List of uuids to analyze (without apk extension)
+    Returns the file name of the file written to
+    """
     fname = "apks.txt"
     with open(fname, 'w') as f:
         for uuid in uuid_list:
@@ -54,8 +57,14 @@ def to_file_for_analysis(uuid_list):
 
     return fname
 
+def download_decompile_all():
+    """
+    Downloads all not downloaded apps, then decompiles all that are a top app
+    """
+
+
 # ***************** #
-# CLI command functions
+# smaller CLI command functions
 # ***************** #
 def download_all(args):
     d = Downloader()
@@ -78,17 +87,12 @@ def update(args):
     u.update_apps_bulk()
 
 def download_and_decompile(args):
-    # Downloads then decompiles each app (instead of download all -> decompile
-    # all). If you wish to download all then decompile, use download_all and
-    # decompile_all separately (but more difficult to do this). ONLY DECOMPILES
-    # THE TOP APPS
+    # Downloads then decompiles each app
+    # ONLY DECOMPILES THE TOP APPS
     helper = DbHelper()
     apps = list(helper.get_all_apps_to_download())
-    chunk_size = 100
-    for i in range(0, len(apps), THREAD_NO * chunk_size):
-        for j in range(0, THREAD_NO):
-            _thread.start_new_thread(download_decompile_apk, 
-                (apps[(i + j * chunk_size):(i + (j+1) * chunk_size)]))
+    with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
+        executor.map(download_decompile_apk, apps)
 
 def update_top_list(args):
     d = DbHelper()
@@ -121,6 +125,39 @@ def analyze(args):
         logger.info("%s fixed" % uuid)
         dbhelper.update_analyses_done(uuid, ['3rd_party_packages', 'linkurl', 'permissionlist'])
     subprocess.call(["rm", fname])
+
+# ***************** #
+# large pipeline CLI command functions
+# ***************** #
+def full_pipeline(args):
+    kickoff = args.kickoff
+    fname = args.fname
+
+    s = None
+    u = None
+    if fname == "":
+        # use crawler to get list of package names
+        logger.error("Crawler for package names not implemented yet")
+        return
+    else:
+        # use specified file of package names
+        s = Scraper(input_file=fname)
+        u = Updater(input_file=fname)
+
+    if kickoff:
+        # use scraper
+        s.efficient_scrape()
+    else:
+        # use updater
+        u.update_apps_bulk()
+
+    # with metadata added, can do download/decompile and static analysis simultaneously
+    dd_thread = threading.Thread(target=download_decompile_all)
+    analysis_thread = threading.Thread(target=analyze, args=(None))
+    dd_thread.start()
+    analysis_thread.start()
+    dd_thread.join()
+    analysis_thread.join()
 
 # ***************** #
 # set up CLI argparser
@@ -197,6 +234,15 @@ a_parser = subparsers.add_parser("analyze",
     help="static analysis of apps",
     description="Static analysis of apps not yet analyzed")
 a_parser.set_defaults(func=analyze)
+
+# entire app data and analysis pipeline
+fp_parser = subparsers.add_parser("full-pipeline",
+    aliases=["fp"],
+    help="entire app data and analysis pipeline",
+    description="Entire pipeline from scraping data about apps to analysis of them")
+fp_parser.add_argument("kickoff", const=False, type=bool, help="true if is first run, false otherwise")
+fp_parser.add_argument("fname", const="", help="file name to scrape from, otherwise use crawler to get package names")
+fp_parser.set_defaults(func=full_pipeline)
 
 if __name__ == '__main__':
     print(sys.argv[0])

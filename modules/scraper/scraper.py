@@ -2,7 +2,7 @@ import pandas as pd
 import logging
 import datetime
 import time
-import _thread
+from concurrent.futures import ThreadPoolExecutor
 
 from dependencies.app_object import App
 from .uuid_generator import generate_uuids
@@ -46,31 +46,23 @@ class Scraper:
                 logger.error("An input file or a list of package names must be provided to scraper.")
                 return
 
-        chunk_size = 1000
-        indices = range(0, len(package_names))
-        for i in range(0, len(package_names), THREAD_NO * chunk_size):
-            for j in range(0, THREAD_NO):
-                _thread.start_new_thread(self.bulk_scrape_thread_worker, 
-                    (indices[(i + j * chunk_size):(i + (j+1) * chunk_size)],
-                     package_names[(i + j * chunk_size):(i + (j+1) * chunk_size)]))
+        with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
+            executor.map(self.efficient_scrape_thread_worker, zip(range(0, len(package_names)), package_names))
 
-    def efficient_scrape_thread_worker(self, indices, package_names):
+    def efficient_scrape_thread_worker(self, index, package_name):
         """
         thread worker for regular scrape function
         """
-        apps = self.get_metadata_for_apps(packages=package_names, bulk=True)[0]
-        logger.info("Apps {} to {} done for bulk scraping portion of efficient_scrape".format(
-            indices[0], indices[-1]))
+        apps = self.get_metadata_for_apps(packages=[package_name], bulk=True)[0]
 
-        good_names = []
-        good_indices = []
-        for i in range(0, len(apps)):
-            if apps[i] is not None:
-                good_names.append(package_names[i])
-                good_indices.append(indices[i])
+        good_name = None
+        good_index = None
+        if apps[0] is not None:
+            good_name = package_name
+            good_index = index
 
-        logger.info("Scraping {} good apps".format(len(good_names)))
-        self.scrape_thread_worker(good_indices, good_names)
+        if good_name is not None:
+            self.scrape_thread_worker(good_index, good_name)
 
     # ***************** #
     # bulk scraping related functions
@@ -89,31 +81,23 @@ class Scraper:
                 logger.error("An input file or a list of package names must be provided to scraper.")
                 return
 
-        chunk_size = 1000
-        indices = range(0, len(package_names))
-        for i in range(0, len(package_names), THREAD_NO * chunk_size):
-            for j in range(0, THREAD_NO):
-                _thread.start_new_thread(self.bulk_scrape_thread_worker, 
-                    (indices[(i + j * chunk_size):(i + (j+1) * chunk_size)],
-                     package_names[(i + j * chunk_size):(i + (j+1) * chunk_size)]))
+        with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
+            executor.map(self.bulk_scrape_thread_worker, zip(range(0, len(package_names)), package_names))
 
-    def bulk_scrape_thread_worker(self, indices, package_names):
+    def bulk_scrape_thread_worker(self, index, package_name):
         """
         Uses the bulk scraping function. Does 1000 apps at a time then loops and
         adds them all to the database if not already in the database.
         """
-        counter = -1
-        data = self.get_metadata_for_apps(package_names, bulk=True)[0] # first item is one from bulk
-        for package_name in package_names:
-            counter = counter + 1
-            if self.__db_helper.is_app_in_db(package_name):
-                continue
-            app = data[counter]
-            if app is None:
-                continue
-            self.__db_helper.insert_app_into_db(app)
+        data = self.get_metadata_for_apps([package_name], bulk=True)[0] # first item is one from bulk
+        if self.__db_helper.is_app_in_db(package_name):
+            return
+        app = data[0]
+        if app is None:
+            return
+        self.__db_helper.insert_app_into_db(app)
 
-        logger.info("Apps {} to {} bulk scraped\n".format(indices[0], indices[-1]))
+        logger.info("Apps {} bulk scraped\n".format(index))
 
     # ***************** #
     # regular scraping related functions
@@ -131,33 +115,27 @@ class Scraper:
                 logger.error("An input file or a list of package names must be provided to scraper.")
                 return
 
-        chunk_size = 1000
-        indices = range(0, len(package_names))
-        for i in range(0, len(package_names), THREAD_NO * chunk_size):
-            for j in range(0, THREAD_NO):
-                _thread.start_new_thread(self.scrape_thread_worker, 
-                    (indices[(i + j * chunk_size):(i + (j+1) * chunk_size)],
-                     package_names[(i + j * chunk_size):(i + (j+1) * chunk_size)]))
+        with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
+            executor.map(self.scrape_thread_worker, zip(range(0, len(package_names)), package_names))
 
-    def scrape_thread_worker(self, indices, package_names):
+    def scrape_thread_worker(self, index, package_name):
         """
         thread worker for regular scrape function
         """
-        for package_name in package_names:
-            if self.__db_helper.is_app_in_db(package_name):
-                logger.info("%s already in database, skipping" % package_name)
-                continue
-            app_details = self.get_metadata_for_apps([package_name])
-            app = app_details[0]
-            if app is None:
-                continue
+        if self.__db_helper.is_app_in_db(package_name):
+            logger.info("%s already in database, skipping" % package_name)
+            return
+        app_details = self.get_metadata_for_apps([package_name])
+        app = app_details[0]
+        if app is None:
+            return
 
-            self.__db_helper.insert_app_into_db(app[0],
-                app_details[1][0],
-                app_details[2][0],
-                True)
+        self.__db_helper.insert_app_into_db(app[0],
+            app_details[1][0],
+            app_details[2][0],
+            True)
 
-        logger.info("Apps {} to {} scraped\n".format(indices[0], indices[-1]))
+        logger.info("App {} scraped\n".format(index))
 
     def get_metadata_for_apps(self, packages, bulk=False):
         """

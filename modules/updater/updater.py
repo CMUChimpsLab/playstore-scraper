@@ -1,5 +1,8 @@
 import datetime
 import logging
+from concurrent.futures import ThreadPoolExecutor
+from functools import partial
+import pandas as pd
 
 from modules.scraper.scraper import Scraper
 from modules.database_helper.helper import DbHelper
@@ -15,8 +18,9 @@ class Updater:
     that have previously been scraped.
     """
 
-    def __init__(self):
+    def __init__(self, input_file=None):
         self.__db_helper = DbHelper()
+        self.input_file = input_file
 
     # ***************** #
     # bulk updating related functions
@@ -25,57 +29,51 @@ class Updater:
         """
         Uses bulk scraping to update apps much faster than before
         """
-        s = Scraper()
-
-        # dicts representing each app and info e.g. current version code, uuid, etc.
-        to_update = self.__db_helper.get_package_names_to_update(0)
-        apps = [app for i,app in to_update.iterrows()]
+        if self.input_file is None:
+            # dicts representing each app and info e.g. current version code, uuid, etc.
+            to_update = self.__db_helper.get_package_names_to_update(0)
+            apps = [app for i,app in to_update.iterrows()]
+        else:
+            apps = pd.read_csv(self.input_file).tolist()
         
+        s = Scraper()
         logger.info("Starting bulk update...")
-        chunk_size = 1000
-        indices = range(0, len(apps))
-        for i in range(0, len(apps), THREAD_NO * chunk_size):
-            for j in range(0, THREAD_NO):
-                _thread.start_new_thread(self.update_bulk_thread_worker, 
-                    (indices[(i + j * chunk_size):(i + (j+1) * chunk_size)],
-                     apps[(i + j * chunk_size):(i + (j+1) * chunk_size)]))
+        with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
+            return executor.map(partial(self.update_bulk_thread_worker, s), zip(range(0, len(apps)), apps))
 
-    def update_bulk_thread_worker(self, indices, apps):
+    def update_bulk_thread_worker(self, s, index, app):
         # bulk scrape to check for updates
-        metadata = s.get_metadata_for_apps([a['package_name'] for a in apps], bulk=True)
+        metadata = s.get_metadata_for_apps([app['package_name']], bulk=True)
         if metadata is None: # TODO why
             logger.error("can't find metadata for apps")
             return
 
         num_updated = 0
-        for app in apps:
-            new_app = metadata[c]
-            if new_app is None:
-                logger.error("no valid new_app")
-                continue
-            if new_app.package_name != app['package_name']: # TODO why
-                logger.error("mismatching package names")
-                continue
+        new_app = metadata[0]
+        if new_app is None:
+            logger.error("no valid new_app")
+            return
+        if new_app.package_name != app['package_name']: # TODO why
+            logger.error("mismatching package names")
+            return
 
-            # check version code to see if app is updated
-            updated = app['version_code'] != new_app.version_code
-            if updated:
-                curr = s.get_metadata_for_apps([app['package_name']])
-                if curr is None: # TODO why
-                    logger.error("can't find app")
-                    continue
+        # check version code to see if app is updated
+        updated = app['version_code'] != new_app.version_code
+        if updated:
+            curr = s.get_metadata_for_apps([app['package_name']])
+            if curr is None: # TODO why
+                logger.error("can't find app")
+                return
 
-                # scrape and insert new data
-                self.__db_helper.insert_app_into_db(curr[0]) 
-                num_updated = num_updated + 1
-                logger.info("Inserting %s into db (updated)" % app['package_name'])
-            else:
-                # no update so just update last scrape date
-                self.__db_helper.update_date_last_scraped_for_app(
-                    app['uuid'],
-                    datetime.datetime.utcnow().strftime("%Y%m%dT%H%M"))
-
-        logger.info("Processed apps {} to {}, updated {}".format(indices[0], indices[-1], num_updated))
+            # scrape and insert new data
+            self.__db_helper.insert_app_into_db(curr[0]) 
+            num_updated = num_updated + 1
+            logger.info("Inserting %s into db (updated)" % app['package_name'])
+        else:
+            # no update so just update last scrape date
+            self.__db_helper.update_date_last_scraped_for_app(
+                app['uuid'],
+                datetime.datetime.utcnow().strftime("%Y%m%dT%H%M"))
 
     # ***************** #
     # updating all related functions
@@ -85,29 +83,23 @@ class Updater:
         Updates all of the apps in the database
         """
         to_update = self.__db_helper.get_package_names_to_update(0)
-        chunk_size = 1000
-        indices = range(0, len(apps))
         apps = [app for i,app in to_update.iterrows()]
-        for i in range(0, len(apps), THREAD_NO * chunk_size):
-            for j in range(0, THREAD_NO):
-                _thread.start_new_thread(self.update_bulk_thread_worker, 
-                    (indices[(i + j * chunk_size):(i + (j+1) * chunk_size)],
-                     apps[(i + j * chunk_size):(i + (j+1) * chunk_size)]))
 
-    def update_all_thread_worker(self, indices, apps):
+        with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
+            return executor.map(self.update_all_thread_worker, zip(range(0, len(apps)), apps))
+
+    def update_all_thread_worker(self, index, app):
         """
         thread worker to updates apps, used by update_all_apps
         """
         s = Scraper()
-        for i in range(0, len(apps)):
-            app = apps[i]
-            new_metadata = s.get_metadata_for_apps([app['package_name']])[0]
-            updated = new_metadata.version_code != app['version_code']
-            if updated:
-                self.__db_helper.insert_app_into_db(new_metadata)
-            else:
-                self.__db_helper.update_date_last_scraped_for_app(app['uuid'],
-                    datetime.datetime.utcnow().strftime("%Y%m%dT%H%M"))
+        new_metadata = s.get_metadata_for_apps([app['package_name']])[0]
+        updated = new_metadata.version_code != app['version_code']
+        if updated:
+            self.__db_helper.insert_app_into_db(new_metadata)
+        else:
+            self.__db_helper.update_date_last_scraped_for_app(app['uuid'],
+                datetime.datetime.utcnow().strftime("%Y%m%dT%H%M"))
 
 if __name__ == '__main__':
     while True:

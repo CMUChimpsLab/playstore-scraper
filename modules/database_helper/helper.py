@@ -358,8 +358,7 @@ class DbHelper:
         #print "Rows affected after inserting permission - " + str (rows_affected)
 
     def insertLinkInfo (self, packagename, filename, link_url, is_external, triggered_by_code, externalpackagename):
-        if type(link_url) != unicode:
-            link_url = link_url.decode('UTF-8', 'ignore')
+        link_url = link_url.decode('UTF-8', 'ignore')
         self.__static_analysis_db.Test_linkurl.insert({
             'packagename': packagename,
             'filename': filename,

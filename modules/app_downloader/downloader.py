@@ -2,7 +2,8 @@ import datetime
 import os
 import logging
 import pandas as pd
-import _thread
+from concurrent.futures import ThreadPoolExecutor
+from functools import partial
 
 import dependencies.gplaycli.gplaycli as gplaycli
 from dependencies.constants import DOWNLOAD_FOLDER, THREAD_NO
@@ -43,13 +44,8 @@ class Downloader:
         haven't been downloaded, and downloads them.
         """
         apps = self.__database_helper.get_all_apps_to_download()
-
-        # chunk for passing into threads
-        chunk_size = 100
-        for i in range(0, len(apps), THREAD_NO * chunk_size):
-            for j in range(0, THREAD_NO):
-                _thread.start_new_thread(self.download, 
-                    (apps[(i + j * chunk_size):(i + (j+1) * chunk_size)]))
+        with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
+            return executor.map(self.download_thread_worker, apps)
 
     def download(self, apps_list, force_download=False):
         """
@@ -63,36 +59,43 @@ class Downloader:
             apps_list = self.__database_helper.get_filename_mappings(apps_list)
 
         downloaded_uuids = []
-        for index, app in enumerate(apps_list):
-            if isinstance(app, str):
-                app = [app, app]
+        for app in apps_list:
+            downloaded_uuids.append(partial(self.download_thread_worker, force_download)(app))
 
-            # Quick fix for adding file extensions to downloaded apps
-            app_extension = ".apk"
-            uuid = app[1]
-            if not app[1].endswith(app_extension):
-                app[1] += ".apk"
-
-            app_dir = uuid[0] + "/" + uuid[1]
-            downloaded_apps = os.listdir(self.__download_folder + "/" + app_dir)
-            if not force_download and app[1] in downloaded_apps:
-                logger.info("App already downloaded - %s" % app[0])
-                downloaded_uuids.append(uuid)
-                continue
-            try:
-                api = gplaycli.GPlaycli(config_file=self.__config_file)
-                api.set_download_folder(self.__download_folder + "/" + app_dir)
-                logger.info("Downloading app - {} as {}".format(app[0], app[1]))
-                api.download([app])
-                downloaded_uuids.append(uuid)
-                download_completion_time = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
-                if self.__use_database:
-                    self.__database_helper.set_download_date(uuid, download_completion_time)
-                del api
-            except Exception as e:
-                logger.error("Download failed - %s" % app[0])
-                logger.error(e)
         return downloaded_uuids
+
+    def download_thread_worker(self, force_download, app):
+        """
+        thread worker for downloading app
+        """
+        if isinstance(app, str):
+            app = [app, app]
+
+        # Quick fix for adding file extensions to downloaded apps
+        app_extension = ".apk"
+        uuid = app[1]
+        if not app[1].endswith(app_extension):
+            app[1] += ".apk"
+
+        app_dir = uuid[0] + "/" + uuid[1]
+        downloaded_apps = os.listdir(self.__download_folder + "/" + app_dir)
+        if not force_download and app[1] in downloaded_apps:
+            logger.info("App already downloaded - %s" % app[0])
+            return uuid
+        try:
+            api = gplaycli.GPlaycli(config_file=self.__config_file)
+            api.set_download_folder(self.__download_folder + "/" + app_dir)
+            logger.info("Downloading app - {} as {}".format(app[0], app[1]))
+            api.download([app])
+            download_completion_time = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
+            if self.__use_database:
+                self.__database_helper.set_download_date(uuid, download_completion_time)
+            del api
+        except Exception as e:
+            logger.error("Download failed - %s" % app[0])
+            logger.error(e)
+
+        return uuid
 
     def download_apps_from_file(self, filename):
         """
