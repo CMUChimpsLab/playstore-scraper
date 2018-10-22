@@ -136,7 +136,7 @@ def full_pipeline(args):
 
     s = None
     u = None
-    if fname == "":
+    if fname == None:
         # use crawler to get list of package names
         logger.error("Crawler for package names not implemented yet")
         return
@@ -145,8 +145,9 @@ def full_pipeline(args):
         s = Scraper(input_file=fname)
         u = Updater(input_file=fname)
 
-    if kickoff:
+    if kickoff == True:
         # use scraper
+        logger.info("Starting efficient scrape...")
         s.efficient_scrape()
     else:
         # use updater
@@ -244,23 +245,23 @@ fp_parser = subparsers.add_parser("full-pipeline",
     aliases=["fp"],
     help="entire app data and analysis pipeline",
     description="Entire pipeline from scraping data about apps to analysis of them")
-fp_parser.add_argument("kickoff", const=False, type=bool, help="true if is first run, false otherwise")
-fp_parser.add_argument("fname", const="", help="file name to scrape from, otherwise use crawler to get package names")
+fp_parser.add_argument("-k", "--kickoff", type=bool, help="true if is first run, false otherwise")
+fp_parser.add_argument("-f", "--fname", help="file name to scrape from, otherwise use crawler to get package names")
 fp_parser.set_defaults(func=full_pipeline)
 
 if __name__ == '__main__':
-    print(sys.argv[0])
-    logging.basicConfig(format='%(asctime)s [%(name)-12.12s] %(levelname)-8s %(message)s',
-                        level=logging.INFO)
-    logger = logging.getLogger(__name__)
-
     args = parser.parse_args()
-    subparser = args.pop("subparser_name")
+    subparser = args.subparser_name
     # now = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
     now = "DEBUG_NEW" # TEMP, TODO REMOVE
     logPath = "{}/{}/{}-{}.log".format(LOG_FOLDER, subparser, subparser, now)
-    if not os.path.exists(logPath):
-        os.makedirs(logPath)
-    logFileHandler = logging.FileHandler(logPath)
+    if not os.path.exists(os.path.dirname(logPath)):
+        os.makedirs(os.path.dirname(logPath))
+    #logFileHandler = logging.FileHandler(logPath)
+    #logger.addHandler(logFileHandler)
+    logging.basicConfig(format='%(asctime)s [%(name)-12.12s] %(levelname)-8s %(message)s',
+                        level=logging.INFO,
+                        filename=logPath)
+    logger = logging.getLogger(__name__)
 
     args.func(args)

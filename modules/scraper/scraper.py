@@ -2,7 +2,7 @@ import pandas as pd
 import logging
 import datetime
 import time
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from dependencies.app_object import App
 from .uuid_generator import generate_uuids
@@ -11,7 +11,7 @@ from dependencies.gpapidev.googleplay import RequestError
 import dependencies.gpapidev.utils as utils
 from dependencies.gplaycli import gplaycli
 from dependencies import GPLAYCLI_CONFIG_FILE_PATH
-from dependencies.constants import THREAD_NO
+from dependencies.constants import THREAD_NO, RESULT_CHUNK
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
@@ -47,12 +47,19 @@ class Scraper:
                 return
 
         with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
-            executor.map(self.efficient_scrape_thread_worker, zip(range(0, len(package_names)), package_names))
+            res = executor.map(self.efficient_scrape_thread_worker,
+                    zip(range(0, len(package_names)), package_names))
+            counter = 0
+            for future in as_completed(res):
+                if counter % RESULT_CHUNK == 0:
+                    logger.info("completed results {} to {}".format(counter - RESULT_CHUNK, counter))
 
-    def efficient_scrape_thread_worker(self, index, package_name):
+    def efficient_scrape_thread_worker(self, index_name_tuple):
         """
         thread worker for regular scrape function
         """
+        index = index_name_tuple[0]
+        package_name = index_name_tuple[1]
         apps = self.get_metadata_for_apps(packages=[package_name], bulk=True)[0]
 
         good_name = None
@@ -150,6 +157,7 @@ class Scraper:
             detail_data = api.get_doc_apk_details(packages, bulk=bulk)
         except RequestError as e:
             logger.error("Could not scrape {}. Reason - {}".format(packages, e.value))
+            return
         except Exception as e:
             logger.error("Non Request-Error problem occurred for {}. Reason - {}.".format(packages, e))
             logger.error("Sleeping for five seconds and continuing")
