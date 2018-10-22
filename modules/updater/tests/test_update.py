@@ -16,7 +16,7 @@ class TestUpdater(TestCase):
         os.system("touch "+self.__database_file)
         self.__proc = helper.start_scraper_server()
         self.__scraper = Scraper(database_file = self.__database_file, package_names = pd.Series([self.__test_app]))
-        self.__scraper.scrape_metadata_for_apps()
+        self.__scraper.s()
         helper.stop_scraper_server(self.__proc)
         self.__updater = None #since db_file read in at init, init later
         logging.basicConfig(format='%(asctime)s [%(name)-12.12s] %(levelname)-8s %(message)s',
@@ -69,7 +69,7 @@ class TestUpdater(TestCase):
     def testLarger(self):
         proc = helper.start_scraper_server()
         self.__scraper = Scraper(database_file = self.__database_file, package_names = pd.Series(self.__larger_test))
-        self.__scraper.scrape_metadata_for_apps()
+        self.__scraper.s()
         helper.stop_scraper_server(proc)
         df = pd.read_csv(self.__database_file)
         df.loc[0, 'updated'] = 100

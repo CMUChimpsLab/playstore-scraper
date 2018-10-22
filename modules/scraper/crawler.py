@@ -10,6 +10,8 @@ except ImportError:
 from dependencies.constants import CATEGORIES
 
 logger = logging.getLogger(__name__)
+logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                    level=logging.INFO)
 
 def scrape(s):
     """

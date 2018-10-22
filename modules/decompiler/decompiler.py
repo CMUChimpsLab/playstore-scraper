@@ -3,12 +3,15 @@ import os
 import datetime
 import logging
 import pandas as pd
+import multiprocessing
+from functools import partial
 
 import modules.database_helper.helper as dbhelper
-from dependencies.constants import DECOMPILE_FOLDER, DOWNLOAD_FOLDER
+from dependencies.constants import DECOMPILE_FOLDER, DOWNLOAD_FOLDER, PROCESS_NO
 
 logger = logging.getLogger(__name__)
-
+logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                    level=logging.INFO)
 
 class Decompiler:
     """
@@ -56,50 +59,52 @@ class Decompiler:
             # Here we want to only keep filenames which are top
             top_apps = set([i for i in file_names if self.__database_helper.is_uuid_top(i[:-len(app_extension)])])
 
-        decompile_completion_time = []
-        try:
-            for fname in file_names:
-                app_dir = "/" + fname[0] + "/" + fname[1]
-                decompiled_apps = os.listdir(self.__decompile_folder + "/" + fname[0])
-                downloaded_apps = os.listdir(self.__download_folder + app_dir)
-                if fname not in top_apps:
-                    logger.info("File {} not a top app, not decompiling".format(fname))
-                    decompile_completion_time.append(None)
-                    continue
-                elif not force_decompile and fname[:-len(app_extension)] in decompiled_apps:
-                    logger.info("File %s already decompiled" % fname)
-                    decompile_completion_time.append(None)
-                    continue
-                elif not force_decompile and (fname[:-len(app_extension)] + '.zip') in decompiled_apps:
-                    logger.info("File %s already decompiled and compressed" % fname)
-                    decompile_completion_time.append(None)
-                    continue
-                elif fname not in downloaded_apps:
-                    logger.error("File %s not found" % fname)
-                    decompile_completion_time.append(None)
-                    continue
+        p = multiprocessing.Pool(PROCESS_NO)
+        decompile_completion_times = []
+        partial_arg_worker = partial(self.decompile_process_worker, force_decompile, top_apps)
+        for decomp_time in p.imap(partial_arg_worker, file_names):
+            decompile_completion_times.append(decomp_time)
 
-                logger.info("Decompiling into - %s" % self.__decompile_folder + "/" + fname[0])
-                app_file_path = '/'.join([self.__download_folder + app_dir, fname])
-                decompile_destination_path = '/'.join([self.__decompile_folder,
-                    fname[0], fname[:-len(app_extension)]])
-                cmd = self.__decompile_command.format(app_file_path, decompile_destination_path)
-                with open(os.devnull, 'w') as fp:
-                    p = subprocess.run(cmd.split(), stdout=fp, stderr=fp)
-                if not p or p.returncode != 0:
-                    logger.error("Nonzero exit code received for %s" % fname)
-                    decompile_completion_time.append(None)
-                else:
-                    logger.info("Decompiled {} into {}".format(app_file_path, decompile_destination_path))
-                    decompile_completion_time.append(datetime.datetime.utcnow().strftime("%Y%m%dT%H%M"))
-                    if self.__compress:
-                        self.compress_storage([fname[:-len(app_extension)]])
+        return decompile_completion_times
+
+    def decompile_process_worker(self, force_decompile, top_apps, fname):
+        app_extension = '.apk'
+        try:
+            app_dir = "/" + fname[0] + "/" + fname[1]
+            decompiled_apps = os.listdir(self.__decompile_folder + "/" + fname[0])
+            downloaded_apps = os.listdir(self.__download_folder + app_dir)
+            if fname not in top_apps:
+                logger.info("File {} not a top app, not decompiling".format(fname))
+                return None
+            elif not force_decompile and fname[:-len(app_extension)] in decompiled_apps:
+                logger.info("File %s already decompiled" % fname)
+                return None
+            elif not force_decompile and (fname[:-len(app_extension)] + '.zip') in decompiled_apps:
+                logger.info("File %s already decompiled and compressed" % fname)
+                return None
+            elif fname not in downloaded_apps:
+                logger.error("File %s not found" % fname)
+                return None
+
+            logger.info("Decompiling into - %s" % self.__decompile_folder + "/" + fname[0])
+            app_file_path = '/'.join([self.__download_folder + app_dir, fname])
+            decompile_destination_path = '/'.join([self.__decompile_folder,
+                fname[0], fname[:-len(app_extension)]])
+            cmd = self.__decompile_command.format(app_file_path, decompile_destination_path)
+            with open(os.devnull, 'w') as fp:
+                p = subprocess.run(cmd.split(), stdout=fp, stderr=fp)
+            if not p or p.returncode != 0:
+                logger.error("Nonzero exit code received for %s" % fname)
+                return None
+            else:
+                logger.info("Decompiled {} into {}".format(app_file_path, decompile_destination_path))
+                if self.__compress:
+                    self.compress_storage([fname[:-len(app_extension)]])
+                return datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
         except Exception as e:
             logger.error("Decompile failed - %s" % fname)
             logger.error(e)
-            decompile_completion_time.append(None)
-
-        return decompile_completion_time
+            return None
 
     def decompile_apps_from_file(self, filename):
         """
@@ -148,7 +153,5 @@ class Decompiler:
         os.chdir(a)
 
 
-if __name__ == '__main__':
-    logging.basicConfig(format='%(asctime)s [%(name)-12.12s] %(levelname)-8s %(message)s',
-                        level=logging.INFO)
+# if __name__ == '__main__':
     # TODO Add cli functionality (to be addressed later)

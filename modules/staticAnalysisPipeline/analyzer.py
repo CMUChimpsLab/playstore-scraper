@@ -26,7 +26,7 @@ import playstoreAnalysis.src.analyze as analyze
 import crowdAnalysis.topApps.getSensitivePairs as getSensitivePairs
 import crowdAnalysis.topApps.getSummedScore as getSummedScore
 from modules.database_helper.helper import DbHelper
-
+from dependencies.constants import PROCESS_NO
 
 def staticAnalysis((apkEntry, outputPath)):
     logger = get_logger()
@@ -106,8 +106,7 @@ def analyzer(apkList):
 
     # run static analysis part
     apkList = [(entry, outputPath) for entry in apkList]
-    numberOfProcess = 1
-    pool = Pool(numberOfProcess)
+    pool = Pool(PROCESS_NO)
     for package_name in pool.imap(staticAnalysis, apkList):
         print package_name
         if package_name != "":

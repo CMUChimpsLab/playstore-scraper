@@ -12,7 +12,8 @@ import dependencies.constants as constants
 from modules.database_helper.util import details_to_dict
 
 logger = logging.getLogger(__name__)
-
+logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                    level=logging.INFO)
 
 class DbHelper:
     def __init__(self):

@@ -38,9 +38,9 @@ Contianed in scraper folder, mainly contianed in `scraper.py`. The scraper will 
 ```python
 s = Scraper(input_file='package_names.csv')
 ```
-Then, run `scrape_metadata_for_apps` with the options you wish, for default do:
+Then, run `scrape_apps` with the options you wish, for default do:
 ```python
-s.scrape_metadata_for_apps()
+s.scrape_apps()
 ```
 The broad purpose of the scraper is to keep updated metadata for each app when a new version is released and also is used by the updater to see when a new version has been released.
 

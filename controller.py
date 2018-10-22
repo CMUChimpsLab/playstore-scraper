@@ -12,6 +12,8 @@ from modules.decompiler.decompiler import Decompiler
 from modules.pipeline.analyzer import analyze
 
 logger = logging.getLogger(__name__)
+logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                    level=logging.INFO)
 
 class Controller:
     """

@@ -2,16 +2,18 @@ import datetime
 import os
 import logging
 import pandas as pd
+import _thread
 
 import dependencies.gplaycli.gplaycli as gplaycli
-from dependencies.constants import DOWNLOAD_FOLDER
+from dependencies.constants import DOWNLOAD_FOLDER, THREAD_NO
 from dependencies.app_object import App
 import modules.scraper.uuid_generator as uuid_generator
 from modules.database_helper.helper import DbHelper
 from dependencies import GPLAYCLI_CONFIG_FILE_PATH
 
 logger = logging.getLogger(__name__)
-
+logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                    level=logging.INFO)
 
 class Downloader:
     """
@@ -41,10 +43,13 @@ class Downloader:
         haven't been downloaded, and downloads them.
         """
         apps = self.__database_helper.get_all_apps_to_download()
-        # If I don't chunk, it dies
-        apps_chunked = [apps[i:i+10] for i in range(0, len(apps), 10)]
-        for chunk in apps_chunked:
-            self.download(chunk)
+
+        # chunk for passing into threads
+        chunk_size = 100
+        for i in range(0, len(apps), THREAD_NO * chunk_size):
+            for j in range(0, THREAD_NO):
+                _thread.start_new_thread(self.download, 
+                    (apps[(i + j * chunk_size):(i + (j+1) * chunk_size)]))
 
     def download(self, apps_list, force_download=False):
         """
@@ -120,6 +125,4 @@ def main():
 
 
 if __name__ == '__main__':
-    logging.basicConfig(format='%(asctime)s [%(name)-12.12s] %(levelname)-8s %(message)s',
-                        level=logging.INFO)
     main()
