@@ -300,9 +300,13 @@ class DbHelper:
         self.__top_apps.update_many({}, {'$set': {'currently_top': False}})
         new_top_list = crawler.get_top_apps_list()
         for name in new_top_list:
-            self.__top_apps.update_one({'_id': name}, {'$set': {'_id': name, 'currently_top': True}}, upsert=True)
+            self.__top_apps.update_one({'_id': name}, 
+                {'$set': {'_id': name, 'currently_top': True}},
+                upsert=True)
+                
         # Also update top field in main db
-        self.__apk_info_collection.update_many({'package_name': {'$in': new_top_list}}, {'$set': {'has_been_top': True}})
+        self.__apk_info_collection.update_many({'package_name': {'$in': new_top_list}}, 
+            {'$set': {'has_been_top': True}})
 
     def get_top_apps(self):
         """

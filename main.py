@@ -62,7 +62,12 @@ def download_decompile_all():
     """
     Downloads all not downloaded apps, then decompiles all that are a top app
     """
+    d = Downloader()
+    downloaded_uuids = d.download_all_from_db()
+    print(downloaded_uuids) #TODO remove
 
+    dec = Decompiler(use_database=True, compress=True)
+    dec.decompile(downloaded_uuids)
 
 # ***************** #
 # smaller CLI command functions
@@ -133,6 +138,10 @@ def analyze(args):
 def full_pipeline(args):
     kickoff = args.kickoff
     fname = args.fname
+
+    # start by updating top apps
+    d = DbHelper()
+    d.update_top_apps()
 
     s = None
     u = None

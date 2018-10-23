@@ -39,9 +39,7 @@ class Decompiler:
             logger.error("Downloaded Apps Folder %s does not exist" % self.__download_folder)
 
         self.__use_database = use_database
-        if self.__use_database:
-            # self.__database_file = database_file
-            self.__database_helper = dbhelper.DbHelper()
+        self.__database_helper = dbhelper.DbHelper()
 
     def decompile(self, file_names, force_decompile=False):
         """
@@ -55,10 +53,8 @@ class Decompiler:
         app_extension = '.apk'
         file_names = [f if f.endswith(app_extension) else f + app_extension for f in file_names]
 
-        top_apps = set()
-        if self.__use_database:
-            # Here we want to only keep filenames which are top
-            top_apps = set([i for i in file_names if self.__database_helper.is_uuid_top(i[:-len(app_extension)])])
+        # only want to decompile filenames which are top
+        top_apps = set([i for i in file_names if self.__database_helper.is_uuid_top(i[:-len(app_extension)])])
 
         multiprocessing_logging.install_mp_handler(logger)
         p = multiprocessing.Pool(PROCESS_NO)
