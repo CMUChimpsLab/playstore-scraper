@@ -5,6 +5,7 @@ import logging
 import pandas as pd
 import multiprocessing
 from functools import partial
+import multiprocessing_logging
 
 import modules.database_helper.helper as dbhelper
 from dependencies.constants import DECOMPILE_FOLDER, DOWNLOAD_FOLDER, PROCESS_NO
@@ -59,6 +60,7 @@ class Decompiler:
             # Here we want to only keep filenames which are top
             top_apps = set([i for i in file_names if self.__database_helper.is_uuid_top(i[:-len(app_extension)])])
 
+        multiprocessing_logging.install_mp_handler(logger)
         p = multiprocessing.Pool(PROCESS_NO)
         decompile_completion_times = []
         partial_arg_worker = partial(self.decompile_process_worker, force_decompile, top_apps)

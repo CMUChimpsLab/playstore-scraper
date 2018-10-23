@@ -15,6 +15,7 @@ pprint = "*"
 docker = "*"
 airflow = "*"
 pycrypto = "*"
+multiprocessing-logging = "*"
 
 [dev-packages]
 

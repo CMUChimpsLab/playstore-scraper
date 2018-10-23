@@ -3,6 +3,8 @@ import datetime
 import os
 from multiprocessing import Pool, get_logger
 import traceback
+import multiprocessing_logging
+from functools import partial
 
 # sys path hacking to import from other repos
 import sys
@@ -28,8 +30,7 @@ import crowdAnalysis.topApps.getSummedScore as getSummedScore
 from modules.database_helper.helper import DbHelper
 from dependencies.constants import PROCESS_NO, LOG_FOLDER
 
-def staticAnalysis((apkEntry, outputPath)):
-    logger = get_logger()
+def staticAnalysis(logger, (apkEntry, outputPath)):
     dbHelper = DbHelper()
     packageName = dbHelper.app_uuid_to_name(apkEntry['uuid'])
     try:
@@ -99,7 +100,7 @@ def analyzer(apkList):
     dbHelper.insertPermissionInfo('testpackage', 'testfilename', 'testpermission', True, 'testdest', 'testexternalpackagename', 'testsrc')
     dbHelper.insertLinkInfo('testpackage', 'testfilename', 'testlink', True, 'testdest', 'testexternalpackagename')
     '''
-    logger = get_logger()
+    logger = get_logger(__name__)
     logFileHandler = logging.FileHandler(logPath)
     logFormat = logging.Formatter("%(levelname)s - %(asctime)s %(funcName)s - %(message)s")
     logFileHandler.setLevel(logging.DEBUG)

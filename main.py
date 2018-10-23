@@ -6,9 +6,9 @@ from concurrent.futures import ThreadPoolExecutor
 import argparse
 import threading
 import datetime
+import multiprocessing_logging
 
 from modules.scraper.scraper import Scraper
-from controller import Controller
 from modules.app_downloader.downloader import Downloader
 from modules.decompiler.decompiler import Decompiler
 from modules.scraper import crawler
@@ -286,5 +286,6 @@ if __name__ == '__main__':
         "disable_existing_loggers": False,
     })
     logger = logging.getLogger(__name__)
+    multiprocessing_logging.install_mp_handler(logger)
 
     args.func(args)
