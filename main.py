@@ -1,5 +1,5 @@
 import os, sys
-import logging
+import logging.config
 import pandas as pd
 import subprocess
 from concurrent.futures import ThreadPoolExecutor
@@ -257,22 +257,25 @@ if __name__ == '__main__':
     logPath = "{}/{}/{}-{}.log".format(LOG_FOLDER, subparser, subparser, now)
     if not os.path.exists(os.path.dirname(logPath)):
         os.makedirs(os.path.dirname(logPath))
-    #logFileHandler = logging.FileHandler(logPath)
-    #logger.addHandler(logFileHandler)
     logging.config.dictConfig({
         "version": 1,
         "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "formatter": "simpleFormatter",
+                "level": "INFO",
+            },
             "file": {
                 "class": "logging.FileHandler",
                 "filename": logPath,
                 "mode": "w",
                 "level": "INFO",
                 "formatter": "simpleFormatter",
-            }
+            },
         },
         "formatters": {
             "simpleFormatter": {
-                "format": "%(asctime)s [%(name)-12.12s] %(levelname)-8s %(message)s",
+                "format": "%(asctime)s [%(name)] %(levelname)-8s %(message)s",
                 "datefmt": "%d/%m/%Y %H:%M:%S",
             }
         },
@@ -280,6 +283,7 @@ if __name__ == '__main__':
             "level": "INFO",
             "handlers": ["console", "file"],
         },
+        "disable_existing_loggers": False,
     })
     logger = logging.getLogger(__name__)
 
