@@ -149,17 +149,27 @@ def full_pipeline(args):
         # use scraper
         logger.info("Starting efficient scrape...")
         s.efficient_scrape()
+        logger.info("...efficient scrape done")
     else:
         # use updater
+        logger.info("Starting updater...")
         u.update_apps_bulk()
+        logger.info("...update done")
 
-    # with metadata added, can do download/decompile and static analysis simultaneously
+    # download/decompile
+    logger.info("Starting download and decompile...")
     dd_thread = threading.Thread(target=download_decompile_all)
-    analysis_thread = threading.Thread(target=analyze, args=(None))
     dd_thread.start()
-    analysis_thread.start()
     dd_thread.join()
+    logger.info("...download and decompile done")
+
+    # static analysis
+    logger.info("Starting analysis...")
+    analysis_thread = threading.Thread(target=analyze, args=([None]))
+    os.environ["PIPENV_IGNORE_VIRTUALENVS"] = "1" # allow analysis pipeline to have own env
+    analysis_thread.start()
     analysis_thread.join()
+    logger.info("...analysis done")
 
 # ***************** #
 # set up CLI argparser
@@ -245,13 +255,15 @@ fp_parser = subparsers.add_parser("full-pipeline",
     aliases=["fp"],
     help="entire app data and analysis pipeline",
     description="Entire pipeline from scraping data about apps to analysis of them")
-fp_parser.add_argument("-k", "--kickoff", type=bool, help="true if is first run, false otherwise")
+fp_parser.add_argument("-k", "--kickoff", action="store_true", help="true if is first run, false otherwise")
 fp_parser.add_argument("-f", "--fname", help="file name to scrape from, otherwise use crawler to get package names")
 fp_parser.set_defaults(func=full_pipeline)
 
 if __name__ == '__main__':
     args = parser.parse_args()
     subparser = args.subparser_name
+
+    # configure logger so that all subsequent loggers point to same file
     # now = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
     now = "DEBUG_NEW" # TEMP, TODO REMOVE
     logPath = "{}/{}/{}-{}.log".format(LOG_FOLDER, subparser, subparser, now)

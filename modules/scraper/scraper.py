@@ -2,7 +2,7 @@ import pandas as pd
 import logging
 import datetime
 import time
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor
 
 from dependencies.app_object import App
 from .uuid_generator import generate_uuids
@@ -50,18 +50,22 @@ class Scraper:
             res = executor.map(self.efficient_scrape_thread_worker,
                     zip(range(0, len(package_names)), package_names))
             counter = 0
-            for future in as_completed(res):
+            for future in res:
                 if counter % RESULT_CHUNK == 0:
                     logger.info("completed results {} to {}".format(counter - RESULT_CHUNK, counter))
+                counter += 1
 
     def efficient_scrape_thread_worker(self, index_name_tuple):
         """
-        thread worker for regular scrape function
+        thread worker for efficient scrape function
         """
         index = index_name_tuple[0]
         package_name = index_name_tuple[1]
-        apps = self.get_metadata_for_apps(packages=[package_name], bulk=True)[0]
+        if self.__db_helper.is_app_in_db(package_name):
+            logger.info("%s already in database, skipping efficient" % package_name)
+            return
 
+        apps = self.get_metadata_for_apps(packages=[package_name], bulk=True)[0]
         good_name = None
         good_index = None
         if apps[0] is not None:
@@ -96,9 +100,11 @@ class Scraper:
         Uses the bulk scraping function. Does 1000 apps at a time then loops and
         adds them all to the database if not already in the database.
         """
-        data = self.get_metadata_for_apps([package_name], bulk=True)[0] # first item is one from bulk
         if self.__db_helper.is_app_in_db(package_name):
+            logger.info("%s already in database, skipping bulk" % package_name)
             return
+
+        data = self.get_metadata_for_apps([package_name], bulk=True)[0] # first item is one from bulk
         app = data[0]
         if app is None:
             return
@@ -130,19 +136,21 @@ class Scraper:
         thread worker for regular scrape function
         """
         if self.__db_helper.is_app_in_db(package_name):
-            logger.info("%s already in database, skipping" % package_name)
+            logger.info("%s already in database, skipping scrape" % package_name)
             return
+
         app_details = self.get_metadata_for_apps([package_name])
-        app = app_details[0]
-        if app is None:
-            return
+        if app_details is not None:
+            app = app_details[0]
+            if app is None:
+                return
 
-        self.__db_helper.insert_app_into_db(app[0],
-            app_details[1][0],
-            app_details[2][0],
-            True)
+            self.__db_helper.insert_app_into_db(app[0],
+                app_details[1][0],
+                app_details[2][0],
+                True)
 
-        logger.info("App {} scraped\n".format(index))
+            logger.info("App {} scraped\n".format(index))
 
     def get_metadata_for_apps(self, packages, bulk=False):
         """

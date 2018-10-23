@@ -12,10 +12,10 @@ requests = "*"
 pyaxmlparser = "*"
 pymongo = "*"
 pprint = "*"
+multiprocessing-logging = "*"
 docker = "*"
 airflow = "*"
 pycrypto = "*"
-multiprocessing-logging = "*"
 
 [dev-packages]
 

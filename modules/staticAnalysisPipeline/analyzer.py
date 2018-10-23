@@ -1,10 +1,9 @@
 import logging
 import datetime
 import os
-from multiprocessing import Pool, get_logger
+from multiprocessing import Pool
 import traceback
 import multiprocessing_logging
-from functools import partial
 
 # sys path hacking to import from other repos
 import sys
@@ -30,8 +29,10 @@ import crowdAnalysis.topApps.getSummedScore as getSummedScore
 from modules.database_helper.helper import DbHelper
 from dependencies.constants import PROCESS_NO, LOG_FOLDER
 
-def staticAnalysis(logger, (apkEntry, outputPath)):
+def staticAnalysis((apkEntry, outputPath)):
+    logger = logging.getLogger(__name__)
     dbHelper = DbHelper()
+
     packageName = dbHelper.app_uuid_to_name(apkEntry['uuid'])
     try:
         outputPath = outputPath + '/'
@@ -100,19 +101,13 @@ def analyzer(apkList):
     dbHelper.insertPermissionInfo('testpackage', 'testfilename', 'testpermission', True, 'testdest', 'testexternalpackagename', 'testsrc')
     dbHelper.insertLinkInfo('testpackage', 'testfilename', 'testlink', True, 'testdest', 'testexternalpackagename')
     '''
-    logger = get_logger(__name__)
-    logFileHandler = logging.FileHandler(logPath)
-    logFormat = logging.Formatter("%(levelname)s - %(asctime)s %(funcName)s - %(message)s")
-    logFileHandler.setLevel(logging.DEBUG)
-    logFileHandler.setFormatter(logFormat)
-    logger.addHandler(logFileHandler)
-    logger.setLevel(logging.DEBUG)
+    logger = logging.getLogger(__name__)
 
     # run static analysis part
     apkList = [(entry, outputPath) for entry in apkList]
     multiprocessing_logging.install_mp_handler(logger)
     pool = Pool(PROCESS_NO)
-    for package_name in pool.imap(partial(staticAnalysis, logger), apkList):
+    for package_name in pool.imap(staticAnalysis, apkList):
         print package_name
         if package_name != "":
             analyzedApkFile.write(package_name + '\n')
