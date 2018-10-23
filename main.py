@@ -275,7 +275,7 @@ if __name__ == '__main__':
         },
         "formatters": {
             "simpleFormatter": {
-                "format": "%(asctime)s [%(name)] %(levelname)-8s %(message)s",
+                "format": "%(asctime)s [%(name)s] %(levelname)-8s %(message)s",
                 "datefmt": "%d/%m/%Y %H:%M:%S",
             }
         },

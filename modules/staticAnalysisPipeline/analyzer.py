@@ -110,8 +110,9 @@ def analyzer(apkList):
 
     # run static analysis part
     apkList = [(entry, outputPath) for entry in apkList]
+    multiprocessing_logging.install_mp_handler(logger)
     pool = Pool(PROCESS_NO)
-    for package_name in pool.imap(staticAnalysis, apkList):
+    for package_name in pool.imap(partial(staticAnalysis, logger), apkList):
         print package_name
         if package_name != "":
             analyzedApkFile.write(package_name + '\n')
