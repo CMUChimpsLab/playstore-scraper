@@ -1,7 +1,12 @@
 import logging
 import time
-import urllib
-from concurrent.futures import ThreadPoolExecutor
+
+# fix import errors from using python2 for analysis pipeline
+try:
+    import urllib
+    from concurrent.futures import ThreadPoolExecutor
+except ImportError:
+    pass
 
 from dependencies.constants import CATEGORIES, THREAD_NO
 
@@ -35,8 +40,9 @@ def get_top_apps_list():
         res = executor.map(top_app_crawl_thread_worker, CATEGORIES)
         for r in res:
             pkg_list.extend(r)
+            pkg_list = list(set(pkg_list))
 
-    return list(set(pkg_list))
+    return pkg_list
 
 def top_app_crawl_thread_worker(cat):
     # have to get 0 -> 100 then 100 -> 199 then 199 -> 318 (google doesn't like
@@ -45,6 +51,8 @@ def top_app_crawl_thread_worker(cat):
     nums = [120, 79, 120]
     free = ['free', 'paid']
     url = 'https://play.google.com/store/apps/category/{}/collection/topselling_{}?hl=en&gl=us&start={}&num={}'
+    pkg_list = []
+    curr_list = []
     for f in free:
         for start, num in zip(starts, nums):
             newurl = url.format(cat, f, start, num)
@@ -53,25 +61,24 @@ def top_app_crawl_thread_worker(cat):
                     l = urllib.request.urlopen(newurl).read()
                     l = l.decode('utf-8')
                     p = scrape(l)
-                    logger.info("Apps found for category {} is {}".format(cat, len(list(set(p)))))
 
-                    pkg_list = pkg_list + scrape(l)
+                    curr_list.extend(list(set(scrape(l))))
+                    break
                 except urllib.error.HTTPError as e:
                     if e.code == 404:
                         # not valid
-                        logger.error("Category {} with {} apps not valid")
-                        continue
+                        logger.error("Category {}, {} - {} {} not valid".format(cat, f, start, num))
+                        break
                     elif e.code == 500:
                         # no more items that match
-                        continue
+                        break
                     elif e.code == 429:
                         # hit rate limit so sleep
                         logger.error("hit rate limit, sleeping")
                         time.sleep(5)
                         continue
-                break
 
-        pkg_list = list(set(pkg_list))
-        logger.info("Category {} {} apps done".format(cat, f))
+        logger.info("Category {} {} done, {} apps".format(cat, f, len(curr_list)))
+        pkg_list.extend(curr_list)
     return pkg_list
 

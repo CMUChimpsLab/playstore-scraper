@@ -2,17 +2,141 @@ import subprocess
 import os
 import datetime
 import logging
+import pickle
 import pandas as pd
 import multiprocessing
 from functools import partial
 import multiprocessing_logging
+import copyreg
+import types
 
 import modules.database_helper.helper as dbhelper
 from dependencies.constants import DECOMPILE_FOLDER, DOWNLOAD_FOLDER, PROCESS_NO
 
+def _pickle_method(method):
+    func_name = method.im_func.__name__
+    obj = method.im_self
+    cls = method.im_class
+    if func_name.startswith('__') and not func_name.endswith('__'): #deal with mangled names
+        cls_name = cls.__name__.lstrip('_')
+        func_name = '_' + cls_name + func_name
+    return _unpickle_method, (func_name, obj, cls)
+def _unpickle_method(func_name, obj, cls):
+    for cls in cls.__mro__:
+        try:
+            func = cls.__dict__[func_name]
+        except KeyError:
+            pass
+        else:
+            break
+    return func.__get__(obj, cls)
+copyreg.pickle(types.MethodType, _pickle_method, _unpickle_method)
+
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     level=logging.INFO)
+
+def decompile_process_worker(force_decompile, top_apps, fname):
+    """
+    Process worker to actually decompile the apps
+    defined at global scope to make pickle-friendly
+    """
+    app_extension = '.apk'
+    try:
+        app_dir = "/" + fname[0] + "/" + fname[1]
+        decompiled_apps = os.listdir(DECOMP_FOLDER + "/" + fname[0])
+        downloaded_apps = os.listdir(DOWN_FOLDER + app_dir)
+        if fname not in top_apps:
+            logger.info("File {} not a top app, not decompiling".format(fname))
+            return None
+        elif not force_decompile and fname[:-len(app_extension)] in decompiled_apps:
+            logger.info("File %s already decompiled" % fname)
+            return None
+        elif not force_decompile and (fname[:-len(app_extension)] + '.zip') in decompiled_apps:
+            logger.info("File %s already decompiled and compressed" % fname)
+            return None
+        elif fname not in downloaded_apps:
+            logger.error("File %s not found" % fname)
+            return None
+
+        logger.info("Decompiling into - %s" % DECOMP_FOLDER + "/" + fname[0])
+        app_file_path = '/'.join([DOWN_FOLDER + app_dir, fname])
+        decompile_destination_path = '/'.join([DECOMP_FOLDER,
+            fname[0], fname[:-len(app_extension)]])
+        cmd = DECOMP_CMD.format(app_file_path, decompile_destination_path)
+        with open(os.devnull, 'w') as fp:
+            p = subprocess.run(cmd.split(), stdout=fp, stderr=fp)
+        if not p or p.returncode != 0:
+            logger.error("Nonzero exit code received for %s" % fname)
+            return None
+        else:
+            logger.info("Decompiled {} into {}".format(app_file_path, decompile_destination_path))
+            if COMPRESS:
+                compress_storage([fname[:-len(app_extension)]])
+            return datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
+    except Exception as e:
+        logger.error("Decompile failed - %s" % fname)
+        logger.error(e)
+        return None
+
+def compress_storage(file_names, suffix_to_keep=['.xml', '.smali']):
+    """
+    This function takes the filenames, removes all files except the ones
+    with endings specified below (currently .xml and .smali), and then
+    zips them, all as a space-conserving mechanism.
+    defined at global scope to make pickle-friendly
+    """
+    a = os.getcwd()
+    os.chdir(DECOMP_FOLDER)
+    for i in file_names:
+        os.chdir(i[0] + "/" + i)
+        with open(os.devnull, 'w') as fp:
+            # delete files that don't have a matching suffix
+            del_non_suffix_cmd = ["find ", ". ", "-type ", "f ", "! ", "\( "]
+            for s_i in range(0, len(suffix_to_keep) - 1):
+                del_non_suffix_cmd.extend(["-iname ", "'*{}' ".format(suffix_to_keep[s_i]), "-o "])
+            del_non_suffix_cmd.extend(["-iname ", "'*{}' ".format(suffix_to_keep[-1]), "\) ", "-delete"])
+            res = subprocess.run("".join(del_non_suffix_cmd),
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.PIPE,
+                shell=True)
+            if res.returncode != 0:
+                logger.error("{}".format(res.stderr))
+                return
+            logger.info("...{} - done deleting non-needed files".format(i))
+
+            # delete any now-empty directories
+            del_empty_dir_cmd = ["find ", ". ", "-type ", "d ", "-empty ", "-delete"]
+            res = subprocess.run("".join(del_empty_dir_cmd),
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.PIPE,
+                shell=True)
+            if res.returncode != 0:
+                logger.error("{}".format(res.stderr))
+                return
+            logger.info("...{} - done deleting empty dirs".format(i))
+
+            # zip and remove zipped directory
+            os.chdir("..")
+            zip_cmd = ["zip ", "-r ", "{}.zip ".format(i), "{}".format(i)]
+            logger.info("sanity check {}".format("".join(zip_cmd)))
+            res = subprocess.run("".join(zip_cmd),
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.PIPE,
+                shell=True)
+            if res.returncode != 0:
+                logger.error("{}".format(res.stderr))
+                return
+            logger.info("...{} - done zipping".format(i))
+
+            rm_zipped_dir_cmd = ["rm ", "-rf ", "{}".format(i)]
+            res = subprocess.run("".join(rm_zipped_dir_cmd), stderr=subprocess.PIPE, shell=True)
+            if res.returncode != 0:
+                logger.error("{}".format(res.stderr))
+                return
+            logger.info("...{} - done removing original dir".format(i))
+
+    os.chdir(a)
 
 class Decompiler:
     """
@@ -56,53 +180,21 @@ class Decompiler:
         # only want to decompile filenames which are top
         top_apps = set([i for i in file_names if self.__database_helper.is_uuid_top(i[:-len(app_extension)])])
 
+        global DECOMP_FOLDER
+        global DOWN_FOLDER
+        global DECOMP_CMD
+        global COMPRESS
+        DECOMP_FOLDER = self.__decompile_folder
+        DOWN_FOLDER = self.__download_folder
+        DECOMP_CMD = self.__decompile_command
+        COMPRESS = self.__compress
         multiprocessing_logging.install_mp_handler(logger)
         p = multiprocessing.Pool(PROCESS_NO)
         decompile_completion_times = []
-        partial_arg_worker = partial(self.decompile_process_worker, force_decompile, top_apps)
-        for decomp_time in p.imap(partial_arg_worker, file_names):
+        for decomp_time in p.imap(partial(decompile_process_worker, force_decompile, top_apps), file_names):
             decompile_completion_times.append(decomp_time)
 
         return decompile_completion_times
-
-    def decompile_process_worker(self, force_decompile, top_apps, fname):
-        app_extension = '.apk'
-        try:
-            app_dir = "/" + fname[0] + "/" + fname[1]
-            decompiled_apps = os.listdir(self.__decompile_folder + "/" + fname[0])
-            downloaded_apps = os.listdir(self.__download_folder + app_dir)
-            if fname not in top_apps:
-                logger.info("File {} not a top app, not decompiling".format(fname))
-                return None
-            elif not force_decompile and fname[:-len(app_extension)] in decompiled_apps:
-                logger.info("File %s already decompiled" % fname)
-                return None
-            elif not force_decompile and (fname[:-len(app_extension)] + '.zip') in decompiled_apps:
-                logger.info("File %s already decompiled and compressed" % fname)
-                return None
-            elif fname not in downloaded_apps:
-                logger.error("File %s not found" % fname)
-                return None
-
-            logger.info("Decompiling into - %s" % self.__decompile_folder + "/" + fname[0])
-            app_file_path = '/'.join([self.__download_folder + app_dir, fname])
-            decompile_destination_path = '/'.join([self.__decompile_folder,
-                fname[0], fname[:-len(app_extension)]])
-            cmd = self.__decompile_command.format(app_file_path, decompile_destination_path)
-            with open(os.devnull, 'w') as fp:
-                p = subprocess.run(cmd.split(), stdout=fp, stderr=fp)
-            if not p or p.returncode != 0:
-                logger.error("Nonzero exit code received for %s" % fname)
-                return None
-            else:
-                logger.info("Decompiled {} into {}".format(app_file_path, decompile_destination_path))
-                if self.__compress:
-                    self.compress_storage([fname[:-len(app_extension)]])
-                return datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
-        except Exception as e:
-            logger.error("Decompile failed - %s" % fname)
-            logger.error(e)
-            return None
 
     def decompile_apps_from_file(self, filename):
         """
@@ -124,32 +216,6 @@ class Decompiler:
             return [None]
         apps = df['package_name'].tolist()
         return self.decompile(apps)
-
-    def compress_storage(self, file_names, suffix_to_keep=['.xml', '.smali']):
-        """
-        This function takes the filenames, removes all files except the ones
-        with endings specified below (currently .xml and .smali), and then
-        zips them, all as a space-conserving mechanism.
-        """
-        a = os.getcwd()
-        os.chdir(self.__decompile_folder)
-        for i in file_names:
-            os.chdir(i[0] + "/" + i)
-            with open(os.devnull, 'w') as fp:
-                cmd = 'find . | egrep -v \"'
-                cmd = cmd + '|'.join(suffix_to_keep)
-                cmd = cmd + '\" | xargs rm -f'
-                os.system(cmd)
-                #p = subprocess.run(cmd.split())
-                cmd = 'find . -empty -type d -delete'
-                p = subprocess.run(cmd.split(), stdout=fp, stderr=fp)
-                os.chdir('..')
-                cmd = 'zip -r '+i+'.zip '+i
-                p = subprocess.run(cmd.split(), stdout=fp, stderr=fp)
-                cmd = 'rm -rf '+i
-                p = subprocess.run(cmd.split(), stdout=fp, stderr=fp)
-        os.chdir(a)
-
 
 # if __name__ == '__main__':
     # TODO Add cli functionality (to be addressed later)

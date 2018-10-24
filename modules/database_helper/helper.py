@@ -231,13 +231,13 @@ class DbHelper:
         those filenames
         """
         query = {'package_name': {'$in': apps}, 'date_downloaded': None}
-        projection = {'package_name': 1, 'uuid': 1, '_id': 0}
+        projection = {'package_name': 1, 'uuid': 1}
         cursor = self.__apk_info_collection \
             .find(query, projection) \
             .sort([('date_last_scraped', pymongo.DESCENDING)])
         cursor = list(cursor)
         if cursor != []:
-            return [[[x['package_name'], x['uuid']] for x in cursor][0]]
+            return [[x['package_name'], x['uuid']] for x in cursor]
         return []
 
     def set_download_date(self, uuid, download_completion_time):
@@ -300,12 +300,12 @@ class DbHelper:
         self.__top_apps.update_many({}, {'$set': {'currently_top': False}})
         new_top_list = crawler.get_top_apps_list()
         for name in new_top_list:
-            self.__top_apps.update_one({'_id': name}, 
+            self.__top_apps.update_one({'_id': name},
                 {'$set': {'_id': name, 'currently_top': True}},
                 upsert=True)
-                
+
         # Also update top field in main db
-        self.__apk_info_collection.update_many({'package_name': {'$in': new_top_list}}, 
+        self.__apk_info_collection.update_many({'package_name': {'$in': new_top_list}},
             {'$set': {'has_been_top': True}})
 
     def get_top_apps(self):

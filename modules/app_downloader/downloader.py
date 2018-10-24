@@ -44,8 +44,9 @@ class Downloader:
         haven't been downloaded, and downloads them.
         """
         apps = self.__database_helper.get_all_apps_to_download()
+        app_uuid_pairs = self.__database_helper.get_filename_mappings(apps)
         with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
-            return executor.map(self.download_thread_worker, apps)
+            return list(executor.map(partial(self.download_thread_worker, False), app_uuid_pairs))
 
     def download(self, apps_list, force_download=False):
         """
@@ -69,7 +70,8 @@ class Downloader:
         thread worker for downloading app
         """
         if isinstance(app, str):
-            app = [app, app]
+            logger.error("App should be of type list, [package_name, uuid]")
+            return
 
         # Quick fix for adding file extensions to downloaded apps
         app_extension = ".apk"

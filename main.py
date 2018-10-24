@@ -64,7 +64,6 @@ def download_decompile_all():
     """
     d = Downloader()
     downloaded_uuids = d.download_all_from_db()
-    print(downloaded_uuids) #TODO remove
 
     dec = Decompiler(use_database=True, compress=True)
     dec.decompile(downloaded_uuids)
@@ -171,6 +170,8 @@ def full_pipeline(args):
     dd_thread.start()
     dd_thread.join()
     logger.info("...download and decompile done")
+
+    sys.exit(0)
 
     # static analysis
     logger.info("Starting analysis...")
