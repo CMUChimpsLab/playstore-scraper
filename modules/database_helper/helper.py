@@ -93,7 +93,7 @@ class DbHelper:
             # Is in the database, but not a top app, so just update
             old_entry = list(self.__apk_info_collection.find({'package_name': app['package_name']}))[0]
             old_uuid = old_entry['uuid']
-            new_id = self.__apk_info_collection.update_one(app)
+            new_id = self.__apk_info_collection.update_one(app, {"$set": old_entry})
 
             # Remove old db entry
             # self.__apk_info_collection.delete_one({'_id': old_entry["_id"]})
@@ -118,7 +118,8 @@ class DbHelper:
         if not update:
             self.__apk_details_collection.insert_one(details_to_dict(app_detail))
         else:
-            self.__apk_details_collection.update_one(details_to_dict(app_detail))
+            old_entry = list(self.__apk_info_collection.find({'package_name': package_name}))[0]
+            self.__apk_details_collection.update_one(details_to_dict(app_detail), {"$set": old_entry})
 
         # handle appDetails
 

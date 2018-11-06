@@ -4,9 +4,10 @@ import logging
 import pandas as pd
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
+import threading
 
 import dependencies.gplaycli.gplaycli as gplaycli
-from dependencies.constants import DOWNLOAD_FOLDER, THREAD_NO
+from dependencies.constants import DOWNLOAD_FOLDER, THREAD_NO, RESULT_CHUNK
 from dependencies.app_object import App
 import modules.scraper.uuid_generator as uuid_generator
 from modules.database_helper.helper import DbHelper
@@ -15,6 +16,9 @@ from dependencies import GPLAYCLI_CONFIG_FILE_PATH
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     level=logging.INFO)
+
+token_refreshing = False
+lock = threading.Lock()
 
 class Downloader:
     """
@@ -44,9 +48,19 @@ class Downloader:
         haven't been downloaded, and downloads them.
         """
         apps = self.__database_helper.get_all_apps_to_download()
-        app_uuid_pairs = self.__database_helper.get_filename_mappings(apps)
         with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
-            return list(executor.map(partial(self.download_thread_worker, False), app_uuid_pairs))
+            res = executor.map(partial(self.download_thread_worker, False), apps)
+            downloaded_uuids = []
+            counter = 0
+            for future in res:
+                counter += 1
+                if counter % RESULT_CHUNK == 0:
+                    logger.info("downloaded {} to {} out of {}".format(
+                        counter - RESULT_CHUNK, counter, len(app_uuid_pairs)))
+                if future is not None:
+                    downloaded_uuids.append(future)
+
+            return downloaded_uuids
 
     def download(self, apps_list, force_download=False):
         """
@@ -56,25 +70,26 @@ class Downloader:
         :return: A list of timestamps indicating the when the download was completed. If the download fails,
                  a None value is inserted instead.
         """
-        if self.__use_database:
-            apps_list = self.__database_helper.get_filename_mappings(apps_list)
-
         downloaded_uuids = []
         for app in apps_list:
             downloaded_uuids.append(partial(self.download_thread_worker, force_download)(app))
 
         return downloaded_uuids
 
-    def download_thread_worker(self, force_download, app):
+    def download_thread_worker(self, force_download, app_name):
         """
         thread worker for downloading app
         """
-        if isinstance(app, str):
-            logger.error("App should be of type list, [package_name, uuid]")
+        global token_refreshing
+        global lock
+
+        if isinstance(app_name, list):
+            logger.error("App should be a str package_name")
             return
 
         # Quick fix for adding file extensions to downloaded apps
         app_extension = ".apk"
+        app = self.__database_helper.get_filename_mappings([app_name])[0] # prevent RAM error
         uuid = app[1]
         if not app[1].endswith(app_extension):
             app[1] += ".apk"
@@ -84,20 +99,51 @@ class Downloader:
         if not force_download and app[1] in downloaded_apps:
             logger.info("App already downloaded - %s" % app[0])
             return uuid
-        try:
-            api = gplaycli.GPlaycli(config_file=self.__config_file)
-            api.set_download_folder(self.__download_folder + "/" + app_dir)
-            logger.info("Downloading app - {} as {}".format(app[0], app[1]))
-            api.download([app])
-            download_completion_time = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
-            if self.__use_database:
-                self.__database_helper.set_download_date(uuid, download_completion_time)
-            del api
-        except Exception as e:
-            logger.error("Download failed - %s" % app[0])
-            logger.error(e)
 
-        return uuid
+        api = gplaycli.GPlaycli(config_file=self.__config_file)
+        api.set_download_folder(self.__download_folder + "/" + app_dir)
+
+        downloaded_uuids = set()
+        while True:
+            try:
+                logger.info("Downloading app - {} as {}".format(app[0], app[1]))
+                downloaded_uuids, fails = api.download([app])
+
+                # check if any failed downloads should be retried
+                retry = False
+                for (uuid, e) in fails:
+                    if type(e) != SystemError and "Being throttled" in e.value:
+                        # check if thread should refresh
+                        should_refresh = lock.acquire(False)
+                        if should_refresh:
+                            # acquired lock so refresh token
+                            token_refreshing = True
+                            api.refresh_token()
+                            token_refreshing = False
+                            lock.release()
+                        else:
+                            # wait until token is done being refreshed
+                            lock.acquire()
+                            while token_refreshing:
+                                time.sleep(0.1)
+                            lock.release()
+
+                        retry = True
+                if retry:
+                    print("retrying {}".format(app_name))
+                    continue
+                elif len(downloaded_uuids) > 0:
+                    download_completion_time = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
+                    if self.__use_database:
+                        self.__database_helper.set_download_date(uuid, download_completion_time)
+            except Exception as e:
+                logger.error("Download failed for {} - {}".format(app[0], e))
+                downloaded_uuids = set()
+            finally:
+                del api
+                break
+
+            return uuid if len(downloaded_uuids) > 0 else None
 
     def download_apps_from_file(self, filename):
         """

@@ -31,7 +31,7 @@ def setup():
     Sets up apktool for decompiling. Currently only set up for Linux.
     """
     wrapper_script_url = "https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/{}/apktool"
-    jar_file_url = "https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.3.3.jar"
+    jar_file_url = "https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.3.4.jar"
     wrapper_script = 'apktool'
     jar_file = 'apktool.jar'
 

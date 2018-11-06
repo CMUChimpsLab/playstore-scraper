@@ -59,7 +59,7 @@ def decompile_process_worker(force_decompile, top_apps, fname):
             logger.error("File %s not found" % fname)
             return None
 
-        logger.info("Decompiling into - %s" % DECOMP_FOLDER + "/" + fname[0])
+        logger.info("Decompiling {} into {}".format(fname, DECOMP_FOLDER + "/" + fname[0]))
         app_file_path = '/'.join([DOWN_FOLDER + app_dir, fname])
         decompile_destination_path = '/'.join([DECOMP_FOLDER,
             fname[0], fname[:-len(app_extension)]])
@@ -70,7 +70,7 @@ def decompile_process_worker(force_decompile, top_apps, fname):
             logger.error("Nonzero exit code received for %s" % fname)
             return None
         else:
-            logger.info("Decompiled {} into {}".format(app_file_path, decompile_destination_path))
+            logger.info("...{} - done decompiling".format(fname))
             if COMPRESS:
                 compress_storage([fname[:-len(app_extension)]])
             return datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
@@ -119,7 +119,6 @@ def compress_storage(file_names, suffix_to_keep=['.xml', '.smali']):
             # zip and remove zipped directory
             os.chdir("..")
             zip_cmd = ["zip ", "-r ", "{}.zip ".format(i), "{}".format(i)]
-            logger.info("sanity check {}".format("".join(zip_cmd)))
             res = subprocess.run("".join(zip_cmd),
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.PIPE,
@@ -191,8 +190,11 @@ class Decompiler:
         multiprocessing_logging.install_mp_handler(logger)
         p = multiprocessing.Pool(PROCESS_NO)
         decompile_completion_times = []
+        count = 0
         for decomp_time in p.imap(partial(decompile_process_worker, force_decompile, top_apps), file_names):
             decompile_completion_times.append(decomp_time)
+            count += 1
+            logger.info("{} / {} done decompiling".format(count, len(file_names)))
 
         return decompile_completion_times
 

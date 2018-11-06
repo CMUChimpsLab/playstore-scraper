@@ -22,6 +22,7 @@ import logging
 import argparse
 import configparser
 import warnings
+import threading
 from subprocess import PIPE, Popen
 from enum import IntEnum
 
@@ -165,16 +166,16 @@ class GPlaycli:
 
     def retrieve_token(self, force_new=False):
         """
-		Return a token. If a cached token exists,
-		it will be used. Else, or if force_new=True,
-		a new token is fetched from the token-dispenser
-		server located at self.token_url.
-		"""
+        Return a token. If a cached token exists,
+        it will be used. Else, or if force_new=True,
+        a new token is fetched from the token-dispenser
+        server located at self.token_url.
+        """
         token, gsfid = self.get_cached_token()
         if token is not None and not force_new:
-            # logger.info("Using cached token.")
             return token, gsfid
-        logger.info("Retrieving token ...")
+
+        logger.info("Retrieving new token...")
         proc = Popen(['java', '-jar', 'target/token-dispenser.jar']
                                 ,stdout=PIPE, stderr=PIPE)
         out, err = proc.communicate()
@@ -188,6 +189,7 @@ class GPlaycli:
         self.token = token
         self.gsfid = gsfid
         self.write_cached_token(token, gsfid)
+
         return token, gsfid
 
     @hooks.connected
@@ -199,6 +201,15 @@ class GPlaycli:
         else:
             details = self.api.bulkDetails(pkg_todownload)
         return details
+
+    @hooks.connected
+    def download_no_errors(self, pkg_todownload):
+        """
+        helper function that ignores errors return and just returns downloaded
+        uuids
+        """
+        uuids, errors = self.download(pkg_todownload)
+        return uuids
 
     @hooks.connected
     def download(self, pkg_todownload):
@@ -307,7 +318,7 @@ class GPlaycli:
             self.write_logfiles(success_items, failed_items, unavail_items)
 
         self.print_failed(failed_downloads + unavail_downloads)
-        return to_download_items - failed_items
+        return to_download_items - failed_items, failed_downloads
 
     @hooks.connected
     def search(self, search_string, nb_results, free_only=True, include_headers=True):
@@ -415,7 +426,7 @@ class GPlaycli:
             if self.token_passed:
                 logger.info("Using passed token to connect to API")
 
-            # commented out b/c spams logs but left as a reference    
+            # commented out b/c spams logs but left as a reference
             # else:
             #     logger.info("Using auto retrieved token to connect to API")
             authsub_token = self.token

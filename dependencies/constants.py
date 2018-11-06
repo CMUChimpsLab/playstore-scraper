@@ -78,7 +78,7 @@ DB_ROOT_PASS = DB_PASS
 TOP_APPS_COLL = 'topApps'
 
 # parallelism related constants
-THREAD_NO = 10
+THREAD_NO = 20
 PROCESS_NO = 2
 RESULT_CHUNK = 10
 

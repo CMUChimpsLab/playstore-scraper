@@ -206,8 +206,12 @@ class GooglePlayAPI(object):
             # no need to initialize API
             self.gsfId = gsfId
             self.setAuthSubToken(authSubToken)
+
             # check if token is valid with a simple search
-            self.search('firefox', 1, None)
+            try:
+                self.search('firefox', 1, None)
+            except RequestError as e:
+                pass
         else:
             raise LoginError('Either (email,pass) or (gsfId, authSubToken) is needed')
 
@@ -294,6 +298,9 @@ class GooglePlayAPI(object):
                                     timeout=60,
                                     proxies=self.proxies_config)
 
+        # check if getting throttled
+        if response.status_code == 429:
+            raise RequestError("Being throttled")
         message = googleplay_pb2.ResponseWrapper.FromString(response.content)
         if message.commands.displayErrorMessage != "":
             raise RequestError(message.commands.displayErrorMessage)

@@ -64,7 +64,6 @@ def download_decompile_all():
     """
     d = Downloader()
     downloaded_uuids = d.download_all_from_db()
-
     dec = Decompiler(use_database=True, compress=True)
     dec.decompile(downloaded_uuids)
 
@@ -90,6 +89,14 @@ def eff_scrape_file(args):
 def update(args):
     u = Updater()
     u.update_apps_bulk()
+
+def decompile_apks(args):
+    dec = Decompiler(use_database=True, compress=True)
+
+    with open(args.fname) as f:
+        apk_names = f.read().split()
+
+    dec.decompile(apk_names)
 
 def download_and_decompile(args):
     # Downloads then decompiles each app
@@ -138,9 +145,12 @@ def full_pipeline(args):
     kickoff = args.kickoff
     fname = args.fname
 
+    '''
     # start by updating top apps
     d = DbHelper()
     d.update_top_apps()
+
+    # TODO add top apps scrape
 
     s = None
     u = None
@@ -163,6 +173,7 @@ def full_pipeline(args):
         logger.info("Starting updater...")
         u.update_apps_bulk()
         logger.info("...update done")
+    '''
 
     # download/decompile
     logger.info("Starting download and decompile...")
@@ -195,74 +206,82 @@ subparsers = parser.add_subparsers(
     dest="subparser_name")
 
 # download all apps not downloaded in the database
-d_parser = subparsers.add_parser("download",
-    aliases=["d"],
+d_parser = subparsers.add_parser("d",
+    aliases=["download"],
     help="download apps",
     description="Download all apps not downloaded in the database")
 d_parser.set_defaults(func=download_all)
 
 # bulk scrape apps in supplied file
-bs_parser = subparsers.add_parser("bulk-scrape",
-    aliases=["bs"],
+bs_parser = subparsers.add_parser("bs",
+    aliases=["bulk-scrape"],
     help="bulk scrape apps",
     description="Bulk scrape apps in supplied file")
 bs_parser.add_argument("fname", help="file of apps to scrape (package names)")
 bs_parser.set_defaults(func=bulk_scrape_file)
 
 # scrape apps in supplied file
-s_parser = subparsers.add_parser("scrape",
-    aliases=["s"],
+s_parser = subparsers.add_parser("s",
+    aliases=["scrape"],
     help="scrape apps",
     description="Scrape apps listed in file")
 s_parser.add_argument("fname", help="file of apps to scrape (package names)")
 s_parser.set_defaults(func=scrape_file)
 
 # efficiently scrape apps in supplied file
-es_parser = subparsers.add_parser("efficient-scrape",
-    aliases=["es"],
+es_parser = subparsers.add_parser("es",
+    aliases=["efficient-scrape"],
     help="efficiently scrape apps",
     description="Efficiently scrape apps in supplied file")
 es_parser.add_argument("fname", help="file of apps to scrape (package names)")
 es_parser.set_defaults(func=eff_scrape_file)
 
 #update from database (using bulk update for speed)
-u_parser = subparsers.add_parser("update",
-    aliases=["u"],
+u_parser = subparsers.add_parser("u",
+    aliases=["update"],
     help="update apps",
     description="Update apps currently in the database")
 u_parser.set_defaults(func=update)
 
+# decompiles apps listed in the file if is a top app
+d_parser = subparsers.add_parser("d",
+    aliases=["decompile"],
+    help="decompile apps listed in file",
+    description="Decompiles apps listed in the file if is a top app")
+d_parser.add_argument("fname", help="file of apps to download (package names)")
+d_parser.set_defaults(func=decompile_apks)
+
 # download all apps not downloaded in the database and decompile any top apps
-dd_parser = subparsers.add_parser("download-decompile",
-    aliases=["dd"],
+dd_parser = subparsers.add_parser("dd",
+    aliases=["download-decompile"],
     help="download apps and decompile",
     description="Download all apps not downloaded and decompile any top apps")
 dd_parser.set_defaults(func=download_and_decompile)
 
 # update list of top apps
-t_parser = subparsers.add_parser("top",
-    aliases=["t"],
+t_parser = subparsers.add_parser("t",
+    aliases=["top"],
     help="update top apps",
     description="Update which apps are top apps",)
 t_parser.set_defaults(func=update_top_list)
 
 # scrape top apps and insert into db
-pt_parser = subparsers.add_parser("put-top",
-    aliases=["pt"],
+pt_parser = subparsers.add_parser("pt",
+    aliases=["put-top"],
     help="scrape top apps into db",
     description="Scrape top apps and insert into db")
 pt_parser.set_defaults(func=put_top_apps_in_db)
 
 # static analysis of apps not yet analyzed
-a_parser = subparsers.add_parser("analyze",
-    aliases=["a"],
+a_parser = subparsers.add_parser("a",
+    aliases=["analyze"],
     help="static analysis of apps",
     description="Static analysis of apps not yet analyzed")
 a_parser.set_defaults(func=analyze)
 
 # entire app data and analysis pipeline
-fp_parser = subparsers.add_parser("full-pipeline",
-    aliases=["fp"],
+fp_parser = subparsers.add_parser("fp",
+    aliases=["full-pipeline"],
     help="entire app data and analysis pipeline",
     description="Entire pipeline from scraping data about apps to analysis of them")
 fp_parser.add_argument("-k", "--kickoff", action="store_true", help="true if is first run, false otherwise")
@@ -274,8 +293,7 @@ if __name__ == '__main__':
     subparser = args.subparser_name
 
     # configure logger so that all subsequent loggers point to same file
-    # now = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
-    now = "DEBUG_NEW" # TEMP, TODO REMOVE
+    now = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
     logPath = "{}/{}/{}-{}.log".format(LOG_FOLDER, subparser, subparser, now)
     if not os.path.exists(os.path.dirname(logPath)):
         os.makedirs(os.path.dirname(logPath))

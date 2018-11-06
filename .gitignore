@@ -20,9 +20,9 @@ scraper/scraper-server/node_modules
 *.swp
 *.pytest*
 *.log
+
 apps_decompiled
 decompiler/apktool
-
 decompiler/apktool\.jar
 
 secrets\.py
