@@ -98,6 +98,7 @@ class Downloader:
         downloaded_apps = os.listdir(self.__download_folder + "/" + app_dir)
         if not force_download and app[1] in downloaded_apps:
             logger.info("App already downloaded - %s" % app[0])
+            # TODO feed the date of apk into DB
             return uuid
 
         api = gplaycli.GPlaycli(config_file=self.__config_file)
@@ -107,13 +108,15 @@ class Downloader:
         while True:
             try:
                 logger.info("Downloading app - {} as {}".format(app[0], app[1]))
-                downloaded_uuids, fails = api.download([app])
+                downloaded_uuids, fails = api.download_with_errors([app])
 
                 # check if any failed downloads should be retried
                 retry = False
                 for (uuid, e) in fails:
-                    if type(e) != SystemError and "Being throttled" in e.value:
-                        # check if thread should refresh
+                    if type(e) != SystemError and ("Being throttled" in e.value or "Server busy" in e.value):
+                        retry = True
+
+                        # check if thread should refresh token
                         should_refresh = lock.acquire(False)
                         if should_refresh:
                             # acquired lock so refresh token
@@ -128,9 +131,8 @@ class Downloader:
                                 time.sleep(0.1)
                             lock.release()
 
-                        retry = True
                 if retry:
-                    print("retrying {}".format(app_name))
+                    logger.info("DEBUG retrying")
                     continue
                 elif len(downloaded_uuids) > 0:
                     download_completion_time = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")

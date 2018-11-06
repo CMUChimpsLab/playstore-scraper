@@ -203,16 +203,16 @@ class GPlaycli:
         return details
 
     @hooks.connected
-    def download_no_errors(self, pkg_todownload):
+    def download(self, pkg_todownload):
         """
         helper function that ignores errors return and just returns downloaded
         uuids
         """
-        uuids, errors = self.download(pkg_todownload)
+        uuids, errors = self.download_with_errors(pkg_todownload)
         return uuids
 
     @hooks.connected
-    def download(self, pkg_todownload):
+    def download_with_errors(self, pkg_todownload):
         """
 		Download apks from the pkg_todownload list
 
