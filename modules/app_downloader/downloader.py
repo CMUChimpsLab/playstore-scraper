@@ -56,7 +56,7 @@ class Downloader:
                 counter += 1
                 if counter % RESULT_CHUNK == 0:
                     logger.info("downloaded {} to {} out of {}".format(
-                        counter - RESULT_CHUNK, counter, len(app_uuid_pairs)))
+                        counter - RESULT_CHUNK, counter, len(apps)))
                 if future is not None:
                     downloaded_uuids.append(future)
 
@@ -98,7 +98,9 @@ class Downloader:
         downloaded_apps = os.listdir(self.__download_folder + "/" + app_dir)
         if not force_download and app[1] in downloaded_apps:
             logger.info("App already downloaded - %s" % app[0])
-            # TODO feed the date of apk into DB
+            download_time = os.path.getmtime(self.__download_folder + "/" + app_dir + "/" + app[1])
+            self.__database_helper.set_download_date(uuid, 
+                datetime.datetime.fromtimestamp(download_time).strftime("%Y%m%dT%H%M"))
             return uuid
 
         api = gplaycli.GPlaycli(config_file=self.__config_file)
