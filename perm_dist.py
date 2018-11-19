@@ -8,24 +8,27 @@ def get_apps_by_downloads(client):
     num_apps = 5000
 
     apps = []
-    cursor = client["androidApp"].apkInfo.find()
+    cursor = client["androidApp"].apkDetails.find()
     for app in cursor:
         downloads = app["details"]["appDetails"]["numDownloads"]
         download_no = ""
         nums = downloads.split("+")[0]
         for num in nums.split(","):
             download_no += num
-        apps.append((int(download_no), app))
-    
-    apps.sort(reverse=True)
-    return apps[0:num_apps]
+        try:
+            apps.append((int(download_no), app))
+        except:
+            continue
+
+    apps.sort(reverse=True, key=lambda a: a[0])
+    return [a[1] for a in apps[0:num_apps]]
 
 def graph(hist, title, ylabel, fname):
     y_values = list(hist.keys())
     x_pos = np.array(list(hist.values()))
     y_pos = np.arange(len(y_values))
     graph = plt.barh(y_pos, x_pos, height = 0.6, align = "center")
-    
+
     #scale axes to make space
     xMax = x_pos[len(x_pos)-1]
     yMax = y_pos[len(y_pos)-1]
@@ -46,7 +49,7 @@ def graph(hist, title, ylabel, fname):
     i = 0
     for rect in graph:
         width = rect.get_width()
-        plt.text(width + xMax/16.0, rect.get_y() + rect.get_height()/4., 
+        plt.text(width + xMax/16.0, rect.get_y() + rect.get_height()/4.,
                     '%d' % x_pos[i], ha ='center', va='bottom')
         i += 1
 
@@ -57,7 +60,7 @@ def perm_type_hists(perms, apps):
     hist = {}
     for perm in perms:
         hist[str(perm)] = 0
-    
+
     for app in apps:
         app_perms = app["details"]["appDetails"]["permissions"]
         for p in app_perms:
@@ -89,10 +92,16 @@ def permissions():
 
     with open("sensitive_perms.txt", "r") as f:
         perms = set(list(f.read().split("\n")))
-    
+
+    print("Getting apps sorted by download...")
     apps = get_apps_by_downloads(client)
+    print("...done")
+    print("Getting perm type hist...")
     perm_type_hists(perms, apps)
+    print("...done")
+    print("Getting perm count hist...")
     perm_count_hists(perms, apps)
+    print("...done")
 
 if __name__ == "__main__":
     permissions()
