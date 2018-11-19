@@ -16,6 +16,7 @@ multiprocessing-logging = "*"
 docker = "*"
 airflow = "*"
 pycrypto = "*"
+matplotlib = "*"
 
 [dev-packages]
 
