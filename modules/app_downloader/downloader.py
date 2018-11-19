@@ -116,6 +116,7 @@ class Downloader:
                 retry = False
                 for (uuid, e) in fails:
                     if type(e) != SystemError and ("Being throttled" in e.value or "Server busy" in e.value):
+                        logger.info("DEBUG throttled or busy, retrying {}".format(threading.get_ident()))
                         retry = True
 
                         # check if thread should refresh token
@@ -134,7 +135,7 @@ class Downloader:
                             lock.release()
 
                 if retry:
-                    logger.info("DEBUG retrying")
+                    logger.info("DEBUG retrying {}".format(threading.get_ident()))
                     continue
                 elif len(downloaded_uuids) > 0:
                     download_completion_time = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
