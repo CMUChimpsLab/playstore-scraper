@@ -176,10 +176,19 @@ class DbHelper:
                 {'$addToSet': {'analyses_completed': {'$each': new_analyses}}}
             )
 
+    def get_all_downloaded_app_uuids(self):
+        """
+        Returns a list of UUIDs for all apps that have been downloaded
+        """
+        app = self.__apk_info_collection.find(
+            {'date_downloaded': {"$ne": None}},
+            {'_id': 0, 'package_name': 1})
+        return [a['uuid'] for a in app]
+
     def get_all_apps_to_download(self):
         """
         Returns a list of package_names for all of the apps that need to be
-        downloaded + anlayzed + decompiled
+        downloaded + analyzed + decompiled
         """
         app = self.__apk_info_collection.find({'date_downloaded': None}, {'_id': 0, 'package_name': 1})
         return [a['package_name'] for a in app]
