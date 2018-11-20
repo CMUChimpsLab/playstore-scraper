@@ -203,9 +203,10 @@ class Decompiler:
         Decompile apps with file names specified in the CSV file passed as a parameter
         :param filename: The filename (with path) for the CSV file.
                          The first line of the filename must be "fileName"
-        :return: A list of timestamps indicating the when the download was completed. If the download fails,
-                 a None value is inserted instead.
+        :return: A list of timestamps indicating the when the decompile was completed. 
+                 If the decompile fails, a None value is inserted instead.
         """
+        # get list of downloaded apps
         if not os.path.exists(filename):
             logger.error("File to download apps from, could not be found.")
             return
@@ -218,6 +219,16 @@ class Decompiler:
             return [None]
         apps = df['package_name'].tolist()
         return self.decompile(apps)
+
+    def decompile_downloaded_apps(self):
+        """
+        Decompiles any apps that are downloaded but have not been decompiled
+        :param (none)
+        :return: A list of timestamps indicating the when the decompile was completed. 
+                 If the decompile fails, a None value is inserted instead.
+        """
+        downloaded_uuids = self.__database_helper.get_all_downloaded_app_uuids()
+        return self.decompile(downloaded_uuids)
 
 # if __name__ == '__main__':
     # TODO Add cli functionality (to be addressed later)

@@ -253,7 +253,11 @@ d_parser = subparsers.add_parser("d",
     aliases=["decompile"],
     help="decompile apps listed in file",
     description="Decompiles apps listed in the file if is a top app")
-d_parser.add_argument("fname", help="file of apps to download (package names)")
+decompile_args = d_parser.add_mutually_exclusive_group(required=True)
+decompile_args.add_argument("fname", help="file of apps to download (package names)")
+decompile_args.add_argument("-d", "--downloaded",
+    action="store_true",
+    help="decompile apps that have been downloaded")
 d_parser.set_defaults(func=decompile_apks)
 
 # download all apps not downloaded in the database and decompile any top apps
