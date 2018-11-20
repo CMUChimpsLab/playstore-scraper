@@ -55,6 +55,8 @@ def graph(hist, title, ylabel, fname):
 
     plt.tight_layout()
     plt.savefig(fname)
+    plt.clf()
+    plt.close()
 
 def perm_type_hists(perms, apps):
     hist = {}
@@ -67,6 +69,10 @@ def perm_type_hists(perms, apps):
             if str(p) in hist:
                 hist[str(p)] += 1
 
+    hist_tuples = list(hist.items())
+    hist_tuples.sort(reverse=True, key=lambda a: a[1])
+    hist = dict(hist_tuples[0:10])
+    print(hist)
     graph(hist, "Histogram of Sensitive Permission Types", "Permission", "permtypes.png")
 
 def perm_count_hists(perms, apps):
@@ -82,6 +88,10 @@ def perm_count_hists(perms, apps):
         else:
             hist[sensitive_count] += 1
 
+    hist_tuples = list(hist.items())
+    hist_tuples.sort(reverse=True, key=lambda a: a[1])
+    hist = dict(hist_tuples[0:10])
+    print(hist)
     graph(hist, "Histogram of Sensitive Permission Counts", "Permissions used", "permcounts.png")
 
 def permissions():

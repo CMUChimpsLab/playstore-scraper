@@ -99,7 +99,7 @@ class Downloader:
         if not force_download and app[1] in downloaded_apps:
             logger.info("App already downloaded - %s" % app[0])
             download_time = os.path.getmtime(self.__download_folder + "/" + app_dir + "/" + app[1])
-            self.__database_helper.set_download_date(uuid, 
+            self.__database_helper.set_download_date(uuid,
                 datetime.datetime.fromtimestamp(download_time).strftime("%Y%m%dT%H%M"))
             return uuid
 
@@ -109,7 +109,7 @@ class Downloader:
         downloaded_uuids = set()
         while True:
             try:
-                logger.info("Downloading app - {} as {}".format(app[0], app[1]))
+                logger.info("Downloading app - {} as {}, {}".format(app[0], app[1], threading.get_ident()))
                 downloaded_uuids, fails = api.download_with_errors([app])
 
                 # check if any failed downloads should be retried
@@ -137,18 +137,19 @@ class Downloader:
                 if retry:
                     logger.info("DEBUG retrying {}".format(threading.get_ident()))
                     continue
-                elif len(downloaded_uuids) > 0:
+
+                if len(downloaded_uuids) > 0:
                     download_completion_time = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
                     if self.__use_database:
                         self.__database_helper.set_download_date(uuid, download_completion_time)
+                else:
+                    # TODO mark it as not downloadable in db
             except Exception as e:
                 logger.error("Download failed for {} - {}".format(app[0], e))
                 downloaded_uuids = set()
-            finally:
-                del api
-                break
+            break
 
-            return uuid if len(downloaded_uuids) > 0 else None
+        return uuid if len(downloaded_uuids) > 0 else None
 
     def download_apps_from_file(self, filename):
         """
