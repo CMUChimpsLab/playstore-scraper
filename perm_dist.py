@@ -24,16 +24,17 @@ def get_apps_by_downloads(client):
     return [a[1] for a in apps[0:num_apps]]
 
 def graph(hist, title, ylabel, fname):
-    y_values = sorted(list(hist.keys()))
+    y_values = sorted(list(hist.keys()), reverse=True)
     x_pos = np.array([hist[k] for k in y_values])
     y_pos = np.arange(len(y_values))
+    rint(x_pos, y_pos, y_values)
     graph = plt.barh(y_pos, x_pos, height = 0.6, align = "center")
 
     #scale axes to make space
-    xMax = x_pos[len(x_pos)-1]
-    yMax = y_pos[len(y_pos)-1]
-    plt.xlim(xmax = (xMax + xMax/8.0))
-    plt.ylim(ymin = -(yMax/40.0))
+    xMax = max(x_pos)
+    yMax = max(y_pos)
+    plt.xlim(right = (xMax + xMax/8.0))
+    plt.ylim(bottom = -(yMax/40.0))
 
     #set axes labels and tick labels and title
     plt.xlabel("Count")
@@ -55,6 +56,7 @@ def graph(hist, title, ylabel, fname):
 
     plt.tight_layout()
     plt.savefig(fname)
+    plt.show()
     plt.clf()
     plt.close()
 
@@ -71,9 +73,8 @@ def perm_type_hists(perms, apps):
 
     hist_tuples = list(hist.items())
     hist_tuples.sort(reverse=True, key=lambda a: a[1])
-    hist = dict(hist_tuples[0:10])
-    print(hist)
-    graph(hist, "Histogram of Sensitive Permission Types", "Permission", "permtypes.png")
+    hist = dict([(k.strip("android.permission."), v) for (k, v) in hist_tuples[0:10]])
+    graph(hist, "10 Most Used Sensitive Permission Types", "Permission", "permtypes.png")
 
 def perm_count_hists(perms, apps):
     hist = {}
@@ -91,8 +92,7 @@ def perm_count_hists(perms, apps):
     hist_tuples = list(hist.items())
     hist_tuples.sort(reverse=True, key=lambda a: a[1])
     hist = dict(hist_tuples[0:10])
-    print(hist)
-    graph(hist, "Histogram of Sensitive Permission Counts", "Permissions used", "permcounts.png")
+    graph(hist, "Frequency of # of Sensitive Permissions Used", "Permissions used", "permcounts.png")
 
 def permissions():
     client = pymongo.MongoClient(host=constants.DB_HOST,
