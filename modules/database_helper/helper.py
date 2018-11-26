@@ -281,7 +281,9 @@ class DbHelper:
         Function tells if a package name is in the top 320 from each category
         or not
         """
-        cursor = self.__top_apps.find({'_id': pkg_name})
+        cursor = self.__top_apps.find({
+            '_id': pkg_name,
+            "currently_top": True})
         return len(list(cursor)) != 0
 
     def is_uuid_top(self, uuid):

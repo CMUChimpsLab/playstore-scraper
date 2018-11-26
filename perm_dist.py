@@ -24,8 +24,8 @@ def get_apps_by_downloads(client):
     return [a[1] for a in apps[0:num_apps]]
 
 def graph(hist, title, ylabel, fname):
-    y_values = list(hist.keys())
-    x_pos = np.array(list(hist.values()))
+    y_values = sorted(list(hist.keys()))
+    x_pos = np.array([hist[k] for k in y_values])
     y_pos = np.arange(len(y_values))
     graph = plt.barh(y_pos, x_pos, height = 0.6, align = "center")
 
