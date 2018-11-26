@@ -62,10 +62,15 @@ def download_decompile_all():
     """
     Downloads all not downloaded apps, then decompiles all that are a top app
     """
+    logger.info("Downloading...")
     d = Downloader()
     downloaded_uuids = d.download_all_from_db()
+    logger.info("...done\n")
+
+    logger.info("Decompiling {} apps...".format(len(downloaded_uuids)))
     dec = Decompiler(use_database=True, compress=True)
     dec.decompile(downloaded_uuids)
+    logger.info("...done\n")
 
 # ***************** #
 # smaller CLI command functions
