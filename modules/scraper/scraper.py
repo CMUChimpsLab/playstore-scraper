@@ -249,16 +249,15 @@ class Scraper:
             if int(i/BULK_CHUNK) >= len(app_name_chunks):
                 app_name_chunks.append([app_names[i]])
             else:
-                app_name_chunks[i].append(app_names[i])
+                app_name_chunks[int(i/BULK_CHUNK)].append(app_names[i])
 
         removed_apps = []
         with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
-            res = executor.map(self.removed_thread_worker, 
-                zip(range(0, len(app_name_chunks)), 
-                app_name_chunks))
+            res = executor.map(self.removed_thread_worker,
+                range(0, len(app_name_chunks)), app_name_chunks)
             for r in res:
                 removed_apps.extend(r)
-        
+
         return removed_apps
 
     def removed_thread_worker(self, index, package_names):
@@ -304,7 +303,7 @@ class Scraper:
             # look for apps that are missing
             if detail_data is not None and len(detail_data) > 0:
                 for i in range(0, len(detail_data)):
-                    if app_data is None:
+                    if detail_data[i] is None:
                         removed_app_names.append(package_names[i])
             else:
                 logger.error("Empty details for {}, sleep and retry".format(packages[0]))
