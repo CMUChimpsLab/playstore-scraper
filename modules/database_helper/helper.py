@@ -38,6 +38,9 @@ class DbHelper:
         """
         self.__client.close()
 
+    # ***************** #
+    # common mappings
+    # ***************** #
     def app_uuid_to_name(self, uuid):
         """
         Convert uuid for an app to its package name
@@ -45,12 +48,15 @@ class DbHelper:
         cursor = self.__apk_info_collection.find({"uuid": str(uuid)})
         return cursor[0]["package_name"] # uuid should always correlate to an app
 
-    def apk_info_update_with_doc(self, doc, packageName):
+    # ***************** #
+    # gets
+    # ***************** #
+    def get_all_names_from_database(self):
         """
-        Uses the given doc to update a document with the given package name in
-        the apkInfo collection
+        Retrieve the names of all the apps from the database
         """
-        self.__apk_info_collection.update_one({"package_name": packageName}, doc)
+        cursor = self.__apk_info_collection.find()
+        return [entry["package_name"] for entry in cursor]
 
     def get_uuids_to_analyze(self):
         """
@@ -58,6 +64,127 @@ class DbHelper:
         """
         cursor = self.__apk_info_collection.find({"analyses_completed": None})
         return [entry["uuid"] for entry in cursor]
+
+    def get_all_apps_from_database(self):
+        """
+        Retrieve the metadata for all the apps from the database
+        :return: A Dataframe containing the metadata for apps
+        """
+        cursor = self.__apk_info_collection.find()
+        return pd.DataFrame(list(cursor)).set_index('_id')
+
+    def get_next_app_to_download(self):
+        """
+        Returns [package_name, uuid] of next app that needs to be downloaded.
+        The caller of the method is responsible for correctly updating the date_downloaded property of the document.
+        """
+        app = self.__apk_info_collection.find_one({'date_downloaded': None})
+        return [app['package_name'], app['uuid']]
+
+    def get_all_downloaded_app_uuids(self):
+        """
+        Returns a list of UUIDs for all apps that have been downloaded
+        """
+        app = self.__apk_info_collection.find(
+            {'date_downloaded': {"$ne": None}},
+            {'_id': 0, 'package_name': 1})
+        return [a['uuid'] for a in app]
+
+    def get_all_apps_to_download(self):
+        """
+        Returns a list of package_names for all of the apps that need to be
+        downloaded + analyzed + decompiled
+        """
+        app = self.__apk_info_collection.find({'date_downloaded': None}, {'_id': 0, 'package_name': 1})
+        return [a['package_name'] for a in app]
+
+    def get_all_apps_to_analyze(self):
+        """
+        Finds the uuids for all of the apps we have yet to analyze at all
+        Perhaps add functionality for specific analyses later
+        """
+        app = self.__apk_info_collection.find({'analyses_completed': None}, {'_id': 0, 'uuid': 1})
+        return [a['uuid'] for a in app]
+
+    def get_package_names_to_update(self, count=0):
+        """
+        Grabs a list of all unique package_names from the database, and keeps
+        the ones which have been most recently scraped to see if there are
+        any updates for these apps. Returned as a dataframe, mainly used by
+        Updater.
+        """
+        # Still needs sorting
+        cursor = self.__apk_info_collection \
+            .find(None, {'package_name': 1, 'uuid': 1, 'date_last_scraped':1, 'version_code': 1, '_id': 0}) \
+            .limit(count)
+        df = pd.DataFrame(list(cursor))\
+            .sort_values(by=['date_last_scraped'])\
+            .drop_duplicates(subset=['package_name'], keep='last')
+        return df
+
+    def get_filename_mappings(self, apps):
+        """
+        Takes in a list of package_names and gets the uuids corresponding to
+        those filenames
+        """
+        query = {'package_name': {'$in': apps}, 'date_downloaded': None}
+        projection = {'package_name': 1, 'uuid': 1}
+        cursor = self.__apk_info_collection \
+            .find(query, projection) \
+            .sort([('date_last_scraped', pymongo.DESCENDING)])
+        cursor = list(cursor)
+        if cursor != []:
+            return [[x['package_name'], x['uuid']] for x in cursor]
+        return []
+
+    def get_metadata_in_json(self, OUTPUT_FILE):
+        """
+        This dumps all of the metadata into a JSON file if you want an easy
+        sharing method for a bit of data.
+        """
+        if not os.path.isfile(OUTPUT_FILE):
+            os.system("touch "+OUTPUT_FILE)
+        df = self.get_all_apps_from_database()
+        data = df.to_dict('records')
+        with open(OUTPUT_FILE, 'w') as f:
+            json.dump(data, f)
+
+    def get_current_top_apps(self):
+        """
+        Gets a list of all current top apps from each category
+        """
+        cursor = self.__top_apps.find({"currently_top": True}, {"_id": 1})
+        return list(cursor)
+
+    def get_top_apps(self):
+        """
+        Returns a list of top apps that need to be scraped (not in db yet)
+        Corresponds to main function
+        """
+        top_apps = self.__top_apps.find({}, {'_id': 1})
+        return [a['_id'] for a in top_apps]
+
+    def get_new_top_apps(self):
+        """
+        Same as above, but only returns the ones who aren't already in the
+        database
+        """
+        new_names = []
+        names = self.get_top_apps()
+        for i in names:
+            if not self.is_app_in_db(i):
+                new_names.append(i)
+        return new_names
+
+    # ***************** #
+    # insertions or updates
+    # ***************** #
+    def apk_info_update_with_doc(self, doc, packageName):
+        """
+        Uses the given doc to update a document with the given package name in
+        the apkInfo collection
+        """
+        self.__apk_info_collection.update_one({"package_name": packageName}, doc)
 
     def insert_analysis_into_db(self, uuid, value, collection_name):
         """
@@ -123,14 +250,6 @@ class DbHelper:
 
         # handle appDetails
 
-    def get_all_apps_from_database(self):
-        """
-        Retrieve the metadata for all the apps from the database
-        :return: A Dataframe containing the metadata for apps
-        """
-        cursor = self.__apk_info_collection.find()
-        return pd.DataFrame(list(cursor)).set_index('_id')
-
     def insert_df(self, df):
         """
         Inserts a dataframe into the database best as possible
@@ -151,14 +270,6 @@ class DbHelper:
         if res.matched_count != 1:
             logger.error("Expected one document to be matched, instead %s was" % str(res.matched_count))
 
-    def get_next_app_to_download(self):
-        """
-        Returns [package_name, uuid] of next app that needs to be downloaded.
-        The caller of the method is responsible for correctly updating the date_downloaded property of the document.
-        """
-        app = self.__apk_info_collection.find_one({'date_downloaded': None})
-        return [app['package_name'], app['uuid']]
-
     def update_analyses_done(self, uuid, new_analyses):
         """
         Updates which analyses have been done for app with uuid passed in,
@@ -176,80 +287,6 @@ class DbHelper:
                 {'$addToSet': {'analyses_completed': {'$each': new_analyses}}}
             )
 
-    def get_all_downloaded_app_uuids(self):
-        """
-        Returns a list of UUIDs for all apps that have been downloaded
-        """
-        app = self.__apk_info_collection.find(
-            {'date_downloaded': {"$ne": None}},
-            {'_id': 0, 'package_name': 1})
-        return [a['uuid'] for a in app]
-
-    def get_all_apps_to_download(self):
-        """
-        Returns a list of package_names for all of the apps that need to be
-        downloaded + analyzed + decompiled
-        """
-        app = self.__apk_info_collection.find({'date_downloaded': None}, {'_id': 0, 'package_name': 1})
-        return [a['package_name'] for a in app]
-
-    def get_all_apps_to_analyze(self):
-        """
-        Finds the uuids for all of the apps we have yet to analyze at all
-        Perhaps add functionality for specific analyses later
-        """
-        app = self.__apk_info_collection.find({'analyses_completed': None}, {'_id': 0, 'uuid': 1})
-        return [a['uuid'] for a in app]
-
-    def get_package_names_to_update(self, count=0):
-        """
-        Grabs a list of all unique package_names from the database, and keeps
-        the ones which have been most recently scraped to see if there are
-        any updates for these apps. Returned as a dataframe, mainly used by
-        Updater.
-        """
-        # Still needs sorting
-        cursor = self.__apk_info_collection \
-            .find(None, {'package_name': 1, 'uuid': 1, 'date_last_scraped':1, 'version_code': 1, '_id': 0}) \
-            .limit(count)
-        df = pd.DataFrame(list(cursor))\
-            .sort_values(by=['date_last_scraped'])\
-            .drop_duplicates(subset=['package_name'], keep='last')
-        return df
-
-    def is_app_version_in_db(self, pkg_name, version_code):
-        """
-        Checks if the package_name and version_code combo is already in the db
-        or not
-        Kinda useless now.
-        """
-        cursor = self.__apk_info_collection \
-            .find({'package_name': pkg_name, 'version_code': version_code})
-        return len(list(cursor)) != 0
-
-    def is_app_in_db(self, pkg_name):
-        """
-        Just checks if the package_name has been inserted into the db yet
-        """
-        cursor = self.__package_names_list \
-            .find({"_id": pkg_name})
-        return len(list(cursor)) != 0
-
-    def get_filename_mappings(self, apps):
-        """
-        Takes in a list of package_names and gets the uuids corresponding to
-        those filenames
-        """
-        query = {'package_name': {'$in': apps}, 'date_downloaded': None}
-        projection = {'package_name': 1, 'uuid': 1}
-        cursor = self.__apk_info_collection \
-            .find(query, projection) \
-            .sort([('date_last_scraped', pymongo.DESCENDING)])
-        cursor = list(cursor)
-        if cursor != []:
-            return [[x['package_name'], x['uuid']] for x in cursor]
-        return []
-
     def set_download_date(self, uuid, download_completion_time):
         """
         When the downloader downloads an app, this sets the download time for
@@ -263,46 +300,6 @@ class DbHelper:
             logger.info("Updated download time for {}".format(uuid))
         else:
             logger.warning("Failed to update download time for {}".format(uuid))
-
-    def get_metadata_in_json(self, OUTPUT_FILE):
-        """
-        This dumps all of the metadata into a JSON file if you want an easy
-        sharing method for a bit of data.
-        """
-        if not os.path.isfile(OUTPUT_FILE):
-            os.system("touch "+OUTPUT_FILE)
-        df = self.get_all_apps_from_database()
-        data = df.to_dict('records')
-        with open(OUTPUT_FILE, 'w') as f:
-            json.dump(data, f)
-
-    def is_app_top(self, pkg_name):
-        """
-        Function tells if a package name is in the top 320 from each category
-        or not
-        """
-        cursor = self.__top_apps.find({
-            '_id': pkg_name,
-            "currently_top": True})
-        return len(list(cursor)) != 0
-
-    def is_uuid_top(self, uuid):
-        """
-        Tells if uuid is in top 320 from each category or not
-        """
-        l = list(self.__apk_info_collection.find({'uuid': uuid}))
-        if l == []:
-            logger.error("App with uuid %s not found" % uuid)
-            return False
-        pkg_name = l[0]['package_name']
-        return self.is_app_top(pkg_name)
-
-    def get_current_top_apps(self):
-        """
-        Gets a list of all current top apps from each category
-        """
-        cursor = self.__top_apps.find({"currently_top": True}, {"_id": 1})
-        return list(cursor)
 
     def update_top_apps(self):
         """
@@ -319,26 +316,6 @@ class DbHelper:
         # Also update top field in main db
         self.__apk_info_collection.update_many({'package_name': {'$in': new_top_list}},
             {'$set': {'has_been_top': True}})
-
-    def get_top_apps(self):
-        """
-        Returns a list of top apps that need to be scraped (not in db yet)
-        Corresponds to main function
-        """
-        top_apps = self.__top_apps.find({}, {'_id': 1})
-        return [a['_id'] for a in top_apps]
-
-    def get_new_top_apps(self):
-        """
-        Same as above, but only returns the ones who aren't already in the
-        database
-        """
-        new_names = []
-        names = self.get_top_apps()
-        for i in names:
-            if not self.is_app_in_db(i):
-                new_names.append(i)
-        return new_names
 
     def update_list_of_names(self):
         """
@@ -390,3 +367,44 @@ class DbHelper:
        self.__static_analysis_db.Test_permissionlist.remove({'packagename': packagename})
        self.__static_analysis_db.Test_3rd_party_packages.remove({'packagename': packagename})
 
+    # ***************** #
+    # check for certain condition
+    # ***************** #
+    def is_app_version_in_db(self, pkg_name, version_code):
+        """
+        Checks if the package_name and version_code combo is already in the db
+        or not
+        Kinda useless now.
+        """
+        cursor = self.__apk_info_collection \
+            .find({'package_name': pkg_name, 'version_code': version_code})
+        return len(list(cursor)) != 0
+
+    def is_app_in_db(self, pkg_name):
+        """
+        Just checks if the package_name has been inserted into the db yet
+        """
+        cursor = self.__package_names_list \
+            .find({"_id": pkg_name})
+        return len(list(cursor)) != 0
+
+    def is_app_top(self, pkg_name):
+        """
+        Function tells if a package name is in the top 320 from each category
+        or not
+        """
+        cursor = self.__top_apps.find({
+            '_id': pkg_name,
+            "currently_top": True})
+        return len(list(cursor)) != 0
+
+    def is_uuid_top(self, uuid):
+        """
+        Tells if uuid is in top 320 from each category or not
+        """
+        l = list(self.__apk_info_collection.find({'uuid': uuid}))
+        if l == []:
+            logger.error("App with uuid %s not found" % uuid)
+            return False
+        pkg_name = l[0]['package_name']
+        return self.is_app_top(pkg_name)

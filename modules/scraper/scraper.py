@@ -12,7 +12,7 @@ from dependencies.gpapidev.googleplay import RequestError
 import dependencies.gpapidev.utils as utils
 from dependencies.gplaycli import gplaycli
 from dependencies import GPLAYCLI_CONFIG_FILE_PATH
-from dependencies.constants import THREAD_NO, RESULT_CHUNK
+from dependencies.constants import THREAD_NO, RESULT_CHUNK, BULK_CHUNK
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
@@ -236,6 +236,82 @@ class Scraper:
             else:
                 return None
 
+    # ***************** #
+    # other useful functions
+    # ***************** #
+    def check_removed(self, app_names):
+        """
+        Returns list of app names that have been removed from the play store
+        """
+        # chunk app_names into BULK_CHUNK sizes
+        app_name_chunks = []
+        for i in range(0, len(app_names)):
+            if int(i/BULK_CHUNK) >= len(app_name_chunks):
+                app_name_chunks.append([app_names[i]])
+            else:
+                app_name_chunks[i].append(app_names[i])
+
+        removed_apps = []
+        with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
+            res = executor.map(self.removed_thread_worker, 
+                zip(range(0, len(app_name_chunks)), 
+                app_name_chunks))
+            for r in res:
+                removed_apps.extend(r)
+        
+        return removed_apps
+
+    def removed_thread_worker(self, index, package_names):
+        """
+        Figures out which apps have been removed, returns which apps have been removed
+        NOTE: should not be used with too many packages, or should be used as part of thread
+        """
+        global token_refreshing
+        global lock
+
+        detail_data = None
+        removed_app_names = []
+        while True:
+            try:
+                detail_data = self.api.get_doc_apk_details(package_names, bulk=True)
+            except RequestError as e:
+                if "Server busy" in e.value or "Being throttled" in e.value:
+                    logger.error("Request error for {}, getting new token".format(e.value))
+
+                    # check if thread should refresh
+                    should_refresh = lock.acquire(False)
+                    if should_refresh:
+                        # acquired lock so refresh token
+                        token_refreshing = True
+                        self.api.refresh_token()
+                        token_refreshing = False
+                        lock.release()
+                    else:
+                        # wait until token is done being refreshed
+                        lock.acquire()
+                        while token_refreshing:
+                                time.sleep(0.1)
+                        lock.release()
+
+                    continue
+                else:
+                    logger.error("Request error for {}".format(e.value))
+                    return
+            except Exception as e:
+                logger.error("Non-request error for {}".format(e))
+                return
+
+            # look for apps that are missing
+            if detail_data is not None and len(detail_data) > 0:
+                for i in range(0, len(detail_data)):
+                    if app_data is None:
+                        removed_app_names.append(package_names[i])
+            else:
+                logger.error("Empty details for {}, sleep and retry".format(packages[0]))
+                time.sleep(5)
+                continue
+
+            return removed_app_names
 
 if __name__ == '__main__':
     s = Scraper()
