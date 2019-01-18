@@ -197,6 +197,39 @@ def full_pipeline(args):
     analysis_thread.join()
     logger.info("...analysis done")
 
+def testing(args):
+    kickoff = args.kickoff
+    fname = args.fname
+
+    '''
+    # start by updating top apps
+    d = DbHelper()
+    d.update_top_apps()
+
+    # TODO add top apps scrape
+    '''
+    s = None
+    u = None
+    if fname == None:
+        # use crawler to get list of package names
+        logger.error("Crawler for package names not implemented yet")
+        return
+    else:
+        # use specified file of package names
+        s = Scraper(input_file=fname)
+        u = Updater(input_file=fname)
+
+    if kickoff == True:
+        # use scraper
+        logger.info("Starting efficient scrape...")
+        s.efficient_scrape()
+        logger.info("...efficient scrape done")
+    else:
+        # use updater
+        logger.info("Starting updater...")
+        u.update_apps_bulk()
+        logger.info("...update done")
+        
 # ***************** #
 # set up CLI argparser
 # ***************** #

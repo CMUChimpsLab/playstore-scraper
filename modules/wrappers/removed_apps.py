@@ -9,10 +9,3 @@ class RemovedApps:
         all_apps = self.db.get_all_names_from_database()
         scraper_obj = Scraper()
         removed_apps = scraper_obj.check_removed(all_apps)
-
-    def test_removed_apps_checker(self, app_names):
-        # TODO remove after testing
-        scraper_obj = Scraper()
-        removed_apps = scraper_obj.check_removed(app_names)
-        print(removed_apps, "are removed")
-
