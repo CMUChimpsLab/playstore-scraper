@@ -229,7 +229,7 @@ def testing(args):
         logger.info("Starting updater...")
         u.update_apps_bulk()
         logger.info("...update done")
-        
+
 # ***************** #
 # set up CLI argparser
 # ***************** #
@@ -287,7 +287,7 @@ d_parser = subparsers.add_parser("d",
     help="decompile apps listed in file",
     description="Decompiles apps listed in the file if is a top app")
 decompile_args = d_parser.add_mutually_exclusive_group(required=True)
-decompile_args.add_argument("fname", help="file of apps to download (package names)")
+decompile_args.add_argument("-f", "--fname", help="file of apps to download (package names)")
 decompile_args.add_argument("-d", "--downloaded",
     action="store_true",
     help="decompile apps that have been downloaded")
@@ -329,6 +329,12 @@ fp_parser = subparsers.add_parser("fp",
 fp_parser.add_argument("-k", "--kickoff", action="store_true", help="true if is first run, false otherwise")
 fp_parser.add_argument("-f", "--fname", help="file name to scrape from, otherwise use crawler to get package names")
 fp_parser.set_defaults(func=full_pipeline)
+
+tt_parser = subparsers.add_parser("tt",
+    aliases=["ttestt"])
+tt_parser.add_argument("-k", "--kickoff", action="store_true", help="true if is first run, false otherwise")
+tt_parser.add_argument("-f", "--fname", help="file name to scrape from, otherwise use crawler to get package names")
+tt_parser.set_defaults(func=testing)
 
 if __name__ == '__main__':
     args = parser.parse_args()

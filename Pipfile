@@ -14,9 +14,9 @@ pymongo = "*"
 pprint = "*"
 multiprocessing-logging = "*"
 docker = "*"
-airflow = "*"
 pycrypto = "*"
 matplotlib = "*"
+protobuf3-to-dict = "*"
 
 [dev-packages]
 

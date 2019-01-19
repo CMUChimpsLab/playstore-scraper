@@ -5,6 +5,7 @@ import pandas as pd
 import logging
 import json
 import os
+from dependencies.protobuf_to_dict.protobuf_to_dict.convertor import protobuf_to_dict
 
 from modules.scraper import crawler
 from dependencies.app_object import App
@@ -204,9 +205,12 @@ class DbHelper:
         """
         app = app.__dict__
         app.pop('constants')
+        logger.info(type(app_details))
         if list(self.__apk_info_collection.find({'uuid': app['uuid']})):
             logger.error("App with uuid {0} already exists".format(app['uuid']))
             return
+        logger.info(self.is_app_top(app['package_name']))
+        logger.info(self.is_app_in_db(app['package_name']))
         if self.is_app_top(app['package_name']) or not self.is_app_in_db(app['package_name']):
             # only want to maintain multiple versions for top apps
             new_id = self.__apk_info_collection.insert_one(app)
@@ -242,11 +246,14 @@ class DbHelper:
         Inserts the metadata for an application into apkDetails collections
         :param appDetails: dictionary of all details for the apk
         """
+        dict_details = protobuf_to_dict(app_detail)
+        print(app_detail)
+        print(dict_details)
         if not update:
-            self.__apk_details_collection.insert_one(details_to_dict(app_detail))
+            self.__apk_details_collection.insert_one(dict_details)
         else:
             old_entry = list(self.__apk_info_collection.find({'package_name': package_name}))[0]
-            self.__apk_details_collection.update_one(details_to_dict(app_detail), {"$set": old_entry})
+            self.__apk_details_collection.update_one(dict_details, {"$set": old_entry})
 
         # handle appDetails
 

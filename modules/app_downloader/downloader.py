@@ -142,8 +142,8 @@ class Downloader:
                     download_completion_time = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
                     if self.__use_database:
                         self.__database_helper.set_download_date(uuid, download_completion_time)
-                else:
                     # TODO mark it as not downloadable in db
+
             except Exception as e:
                 logger.error("Download failed for {} - {}".format(app[0], e))
                 downloaded_uuids = set()

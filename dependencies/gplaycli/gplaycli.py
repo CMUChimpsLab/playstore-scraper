@@ -196,9 +196,11 @@ class GPlaycli:
     def get_doc_apk_details(self, pkg_todownload, bulk=False):
         details = []
         if not bulk:
+            logger.info("non-bulk")
             for pkg in pkg_todownload:
                 details.append(self.api.deprecated_details(pkg))
         else:
+            logger.info("bulk")
             details = self.api.bulkDetails(pkg_todownload)
         return details
 
