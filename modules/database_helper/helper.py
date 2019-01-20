@@ -247,8 +247,6 @@ class DbHelper:
         :param appDetails: dictionary of all details for the apk
         """
         dict_details = protobuf_to_dict(app_detail)
-        print(app_detail)
-        print(dict_details)
         if not update:
             self.__apk_details_collection.insert_one(dict_details)
         else:

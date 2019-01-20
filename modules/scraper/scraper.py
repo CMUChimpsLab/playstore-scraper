@@ -69,12 +69,9 @@ class Scraper:
         """
         index = index_name_tuple[0]
         package_name = index_name_tuple[1]
-        '''
-        TODO: remove comment
         if self.__db_helper.is_app_in_db(package_name):
             logger.info("%s already in database, skipping efficient" % package_name)
             return
-        '''
 
         res = self.get_metadata_for_apps(packages=[package_name], bulk=True)
         if res is not None:
@@ -150,12 +147,9 @@ class Scraper:
         """
         thread worker for regular scrape function
         """
-        '''
-        TODO remove comment
         if self.__db_helper.is_app_in_db(package_name):
             logger.info("%s already in database, skipping scrape" % package_name)
             return
-        '''
 
         app_details = self.get_metadata_for_apps([package_name])
         if app_details is not None:
