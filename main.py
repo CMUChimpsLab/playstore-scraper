@@ -150,7 +150,7 @@ def full_pipeline(args):
     kickoff = args.kickoff
     fname = args.fname
 
-    '''
+    #'''
     # start by updating top apps
     d = DbHelper()
     d.update_top_apps()
@@ -178,7 +178,7 @@ def full_pipeline(args):
         logger.info("Starting updater...")
         u.update_apps_bulk()
         logger.info("...update done")
-    '''
+    #'''
 
     # download/decompile
     logger.info("Starting download and decompile...")
