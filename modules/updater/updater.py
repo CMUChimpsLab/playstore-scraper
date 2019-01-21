@@ -3,6 +3,7 @@ import logging
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 import pandas as pd
+import sys
 
 from modules.scraper.scraper import Scraper
 from modules.database_helper.helper import DbHelper
@@ -33,6 +34,8 @@ class Updater:
             # dicts representing each app and info e.g. current version code, uuid, etc.
             to_update = self.__db_helper.get_package_names_to_update(0)
             apps = [app for i,app in to_update.iterrows()]
+            print(apps)
+            sys.exit(0)
         else:
             apps = pd.read_csv(self.input_file, names=['package_name'])['package_name'].tolist()
 

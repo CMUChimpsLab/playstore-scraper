@@ -157,18 +157,16 @@ def full_pipeline(args):
 
     # TODO add top apps scrape
 
-    s = None
-    u = None
-    if fname == None:
-        # use crawler to get list of package names
-        logger.error("Crawler for package names not implemented yet")
-        return
-    else:
-        # use specified file of package names
-        s = Scraper(input_file=fname)
-        u = Updater(input_file=fname)
-
     if kickoff == True:
+        s = None
+        if fname == None:
+            # use crawler to get list of package names
+            logger.error("Crawler for package names not implemented yet")
+            return
+        else:
+            # use specified file of package names
+            s = Scraper(input_file=fname)
+
         # use scraper
         logger.info("Starting efficient scrape...")
         s.efficient_scrape()
@@ -176,6 +174,7 @@ def full_pipeline(args):
     else:
         # use updater
         logger.info("Starting updater...")
+        u = Updater(input_file=fname)
         u.update_apps_bulk()
         logger.info("...update done")
     #'''
@@ -198,37 +197,12 @@ def full_pipeline(args):
     logger.info("...analysis done")
 
 def testing(args):
-    kickoff = args.kickoff
-    fname = args.fname
-
-    '''
-    # start by updating top apps
-    d = DbHelper()
-    d.update_top_apps()
-
-    # TODO add top apps scrape
-    '''
-    s = None
-    u = None
-    if fname == None:
-        # use crawler to get list of package names
-        logger.error("Crawler for package names not implemented yet")
-        return
-    else:
-        # use specified file of package names
-        s = Scraper(input_file=fname)
-        u = Updater(input_file=fname)
-
-    if kickoff == True:
-        # use scraper
-        logger.info("Starting efficient scrape...")
-        s.efficient_scrape()
-        logger.info("...efficient scrape done")
-    else:
-        # use updater
-        logger.info("Starting updater...")
-        u.update_apps_bulk()
-        logger.info("...update done")
+    # download/decompile
+    logger.info("Starting download and decompile...")
+    dd_thread = threading.Thread(target=download_decompile_all)
+    dd_thread.start()
+    dd_thread.join()
+    logger.info("...download and decompile done")
 
 # ***************** #
 # set up CLI argparser
