@@ -177,6 +177,12 @@ class DbHelper:
                 new_names.append(i)
         return new_names
 
+    def get_app_info_by_name(self, app_name):
+        app = self.__apk_info_collection.find_one(
+                {"package_name": app_name},
+                {"_id": 0, "version_code": 1})
+        return app
+
     # ***************** #
     # insertions or updates
     # ***************** #
@@ -198,19 +204,17 @@ class DbHelper:
         collection.insert_one({'uuid': uuid, 'analysisResult': value})
         logger.info("App with uuid {0} analyzed and put into {1}".format(uuid, collection_name))
 
-    def insert_app_into_db(self, app, app_info=None, app_details=None, insert_frontend=False):
+    def insert_app_into_db(self, app, app_info=None, app_details=None, insert_frontend=True):
         """
         Inserts the metadata for an application into the database
         :param app: An object of class App
         """
         app = app.__dict__
         app.pop('constants')
-        logger.info(type(app_details))
         if list(self.__apk_info_collection.find({'uuid': app['uuid']})):
             logger.error("App with uuid {0} already exists".format(app['uuid']))
             return
-        logger.info(self.is_app_top(app['package_name']))
-        logger.info(self.is_app_in_db(app['package_name']))
+
         if self.is_app_top(app['package_name']) or not self.is_app_in_db(app['package_name']):
             # only want to maintain multiple versions for top apps
             new_id = self.__apk_info_collection.insert_one(app)
@@ -224,10 +228,9 @@ class DbHelper:
             # Is in the database, but not a top app, so just update
             old_entry = list(self.__apk_info_collection.find({'package_name': app['package_name']}))[0]
             old_uuid = old_entry['uuid']
-            new_id = self.__apk_info_collection.update_one(app, {"$set": old_entry})
-
-            # Remove old db entry
-            # self.__apk_info_collection.delete_one({'_id': old_entry["_id"]})
+            new_id = self.__apk_info_collection.update_one(
+                    {"package_name": app["package_name"]},
+                    {"$set": app})
 
             # Remove old files
             app_path = "/" + old_uuid[0] + "/" + old_uuid[1] + "/" + old_uuid + ".apk"
@@ -250,10 +253,9 @@ class DbHelper:
         if not update:
             self.__apk_details_collection.insert_one(dict_details)
         else:
-            old_entry = list(self.__apk_info_collection.find({'package_name': package_name}))[0]
-            self.__apk_details_collection.update_one(dict_details, {"$set": old_entry})
-
-        # handle appDetails
+            self.__apk_details_collection.update_one(
+                {"details.appDetails.packageName": package_name},
+                {"$set": dict_details})
 
     def insert_df(self, df):
         """

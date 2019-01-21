@@ -34,41 +34,44 @@ class Updater:
             to_update = self.__db_helper.get_package_names_to_update(0)
             apps = [app for i,app in to_update.iterrows()]
         else:
-            apps = pd.read_csv(self.input_file).tolist()
-        
+            apps = pd.read_csv(self.input_file, names=['package_name'])['package_name'].tolist()
+
         s = Scraper()
         logger.info("Starting bulk update...")
         with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
-            return executor.map(partial(self.update_bulk_thread_worker, s), zip(range(0, len(apps)), apps))
+            return executor.map(partial(self.update_bulk_thread_worker, s),
+                    range(0, len(apps)), apps)
 
-    def update_bulk_thread_worker(self, s, index, app):
+    def update_bulk_thread_worker(self, s, index, app_name):
         # bulk scrape to check for updates
-        metadata = s.get_metadata_for_apps([app['package_name']], bulk=True)
+        metadata = s.get_metadata_for_apps([app_name], bulk=True)
         if metadata is None: # TODO why
             logger.error("can't find metadata for apps")
             return
 
         num_updated = 0
-        new_app = metadata[0]
+        new_app = metadata[0][0]
         if new_app is None:
             logger.error("no valid new_app")
             return
-        if new_app.package_name != app['package_name']: # TODO why
+        if new_app.package_name != app_name: # TODO why
             logger.error("mismatching package names")
             return
 
         # check version code to see if app is updated
+        app = self.__db_helper.get_app_info_by_name(app_name)
         updated = app['version_code'] != new_app.version_code
+        updated = True
         if updated:
-            curr = s.get_metadata_for_apps([app['package_name']])
+            curr = s.get_metadata_for_apps([app_name])
             if curr is None: # TODO why
                 logger.error("can't find app")
                 return
 
             # scrape and insert new data
-            self.__db_helper.insert_app_into_db(curr[0]) 
+            self.__db_helper.insert_app_into_db(curr[0][0], curr[1][0], curr[2][0])
             num_updated = num_updated + 1
-            logger.info("Inserting %s into db (updated)" % app['package_name'])
+            logger.info("Inserting %s into db (updated)" % app_name)
         else:
             # no update so just update last scrape date
             self.__db_helper.update_date_last_scraped_for_app(
