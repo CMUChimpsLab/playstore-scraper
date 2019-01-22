@@ -33,9 +33,24 @@ class Updater:
         if self.input_file is None:
             # dicts representing each app and info e.g. current version code, uuid, etc.
             to_update = self.__db_helper.get_package_names_to_update(0)
-            apps = [app for i,app in to_update.iterrows()]
-            print(apps)
-            sys.exit(0)
+            apps = [app["package_name"] for i,app in to_update.iterrows()]
+            '''
+            apps = ["com.battlelancer.seriesguide",
+                    "com.alexeyshevchenko.PlanetsBurger",
+                    "com.intuit.mobile.taxcaster",
+                    "com.gamestop.powerup",
+                    "com.bitdefender.security",
+                    "com.whatsapp",
+                    "com.king.candycrushsaga",
+                    "flipboard.app",
+                    "com.pandora.android",
+                    "jp.naver.line.android",
+                    "com.picsart.studio",
+                    "com.kakao.story",
+                    "com.skype.raider",
+                    "com.twitter.android",
+                    "com.snapchat.android"]
+            '''
         else:
             apps = pd.read_csv(self.input_file, names=['package_name'])['package_name'].tolist()
 
@@ -48,14 +63,17 @@ class Updater:
     def update_bulk_thread_worker(self, s, index, app_name):
         # bulk scrape to check for updates
         metadata = s.get_metadata_for_apps([app_name], bulk=True)
-        if metadata is None: # TODO why
+        if metadata is None:
+            # app probably removed
             logger.error("can't find metadata for apps")
+            self.__db_helper.update_app_as_removed(app_name)
             return
 
         num_updated = 0
         new_app = metadata[0][0]
         if new_app is None:
-            logger.error("no valid new_app")
+            # app is removed
+            logger.error("no valid new_app for {}".format(app_name))
             return
         if new_app.package_name != app_name: # TODO why
             logger.error("mismatching package names")
@@ -64,15 +82,10 @@ class Updater:
         # check version code to see if app is updated
         app = self.__db_helper.get_app_info_by_name(app_name)
         updated = app['version_code'] != new_app.version_code
-        updated = True
         if updated:
-            curr = s.get_metadata_for_apps([app_name])
-            if curr is None: # TODO why
-                logger.error("can't find app")
-                return
-
             # scrape and insert new data
-            self.__db_helper.insert_app_into_db(curr[0][0], curr[1][0], curr[2][0])
+            self.__db_helper.insert_app_into_db(metadata[0][0],
+                metadata[1][0], metadata[2][0])
             num_updated = num_updated + 1
             logger.info("Inserting %s into db (updated)" % app_name)
         else:

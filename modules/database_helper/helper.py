@@ -228,6 +228,7 @@ class DbHelper:
             # Is in the database, but not a top app, so just update
             old_entry = list(self.__apk_info_collection.find({'package_name': app['package_name']}))[0]
             old_uuid = old_entry['uuid']
+            print(app["package_name"])
             new_id = self.__apk_info_collection.update_one(
                     {"package_name": app["package_name"]},
                     {"$set": app})
@@ -274,6 +275,17 @@ class DbHelper:
         res = self.__apk_info_collection.update_one(
             {'uuid': uuid},
             {'$set': {'date_last_scraped': date_last_scraped}})
+        if res.matched_count != 1:
+            logger.error("Expected one document to be matched, instead %s was" % str(res.matched_count))
+
+    def update_app_as_removed(self, app_name):
+        """
+        Update the metadata in the database for an application to reflect it as
+        being removed
+        """
+        res = self.__apk_info_collection.update_one(
+                {"package_name": app_name},
+                {"$set": {"removed": True}})
         if res.matched_count != 1:
             logger.error("Expected one document to be matched, instead %s was" % str(res.matched_count))
 
