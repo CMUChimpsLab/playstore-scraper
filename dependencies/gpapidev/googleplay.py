@@ -395,10 +395,12 @@ class GooglePlayAPI(object):
         req = googleplay_pb2.BulkDetailsRequest()
         req.docid.extend(packageNames)
         data = req.SerializeToString()
+        print(data)
         message = self.executeRequestApi2(path,
                                           post_data=data.decode("utf-8"),
                                           content_type="application/x-protobuf",
                                           params=params)
+        print(message)
         response = message.payload.bulkDetailsResponse
         return [None if not utils.hasDoc(entry) else
                 utils.fromDocToDictionary(entry.doc)

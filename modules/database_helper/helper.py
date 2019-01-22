@@ -210,6 +210,7 @@ class DbHelper:
         :param app: An object of class App
         """
         app = app.__dict__
+        app["removed"] = False
         app.pop('constants')
         if list(self.__apk_info_collection.find({'uuid': app['uuid']})):
             logger.error("App with uuid {0} already exists".format(app['uuid']))

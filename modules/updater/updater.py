@@ -34,23 +34,6 @@ class Updater:
             # dicts representing each app and info e.g. current version code, uuid, etc.
             to_update = self.__db_helper.get_package_names_to_update(0)
             apps = [app["package_name"] for i,app in to_update.iterrows()]
-            '''
-            apps = ["com.battlelancer.seriesguide",
-                    "com.alexeyshevchenko.PlanetsBurger",
-                    "com.intuit.mobile.taxcaster",
-                    "com.gamestop.powerup",
-                    "com.bitdefender.security",
-                    "com.whatsapp",
-                    "com.king.candycrushsaga",
-                    "flipboard.app",
-                    "com.pandora.android",
-                    "jp.naver.line.android",
-                    "com.picsart.studio",
-                    "com.kakao.story",
-                    "com.skype.raider",
-                    "com.twitter.android",
-                    "com.snapchat.android"]
-            '''
         else:
             apps = pd.read_csv(self.input_file, names=['package_name'])['package_name'].tolist()
 
@@ -62,7 +45,7 @@ class Updater:
 
     def update_bulk_thread_worker(self, s, index, app_name):
         # bulk scrape to check for updates
-        metadata = s.get_metadata_for_apps([app_name], bulk=True)
+        metadata = s.get_metadata_for_apps([app_name], bulk=False)
         if metadata is None:
             # app probably removed
             logger.error("can't find metadata for apps")
@@ -73,7 +56,8 @@ class Updater:
         new_app = metadata[0][0]
         if new_app is None:
             # app is removed
-            logger.error("no valid new_app for {}".format(app_name))
+            logger.error("app {} has been removed".format(app_name))
+            self.__db_helper.update_app_as_removed(app_name)
             return
         if new_app.package_name != app_name: # TODO why
             logger.error("mismatching package names")
