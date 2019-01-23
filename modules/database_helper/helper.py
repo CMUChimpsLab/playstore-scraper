@@ -383,9 +383,21 @@ class DbHelper:
         #print "Rows affected after inserting permission - " + str (rows_affected)
 
     def deleteEntry (self, packagename):
-       self.__static_analysis_db.Test_linkurl.remove({'packagename': packagename})
-       self.__static_analysis_db.Test_permissionlist.remove({'packagename': packagename})
-       self.__static_analysis_db.Test_3rd_party_packages.remove({'packagename': packagename})
+        """
+        Deletes a database entry for anything related to static analysis
+        """
+        self.__static_analysis_db.Test_linkurl.remove({'packagename': packagename})
+        self.__static_analysis_db.Test_permissionlist.remove({'packagename': packagename})
+        self.__static_analysis_db.Test_3rd_party_packages.remove({'packagename': packagename})
+
+    def delete_metadata_entry(self, package_name):
+        """
+        Deletes database entries related to app metadata
+        """
+        self.__apk_info_collection.remove({"package_name": package_name})
+        self.__apk_details_collection.remove({"details.appDetails.packageName": package_name})
+        self.__package_names_list.remove({"_id": package_name})
+        self.__top_apps.remove({"_id": package_name})
 
     # ***************** #
     # check for certain condition
