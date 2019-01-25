@@ -57,7 +57,7 @@ class DbHelper:
         Retrieve the names of all the apps from the database
         """
         cursor = self.__apk_info_collection.find()
-        return [entry["package_name"] for entry in cursor]
+        return [(entry["package_name"], entry["removed"]) for entry in cursor]
 
     def get_uuids_to_analyze(self):
         """

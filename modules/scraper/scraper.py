@@ -305,8 +305,9 @@ class Scraper:
                 for i in range(0, len(detail_data)):
                     if detail_data[i] is None:
                         removed_app_names.append(package_names[i])
+                        self.__db_helper.update_app_as_removed(package_names[i])
             else:
-                logger.error("Empty details for {}, sleep and retry".format(packages[0]))
+                logger.error("Empty details for {}, sleep and retry".format(package_names[0]))
                 time.sleep(5)
                 continue
 
