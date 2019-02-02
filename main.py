@@ -93,7 +93,7 @@ def eff_scrape_file(args):
 
 def update(args):
     u = Updater()
-    u.update_apps_bulk()
+    u.update_apps_all()
 
 def decompile_apks(args):
     dec = Decompiler(use_database=True, compress=True)
@@ -176,7 +176,7 @@ def full_pipeline(args):
         # use updater
         logger.info("Starting updater...")
         u = Updater(input_file=fname)
-        u.update_apps_bulk()
+        u.update_apps_all()
         logger.info("...update done")
     sys.exit(0)
     #'''

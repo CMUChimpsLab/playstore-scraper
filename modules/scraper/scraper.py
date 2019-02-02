@@ -13,6 +13,7 @@ import dependencies.gpapidev.utils as utils
 from dependencies.gplaycli import gplaycli
 from dependencies import GPLAYCLI_CONFIG_FILE_PATH
 from dependencies.constants import THREAD_NO, RESULT_CHUNK, BULK_CHUNK
+from dependencies.protobuf_to_dict.protobuf_to_dict.convertor import protobuf_to_dict
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
@@ -75,7 +76,7 @@ class Scraper:
 
         res = self.get_metadata_for_apps(packages=[package_name], bulk=True)
         if res is not None:
-            apps = res[0]
+            apps = res[0] # first item is from bulk
             good_name = None
             good_index = None
             if apps[0] is not None:
@@ -151,16 +152,12 @@ class Scraper:
             logger.info("%s already in database, skipping scrape" % package_name)
             return
 
-        app_details = self.get_metadata_for_apps([package_name])
-        if app_details is not None:
-            app = app_details[0]
-            if app is None:
+        app_metadata = self.get_metadata_for_apps([package_name])
+        if app_metadata is not None:
+            if app_metadata[0] is None:
                 return
 
-            self.__db_helper.insert_app_into_db(app[0],
-                app_details[1][0],
-                app_details[2][0],
-                True)
+            self.__db_helper.insert_app_into_db(app_metadata[0][0], app_metadata[1][0])
 
             logger.info("App {}, {} scraped".format(index, package_name))
 
@@ -212,15 +209,14 @@ class Scraper:
                 time.sleep(5)
                 continue
 
-            # convert data array into arrays of frontend apk info, apk info and apk details
+            # convert data array into arrays of apk info and apk details
             if detail_data is not None:
-                frontend_data = []
                 info_data = []
                 if not bulk:
                     for app_details in detail_data:
-                        frontend_data.append(app_details.details.appDetails)
-                        info_data.append(utils.fromDocToDictionary(app_details))
+                        info_data.append(protobuf_to_dict(app_details))
                 else:
+                    # detail_data is just info if bulk is False
                     info_data = detail_data
 
                 # Zips uuids with dictionaries in data array then makes them Apps
@@ -232,7 +228,7 @@ class Scraper:
                 uuids = generate_uuids(len(info_data))
                 app_list = [App.convert_to_App_Object(d, uuid) for (d, uuid) in zip(info_data, uuids)]
 
-                return [app_list, frontend_data, detail_data]
+                return [app_list, detail_data]
             else:
                 return None
 

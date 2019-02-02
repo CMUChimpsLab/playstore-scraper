@@ -39,9 +39,9 @@ class DbHelper:
         """
         self.__client.close()
 
-    # ***************** #
-    # common mappings
-    # ***************** #
+    # ************************************************************************ #
+    # COMMON MAPPINGS 
+    # ************************************************************************ #
     def app_uuid_to_name(self, uuid):
         """
         Convert uuid for an app to its package name
@@ -49,15 +49,16 @@ class DbHelper:
         cursor = self.__apk_info_collection.find({"uuid": str(uuid)})
         return cursor[0]["package_name"] # uuid should always correlate to an app
 
-    # ***************** #
-    # gets
-    # ***************** #
-    def get_all_names_from_database(self):
+
+    # ************************************************************************ #
+    #  GETS 
+    # ************************************************************************ #
+    def get_removed_names_from_database(self):
         """
         Retrieve the names of all the apps from the database
         """
         cursor = self.__apk_info_collection.find()
-        return [(entry["package_name"], entry["removed"]) for entry in cursor]
+        return [entry["package_name"] for entry in cursor if entry["removed"]]
 
     def get_uuids_to_analyze(self):
         """
@@ -183,9 +184,14 @@ class DbHelper:
                 {"_id": 0, "version_code": 1})
         return app
 
-    # ***************** #
-    # insertions or updates
-    # ***************** #
+    
+    def getManiFestPermissions(self, packagename):
+        return self.__apk_info_collection.find_one({'package_name': packagename}, {'permissions':1})['permissions']
+
+
+    # ************************************************************************ #
+    # INSERTIONS, DELETES, UPDATES 
+    # ************************************************************************ #
     def apk_info_update_with_doc(self, doc, packageName):
         """
         Uses the given doc to update a document with the given package name in
@@ -204,35 +210,35 @@ class DbHelper:
         collection.insert_one({'uuid': uuid, 'analysisResult': value})
         logger.info("App with uuid {0} analyzed and put into {1}".format(uuid, collection_name))
 
-    def insert_app_into_db(self, app, app_info=None, app_details=None, insert_frontend=True):
+    def insert_app_into_db(self, app_info_obj, app_details=None):
         """
         Inserts the metadata for an application into the database
         :param app: An object of class App
         """
-        app = app.__dict__
-        app["removed"] = False
-        app.pop('constants')
-        if list(self.__apk_info_collection.find({'uuid': app['uuid']})):
-            logger.error("App with uuid {0} already exists".format(app['uuid']))
+        app_info = app_info_obj.__dict__
+        app_info["removed"] = False
+        app_info.pop('constants')
+        if list(self.__apk_info_collection.find({'uuid': app_info['uuid']})):
+            logger.error("App with uuid {0} already exists".format(app_info['uuid']))
             return
 
-        if self.is_app_top(app['package_name']) or not self.is_app_in_db(app['package_name']):
+        if self.is_app_top(app_info['package_name']) or not self.is_app_in_db(app_info['package_name']):
             # only want to maintain multiple versions for top apps
-            new_id = self.__apk_info_collection.insert_one(app)
-            if not self.is_app_in_db(app['package_name']):
-                self.__package_names_list.insert_one({'_id': app['package_name']})
-
-            # insert into apkFrontendInfo and appDetails
-            if insert_frontend:
-                self.insert_info_details(app["package_name"], app_details, False)
+            new_id = self.__apk_info_collection.insert_one(app_info)
+            self.__apk_details_collection.insert_one(protobuf_to_dict(app_details))
+            if not self.is_app_in_db(app_info['package_name']):
+                self.__package_names_list.insert_one({'_id': app_info['package_name']})
         else:
             # Is in the database, but not a top app, so just update
-            old_entry = list(self.__apk_info_collection.find({'package_name': app['package_name']}))[0]
+            old_entry = list(self.__apk_info_collection.find({'package_name': app_info['package_name']}))[0]
             old_uuid = old_entry['uuid']
-            print(app["package_name"])
+            print(app_info["package_name"])
             new_id = self.__apk_info_collection.update_one(
-                    {"package_name": app["package_name"]},
-                    {"$set": app})
+                    {"package_name": app_info["package_name"]},
+                    {"$set": app_info})
+            self.__apk_details_collection.update_one(
+                {"details.appDetails.packageName": app_info["package_name"]},
+                {"$set": app_details})
 
             # Remove old files
             app_path = "/" + old_uuid[0] + "/" + old_uuid[1] + "/" + old_uuid + ".apk"
@@ -241,85 +247,6 @@ class DbHelper:
             zip_path = "/" + old_uuid[0] + "/" + old_uuid + ".zip"
             if os.path.isfile(constants.DECOMPILE_FOLDER + zip_path):
                 os.remove(constants.DECOMPILE_FOLDER + zip_path)
-
-            # update apkFrontendInfo and appDetails
-            if insert_frontend:
-                self.insert_info_details(app["package_name"], app_details, True)
-
-    def insert_info_details(self, package_name, app_detail, update=False):
-        """
-        Inserts the metadata for an application into apkDetails collections
-        :param appDetails: dictionary of all details for the apk
-        """
-        dict_details = protobuf_to_dict(app_detail)
-        if not update:
-            self.__apk_details_collection.insert_one(dict_details)
-        else:
-            self.__apk_details_collection.update_one(
-                {"details.appDetails.packageName": package_name},
-                {"$set": dict_details})
-
-    def insert_df(self, df):
-        """
-        Inserts a dataframe into the database best as possible
-        """
-        values = [dict(zip(df.columns, i)) for i in df.values]
-        self.__apk_info_collection.insert_many(values)
-
-    def update_date_last_scraped_for_app(self, uuid, date_last_scraped):
-        """
-        Update the metadata in the database for an application
-        :param date_last_scraped: Timestamp indicating when the last check for a new version of the app was made
-        :param uuid: The identifier associated with a particular app and version
-        """
-
-        res = self.__apk_info_collection.update_one(
-            {'uuid': uuid},
-            {'$set': {'date_last_scraped': date_last_scraped}})
-        if res.matched_count != 1:
-            logger.error("Expected one document to be matched, instead %s was" % str(res.matched_count))
-
-    def update_app_as_removed(self, app_name):
-        """
-        Update the metadata in the database for an application to reflect it as
-        being removed
-        """
-        res = self.__apk_info_collection.update_one(
-                {"package_name": app_name},
-                {"$set": {"removed": True}})
-        if res.matched_count != 1:
-            logger.error("Expected one document to be matched, instead %s was" % str(res.matched_count))
-
-    def update_analyses_done(self, uuid, new_analyses):
-        """
-        Updates which analyses have been done for app with uuid passed in,
-        with the analyses list in new_analyses
-        """
-        if list(self.__apk_info_collection.find({'uuid': uuid}, {'_id': 0, 'analyses_completed': 1}))[0]['analyses_completed'] is None:
-            self.__apk_info_collection.update_one(
-                {'uuid': uuid},
-                {'$set': {'analyses_completed': new_analyses}}
-            )
-            logger.info("set new analyses for %s " % uuid)
-        else:
-            self.__apk_info_collection.update_one(
-                {'uuid': uuid},
-                {'$addToSet': {'analyses_completed': {'$each': new_analyses}}}
-            )
-
-    def set_download_date(self, uuid, download_completion_time):
-        """
-        When the downloader downloads an app, this sets the download time for
-        that app in seconds from epoch form
-        """
-        res = self.__apk_info_collection.update_one(
-            {'uuid': uuid},
-            {'$set': {'date_downloaded': download_completion_time}}
-        )
-        if res.modified_count > 0:
-            logger.info("Updated download time for {}".format(uuid))
-        else:
-            logger.warning("Failed to update download time for {}".format(uuid))
 
     def update_top_apps(self):
         """
@@ -345,9 +272,6 @@ class DbHelper:
         names = list(set(sorted([i['package_name'] for i in ls])))
         names = [{'_id': i} for i in names if len(i) > 0]
         self.__package_names_list.insert(names)
-
-    def getManiFestPermissions(self, packagename):
-        return self.__apk_info_collection.find_one({'package_name': packagename}, {'permissions':1})['permissions']
 
     def insert3rdPartyPackageInfo (self, packagename, filename, externalpackagename, category):
         self.__static_analysis_db.Test_3rd_party_packages.insert({
@@ -399,9 +323,91 @@ class DbHelper:
         self.__package_names_list.remove({"_id": package_name})
         self.__top_apps.remove({"_id": package_name})
 
-    # ***************** #
-    # check for certain condition
-    # ***************** #
+
+    # ************************************************************************ # 
+    # FIELD UPDATES 
+    # ************************************************************************ #
+    def update_date_last_scraped_for_app(self, uuid, date_last_scraped):
+        """
+        Update the metadata in the database for an application
+        :param date_last_scraped: Timestamp indicating when the last check for a new version of the app was made
+        :param uuid: The identifier associated with a particular app and version
+        """
+
+        res = self.__apk_info_collection.update_one(
+            {'uuid': uuid},
+            {'$set': {'date_last_scraped': date_last_scraped}})
+        if res.matched_count != 1:
+            logger.error("Expected one document to be matched, instead %s was" % str(res.matched_count))
+
+    def update_app_as_removed(self, app_name):
+        """
+        Update the metadata in the database for an application to reflect it as
+        being removed
+        """
+        res = self.__apk_info_collection.update_one(
+                {"package_name": app_name},
+                {"$set": {"removed": True}})
+        if res.matched_count != 1:
+            logger.error("Expected one document to be matched, instead %s was" % str(res.matched_count))
+
+    def update_app_as_not_removed(self, uuid):
+        """
+        Update the metadata in the database for an application to reflect it as
+        not removed and still in the Play Store
+        """
+        res = self.__apk_info_collection.update_one(
+                {"uuid": uuid},
+                {"$set": {"removed": False}})
+        if res.matched_count != 1:
+            logger.error("Expected one document to be matched, instead %s was" % str(res.matched_count))
+
+    def update_no_download_country(self, uuid):
+        """
+        Update the metadata in the database for an application to reflect it as
+        not downloadable because of country location
+        """
+        res = self.__apk_info_collection.update_one(
+                {"uuid": uuid},
+                {"$set": {"no_download_country": True}})
+        if res.matched_count != 1:
+            logger.error("Expected one document to be matched, instead %s was" % str(res.matched_count))
+
+    def update_analyses_done(self, uuid, new_analyses):
+        """
+        Updates which analyses have been done for app with uuid passed in,
+        with the analyses list in new_analyses
+        """
+        if list(self.__apk_info_collection.find({'uuid': uuid}, {'_id': 0, 'analyses_completed': 1}))[0]['analyses_completed'] is None:
+            self.__apk_info_collection.update_one(
+                {'uuid': uuid},
+                {'$set': {'analyses_completed': new_analyses}}
+            )
+            logger.info("set new analyses for %s " % uuid)
+        else:
+            self.__apk_info_collection.update_one(
+                {'uuid': uuid},
+                {'$addToSet': {'analyses_completed': {'$each': new_analyses}}}
+            )
+
+    def set_download_date(self, uuid, download_completion_time):
+        """
+        When the downloader downloads an app, this sets the download time for
+        that app in seconds from epoch form
+        """
+        res = self.__apk_info_collection.update_one(
+            {'uuid': uuid},
+            {'$set': {'date_downloaded': download_completion_time}}
+        )
+        if res.modified_count > 0:
+            logger.info("Updated download time for {}".format(uuid))
+        else:
+            logger.warning("Failed to update download time for {}".format(uuid))
+
+
+    # ************************************************************************ #
+    # CONDITION CHECKS 
+    # ************************************************************************ #
     def is_app_version_in_db(self, pkg_name, version_code):
         """
         Checks if the package_name and version_code combo is already in the db

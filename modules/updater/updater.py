@@ -24,9 +24,9 @@ class Updater:
         self.input_file = input_file
 
     # ***************** #
-    # bulk updating related functions
+    # updating all related functions
     # ***************** #
-    def update_apps_bulk(self):
+    def update_apps_all(self):
         """
         Uses bulk scraping to update apps much faster than before
         """
@@ -40,10 +40,10 @@ class Updater:
         s = Scraper()
         logger.info("Starting bulk update...")
         with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
-            return executor.map(partial(self.update_bulk_thread_worker, s),
+            return executor.map(partial(self.update_all_thread_worker, s),
                     range(0, len(apps)), apps)
 
-    def update_bulk_thread_worker(self, s, index, app_name):
+    def update_all_thread_worker(self, s, index, app_name):
         # bulk scrape to check for updates
         metadata = s.get_metadata_for_apps([app_name], bulk=False)
         if metadata is None:
@@ -68,42 +68,17 @@ class Updater:
         updated = app['version_code'] != new_app.version_code
         if updated:
             # scrape and insert new data
-            self.__db_helper.insert_app_into_db(metadata[0][0],
-                metadata[1][0], metadata[2][0])
-            num_updated = num_updated + 1
+            # self.__db_helper.insert_app_into_db(metadata[0][0], metadata[1][0])
+            # num_updated = num_updated + 1
             logger.info("Inserting %s into db (updated)" % app_name)
+            sys.exit(0) #TODO remove after 
         else:
             # no update so just update last scrape date
+            self.__db_helper.update_app_as_not_removed(app["uuid"])
             self.__db_helper.update_date_last_scraped_for_app(
                 app['uuid'],
                 datetime.datetime.utcnow().strftime("%Y%m%dT%H%M"))
-
-    # ***************** #
-    # updating all related functions
-    # ***************** #
-    def update_all_apps(self):
-        """
-        Updates all of the apps in the database
-        """
-        to_update = self.__db_helper.get_package_names_to_update(0)
-        apps = [app for i,app in to_update.iterrows()]
-
-        with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
-            return executor.map(self.update_all_thread_worker, zip(range(0, len(apps)), apps))
-
-    def update_all_thread_worker(self, index, app):
-        """
-        thread worker to updates apps, used by update_all_apps
-        """
-        s = Scraper()
-        new_metadata = s.get_metadata_for_apps([app['package_name']])[0]
-        updated = new_metadata.version_code != app['version_code']
-        if updated:
-            self.__db_helper.insert_app_into_db(new_metadata)
-        else:
-            self.__db_helper.update_date_last_scraped_for_app(app['uuid'],
-                datetime.datetime.utcnow().strftime("%Y%m%dT%H%M"))
-
+"""
 if __name__ == '__main__':
     while True:
         try:
@@ -111,3 +86,4 @@ if __name__ == '__main__':
             up.update_all_apps()
         except KeyboardInterrupt:
             logger.warning("Updater interrupted by user")
+"""

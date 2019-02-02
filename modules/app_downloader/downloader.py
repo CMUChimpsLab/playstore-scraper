@@ -133,6 +133,9 @@ class Downloader:
                             while token_refreshing:
                                 time.sleep(0.1)
                             lock.release()
+                    elif "purchases are not supported in your country" in e.value:
+                        # mark as wrong country
+                        self.__database_helper.update_no_download_country(uuid)
 
                 if retry:
                     logger.info("DEBUG retrying {}".format(threading.get_ident()))
