@@ -40,7 +40,7 @@ class DbHelper:
         self.__client.close()
 
     # ************************************************************************ #
-    # COMMON MAPPINGS 
+    # COMMON MAPPINGS
     # ************************************************************************ #
     def app_uuid_to_name(self, uuid):
         """
@@ -51,7 +51,7 @@ class DbHelper:
 
 
     # ************************************************************************ #
-    #  GETS 
+    #  GETS
     # ************************************************************************ #
     def get_removed_names_from_database(self):
         """
@@ -117,12 +117,17 @@ class DbHelper:
         """
         # Still needs sorting
         cursor = self.__apk_info_collection \
-            .find(None, {'package_name': 1, 'uuid': 1, 'date_last_scraped':1, 'version_code': 1, '_id': 0}) \
+            .find(
+                {
+                    "$or": [{"removed": False}, {"removed": {"$exists": False}}],
+                },
+                {
+                    'package_name': 1,
+                    '_id': 0,
+                }) \
             .limit(count)
-        df = pd.DataFrame(list(cursor))\
-            .sort_values(by=['date_last_scraped'])\
-            .drop_duplicates(subset=['package_name'], keep='last')
-        return df
+
+        return list(cursor)
 
     def get_filename_mappings(self, apps):
         """
@@ -178,19 +183,12 @@ class DbHelper:
                 new_names.append(i)
         return new_names
 
-    def get_app_info_by_name(self, app_name):
-        app = self.__apk_info_collection.find_one(
-                {"package_name": app_name},
-                {"_id": 0, "version_code": 1})
-        return app
-
-    
     def getManiFestPermissions(self, packagename):
         return self.__apk_info_collection.find_one({'package_name': packagename}, {'permissions':1})['permissions']
 
 
     # ************************************************************************ #
-    # INSERTIONS, DELETES, UPDATES 
+    # INSERTIONS, DELETES, UPDATES
     # ************************************************************************ #
     def apk_info_update_with_doc(self, doc, packageName):
         """
@@ -218,21 +216,26 @@ class DbHelper:
         app_info = app_info_obj.__dict__
         app_info["removed"] = False
         app_info.pop('constants')
+        app_details = protobuf_to_dict(app_details)
+        if "descriptionHtml" in app_details:
+            app_details["descriptionHtml"] = app_details["descriptionHtml"].encode("utf8")
+
         if list(self.__apk_info_collection.find({'uuid': app_info['uuid']})):
             logger.error("App with uuid {0} already exists".format(app_info['uuid']))
             return
 
         if self.is_app_top(app_info['package_name']) or not self.is_app_in_db(app_info['package_name']):
             # only want to maintain multiple versions for top apps
+            return
             new_id = self.__apk_info_collection.insert_one(app_info)
-            self.__apk_details_collection.insert_one(protobuf_to_dict(app_details))
+            self.__apk_details_collection.insert_one(app_details)
             if not self.is_app_in_db(app_info['package_name']):
                 self.__package_names_list.insert_one({'_id': app_info['package_name']})
+            logger.info("Inserted {} into db".format(app_info["package_name"]))
         else:
             # Is in the database, but not a top app, so just update
             old_entry = list(self.__apk_info_collection.find({'package_name': app_info['package_name']}))[0]
             old_uuid = old_entry['uuid']
-            print(app_info["package_name"])
             new_id = self.__apk_info_collection.update_one(
                     {"package_name": app_info["package_name"]},
                     {"$set": app_info})
@@ -247,6 +250,7 @@ class DbHelper:
             zip_path = "/" + old_uuid[0] + "/" + old_uuid + ".zip"
             if os.path.isfile(constants.DECOMPILE_FOLDER + zip_path):
                 os.remove(constants.DECOMPILE_FOLDER + zip_path)
+            logger.info("Replaced {} in db".format(app_info["package_name"]))
 
     def update_top_apps(self):
         """
@@ -324,8 +328,8 @@ class DbHelper:
         self.__top_apps.remove({"_id": package_name})
 
 
-    # ************************************************************************ # 
-    # FIELD UPDATES 
+    # ************************************************************************ #
+    # FIELD UPDATES
     # ************************************************************************ #
     def update_date_last_scraped_for_app(self, uuid, date_last_scraped):
         """
@@ -338,7 +342,8 @@ class DbHelper:
             {'uuid': uuid},
             {'$set': {'date_last_scraped': date_last_scraped}})
         if res.matched_count != 1:
-            logger.error("Expected one document to be matched, instead %s was" % str(res.matched_count))
+            logger.error("date_scraped {}: Expected 1 document to be matched, instead {} was".format(
+                uuid, str(res.matched_count)))
 
     def update_app_as_removed(self, app_name):
         """
@@ -349,7 +354,8 @@ class DbHelper:
                 {"package_name": app_name},
                 {"$set": {"removed": True}})
         if res.matched_count != 1:
-            logger.error("Expected one document to be matched, instead %s was" % str(res.matched_count))
+            logger.error("update_removed {}: Expected 1 document to be matched, instead {} was".format(
+                app_name, str(res.matched_count)))
 
     def update_app_as_not_removed(self, uuid):
         """
@@ -360,7 +366,8 @@ class DbHelper:
                 {"uuid": uuid},
                 {"$set": {"removed": False}})
         if res.matched_count != 1:
-            logger.error("Expected one document to be matched, instead %s was" % str(res.matched_count))
+            logger.error("update_not_removed {}: Expected 1 document to be matched, instead {} was".format(
+                uuid, str(res.matched_count)))
 
     def update_no_download_country(self, uuid):
         """
@@ -371,7 +378,8 @@ class DbHelper:
                 {"uuid": uuid},
                 {"$set": {"no_download_country": True}})
         if res.matched_count != 1:
-            logger.error("Expected one document to be matched, instead %s was" % str(res.matched_count))
+            logger.error("update_no_download {}: Expected 1 document to be matched, instead {} was".format(
+                uuid, str(res.matched_count)))
 
     def update_analyses_done(self, uuid, new_analyses):
         """
@@ -406,7 +414,7 @@ class DbHelper:
 
 
     # ************************************************************************ #
-    # CONDITION CHECKS 
+    # CONDITION CHECKS
     # ************************************************************************ #
     def is_app_version_in_db(self, pkg_name, version_code):
         """
@@ -446,3 +454,19 @@ class DbHelper:
             return False
         pkg_name = l[0]['package_name']
         return self.is_app_top(pkg_name)
+
+    def check_app_to_update(self, app_name, new_version_code):
+        """
+        Checks if the app specified has been updated
+        Checks against all version_codes in case version varies by device
+        """
+        # return latest version in case is a top app with multiple documents
+        app_versions= self.__apk_info_collection.find({"package_name": app_name},
+                {"_id": 0, "uuid": 1, "version_code": 1})
+        updated = True
+        for app in app_versions:
+            if app.get("version_code", None) == new_version_code:
+                updated = False
+
+        return app, updated
+

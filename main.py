@@ -149,6 +149,9 @@ def analyze(args):
 def full_pipeline(args):
     kickoff = args.kickoff
     fname = args.fname
+    if not kickoff and args.fname is not None:
+        logger.error("Can't use updater with -f option")
+        return
 
     '''
     # start by updating top apps
@@ -175,7 +178,7 @@ def full_pipeline(args):
     else:
         # use updater
         logger.info("Starting updater...")
-        u = Updater(input_file=fname)
+        u = Updater()
         u.update_apps_all()
         logger.info("...update done")
     sys.exit(0)

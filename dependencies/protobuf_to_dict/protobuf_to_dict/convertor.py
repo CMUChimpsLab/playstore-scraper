@@ -103,6 +103,7 @@ def protobuf_to_dict(pb, type_callable_map=TYPE_CALLABLE_MAP, use_enum_labels=Fa
 
     if extensions:
         result_dict[EXTENSION_CONTAINER] = extensions
+
     return result_dict
 
 

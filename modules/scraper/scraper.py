@@ -214,7 +214,10 @@ class Scraper:
                 info_data = []
                 if not bulk:
                     for app_details in detail_data:
-                        info_data.append(protobuf_to_dict(app_details))
+                        dict_details = protobuf_to_dict(app_details)
+                        if "descriptionHtml" in dict_details:
+                            dict_details["descriptionHtml"] = dict_details["descriptionHtml"].encode("utf8")
+                        info_data.append(dict_details)
                 else:
                     # detail_data is just info if bulk is False
                     info_data = detail_data
