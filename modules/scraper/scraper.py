@@ -3,6 +3,7 @@ import logging
 import datetime
 import time
 from concurrent.futures import ThreadPoolExecutor
+import threading
 
 from dependencies.app_object import App
 from .uuid_generator import generate_uuids
@@ -13,11 +14,13 @@ from dependencies.gplaycli import gplaycli
 from dependencies import GPLAYCLI_CONFIG_FILE_PATH
 from dependencies.constants import THREAD_NO, RESULT_CHUNK, BULK_CHUNK
 from dependencies.protobuf_to_dict.protobuf_to_dict.convertor import protobuf_to_dict
-from dependencies.token_server import TokenServer
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     level=logging.INFO)
+
+token_refreshing = False
+lock = threading.Lock()
 
 class Scraper:
     """
@@ -32,7 +35,6 @@ class Scraper:
         self.input_file = input_file
         self.__config_file = GPLAYCLI_CONFIG_FILE_PATH
         self.api = gplaycli.GPlaycli(config_file=self.__config_file)
-        self.token_server = TokenServer()
 
     # ***************** #
     # efficient scraping related functions
@@ -164,6 +166,9 @@ class Scraper:
         Returns list of App objects corresponding to package names in packages
         NOTE: should not be used with too many packages, or should be used as part of thread
         """
+        global token_refreshing
+        global lock
+
         detail_data = None
         if packages[0] is None:
             return
@@ -174,7 +179,22 @@ class Scraper:
                 if "Server busy" in e.value or "Being throttled" in e.value:
                     logger.error("Request error for {} - {}, getting new token".format(
                         packages[0], e.value))
-                    self.token_server.request_new_token(self.api)
+
+                    # check if thread should refresh
+                    should_refresh = lock.acquire(False)
+                    if should_refresh:
+                        # acquired lock so refresh token
+                        token_refreshing = True
+                        self.api.refresh_token()
+                        token_refreshing = False
+                        lock.release()
+                    else:
+                        # wait until token is done being refreshed
+                        lock.acquire()
+                        while token_refreshing:
+                                time.sleep(0.1)
+                        lock.release()
+
                     continue
                 else:
                     logger.error("Request error for {} - {}".format(packages[0], e.value))
@@ -244,6 +264,9 @@ class Scraper:
         Figures out which apps have been removed, returns which apps have been removed
         NOTE: should not be used with too many packages, or should be used as part of thread
         """
+        global token_refreshing
+        global lock
+
         detail_data = None
         removed_app_names = []
         while True:
@@ -252,7 +275,22 @@ class Scraper:
             except RequestError as e:
                 if "Server busy" in e.value or "Being throttled" in e.value:
                     logger.error("Request error for {}, getting new token".format(e.value))
-                    self.token_server.request_new_token(self.api)
+
+                    # check if thread should refresh
+                    should_refresh = lock.acquire(False)
+                    if should_refresh:
+                        # acquired lock so refresh token
+                        token_refreshing = True
+                        self.api.refresh_token()
+                        token_refreshing = False
+                        lock.release()
+                    else:
+                        # wait until token is done being refreshed
+                        lock.acquire()
+                        while token_refreshing:
+                                time.sleep(0.1)
+                        lock.release()
+
                     continue
                 else:
                     logger.error("Request error for {}".format(e.value))

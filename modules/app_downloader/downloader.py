@@ -12,11 +12,13 @@ from dependencies.app_object import App
 import modules.scraper.uuid_generator as uuid_generator
 from modules.database_helper.helper import DbHelper
 from dependencies import GPLAYCLI_CONFIG_FILE_PATH
-from dependencies.token_server import TokenServer
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     level=logging.INFO)
+
+token_refreshing = False
+lock = threading.Lock()
 
 class Downloader:
     """
@@ -39,7 +41,6 @@ class Downloader:
 
         # This config file is used by the GPlaycli module to determine the authentication token
         self.__config_file = GPLAYCLI_CONFIG_FILE_PATH
-        self.token_server = TokenServer()
 
     def download_all_from_db(self):
         """
@@ -71,7 +72,7 @@ class Downloader:
         """
         downloaded_uuids = []
         for app in apps_list:
-            downloaded_uuids.append(self.download_thread_worker(force_download, app))
+            downloaded_uuids.append(partial(self.download_thread_worker, force_download)(app))
 
         return downloaded_uuids
 
@@ -79,6 +80,9 @@ class Downloader:
         """
         thread worker for downloading app
         """
+        global token_refreshing
+        global lock
+
         if isinstance(app_name, list):
             logger.error("App should be a str package_name")
             return
@@ -114,7 +118,21 @@ class Downloader:
                     if type(e) != SystemError and ("Being throttled" in e.value or "Server busy" in e.value):
                         logger.info("DEBUG throttled or busy, retrying {}".format(threading.get_ident()))
                         retry = True
-                        self.token_server.request_new_token(api)
+
+                        # check if thread should refresh token
+                        should_refresh = lock.acquire(False)
+                        if should_refresh:
+                            # acquired lock so refresh token
+                            token_refreshing = True
+                            api.refresh_token()
+                            token_refreshing = False
+                            lock.release()
+                        else:
+                            # wait until token is done being refreshed
+                            lock.acquire()
+                            while token_refreshing:
+                                time.sleep(0.1)
+                            lock.release()
                     elif "purchases are not supported in your country" in e.value:
                         # mark as wrong country
                         self.__database_helper.update_no_download_country(uuid)
@@ -128,6 +146,7 @@ class Downloader:
                     if self.__use_database:
                         self.__database_helper.set_download_date(uuid, download_completion_time)
                     # TODO mark it as not downloadable in db
+
             except Exception as e:
                 logger.error("Download failed for {} - {}".format(app[0], e))
                 downloaded_uuids = set()
