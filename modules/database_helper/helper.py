@@ -226,7 +226,6 @@ class DbHelper:
 
         if self.is_app_top(app_info['package_name']) or not self.is_app_in_db(app_info['package_name']):
             # only want to maintain multiple versions for top apps
-            return
             new_id = self.__apk_info_collection.insert_one(app_info)
             self.__apk_details_collection.insert_one(app_details)
             if not self.is_app_in_db(app_info['package_name']):

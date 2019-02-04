@@ -4,6 +4,7 @@ from modules.database_helper.helper import DbHelper
 from collections import defaultdict
 from bson.objectid import ObjectId
 from modules.scraper.uuid_generator import generate_uuids
+from datetime import datetime
 
 dh = MongoClient(host=constants.DB_HOST,
     port=constants.DB_PORT,
@@ -50,8 +51,11 @@ for a in apk_details_set:
     i_v = info_freq_dict.get(a, 0)
     """
     detail_obj_to_use = None
+    """
     vc_set = set([x[1] for x in apk_infos_dict[a]])
+    vc_details_set = set([x[1] for x in apk_details_dict[a]])
     if len(vc_set) != len(apk_infos_dict[a]):
+        """
         x = apk_infos_dict[a][0]
         y = apk_infos_dict[a][1]
         to_delete_info = str(x[0]) if str(x[2]) < str(y[2]) else str(y[0])
@@ -63,8 +67,18 @@ for a in apk_details_set:
         if to_delete_details != "":
             android_app_db.apkDetails.remove({"_id": ObjectId(to_delete_details)})
         else:
-            print(a, apk_details_dict[a], apk_infos_dict[a], to_delete_info, to_delete_details)
+        print(a, apk_details_dict[a], apk_infos_dict[a], to_delete_info, to_delete_details)
+        """
+        print(a, apk_details_dict[a], apk_infos_dict[a])
+    if vc_set != vc_details_set:
+        to_print = False
+        for x in apk_infos_dict[a]:
+            if datetime.strptime(x[2], "%Y%m%dT%H%M").year > 2017:
+                to_print = True
+        if to_print:
+            print(a, vc_details_set, vc_set)
 
+    """
     continue
     if d_v > i_v:
         print("{} - details has {}, info has {}".format(a, d_v, i_v))

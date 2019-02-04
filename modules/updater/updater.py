@@ -35,9 +35,8 @@ class Updater:
         """
         if self.input_file is None:
             # dicts representing each app and info e.g. current version code, uuid, etc.
-            #to_update = self.__db_helper.get_package_names_to_update(0)
-            #apps = [app["package_name"] for app in to_update]
-            apps = ["com.app.downloadmanager"]
+            to_update = self.__db_helper.get_package_names_to_update(0)
+            apps = [app["package_name"] for app in to_update]
         else:
             apps = pd.read_csv(self.input_file, names=['package_name'])['package_name'].tolist()
 
@@ -51,14 +50,11 @@ class Updater:
         # bulk scrape to check for updates
         try:
             metadata = s.get_metadata_for_apps([app_name], bulk=False)
-            print(metadata[0][0].version_code,
-                protobuf_to_dict(metadata[1][0])["details"]["appDetails"]["versionCode"])
             if metadata is None:
                 # app probably removed
                 logger.error("can't find metadata for apps")
                 self.__db_helper.update_app_as_removed(app_name)
                 return
-
             num_updated = 0
             new_app = metadata[0][0]
             if new_app is None:
@@ -70,9 +66,14 @@ class Updater:
                 logger.error("mismatching package names")
                 return
 
+            if metadata[0][0].version_code != protobuf_to_dict(metadata[1][0])["details"]["appDetails"]["versionCode"]:
+                logger.error("VERSION MISMATCH")
+                print(metadata[0][0])
+                print(metadata[1][0])
+                return
+
             # check version code to see if app is updated
             app, updated = self.__db_helper.check_app_to_update(app_name, new_app.version_code)
-            updated = True
             if updated:
                 # scrape and insert new data
                 self.__db_helper.insert_app_into_db(metadata[0][0], metadata[1][0])

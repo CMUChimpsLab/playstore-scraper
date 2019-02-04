@@ -95,8 +95,6 @@ class App:
                   num_downloads=app_details["numDownloads"],
                   version_string=app_details.get("versionString", None),
                   is_free=is_free)
-        if "permission" not in app_details:
-            print("{} has no permissions".format(app_details["packageName"]))
 
         return app
 
