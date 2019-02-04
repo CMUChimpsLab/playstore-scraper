@@ -40,14 +40,14 @@ class Updater:
         else:
             apps = pd.read_csv(self.input_file, names=['package_name'])['package_name'].tolist()
 
-        s = Scraper()
         logger.info("Starting bulk update...")
         with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
             return executor.map(partial(self.update_all_thread_worker, s),
                     range(0, len(apps)), apps)
 
-    def update_all_thread_worker(self, s, index, app_name):
+    def update_all_thread_worker(self, index, app_name):
         # bulk scrape to check for updates
+        s = Scraper()
         try:
             metadata = s.get_metadata_for_apps([app_name], bulk=False)
             if metadata is None:
