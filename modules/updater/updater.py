@@ -40,8 +40,8 @@ class Updater:
         else:
             apps = pd.read_csv(self.input_file, names=['package_name'])['package_name'].tolist()
 
-        s = Scraper()
         logger.info("Starting bulk update...")
+        s = Scraper()
         with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
             return executor.map(partial(self.update_all_thread_worker, s),
                     range(0, len(apps)), apps)
