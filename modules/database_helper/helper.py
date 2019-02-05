@@ -330,43 +330,43 @@ class DbHelper:
     # ************************************************************************ #
     # FIELD UPDATES
     # ************************************************************************ #
-    def update_date_last_scraped_for_app(self, uuid, date_last_scraped):
+    def update_date_last_scraped_for_app(self, app_name, date_last_scraped):
         """
         Update the metadata in the database for an application
         :param date_last_scraped: Timestamp indicating when the last check for a new version of the app was made
         :param uuid: The identifier associated with a particular app and version
         """
 
-        res = self.__apk_info_collection.update_one(
-            {'uuid': uuid},
+        res = self.__apk_info_collection.update_many(
+            {"package_name": app_name},
             {'$set': {'date_last_scraped': date_last_scraped}})
         if res.matched_count != 1:
             logger.error("date_scraped {}: Expected 1 document to be matched, instead {} was".format(
-                uuid, str(res.matched_count)))
+                app_name, str(res.matched_count)))
 
     def update_app_as_removed(self, app_name):
         """
         Update the metadata in the database for an application to reflect it as
         being removed
         """
-        res = self.__apk_info_collection.update_one(
+        res = self.__apk_info_collection.update_many(
                 {"package_name": app_name},
                 {"$set": {"removed": True}})
         if res.matched_count != 1:
             logger.error("update_removed {}: Expected 1 document to be matched, instead {} was".format(
                 app_name, str(res.matched_count)))
 
-    def update_app_as_not_removed(self, uuid):
+    def update_app_as_not_removed(self, app_name):
         """
         Update the metadata in the database for an application to reflect it as
         not removed and still in the Play Store
         """
-        res = self.__apk_info_collection.update_one(
-                {"uuid": uuid},
+        res = self.__apk_info_collection.update_many(
+                {"package_name": app_name},
                 {"$set": {"removed": False}})
         if res.matched_count != 1:
             logger.error("update_not_removed {}: Expected 1 document to be matched, instead {} was".format(
-                uuid, str(res.matched_count)))
+                app_name, str(res.matched_count)))
 
     def update_no_download_country(self, uuid):
         """

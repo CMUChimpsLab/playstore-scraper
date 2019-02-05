@@ -80,9 +80,9 @@ class Updater:
                 num_updated = num_updated + 1
             else:
                 # no update so just update last scrape date
-                self.__db_helper.update_app_as_not_removed(app["uuid"])
+                self.__db_helper.update_app_as_not_removed(app_name)
                 self.__db_helper.update_date_last_scraped_for_app(
-                    app['uuid'],
+                    app_name,
                     datetime.datetime.utcnow().strftime("%Y%m%dT%H%M"))
         except Exception as e:
             logger.error(e)
