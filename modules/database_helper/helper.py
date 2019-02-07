@@ -5,8 +5,9 @@ import pandas as pd
 import logging
 import json
 import os
-from dependencies.protobuf_to_dict.protobuf_to_dict.convertor import protobuf_to_dict
+from datetime import datetime
 
+from dependencies.protobuf_to_dict.protobuf_to_dict.convertor import protobuf_to_dict
 from modules.scraper import crawler
 from dependencies.app_object import App
 import dependencies.constants as constants
@@ -233,10 +234,24 @@ class DbHelper:
             logger.info("Inserted {} into db".format(app_info["package_name"]))
         else:
             # Is in the database, but not a top app, so just update
-            old_entry = list(self.__apk_info_collection.find({'package_name': app_info['package_name']}))[0]
-            old_uuid = old_entry['uuid']
+            old_entries = self.__apk_info_collection.find(
+                {'package_name': app_info['package_name']},
+                {"uuid": 1, "package_name": 1, "upload_date": 1})
+
+            old_uuid = None
+            newest_upload = None
+            for entry in old_entries:
+                try:
+                    time_obj = datetime.strptime(entry["upload_date"], "%d %b %Y")
+                except ValueError:
+                    time_obj = datetime.strptime(entry["upload_date"], "%b %d, %Y")
+
+                if newest_upload is None or time_obj > newest_upload:
+                    newest_upload = time_obj
+                    old_uuid = entry["uuid"]
+
             new_id = self.__apk_info_collection.update_one(
-                    {"package_name": app_info["package_name"]},
+                    {"uuid": old_uuid},
                     {"$set": app_info})
             self.__apk_details_collection.update_one(
                 {"details.appDetails.packageName": app_info["package_name"]},
@@ -340,9 +355,6 @@ class DbHelper:
         res = self.__apk_info_collection.update_many(
             {"package_name": app_name},
             {'$set': {'date_last_scraped': date_last_scraped}})
-        if res.matched_count != 1:
-            logger.error("date_scraped {}: Expected 1 document to be matched, instead {} was".format(
-                app_name, str(res.matched_count)))
 
     def update_app_as_removed(self, app_name):
         """
@@ -352,9 +364,6 @@ class DbHelper:
         res = self.__apk_info_collection.update_many(
                 {"package_name": app_name},
                 {"$set": {"removed": True}})
-        if res.matched_count != 1:
-            logger.error("update_removed {}: Expected 1 document to be matched, instead {} was".format(
-                app_name, str(res.matched_count)))
 
     def update_app_as_not_removed(self, app_name):
         """
@@ -364,9 +373,6 @@ class DbHelper:
         res = self.__apk_info_collection.update_many(
                 {"package_name": app_name},
                 {"$set": {"removed": False}})
-        if res.matched_count != 1:
-            logger.error("update_not_removed {}: Expected 1 document to be matched, instead {} was".format(
-                app_name, str(res.matched_count)))
 
     def update_no_download_country(self, uuid):
         """
@@ -467,5 +473,5 @@ class DbHelper:
             if app.get("version_code", None) == new_version_code:
                 updated = False
 
-        return app, updated
+        return updated
 

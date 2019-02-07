@@ -5,6 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 import pandas as pd
 import sys
+import pprint
 
 from modules.scraper.scraper import Scraper
 from modules.database_helper.helper import DbHelper
@@ -15,6 +16,7 @@ from dependencies.app_object import App
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     level=logging.INFO)
+pp = pprint.PrettyPrinter(indent=4)
 
 class Updater:
     """
@@ -55,6 +57,7 @@ class Updater:
                 logger.error("can't find metadata for apps")
                 self.__db_helper.update_app_as_removed(app_name)
                 return
+
             num_updated = 0
             new_app = metadata[0][0]
             if new_app is None:
@@ -66,26 +69,35 @@ class Updater:
                 logger.error("mismatching package names")
                 return
 
-            if metadata[0][0].version_code != protobuf_to_dict(metadata[1][0])["details"]["appDetails"]["versionCode"]:
-                logger.error("VERSION MISMATCH")
-                print(metadata[0][0])
-                print(metadata[1][0])
+            if new_app.version_code is None or new_app.upload_date is None:
+                # TODO add crawler code here to fix this, ignore for now
+                logger.warning("{} - null version_code or upload_date, ignoring".format(app_name))
                 return
 
-            # check version code to see if app is updated
-            app, updated = self.__db_helper.check_app_to_update(app_name, new_app.version_code)
+            if new_app.version_code is not None:
+                info_vc = metadata[0][0].version_code
+                details_dict = protobuf_to_dict(metadata[1][0])
+                if info_vc != details_dict["details"]["appDetails"]["versionCode"]:
+                    logger.error("VERSION MISMATCH for {}".format(app_name))
+                    print(metadata[0][0])
+                    print(metadata[1][0])
+                    return
+
+                # check version code to see if app is updated
+                updated = self.__db_helper.check_app_to_update(app_name, new_app.version_code)
+            else:
+                # if not provided just assume is updated
+                updated = True
+
             if updated:
                 # scrape and insert new data
                 self.__db_helper.insert_app_into_db(metadata[0][0], metadata[1][0])
                 num_updated = num_updated + 1
-            else:
-                # no update so just update last scrape date
-                self.__db_helper.update_app_as_not_removed(app_name)
-                self.__db_helper.update_date_last_scraped_for_app(
-                    app_name,
-                    datetime.datetime.utcnow().strftime("%Y%m%dT%H%M"))
+            self.__db_helper.update_app_as_not_removed(app_name)
+            self.__db_helper.update_date_last_scraped_for_app(app_name,
+                datetime.datetime.utcnow().strftime("%Y%m%dT%H%M"))
         except Exception as e:
-            logger.error(e)
+            logger.error("{} - {}".format(app_name, str(e)))
 
 """
 if __name__ == '__main__':

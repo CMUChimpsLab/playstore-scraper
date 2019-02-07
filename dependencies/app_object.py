@@ -1,4 +1,5 @@
 import pandas as pd
+import pprint
 
 class App:
     """
@@ -15,8 +16,8 @@ class App:
                  major_version_number=None, developer_website=None,
                  num_downloads=None, version_string=None, is_free=None):
 
-        if any(variable is None for variable in [uuid, package_name, version_code]):
-            raise AttributeError("The following cannot be None: uuid, package_name, version_code")
+        if any(variable is None for variable in [uuid, package_name]):
+            raise AttributeError("The following cannot be None: uuid, package_name")
 
         # These values should not be changed
         self.__dict__['uuid'] = uuid
@@ -75,10 +76,10 @@ class App:
 
         app = App(uuid,
                   app_details["packageName"],
-                  app_details['versionCode'],
+                  app_details.get("versionCode", None),
                   title=info_dict['title'],
                   developer_name=app_details['developerName'],
-                  installation_size=app_details['installationSize'],
+                  installation_size=app_details.get('installationSize', None),
                   category=info_dict["relatedLinks"]["categoryInfo"]["appCategory"],
                   user_rating=info_dict['aggregateRating'],
                   permission=app_details.get('permission', []),
@@ -86,13 +87,13 @@ class App:
                   description_text=info_dict['descriptionHtml'],
                   content_rating=app_details.get("contentRating", None),
                   app_type=app_details["appType"],
-                  developer_email=app_details["developerEmail"],
+                  developer_email=app_details.get("developerEmail", None),
                   file_obj=a_file,
                   upload_date=app_details.get("uploadDate", None),
                   recent_changes_html=app_details.get("recentChangesHtml", None),
                   major_version_number=app_details.get("majorVersionNumber", None),
                   developer_website=app_details.get("developerWebsite", None),
-                  num_downloads=app_details["numDownloads"],
+                  num_downloads=app_details.get("numDownloads", None),
                   version_string=app_details.get("versionString", None),
                   is_free=is_free)
 
