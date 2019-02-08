@@ -110,7 +110,8 @@ def download_and_decompile(args):
 
 def update_top_list(args):
     d = DbHelper()
-    d.update_top_apps()
+    new_top_list = crawler.get_top_apps_list()
+    d.update_top_apps(new_top_list)
 
 def put_top_apps_in_db(args):
     d = DbHelper()
@@ -152,7 +153,8 @@ def full_pipeline(args):
 
     # start by updating top apps
     d = DbHelper()
-    d.update_top_apps()
+    new_top_list = crawler.get_top_apps_list()
+    d.update_top_apps(new_top_list)
 
     # TODO add top apps scrape
 

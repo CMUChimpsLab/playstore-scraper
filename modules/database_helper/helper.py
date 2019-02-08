@@ -275,13 +275,12 @@ class DbHelper:
                 os.remove(constants.DECOMPILE_FOLDER + zip_path)
             logger.info("Replaced {} in db".format(app_info["package_name"]))
 
-    def update_top_apps(self):
+    def update_top_apps(self, new_top_list):
         """
         Update the list of top apps to include possible new ones, and change
         the status of old ones. _id is package_name, makes for faster querying
         """
         self.__top_apps.update_many({}, {'$set': {'currently_top': False}})
-        new_top_list = crawler.get_top_apps_list()
         for name in new_top_list:
             self.__top_apps.update_one({'_id': name},
                 {'$set': {'_id': name, 'currently_top': True}},
