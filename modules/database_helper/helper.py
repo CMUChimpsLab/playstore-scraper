@@ -414,6 +414,8 @@ class DbHelper:
         When the downloader downloads an app, this sets the download time for
         that app in seconds from epoch form
         """
+        if uuid.endswith(".apk"):
+            uuid = uuid[:-4]
         res = self.__apk_info_collection.update_one(
             {'uuid': uuid},
             {'$set': {'date_downloaded': download_completion_time}}

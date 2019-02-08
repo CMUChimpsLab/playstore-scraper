@@ -98,7 +98,7 @@ class Downloader:
         app_dir = uuid[0] + "/" + uuid[1]
         downloaded_apps = os.listdir(self.__download_folder + "/" + app_dir)
         if not force_download and app[1] in downloaded_apps:
-            logger.info("App already downloaded - %s" % app[0])
+            logger.info("App already downloaded - {}".format(app[0]))
             download_time = os.path.getmtime(self.__download_folder + "/" + app_dir + "/" + app[1])
             self.__database_helper.set_download_date(uuid,
                 datetime.datetime.fromtimestamp(download_time).strftime("%Y%m%dT%H%M"))
@@ -115,7 +115,7 @@ class Downloader:
 
                 # check if any failed downloads should be retried
                 retry = False
-                for (uuid, e) in fails:
+                for (failed_uuid, e) in fails:
                     if type(e) != SystemError and ("Being throttled" in e.value or "Server busy" in e.value):
                         logger.info("{} throttled or busy, retrying".format(app[0]))
                         retry = True
