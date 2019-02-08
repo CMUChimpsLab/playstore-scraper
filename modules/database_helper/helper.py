@@ -8,7 +8,6 @@ import os
 from datetime import datetime
 
 from dependencies.protobuf_to_dict.protobuf_to_dict.convertor import protobuf_to_dict
-from modules.scraper import crawler
 from dependencies.app_object import App
 import dependencies.constants as constants
 from modules.database_helper.util import details_to_dict
@@ -84,14 +83,6 @@ class DbHelper:
         cursor = self.__apk_info_collection.find()
         return pd.DataFrame(list(cursor)).set_index('_id')
 
-    def get_next_app_to_download(self):
-        """
-        Returns [package_name, uuid] of next app that needs to be downloaded.
-        The caller of the method is responsible for correctly updating the date_downloaded property of the document.
-        """
-        app = self.__apk_info_collection.find_one({'date_downloaded': None})
-        return [app['package_name'], app['uuid']]
-
     def get_all_downloaded_app_uuids(self):
         """
         Returns a list of UUIDs for all apps that have been downloaded
@@ -106,7 +97,15 @@ class DbHelper:
         Returns a list of package_names for all of the apps that need to be
         downloaded + analyzed + decompiled
         """
-        app = self.__apk_info_collection.find({'date_downloaded': None}, {'_id': 0, 'package_name': 1})
+        app = self.__apk_info_collection.find(
+            {
+                "date_downloaded": None,
+                "removed": False,
+            },
+            {
+                "_id": 0,
+                "package_name": 1
+            })
         return [a['package_name'] for a in app]
 
     def get_all_apps_to_analyze(self):
@@ -128,8 +127,7 @@ class DbHelper:
         cursor = self.__apk_info_collection \
             .find(
                 {
-                    # "$or": [{"removed": False}, {"removed": {"$exists": False}}],
-                    {"removed": {"$exists": False}}, # TODO temp
+                    "$or": [{"removed": False}, {"removed": {"$exists": False}}],
                 },
                 {
                     'package_name': 1,

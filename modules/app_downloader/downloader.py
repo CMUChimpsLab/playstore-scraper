@@ -1,4 +1,5 @@
 import datetime
+import time
 import os
 import logging
 import pandas as pd
@@ -109,14 +110,14 @@ class Downloader:
         downloaded_uuids = set()
         while True:
             try:
-                logger.info("Downloading app - {} as {}, {}".format(app[0], app[1], threading.get_ident()))
+                logger.info("Downloading app - {} as {}".format(app[0], app[1]))
                 downloaded_uuids, fails = api.download_with_errors([app])
 
                 # check if any failed downloads should be retried
                 retry = False
                 for (uuid, e) in fails:
                     if type(e) != SystemError and ("Being throttled" in e.value or "Server busy" in e.value):
-                        logger.info("DEBUG throttled or busy, retrying {}".format(threading.get_ident()))
+                        logger.info("{} throttled or busy, retrying".format(app[0]))
                         retry = True
 
                         # check if thread should refresh token
@@ -134,12 +135,11 @@ class Downloader:
                             while token_refreshing:
                                 time.sleep(0.5)
                             lock.release()
-                    elif "purchases are not supported in your country" in e.value:
-                        # mark as wrong country
-                        self.__database_helper.update_no_download_country(uuid)
+                    #elif "purchases are not supported in your country" in e.value:
+                    #     mark as wrong country
+                    #    self.__database_helper.update_no_download_country(uuid)
 
                 if retry:
-                    logger.info("DEBUG retrying {}".format(threading.get_ident()))
                     continue
 
                 if len(downloaded_uuids) > 0:
