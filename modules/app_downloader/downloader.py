@@ -124,6 +124,7 @@ class Downloader:
                         if should_refresh:
                             # acquired lock so refresh token
                             token_refreshing = True
+                            time.sleep(5)
                             api.refresh_token()
                             token_refreshing = False
                             lock.release()
@@ -131,7 +132,7 @@ class Downloader:
                             # wait until token is done being refreshed
                             lock.acquire()
                             while token_refreshing:
-                                time.sleep(0.1)
+                                time.sleep(0.5)
                             lock.release()
                     elif "purchases are not supported in your country" in e.value:
                         # mark as wrong country

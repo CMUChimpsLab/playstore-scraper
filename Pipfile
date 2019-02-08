@@ -17,6 +17,8 @@ docker = "*"
 pycrypto = "*"
 matplotlib = "*"
 protobuf3-to-dict = "*"
+"beautifulsoup4" = "*"
+lxml = "*"
 
 [dev-packages]
 

@@ -185,6 +185,7 @@ class Scraper:
                     if should_refresh:
                         # acquired lock so refresh token
                         token_refreshing = True
+                        time.sleep(5)
                         self.api.refresh_token()
                         token_refreshing = False
                         lock.release()
@@ -192,7 +193,7 @@ class Scraper:
                         # wait until token is done being refreshed
                         lock.acquire()
                         while token_refreshing:
-                                time.sleep(0.1)
+                                time.sleep(0.5)
                         lock.release()
 
                     continue
@@ -281,6 +282,7 @@ class Scraper:
                     if should_refresh:
                         # acquired lock so refresh token
                         token_refreshing = True
+                        time.sleep(5)
                         self.api.refresh_token()
                         token_refreshing = False
                         lock.release()
@@ -288,7 +290,7 @@ class Scraper:
                         # wait until token is done being refreshed
                         lock.acquire()
                         while token_refreshing:
-                                time.sleep(0.1)
+                                time.sleep(0.5)
                         lock.release()
 
                     continue

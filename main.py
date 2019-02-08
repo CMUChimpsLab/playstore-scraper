@@ -106,10 +106,7 @@ def decompile_apks(args):
 def download_and_decompile(args):
     # Downloads then decompiles each app
     # ONLY DECOMPILES THE TOP APPS
-    helper = DbHelper()
-    apps = list(helper.get_all_apps_to_download())
-    with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
-        executor.map(download_decompile_apk, apps)
+    download_decompile_all()
 
 def update_top_list(args):
     d = DbHelper()
@@ -153,11 +150,9 @@ def full_pipeline(args):
         logger.error("Can't use updater with -f option")
         return
 
-    '''
     # start by updating top apps
     d = DbHelper()
     d.update_top_apps()
-    '''
 
     # TODO add top apps scrape
 
@@ -181,33 +176,19 @@ def full_pipeline(args):
         u = Updater()
         u.update_apps_all()
         logger.info("...update done")
-    sys.exit(0)
-    #'''
 
     # download/decompile
     logger.info("Starting download and decompile...")
-    dd_thread = threading.Thread(target=download_decompile_all)
-    dd_thread.start()
-    dd_thread.join()
+    download_decompile_all()
     logger.info("...download and decompile done")
 
     sys.exit(0)
 
     # static analysis
     logger.info("Starting analysis...")
-    analysis_thread = threading.Thread(target=analyze, args=([None]))
     os.environ["PIPENV_IGNORE_VIRTUALENVS"] = "1" # allow analysis pipeline to have own env
-    analysis_thread.start()
-    analysis_thread.join()
+    analyze()
     logger.info("...analysis done")
-
-def testing(args):
-    # download/decompile
-    logger.info("Starting download and decompile...")
-    dd_thread = threading.Thread(target=download_decompile_all)
-    dd_thread.start()
-    dd_thread.join()
-    logger.info("...download and decompile done")
 
 # ***************** #
 # set up CLI argparser
@@ -308,12 +289,6 @@ fp_parser = subparsers.add_parser("fp",
 fp_parser.add_argument("-k", "--kickoff", action="store_true", help="true if is first run, false otherwise")
 fp_parser.add_argument("-f", "--fname", help="file name to scrape from, otherwise use crawler to get package names")
 fp_parser.set_defaults(func=full_pipeline)
-
-tt_parser = subparsers.add_parser("tt",
-    aliases=["ttestt"])
-tt_parser.add_argument("-k", "--kickoff", action="store_true", help="true if is first run, false otherwise")
-tt_parser.add_argument("-f", "--fname", help="file name to scrape from, otherwise use crawler to get package names")
-tt_parser.set_defaults(func=testing)
 
 if __name__ == '__main__':
     args = parser.parse_args()

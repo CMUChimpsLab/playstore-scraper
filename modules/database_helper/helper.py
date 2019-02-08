@@ -54,6 +54,14 @@ class DbHelper:
     # ************************************************************************ #
     #  GETS
     # ************************************************************************ #
+    def get_all_app_names_uuids(self):
+        """
+        Finds the uuids for all of the apps we have yet to analyze at all
+        Perhaps add functionality for specific analyses later
+        """
+        apps = self.__apk_info_collection.find({}, {"_id": 0, "uuid": 1, "package_name": 1})
+        return [(app["package_name"], app["uuid"]) for app in apps]
+
     def get_removed_names_from_database(self):
         """
         Retrieve the names of all the apps from the database
@@ -120,7 +128,8 @@ class DbHelper:
         cursor = self.__apk_info_collection \
             .find(
                 {
-                    "$or": [{"removed": False}, {"removed": {"$exists": False}}],
+                    # "$or": [{"removed": False}, {"removed": {"$exists": False}}],
+                    {"removed": {"$exists": False}}, # TODO temp
                 },
                 {
                     'package_name': 1,
