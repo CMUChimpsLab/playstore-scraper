@@ -122,7 +122,7 @@ def put_top_apps_in_db(args):
 def analyze(args):
     # static analysis
     helper = DbHelper()
-    uuid_list = helper.get_all_apps_to_analyze()
+    uuid_list = helper.get_all_apps_to_analyze()[0]
 
     os.chdir("modules/staticAnalysisPipeline")
     fname = to_file_for_analysis(uuid_list)
