@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
+    <script type='text/javascript' src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/js/start.js?v=1' type='text/javascript'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/js/jquery-1.7.2.min.js'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/bootstrap/js/bootstrap.js'></script>
+    <link href='https://s3.amazonaws.com/privacygrade/static/bootstrap/css/bootstrap.css' rel='stylesheet'>
+    <style type='text/css'>
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+    </style>
+    <link href='https://s3.amazonaws.com/privacygrade/static/bootstrap/css/bootstrap-responsive.css' rel='stylesheet'>
+    <title>Mobile app privacy comfort</title>
+
+    <!-- Le styles -->
+    <link href='https://s3.amazonaws.com/privacygrade/static/css/start.css?v=1' rel='stylesheet'> 
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src='http://html5shim.googlecode.com/svn/trunk/html5.js'></script>
+    <![endif]-->
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+  </head>
+  <body id = 'body'>
+
+    <div id='appInfo' class='span9 offset3'>
+<h3>Instruction</h3>
+<p class='instuction'> Please read the mobile app description carefully and look at the application screenshots <br>then answer the questions below. HIT will be rejected if you just click through. </p>
+<h4 style='margin-left:20px'>Hill Climb Racing</h4>
+<img class="icon" src=https://lh6.ggpht.com/N0UxhBVUmx8s7y3F7Kqre2AcpXyPDKAp8nHjiPPoOONc_sfugHCYMjBpbUKCMlK_XUs alt="icon image">
+<h4>App Screenshots</h4>
+<div id='screenShots'>
+<table border='0' width='65%'>
+  <tbody>
+    <tr>
+      <td>
+        <img class='imageCell' src=https://lh6.ggpht.com/X-mKVE7VKpBnoEdU456TeDHFqoOvPw3DhBtmYV6A08TXIJNPK6xyaCG_A5mld5YhzwM alt='screen shot' >
+      </td>
+      <td>
+        <img class='imageCell' src=https://lh4.ggpht.com/Z5Wy95Va4EOlZcfwGEqGGDhNdsU0uWVq3Kqc0udNYkTex5TLC_g8bkgtdRF4KF3F75E alt='screen shot' >
+      </td>
+      <td>
+        <img class='imageCell' src=https://lh3.ggpht.com/sXoKRlFBVJWWflRPsqTOl74kmTbQR2SXcxe69gFKokEBzlqVol1t5Ar4HyrmhPuN4sQ alt='screen shot' >
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+  
+<h4>App Description</h4>
+<div id='descrption' class='span8'>
+  <p>One of the most addictive and entertaining physics based driving game ever made for Android! And it&#39;s free!<p><br>Meet Newton Bill, the young aspiring uphill racer. He is about to embark on a journey that takes him to where no ride has ever been before. With little respect to the laws of physics, Newton Bill will not rest until he has conquered the highest hills up on the moon!<p>Face the challenges of unique hill climbing environments with many different cars. Gain bonuses from daring tricks and collect coins to upgrade your car and reach even higher distances. Watch out though - Bill&#39;s stout neck is not what it used to be when he was a kid! And his good ol&#39; gasoline crematorium will easily run out of fuel.<p>Features:<br> - 14 different vehicles with unique upgrades (many different vehicles: bike, truck, jeep, tank etc)<br> - Upgradeable parts include engine, suspension, tires and 4WD<br> - 14 stages with levels to reach in each (Countryside, Desert, Arctic and the Moon! +++)<br> - Share your score with a screenshot with your friends!<br> - Cool graphics and smooth physics simulation<br> - Designed to look good on low resolution and high resolution devices (incl. tablets)<br> - Real turbo sound when you upgrade your engine!<p>Like us at Facebook and stay tuned with all new games and updates: <a href="https://www.google.com/url?q=http://www.facebook.com/Fingersoft&amp;sa=D&amp;usg=AFQjCNGz4JeHd4p-qkCF8PEi_llXKtnwTQ" target="_blank">http://www.facebook.com/Fingersoft</a><p>We&#39;d appreciate if you&#39;d report any issues you&#39;re having with the game to <a href="mailto:support@fingersoft.net">support@fingersoft.net</a>, please include your device make and model.</p>
+</div>
+<hr class="span8">
+</div>
+<div class="span8 offset3">
+<h4>Questions</h4>
+<form name='mturk_form' method='post' id='mturk_form' action='https://www.mturk.com/mturk/externalSubmit'  onsubmit='return checkformbeforesubmit();' style="margin-left:20px">
+  <input type='hidden' value='' name='assignmentId' id='assignmentId'>
+  <input type='hidden' name='packageName' value='com.fingersoft.hillclimb' id="packageName"> 
+  <input type='hidden' name='permissionType' value='READ_PHONE_STATE' id="permissionType"> 
+  <input type='hidden' name='purposeType' value='MOBILE_ANALYTICS' id="purposeType"> 
+  <input type='hidden' name='permissionText' value="reads phone current state information like signal, carrier, device ID and phone number" id="permissionText"> 
+  <input type='hidden' name='purposeText' value="to identify users for market/customer analysis" id="purposeText"> 
+  <div id='Q1'>
+    <h5>Question 1</h5>
+      <p>What category do you think this mobile app belongs to?<span style='color:red'>(required)</span></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='GAME'> Game Application<br></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='APPLICATION'> Non-game Application<br></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='Content: Book, Music or Video'> Content: Book, Music or Video<br></p>
+      <input type='hidden' name='Q1realCategry' value=GAME> 
+  </div>
+  <div id='Q2' style='margin-top:20px'>
+    <h5>Question 2</h5>
+    <p>Based on our analysis, Hill Climb Racing <strong><span style='color:blue'>reads phone current state information like signal, carrier, device ID and phone number</span></strong> <strong>to identify users for market/customer analysis</strong>. </p>
+    <p>Suppose you have installed Hill Climb Racing on your smart phone, do you feel comfortable when it <strong><span style='color:blue'>reads phone current state information like signal, carrier, device ID and phone number</span></strong> <strong>to identify users for market/customer analysis</strong>. <span style='color:red'>(required)</span> </p>
+    <p><input type='radio' name='Q2comfortQuestion' value='2'> Very comfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='1'> Somewhat comfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='-1'> Somewhat uncomfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='-2'> Very uncomfortable<br></p>
+  </div>
+  <div id="Q3" style='margin-top:20px'>
+    <h5>Question 3</h5>
+    <p>Please provide any comments you may have below, we appreciate your input!</p>
+    <textarea rows="3" cols="80" name="Q2comment"></textarea>
+  </div>
+  <p id='error_msg' class='alert' style='display:none'>**Please answer all the required questions.**</p>
+  <p><input type='submit' id='submitButton' value='Submit' /></p>
+</form>
+<script language='Javascript'>turkSetAssignmentID();</script>
+</div>
+
+</body>
+</html>

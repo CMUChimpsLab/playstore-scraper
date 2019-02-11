@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 multiprocessing-logging = "*"
+protobuf = "*"
 
 [dev-packages]
 pymongo = "*"

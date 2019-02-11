@@ -122,12 +122,14 @@ def put_top_apps_in_db(args):
 def analyze(args):
     # static analysis
     helper = DbHelper()
-    uuid_list = helper.get_all_apps_to_analyze()[0]
+    uuid_list = helper.get_all_apps_to_analyze()[0:1]
 
     os.chdir("modules/staticAnalysisPipeline")
     fname = to_file_for_analysis(uuid_list)
-    subprocess.call(["pipenv", "install", "--dev"])
-    subprocess.call(["pipenv", "run", "python", "analyzer.py", fname])
+    python_2_env = os.environ.copy()
+    python_2_env["PIPENV_IGNORE_VIRTUALENVS"] = "1"
+    subprocess.call(["pipenv", "install", "--dev"], env=python_2_env)
+    subprocess.call(["pipenv", "run", "python", "analyzer.py", fname], env=python_2_env)
     os.chdir("../..")
     sys.exit(0)
 

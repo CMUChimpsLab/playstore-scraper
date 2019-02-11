@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
+    <script type='text/javascript' src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/js/start.js?v=1' type='text/javascript'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/js/jquery-1.7.2.min.js'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/bootstrap/js/bootstrap.js'></script>
+    <link href='https://s3.amazonaws.com/privacygrade/static/bootstrap/css/bootstrap.css' rel='stylesheet'>
+    <style type='text/css'>
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+    </style>
+    <link href='https://s3.amazonaws.com/privacygrade/static/bootstrap/css/bootstrap-responsive.css' rel='stylesheet'>
+    <title>Mobile app privacy comfort</title>
+
+    <!-- Le styles -->
+    <link href='https://s3.amazonaws.com/privacygrade/static/css/start.css?v=1' rel='stylesheet'> 
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src='http://html5shim.googlecode.com/svn/trunk/html5.js'></script>
+    <![endif]-->
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+  </head>
+  <body id = 'body'>
+
+    <div id='appInfo' class='span9 offset3'>
+<h3>Instruction</h3>
+<p class='instuction'> Please read the mobile app description carefully and look at the application screenshots <br>then answer the questions below. HIT will be rejected if you just click through. </p>
+<h4 style='margin-left:20px'>Google Play Music</h4>
+<img class="icon" src=https://lh5.ggpht.com/8TgQiluu48_ti211EJIdKDiF3wJmEIeTiGT913KjLXaamEnTXt-GqWudgG593-4QODM alt="icon image">
+<h4>App Screenshots</h4>
+<div id='screenShots'>
+<table border='0' width='65%'>
+  <tbody>
+    <tr>
+      <td>
+        <img class='imageCell' src=https://lh4.ggpht.com/hMWW36xnh9Z7GY_eMWIKMf3iq2F075uHX-LaGD4mfQ8M06lqNHVY_exVxFoV2zSuqdNd alt='screen shot' >
+      </td>
+      <td>
+        <img class='imageCell' src=https://lh4.ggpht.com/lSrBP_nGY4yoRRD1QWeTNTodZFm5HZFmgaH2rumr7MBcd2dFewqiZoNRto1BvsWA348 alt='screen shot' >
+      </td>
+      <td>
+        <img class='imageCell' src=https://lh3.ggpht.com/CgDOto1JIi2YecImKdU5cpVg4fcC8MhJ3U9UKfBEhLK2lvW_PtnC1aeE0tMcq2agCC4 alt='screen shot' >
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+  
+<h4>App Description</h4>
+<div id='descrption' class='span8'>
+  <p>Google Play Music makes it easy to discover, play and share the music you love on Android and the web.<p> With our new All Access service, you can play millions of songs on Google Play, listen to radio with no limits, and enjoy playlists handcrafted by our music experts.<p>With both All Access and Standard, the Google Play Music app lets you listen to your music collection anywhere. All your music is stored online, so no need to worry about syncing, storage space or offline playback.<p>All Access features:<br>* Listen to unlimited songs<br>* Create custom radio from any song, artist or album<br>* Enjoy radio without skip limits<br>* Get smart recommendations based on your tastes<p>All Access and Standard features:<br>* Add up to 20,000 of your own songs from your personal music collection<br>* Access your music anywhere without syncing, and save your favorites for offline playback<br>* Experience music without ads<br>* Buy new music on Google Play (18M+ songs)<br>* Share a free full play of the songs you purchase from Google Play with your friends on Google+.<br>* Learn more about availability of Google Play Music at <a href="https://www.google.com/url?q=https://support.google.com/googleplay/?p%3Davailability&amp;sa=D&amp;usg=AFQjCNEXYscMH7VuuTdNgD6MsUXhfGePDg" target="_blank">https://support.google.com/googleplay/?p=availability</a><br>* Learn more about Google Play at http://play.google.com/about/music</p>
+</div>
+<hr class="span8">
+</div>
+<div class="span8 offset3">
+<h4>Questions</h4>
+<form name='mturk_form' method='post' id='mturk_form' action='https://www.mturk.com/mturk/externalSubmit'  onsubmit='return checkformbeforesubmit();' style="margin-left:20px">
+  <input type='hidden' value='' name='assignmentId' id='assignmentId'>
+  <input type='hidden' name='packageName' value='com.google.android.music' id="packageName"> 
+  <input type='hidden' name='permissionType' value='GET_ACCOUNTS' id="permissionType"> 
+  <input type='hidden' name='purposeType' value='INTERNAL' id="purposeType"> 
+  <input type='hidden' name='permissionText' value="uses user's accounts information stored on the phone" id="permissionText"> 
+  <input type='hidden' name='purposeText' value="to login the app with Google accounts" id="purposeText"> 
+  <div id='Q1'>
+    <h5>Question 1</h5>
+      <p>What category do you think this mobile app belongs to?<span style='color:red'>(required)</span></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='GAME'> Game Application<br></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='APPLICATION'> Non-game Application<br></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='Content: Book, Music or Video'> Content: Book, Music or Video<br></p>
+      <input type='hidden' name='Q1realCategry' value=APPLICATION> 
+  </div>
+  <div id='Q2' style='margin-top:20px'>
+    <h5>Question 2</h5>
+    <p>Based on our analysis, Google Play Music <strong><span style='color:blue'>uses user's accounts information stored on the phone</span></strong> <strong>to login the app with Google accounts</strong>. </p>
+    <p>Suppose you have installed Google Play Music on your smart phone, do you feel comfortable when it <strong><span style='color:blue'>uses user's accounts information stored on the phone</span></strong> <strong>to login the app with Google accounts</strong>. <span style='color:red'>(required)</span> </p>
+    <p><input type='radio' name='Q2comfortQuestion' value='2'> Very comfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='1'> Somewhat comfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='-1'> Somewhat uncomfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='-2'> Very uncomfortable<br></p>
+  </div>
+  <div id="Q3" style='margin-top:20px'>
+    <h5>Question 3</h5>
+    <p>Please provide any comments you may have below, we appreciate your input!</p>
+    <textarea rows="3" cols="80" name="Q2comment"></textarea>
+  </div>
+  <p id='error_msg' class='alert' style='display:none'>**Please answer all the required questions.**</p>
+  <p><input type='submit' id='submitButton' value='Submit' /></p>
+</form>
+<script language='Javascript'>turkSetAssignmentID();</script>
+</div>
+
+</body>
+</html>

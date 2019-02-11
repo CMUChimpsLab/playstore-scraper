@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
+    <script type='text/javascript' src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/js/start.js?v=1' type='text/javascript'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/js/jquery-1.7.2.min.js'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/bootstrap/js/bootstrap.js'></script>
+    <link href='https://s3.amazonaws.com/privacygrade/static/bootstrap/css/bootstrap.css' rel='stylesheet'>
+    <style type='text/css'>
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+    </style>
+    <link href='https://s3.amazonaws.com/privacygrade/static/bootstrap/css/bootstrap-responsive.css' rel='stylesheet'>
+    <title>Mobile app privacy comfort</title>
+
+    <!-- Le styles -->
+    <link href='https://s3.amazonaws.com/privacygrade/static/css/start.css?v=1' rel='stylesheet'> 
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src='http://html5shim.googlecode.com/svn/trunk/html5.js'></script>
+    <![endif]-->
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+  </head>
+  <body id = 'body'>
+
+    <div id='appInfo' class='span9 offset3'>
+<h3>Instruction</h3>
+<p class='instuction'> Please read the mobile app description carefully and look at the application screenshots <br>then answer the questions below. HIT will be rejected if you just click through. </p>
+<h4 style='margin-left:20px'>Antivirus Free</h4>
+<img class="icon" src=https://lh6.ggpht.com/xyNDLFlX6Y01V8L4PyPylTOEwtxuBFdNbeJ5qzHOmXLw-rAOryTH7ZKMfIuKNqoSYQ alt="icon image">
+<h4>App Screenshots</h4>
+<div id='screenShots'>
+<table border='0' width='65%'>
+  <tbody>
+    <tr>
+      <td>
+        <img class='imageCell' src=https://lh6.ggpht.com/YLZiHxXdX2UsH1IytEjfs5BciioIhAx05MtiUfcEutZpPZSNco39u9OikBkB04sXzyqe alt='screen shot' >
+      </td>
+      <td>
+        <img class='imageCell' src=https://lh5.ggpht.com/PWo-3od0Yi7Ir1TkWCnNbv3fYCZ8KygLaRXFLbP2oc_P182PyTGhUWPJ4HDtugtop44 alt='screen shot' >
+      </td>
+      <td>
+        <img class='imageCell' src=https://lh5.ggpht.com/wAJE9Hv5dITNz2jyGJUXghK1mvf-7YkYLXbdfxErhNCJ2zqnhrvqN0V1nrkuKoDSbA alt='screen shot' >
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+  
+<h4>App Description</h4>
+<div id='descrption' class='span8'>
+  <p>Antivirus Free gives you the latest Android mobile protection.<p>Over 10,000,000 users have already enjoyed Antivirus Free. Join them and Download Free Now! <p>Antivirus Free’s features offer a complete mobile security package. Real-time antivirus protection keeps you safe from the latest mobile threats, viruses and malicious apps by cross-referencing new apps that are installed on your mobile device.<p>Why do you need mobile protection and security?<p>Some mobile downloads can:<br>1. Compromise your security by accessing the account log-in info of your social media or email accounts<br>2. Send SMS from your mobile that cost your money<br>3. Track your mobile activity and relay it to a remote server<p>Maintain battery life<br>Antivirus Free’s battery friendly system will give you comprehensive mobile protection while using less of your battery than other mobile security apps.<p>Complete Mobile Protection<br>Compatible with all the most popular mobile devices, Antivirus Free is an essential app if you are serious about mobile protection. Ensure that only trustworthy apps are installed on your Android and keep your private data safe while doing so.<p>Full Protection in Full Version<br>You are able to upgrade to the Full Version to get more features and advanced protection, such as more professional antivirus engine.<p>Features of Full Version:<br>--Anti-Virus &amp; Security Protection: Scan with Dual-Engine<br>--Automatic virus database update (Premium)<br>--System Optimization: kill unnecessary tasks to save RAM and Battery<br>--Find Your Phone<br>--Network Manager<br>--Privacy Protection<br>--Backup Contacts &amp; Restore<br>--Anti-eavesdropping protection (Premium)<br>--Anti-theft features: Lock phone, Delete data, Sound an Alarm, etc. (Premium)<br>--And more features<p>Simple yet effective, Antivirus Free is easier, faster and lighter on your battery than anything else! Download Now!</p>
+</div>
+<hr class="span8">
+</div>
+<div class="span8 offset3">
+<h4>Questions</h4>
+<form name='mturk_form' method='post' id='mturk_form' action='https://www.mturk.com/mturk/externalSubmit'  onsubmit='return checkformbeforesubmit();' style="margin-left:20px">
+  <input type='hidden' value='' name='assignmentId' id='assignmentId'>
+  <input type='hidden' name='packageName' value='com.zrgiu.antivirus' id="packageName"> 
+  <input type='hidden' name='permissionType' value='SEND_SMS' id="permissionType"> 
+  <input type='hidden' name='purposeType' value='PAYMENT' id="purposeType"> 
+  <input type='hidden' name='permissionText' value="can send out SMS messages" id="permissionText"> 
+  <input type='hidden' name='purposeText' value="for in-app purchase" id="purposeText"> 
+  <div id='Q1'>
+    <h5>Question 1</h5>
+      <p>What category do you think this mobile app belongs to?<span style='color:red'>(required)</span></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='GAME'> Game Application<br></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='APPLICATION'> Non-game Application<br></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='Content: Book, Music or Video'> Content: Book, Music or Video<br></p>
+      <input type='hidden' name='Q1realCategory' value=APPLICATION> 
+  </div>
+  <div id='Q2' style='margin-top:20px'>
+    <h5>Question 2</h5>
+    <p>Based on our analysis, Antivirus Free <strong><span style='color:blue'>can send out SMS messages</span></strong> <strong>for in-app purchase</strong>. </p>
+    <p>Suppose you have installed Antivirus Free on your smart phone, do you feel comfortable when it <strong><span style='color:blue'>can send out SMS messages</span></strong> <strong>for in-app purchase</strong>. <span style='color:red'>(required)</span> </p>
+    <p><input type='radio' name='Q2comfortQuestion' value='2'> Very comfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='1'> Somewhat comfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='-1'> Somewhat uncomfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='-2'> Very uncomfortable<br></p>
+  </div>
+  <div id="Q3" style='margin-top:20px'>
+    <h5>Question 3</h5>
+    <p>Please provide any comments you may have below, we appreciate your input!</p>
+    <textarea rows="3" cols="80" name="Q2comment"></textarea>
+  </div>
+  <p id='error_msg' class='alert' style='display:none'>**Please answer all the required questions.**</p>
+  <p><input type='submit' id='submitButton' value='Submit' /></p>
+</form>
+<script language='Javascript'>turkSetAssignmentID();</script>
+</div>
+
+</body>
+</html>

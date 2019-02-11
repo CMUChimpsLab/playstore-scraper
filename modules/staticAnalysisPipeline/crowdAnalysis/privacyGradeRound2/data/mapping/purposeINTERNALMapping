@@ -1,0 +1,9 @@
+[
+{'packageName': 'com.tumblr', 'purposeText': 'to manage Tumblr account on users\' phone', 'purpose': 'INTERNAL', 'permissionText': "can use user's account authentication information (like password) or create new accounts", 'permission': 'AUTHENTICATE_ACCOUNTS'} ,
+{'packageName': 'com.tripadvisor.tripadvisor', 'purposeText': 'to login Tripadvisor', 'purpose': 'INTERNAL', 'permissionText': "can manage user's accounts on the phone", 'permission': 'MANAGE_ACCOUNTS'} ,
+{'packageName': 'com.yahoo.mobile.client.android.weather', 'purposeText': 'to login Yahoo Weather', 'purpose': 'INTERNAL', 'permissionText': "can manage user's accounts on the phone", 'permission': 'MANAGE_ACCOUNTS'} ,
+{'packageName': 'com.nimbuzz', 'purposeText': 'to login Nimbuzz account', 'purpose': 'INTERNAL', 'permissionText': "can manage user's accounts on the phone", 'permission': 'MANAGE_ACCOUNTS'} ,
+{'packageName': 'com.tumblr', 'purposeText': 'to login Tumblr', 'purpose': 'INTERNAL', 'permissionText': "can manage user's accounts on the phone", 'permission': 'MANAGE_ACCOUNTS'} ,
+{'packageName': 'com.lookout', 'purposeText': 'to login Antivirus & Security | Lookout', 'purpose': 'INTERNAL', 'permissionText': "can manage user's accounts on the phone", 'permission': 'MANAGE_ACCOUNTS'} ,
+{'packageName': 'com.yahoo.mobile.client.android.im', 'purposeText': 'to login Yahoo Messenger', 'purpose': 'INTERNAL', 'permissionText': "can manage user's accounts on the phone", 'permission': 'MANAGE_ACCOUNTS'} ,
+]

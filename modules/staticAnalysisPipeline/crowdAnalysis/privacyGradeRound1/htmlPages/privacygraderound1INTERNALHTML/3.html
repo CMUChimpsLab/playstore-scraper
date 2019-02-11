@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
+    <script type='text/javascript' src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/js/start.js?v=1' type='text/javascript'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/js/jquery-1.7.2.min.js'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/bootstrap/js/bootstrap.js'></script>
+    <link href='https://s3.amazonaws.com/privacygrade/static/bootstrap/css/bootstrap.css' rel='stylesheet'>
+    <style type='text/css'>
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+    </style>
+    <link href='https://s3.amazonaws.com/privacygrade/static/bootstrap/css/bootstrap-responsive.css' rel='stylesheet'>
+    <title>Mobile app privacy comfort</title>
+
+    <!-- Le styles -->
+    <link href='https://s3.amazonaws.com/privacygrade/static/css/start.css?v=1' rel='stylesheet'> 
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src='http://html5shim.googlecode.com/svn/trunk/html5.js'></script>
+    <![endif]-->
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+  </head>
+  <body id = 'body'>
+
+    <div id='appInfo' class='span9 offset3'>
+<h3>Instruction</h3>
+<p class='instuction'> Please read the mobile app description carefully and look at the application screenshots <br>then answer the questions below. HIT will be rejected if you just click through. </p>
+<h4 style='margin-left:20px'>Facebook</h4>
+<img class="icon" src=https://lh5.ggpht.com/_XklY7dK6yGsYt53X15RIp7-tbdjWMwQwl_iUAcW-uSq_8zAprmywdn5DQfBHvxZurs1 alt="icon image">
+<h4>App Screenshots</h4>
+<div id='screenShots'>
+<table border='0' width='65%'>
+  <tbody>
+    <tr>
+      <td>
+        <img class='imageCell' src=https://lh5.ggpht.com/O06WlRwAeQVJOoNlKi_vyD-EzF2LBjiQTge_Qh-XwuADTrBOoTyrXtE51DoQAFjL0v8 alt='screen shot' >
+      </td>
+      <td>
+        <img class='imageCell' src=https://lh3.ggpht.com/rOVX3H4KbjrzHIBwt84ioa2PsLy2QWOOBUx5PTohaLDIB1B2DjjotwX8hR4t-jHHNfE alt='screen shot' >
+      </td>
+      <td>
+        <img class='imageCell' src=https://lh4.ggpht.com/79LCywcpr4RXjofiEegXfpdpvt1xw180ulDloQO88vBd4mkxg9DAw2-Cm-CJDhh87w alt='screen shot' >
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+  
+<h4>App Description</h4>
+<div id='descrption' class='span8'>
+  <p>Keeping up with friends is faster than ever.<p>• See what friends are up to<br>• Share updates, photos and videos<br>• Get notified when friends like and comment on your posts<br>• Text, chat and have group conversations<br>• Play games and use your favorite apps<p>Now you can get early access to the next version of Facebook for Android by becoming a beta tester. Learn how to sign up, give feedback and leave the program in our Help Center: <a href="https://www.google.com/url?q=http://on.fb.me/133NwuP&amp;sa=D&amp;usg=AFQjCNGsqSTbt7clgKsNP1-kXA7VfYSQyw" target="_blank">http://on.fb.me/133NwuP</a> <p>Problems downloading or installing the app? See <a href="https://www.google.com/url?q=http://bit.ly/GPDownload1&amp;sa=D&amp;usg=AFQjCNErhCeQ2y1iI8JnCZl1hW6kzclEqQ" target="_blank">http://bit.ly/GPDownload1</a><br>Still need help? Please tell us more about the issue. <a href="https://www.google.com/url?q=http://bit.ly/invalidpackage&amp;sa=D&amp;usg=AFQjCNF52abPXM8gDY7vlGYJMo4tTe_3qA" target="_blank">http://bit.ly/invalidpackage</a><p>Facebook is only available for users age 13 and over.<br>Terms of Service: <a href="https://www.google.com/url?q=http://m.facebook.com/terms.php&amp;sa=D&amp;usg=AFQjCNGrqpuQ6bO8akXW353UTrOXgTz_mA" target="_blank">http://m.facebook.com/terms.php</a>.</p>
+</div>
+<hr class="span8">
+</div>
+<div class="span8 offset3">
+<h4>Questions</h4>
+<form name='mturk_form' method='post' id='mturk_form' action='https://www.mturk.com/mturk/externalSubmit'  onsubmit='return checkformbeforesubmit();' style="margin-left:20px">
+  <input type='hidden' value='' name='assignmentId' id='assignmentId'>
+  <input type='hidden' name='packageName' value='com.facebook.katana' id="packageName"> 
+  <input type='hidden' name='permissionType' value='GET_ACCOUNTS' id="permissionType"> 
+  <input type='hidden' name='purposeType' value='INTERNAL' id="purposeType"> 
+  <input type='hidden' name='permissionText' value="uses user's accounts information stored on the phone" id="permissionText"> 
+  <input type='hidden' name='purposeText' value="to login Facebook" id="purposeText"> 
+  <div id='Q1'>
+    <h5>Question 1</h5>
+      <p>What category do you think this mobile app belongs to?<span style='color:red'>(required)</span></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='GAME'> Game Application<br></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='APPLICATION'> Non-game Application<br></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='Content: Book, Music or Video'> Content: Book, Music or Video<br></p>
+      <input type='hidden' name='Q1realCategry' value=APPLICATION> 
+  </div>
+  <div id='Q2' style='margin-top:20px'>
+    <h5>Question 2</h5>
+    <p>Based on our analysis, Facebook <strong><span style='color:blue'>uses user's accounts information stored on the phone</span></strong> <strong>to login Facebook</strong>. </p>
+    <p>Suppose you have installed Facebook on your smart phone, do you feel comfortable when it <strong><span style='color:blue'>uses user's accounts information stored on the phone</span></strong> <strong>to login Facebook</strong>. <span style='color:red'>(required)</span> </p>
+    <p><input type='radio' name='Q2comfortQuestion' value='2'> Very comfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='1'> Somewhat comfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='-1'> Somewhat uncomfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='-2'> Very uncomfortable<br></p>
+  </div>
+  <div id="Q3" style='margin-top:20px'>
+    <h5>Question 3</h5>
+    <p>Please provide any comments you may have below, we appreciate your input!</p>
+    <textarea rows="3" cols="80" name="Q2comment"></textarea>
+  </div>
+  <p id='error_msg' class='alert' style='display:none'>**Please answer all the required questions.**</p>
+  <p><input type='submit' id='submitButton' value='Submit' /></p>
+</form>
+<script language='Javascript'>turkSetAssignmentID();</script>
+</div>
+
+</body>
+</html>

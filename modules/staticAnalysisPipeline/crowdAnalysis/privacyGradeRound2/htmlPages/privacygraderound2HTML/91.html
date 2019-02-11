@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
+    <script type='text/javascript' src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/js/start.js?v=1' type='text/javascript'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/js/jquery-1.7.2.min.js'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/bootstrap/js/bootstrap.js'></script>
+    <link href='https://s3.amazonaws.com/privacygrade/static/bootstrap/css/bootstrap.css' rel='stylesheet'>
+    <style type='text/css'>
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+    </style>
+    <link href='https://s3.amazonaws.com/privacygrade/static/bootstrap/css/bootstrap-responsive.css' rel='stylesheet'>
+    <title>Mobile app privacy comfort</title>
+
+    <!-- Le styles -->
+    <link href='https://s3.amazonaws.com/privacygrade/static/css/start.css?v=1' rel='stylesheet'> 
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src='http://html5shim.googlecode.com/svn/trunk/html5.js'></script>
+    <![endif]-->
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+  </head>
+  <body id = 'body'>
+
+    <div id='appInfo' class='span9 offset3'>
+<h3>Instruction</h3>
+<p class='instuction'> Please read the mobile app description carefully and look at the application screenshots <br>then answer the questions below. HIT will be rejected if you just click through. </p>
+<h4 style='margin-left:20px'>Monster Trainer</h4>
+<img class="icon" src=https://lh3.ggpht.com/Vcau3XAiLsq7BAl99t_BXYjrf--MGwb2QjciZmEwUWu37TKr5I-ultyeevegH2YkXGM alt="icon image">
+<h4>App Screenshots</h4>
+<div id='screenShots'>
+<table border='0' width='65%'>
+  <tbody>
+    <tr>
+      <td>
+        <img class='imageCell' src=https://lh6.ggpht.com/YbeahxVu-38ZS4muUVbkyMdIiPN9eb30s0L69zPzcfH6OhGsRrQLp4NzYSL7JeM2QA alt='screen shot' >
+      </td>
+      <td>
+        <img class='imageCell' src=https://lh5.ggpht.com/Ykzb61PSB2Y-AJJ6qA1BLNAE52hotAHr7aYJner9iMux8S9WdoCPRdtGj2tvFD199Vui alt='screen shot' >
+      </td>
+      <td>
+        <img class='imageCell' src=https://lh6.ggpht.com/UtbsLTb1qwGSWG4nMy-PASuegP8g2cJlP6cdfK4NFhNAXAmTzo5lcwywV3STruxR9fw alt='screen shot' >
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+  
+<h4>App Description</h4>
+<div id='descrption' class='span8'>
+  <p>You might have played VPet when you are young, now it&#39;s back again! Train your VPet and have a battle with your friends now!<p>There are 36 creatures in the game. The creature will evolve to different looking according to your way of training. The attribute of creature might grow slower if you don&#39;t respond to the creature&#39;s call. Take good care of your creature and it will pay you back by wining every battle for you!<p>There&#39;s no separation between VPet and battles! The game provides Bluetooth battle mechanism for you to fight your friends. One person host the game and another one join, it&#39;s as easy as clicking a button!<p>There are three type of elements of the creature and their skills : fire, grass and water. Fire&gt;Grass, Grass&gt;Water, Water&gt;Fire. If you use the skill that is the same element as the monster, the attack will be more powerful! Since you need to predict what type of element your opponent will use to attack in order to win the battle, keep using skill that easy to guess will put you in a disadvantage position.<p>You gain skill by training successfully. Higher the skill level, high the damage it cause; however, the side effect and energy cost is also greater. It&#39;s up to you to select the best skill that fits you!<p>It&#39;s a good way to interact with the creature by playing toys with it. Petting it will make it happy and hitting it will make it sad. The mood of creature is not link to the battle so there&#39;s no worry about sad monster might cause bad side effect to the battle.<p>This game is linked to our YoWallet, which you can purchase more coins with it (and it&#39;s FREE!). Please refer to the side link for more detail(or you can get it in game also)<p>*** FAQ ***<br>Q: How to evolve my monster?<br>A: The monster will evolve in a day or two in real time. The growth of monster will not be paused even you leave the game via Home/Back button on phone. The monster will send notification to you once it needs help.<p><br>Facebook：<br><a href="https://www.google.com/url?q=http://goo.gl/tMmCG&amp;sa=D&amp;usg=AFQjCNEGFF9JdacpV9qU49-mqyJ_fF-yBA" target="_blank">http://goo.gl/tMmCG</a></p>
+</div>
+<hr class="span8">
+</div>
+<div class="span8 offset3">
+<h4>Questions</h4>
+<form name='mturk_form' method='post' id='mturk_form' action='https://www.mturk.com/mturk/externalSubmit'  onsubmit='return checkformbeforesubmit();' style="margin-left:20px">
+  <input type='hidden' value='' name='assignmentId' id='assignmentId'>
+  <input type='hidden' name='packageName' value='com.yodawnla.isMonster2' id="packageName"> 
+  <input type='hidden' name='permissionType' value='BLUETOOTH' id="permissionType"> 
+  <input type='hidden' name='purposeType' value='UTILITY' id="purposeType"> 
+  <input type='hidden' name='permissionText' value="can connect to user's Bluetooth devices" id="permissionText"> 
+  <input type='hidden' name='purposeText' value="to enable fight your friends through Bluetooth" id="purposeText"> 
+  <div id='Q1'>
+    <h5>Question 1</h5>
+      <p>What category do you think this mobile app belongs to?<span style='color:red'>(required)</span></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='GAME'> Game Application<br></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='APPLICATION'> Non-game Application<br></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='Content: Book, Music or Video'> Content: Book, Music or Video<br></p>
+      <input type='hidden' name='Q1realCategory' value=GAME> 
+  </div>
+  <div id='Q2' style='margin-top:20px'>
+    <h5>Question 2</h5>
+    <p>Based on our analysis, Monster Trainer <strong><span style='color:blue'>can connect to user's Bluetooth devices</span></strong> <strong>to enable fight your friends through Bluetooth</strong>. </p>
+    <p>Suppose you have installed Monster Trainer on your smart phone, do you feel comfortable when it <strong><span style='color:blue'>can connect to user's Bluetooth devices</span></strong> <strong>to enable fight your friends through Bluetooth</strong>. <span style='color:red'>(required)</span> </p>
+    <p><input type='radio' name='Q2comfortQuestion' value='2'> Very comfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='1'> Somewhat comfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='-1'> Somewhat uncomfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='-2'> Very uncomfortable<br></p>
+  </div>
+  <div id="Q3" style='margin-top:20px'>
+    <h5>Question 3</h5>
+    <p>Please provide any comments you may have below, we appreciate your input!</p>
+    <textarea rows="3" cols="80" name="Q2comment"></textarea>
+  </div>
+  <p id='error_msg' class='alert' style='display:none'>**Please answer all the required questions.**</p>
+  <p><input type='submit' id='submitButton' value='Submit' /></p>
+</form>
+<script language='Javascript'>turkSetAssignmentID();</script>
+</div>
+
+</body>
+</html>

@@ -93,10 +93,10 @@ def analyzer(apkList):
 
     # in case the crawler breaks, append to the list.
     analyzedApkFilePath = outputPath + '/' + 'filelist.txt'
-    analyzedApkFile = open(analyzedApkFilePath, 'a+')
+    analyzedApkFile = open(analyzedApkFilePath, "w+")
 
     '''
-    Example of how the various entrie are made into the database
+    Example of how the various entries are made into the database
     dbHelper.insert3rdPartyPackageInfo("testpackage", "testfilename", "testexternalpackage")
     dbHelper.insertPermissionInfo('testpackage', 'testfilename', 'testpermission', True, 'testdest', 'testexternalpackagename', 'testsrc')
     dbHelper.insertLinkInfo('testpackage', 'testfilename', 'testlink', True, 'testdest', 'testexternalpackagename')
@@ -108,7 +108,6 @@ def analyzer(apkList):
     multiprocessing_logging.install_mp_handler(logger)
     pool = Pool(PROCESS_NO)
     for package_name in pool.imap(staticAnalysis, apkList):
-        print package_name
         if package_name != "":
             analyzedApkFile.write(package_name + '\n')
             analyzedApkFile.flush()
@@ -118,9 +117,8 @@ def analyzer(apkList):
     updatedApkList = []
     with open(analyzedApkFilePath) as f:
         for line in f:
-            updatedApkList.append(line.rstrip("\n"))
+            updatedApkList.append(line.strip("\n"))
 
-    print os.getcwd()
     extractApp.extractPackagePair(updatedApkList, os.getcwd())
     rateApp.transRateToLevel()
 
@@ -148,8 +146,8 @@ def getUuidsFromFile(uuidListFile):
     apkList = []
     apkList_f = open(uuidListFile)
     for line in apkList_f:
-        pair = line.rstrip('\n').split(' ')
-        apkList.append({'uuid': pair[0].rstrip(".apk"), "fileDir": pair[1]})
+        pair = line.strip('\n').split(' ')
+        apkList.append({'uuid': pair[0][:-4], "fileDir": pair[1]})
     apkList_f.close()
 
     return apkList
@@ -172,6 +170,7 @@ if __name__ == "__main__":
     if len(sys.argv) >= 2:
         uuidListFile = sys.argv[1]
         uuidList = getUuidsFromFile(uuidListFile)
+        print uuidList
     else:
         uuidList = []
         for uuid in getUuidsFromDb():

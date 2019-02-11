@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/aws-mturk-dataschema.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/aws-mturk-wsdl.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/axis-ant.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/axis.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/commons-beanutils.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/commons-codec-1.4.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/commons-collections-3.2.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/commons-collections-testframework-3.2.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/commons-dbcp-1.2.2.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/commons-digester-1.8.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/commons-discovery-0.2.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/commons-httpclient-3.1.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/commons-httpclient-contrib-3.1.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/commons-lang-2.3.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/commons-logging-api.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/commons-logging.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/commons-pool-1.3.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/geronimo-activation_1.0.2_spec-1.2.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/geronimo-javamail_1.3.1_spec-1.3.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/httpclient-4.1.2.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/httpclient-cache-4.1.2.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/httpcore-4.1.2.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/httpmime-4.1.2.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/java-aws-mturk.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/jaxme2-0.5.2.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/jaxme2-rt-0.5.2.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/jaxmeapi-0.5.2.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/jaxmejs-0.5.2.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/jaxmepm-0.5.2.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/jaxmexs-0.5.2.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/jaxrpc.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/log4j-1.2.15.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/opencsv-1.8.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/resolver.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/saaj.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/velocity-1.5.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/velocity-tools-1.4.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/wsdl4j.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/wstx-asl-3.2.3.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/xalan.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/xercesImpl.jar"/>
+	<classpathentry kind="lib" path="/Users/lsuper/Dropbox/Research/AppScanner/JialiuCode/MturkAppPrivacyHIT-Input-Results - Copy/third-party/xml-apis.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

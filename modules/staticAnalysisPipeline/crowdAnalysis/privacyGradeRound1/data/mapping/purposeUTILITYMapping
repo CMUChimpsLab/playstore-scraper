@@ -1,0 +1,12 @@
+{"packageName":"com.facebook.katana", "permission":"READ_PHONE_STATE", "purpose":"UTILITY", "purposeText":"for reporting bug to the app developer"}
+{"packageName":"com.facebook.orca", "permission":"READ_PHONE_STATE", "purpose":"UTILITY", "purposeText":"for reporting bug to the app developer"}
+{"packageName":"com.viber.voip", "permission":"READ_PHONE_STATE", "purpose":"UTILITY", "purposeText":"for reporting bug to the app developer"}
+{"packageName":"com.skype.raider", "permission":"READ_PHONE_STATE", "purpose":"UTILITY", "purposeText":"for connecting to Microsoft online service"}
+{"packageName":"com.sgiggle.production", "permission":"ACCESS_FINE_LOCATION", "purpose":"UTILITY", "purposeText":"for reporting bug to the app developer"}
+{"packageName":"com.outfit7.mytalkingtomfree", "permission":"RECORD_AUDIO", "purpose":"UTILITY", "purposeText":"for creating game audio"}
+{"packageName":"net.zedge.android", "permission":"READ_CONTACTS", "purpose":"UTILITY", "purposeText":"for implementing user interface"}
+{"packageName":"com.omgpop.dstfree", "permission":"READ_PHONE_STATE", "purpose":"UTILITY", "purposeText":"for functionality purpose"}
+{"packageName":"com.shazam.android", "permission":"RECORD_AUDIO", "purpose":"UTILITY", "purposeText":"for speech recognition and text-to-speech capabilities"}
+{"packageName":"com.avast.android.mobilesecurity", "permission":"READ_CONTACTS", "purpose":"UTILITY", "purposeText":"for implementing user interface"}
+{"packageName":"com.vkontakte.android", "permission":"READ_CONTACTS", "purpose":"UTILITY", "purposeText":"for implementing user interface"}
+{"packageName":"com.vkontakte.android", "permission":"READ_PHONE_STATE", "purpose":"UTILITY", "purposeText":"for reporting bug to the app developer"}

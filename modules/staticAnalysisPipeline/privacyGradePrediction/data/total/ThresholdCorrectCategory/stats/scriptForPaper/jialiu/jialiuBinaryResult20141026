@@ -1,0 +1,90 @@
+result for cluster size 1
+accuracy 0.465017
+             precision    recall  f1-score   support
+
+      False       0.36      0.25      0.30      7436
+       True       0.51      0.63      0.57      9215
+
+avg / total       0.45      0.47      0.45     16651
+
+result for cluster size 2
+accuracy 0.488079
+             precision    recall  f1-score   support
+
+      False       0.38      0.24      0.30      7436
+       True       0.53      0.69      0.60      9215
+
+avg / total       0.46      0.49      0.46     16651
+
+result for cluster size 3
+accuracy 0.538046
+             precision    recall  f1-score   support
+
+      False       0.48      0.38      0.43      7436
+       True       0.57      0.66      0.61      9215
+
+avg / total       0.53      0.54      0.53     16651
+
+result for cluster size 4
+accuracy 0.540388
+             precision    recall  f1-score   support
+
+      False       0.49      0.57      0.53      7436
+       True       0.60      0.52      0.55      9215
+
+avg / total       0.55      0.54      0.54     16651
+
+result for cluster size 5
+accuracy 0.547234
+             precision    recall  f1-score   support
+
+      False       0.49      0.54      0.51      7436
+       True       0.60      0.56      0.58      9215
+
+avg / total       0.55      0.55      0.55     16651
+
+result for cluster size 6
+accuracy 0.551859
+             precision    recall  f1-score   support
+
+      False       0.50      0.54      0.52      7436
+       True       0.60      0.56      0.58      9215
+
+avg / total       0.56      0.55      0.55     16651
+
+result for cluster size 7
+accuracy 0.529878
+             precision    recall  f1-score   support
+
+      False       0.48      0.55      0.51      7436
+       True       0.59      0.52      0.55      9215
+
+avg / total       0.54      0.53      0.53     16651
+
+result for cluster size 8
+accuracy 0.539727
+             precision    recall  f1-score   support
+
+      False       0.49      0.52      0.50      7436
+       True       0.59      0.56      0.57      9215
+
+avg / total       0.54      0.54      0.54     16651
+
+result for cluster size 9
+accuracy 0.532340
+             precision    recall  f1-score   support
+
+      False       0.48      0.45      0.46      7436
+       True       0.57      0.60      0.59      9215
+
+avg / total       0.53      0.53      0.53     16651
+
+result for cluster size 10
+accuracy 0.537085
+             precision    recall  f1-score   support
+
+      False       0.48      0.46      0.47      7436
+       True       0.58      0.60      0.59      9215
+
+avg / total       0.54      0.54      0.54     16651
+

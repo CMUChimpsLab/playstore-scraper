@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
+    <script type='text/javascript' src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/js/start.js?v=1' type='text/javascript'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/js/jquery-1.7.2.min.js'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/bootstrap/js/bootstrap.js'></script>
+    <link href='https://s3.amazonaws.com/privacygrade/static/bootstrap/css/bootstrap.css' rel='stylesheet'>
+    <style type='text/css'>
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+    </style>
+    <link href='https://s3.amazonaws.com/privacygrade/static/bootstrap/css/bootstrap-responsive.css' rel='stylesheet'>
+    <title>Mobile app privacy comfort</title>
+
+    <!-- Le styles -->
+    <link href='https://s3.amazonaws.com/privacygrade/static/css/start.css?v=1' rel='stylesheet'> 
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src='http://html5shim.googlecode.com/svn/trunk/html5.js'></script>
+    <![endif]-->
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+  </head>
+  <body id = 'body'>
+
+    <div id='appInfo' class='span9 offset3'>
+<h3>Instruction</h3>
+<p class='instuction'> Please read the mobile app description carefully and look at the application screenshots <br>then answer the questions below. HIT will be rejected if you just click through. </p>
+<h4 style='margin-left:20px'>KakaoTalk: Free Calls & Text</h4>
+<img class="icon" src=https://lh4.ggpht.com/2JbnGcDGeeiq73oFhI1oy_IWVd6s2GNEJlVgCKagEmsM6XeCcsvUPRcf48JSY6UPFoI alt="icon image">
+<h4>App Screenshots</h4>
+<div id='screenShots'>
+<table border='0' width='65%'>
+  <tbody>
+    <tr>
+      <td>
+        <img class='imageCell' src=https://lh3.ggpht.com/xj_McNs2DOSbt6F2k0FlFYeuNTq-w2OLhATSzVT-jzD5ONoWmOcbL_PoaTebo9R71kHm alt='screen shot' >
+      </td>
+      <td>
+        <img class='imageCell' src=https://lh6.ggpht.com/9uXTFlwf6cPdN8_b9L5N0qbwLk9tVA-xmQeidahPKVxCdrHzeaLRcf2sr3DlWqPv5rA alt='screen shot' >
+      </td>
+      <td>
+        <img class='imageCell' src=https://lh4.ggpht.com/jZ1yWsQotc3VIjFqfyz5ol_TiSd0cmkb64uIM5KBZvI6dQioBu3n27QZJ71I0UJLs5Q alt='screen shot' >
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+  
+<h4>App Description</h4>
+<div id='descrption' class='span8'>
+  <p>KakaoTalk is a smartphone messenger for FREE calls and messaging. Send messages, photos, videos, voice notes and locations. Add fun to your KakaoTalk chats with lots of cute emoticons and stickers! <p>About Us: <br>★Chosen by more than 130 million users worldwide <br>★Fast, fun, easy way to communicate with friends and family <br>★Uses internet connection (3G/EDGE or Wi-FI) for calls and messaging <br>★Supports: Android, iOS, BlackBerry, Windows OS, Bada <p>Key Features: <br>* FREE CHATS: Send FREE messages &amp; multimedia (photos, videos, voice notes) <br>* FREE CALLS: Make high-quality voice calls (1:1 and group) <br>* GROUP CHAT: Enjoy group chats with unlimited number of participants <br>* VOICE FILTER: Have fun during free calls with TALKING TOM &amp; BEN&#39;s voice filters <br>* EMOTICONS: Have fun using fun cute emoticons &amp; custom themes <br>* PLUS FRIEND: Get coupons &amp; benefits from your favorite brands <p>Other Amazing Features: <br>* Share your location <br>* Add friends using BlackBerry PIN <br>* See who read your messages (unread count) <br>* Swipe screen to move between tabs <br>* Multitask during free calls (send messages in other chat rooms) <br>* Schedule appointments, lunches, gatherings (w/ reminders) <br>* Use KakaoTalk on any smartphone and PC (multi platform) <br>* Add to the fun with Kakao mobile games <p>Contact us at <a href="https://www.google.com/url?q=http://www.kakao.com/talk/en/contact&amp;sa=D&amp;usg=AFQjCNHf3qayNmczQ8K4s54Z8tt-bNCMXg" target="_blank">http://www.kakao.com/talk/en/contact</a> <br>Like us at <a href="https://www.google.com/url?q=http://facebook.com/kakaotalk&amp;sa=D&amp;usg=AFQjCNG1BCbeesUVkbecncJjNM-pMjelfg" target="_blank">http://facebook.com/kakaotalk</a> <br>Follow us at <a href="https://www.google.com/url?q=http://twitter.com/kakaotalk&amp;sa=D&amp;usg=AFQjCNGifbmiVWClUHgRdFDpeZq5O6UL8w" target="_blank">http://twitter.com/kakaotalk</a></p>
+</div>
+<hr class="span8">
+</div>
+<div class="span8 offset3">
+<h4>Questions</h4>
+<form name='mturk_form' method='post' id='mturk_form' action='https://www.mturk.com/mturk/externalSubmit'  onsubmit='return checkformbeforesubmit();' style="margin-left:20px">
+  <input type='hidden' value='' name='assignmentId' id='assignmentId'>
+  <input type='hidden' name='packageName' value='com.kakao.talk' id="packageName"> 
+  <input type='hidden' name='permissionType' value='ACCESS_FINE_LOCATION' id="permissionType"> 
+  <input type='hidden' name='purposeType' value='TARGETED_ADS' id="purposeType"> 
+  <input type='hidden' name='permissionText' value="uses user's precise location" id="permissionText"> 
+  <input type='hidden' name='purposeText' value="for delivering location targeted advertisement" id="purposeText"> 
+  <div id='Q1'>
+    <h5>Question 1</h5>
+      <p>What category do you think this mobile app belongs to?<span style='color:red'>(required)</span></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='GAME'> Game Application<br></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='APPLICATION'> Non-game Application<br></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='Content: Book, Music or Video'> Content: Book, Music or Video<br></p>
+      <input type='hidden' name='Q1realCategry' value=APPLICATION> 
+  </div>
+  <div id='Q2' style='margin-top:20px'>
+    <h5>Question 2</h5>
+    <p>Based on our analysis, KakaoTalk: Free Calls & Text <strong><span style='color:blue'>uses user's precise location</span></strong> <strong>for delivering location targeted advertisement</strong>. </p>
+    <p>Suppose you have installed KakaoTalk: Free Calls & Text on your smart phone, do you feel comfortable when it <strong><span style='color:blue'>uses user's precise location</span></strong> <strong>for delivering location targeted advertisement</strong>. <span style='color:red'>(required)</span> </p>
+    <p><input type='radio' name='Q2comfortQuestion' value='2'> Very comfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='1'> Somewhat comfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='-1'> Somewhat uncomfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='-2'> Very uncomfortable<br></p>
+  </div>
+  <div id="Q3" style='margin-top:20px'>
+    <h5>Question 3</h5>
+    <p>Please provide any comments you may have below, we appreciate your input!</p>
+    <textarea rows="3" cols="80" name="Q2comment"></textarea>
+  </div>
+  <p id='error_msg' class='alert' style='display:none'>**Please answer all the required questions.**</p>
+  <p><input type='submit' id='submitButton' value='Submit' /></p>
+</form>
+<script language='Javascript'>turkSetAssignmentID();</script>
+</div>
+
+</body>
+</html>

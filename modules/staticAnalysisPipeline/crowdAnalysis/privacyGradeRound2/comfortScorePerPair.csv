@@ -1,0 +1,131 @@
+packageName	permission	purpose	permissionText	purposeText	rate	level
+bubbleshooter.android	ACCESS_FINE_LOCATION	SOCIAL_GAMING	can use user's precise location	for the internal GAME engine	-0.95	D
+cn.otlive.games.android.CashOut	SEND_SMS	GAME_ENGINE	can send out SMS messages	for unknown use in a social game platform	-1.2	D
+cn.otlive.games.android.CashOut_Pad	SEND_SMS	GAME_ENGINE	can send out SMS messages	for unknown use in a social game platform	-1.3	D
+com.GnarlyGames.GnarBikeTrials	ACCESS_COARSE_LOCATION	PAYMENT	can use user's approximate location	to get to know where users make online payment	-0.8947368421052632	D
+com.SnowfallLiveWallpapers	ACCESS_FINE_LOCATION	SOCIAL_GAMING	can use user's precise location	for the internal GAME engine	-0.8947368421052632	D
+com.acmdvp.myconverter	ACCESS_FINE_LOCATION	SECONDARY_MARKET	can use user's precise location	for an independent/secondary app store to conduct market/customer analysis	-0.65	C
+com.aidigame.xcity	ACCESS_FINE_LOCATION	SOCIAL_GAMING	can use user's precise location	for the internal GAME engine	-0.4	B
+com.aidigame.xcity	CAMERA	SOCIAL_GAMING	can use camera or flashlight on the phone	for unclear purpose in an integrated social game platform	0.0	N/A
+com.aidigame.xcity	RECORD_AUDIO	SOCIAL_GAMING	can record audio through microphone on the phone	to support sending audio messages to friends in social game platform	0.3	N/A
+com.amazon.kindle	AUTHENTICATE_ACCOUNTS	UTILITY	can use user's account authentication information (like password) or create new accounts	to manage Amazon account information on users' phone	0.4375	N/A
+com.amazon.kindle	MANAGE_ACCOUNTS	UTILITY	can manage user's accounts on the phone	to login Amazon account	0.6428571428571429	N/A
+com.amazon.mp3	AUTHENTICATE_ACCOUNTS	UTILITY	can use user's account authentication information (like password) or create new accounts	to manage Amazon account information on users' phone	0.26666666666666666	N/A
+com.animocacollective.google.superstarFashionGirl	CAMERA	GAME_ENGINE	can use camera or flashlight on the phone	in order to use camera/flashlight in the game	0.5263157894736842	N/A
+com.aurum.google.aliceOfHeart	BLUETOOTH	GAME_ENGINE	can connect to user's Bluetooth devices	to enable features like connecting with other players or share game content through Bluetooth	1.15	N/A
+com.c4mprod.ezcodescanner	CAMERA	GAME_ENGINE	can use camera or flashlight on the phone	in order to use camera/flashlight in the game	0.8	N/A
+com.catstudio.zuma1	RECORD_AUDIO	GAME_ENGINE	can record audio through microphone on the phone	to enable audio recording in game (though may not be used in Game)	-0.3	A
+com.cento.gates.main	ACCESS_FINE_LOCATION	SOCIAL_GAMING	can use user's precise location	for the internal GAME engine	-0.45	B
+com.creativemobile.dragracingbe	READ_PHONE_STATE	PAYMENT	can read phone current state information like oncall or not, signal, carrier, device ID and phone number	to identify users in payment transaction	0.0	N/A
+com.ddmap.android.privilege	MANAGE_ACCOUNTS	SNS	can manage user's accounts on the phone	to login social network sites like Facebook	-0.65	C
+com.digitalchocolate.androiddistrictpa	READ_CONTACTS	SNS	can read user's contact list (phone book) and phone call history	to connect to users' friends through integrated social platforms	-0.55	B
+com.electricsheep.edj	ACCESS_COARSE_LOCATION	SOCIAL_GAMING	can use user's approximate location	for customer analysis	-0.35	A
+com.elijahsh.birthdayreminder	AUTHENTICATE_ACCOUNTS	SNS	can use user's account authentication information (like password) or create new accounts	to manage accounts on social network sites like Facebook	-0.4	B
+com.fitbit.FitbitMobile	BLUETOOTH	MOBILE_ANALYTICS	can connect to user's Bluetooth devices	for app usage analytics	0.95	N/A
+com.fruit.shooter.blast	READ_CONTACTS	SECONDARY_MARKET	can read user's contact list (phone book) and phone call history	for unclear purpose	-1.3	D
+com.fruit.shooter.legend	READ_CONTACTS	SECONDARY_MARKET	can read user's contact list (phone book) and phone call history	for unclear purpose	-1.3	D
+com.gamebasics.osm	SEND_SMS	PAYMENT	can send out SMS messages	for in-app purchase	-0.5	B
+com.gamestop.powerup	CAMERA	DEVELOPMENT_AID	can use camera or flashlight on the phone	to enable bar code scanner feature	0.9444444444444444	N/A
+com.gamestop.powerup	ACCESS_FINE_LOCATION	DEVELOPMENT_AID	can use user's precise location	to find a store nearby	0.9375	N/A
+com.gamestop.powerup	READ_CONTACTS	DEVELOPMENT_AID	can read user's contact list (phone book) and phone call history	for unclear purpose	-1.2941176470588236	D
+com.gau.go.launcherex.gowidget.weatherwidget	READ_PHONE_STATE	SECONDARY_MARKET	can read phone current state information like oncall or not, signal, carrier, device ID and phone number	to identify users in order to connect with independent/secondary mobile app stores	-0.7368421052631579	C
+com.gau.go.launcherex.gowidget.weatherwidget	GET_ACCOUNTS	SECONDARY_MARKET	can use user's accounts information stored on the phone	to connect with independent/secondary mobile app stores	-0.6	B
+com.genina.android.blackjack.view	READ_PHONE_STATE	GAME_ENGINE	can read phone current state information like oncall or not, signal, carrier, device ID and phone number	to identify users for delivering targeted advertisement in game	-1.05	D
+com.glu.android.ck	READ_PHONE_STATE	PAYMENT	can read phone current state information like oncall or not, signal, carrier, device ID and phone number	to identify users in payment transaction	-0.15	A
+com.handmark.tweetcaster	ACCESS_COARSE_LOCATION	UTILITY	can use user's approximate location	to enable location-based features (like tweet nearby) in this app	0.9	N/A
+com.happyelements.happyfish	ACCESS_FINE_LOCATION	SNS	can use user's precise location	for tagging location informaiton when users share the app content to social network sites like Facebook and Twitter	-0.2631578947368421	A
+com.happyelements.happyfish	READ_PHONE_STATE	PAYMENT	can read phone current state information like oncall or not, signal, carrier, device ID and phone number	to identify users in payment transaction	-0.05	A
+com.hipipal.qpy3	SEND_SMS	DEVELOPMENT_AID	can send out SMS messages	to enable programers to program using with phone's SMS functionality	-0.10526315789473684	A
+com.hipipal.qpyplus	BLUETOOTH	DEVELOPMENT_AID	can connect to user's Bluetooth devices	to enable programers to program with audio recording funcitonality	0.95	N/A
+com.hotspots.voicedialer	ACCESS_FINE_LOCATION	SECONDARY_MARKET	can use user's precise location	for an independent/secondary app store to conduct market/customer analysis	-0.7894736842105263	C
+com.icloudzone.SpeedNight	READ_CONTACTS	SOCIAL_GAMING	can read user's contact list (phone book) and phone call history	to find out if users' friends are on the same game platform	-0.6	B
+com.icloudzone.SpeedNight2	READ_CONTACTS	SOCIAL_GAMING	can read user's contact list (phone book) and phone call history	to find out if users' friends are on the same game platform	-0.35	A
+com.jb.gokeyboard	GET_ACCOUNTS	SECONDARY_MARKET	can use user's accounts information stored on the phone	to connect with independent/secondary mobile app stores	-0.631578947368421	C
+com.jrummy.liberty.toolbox	READ_CONTACTS	SNS	can read user's contact list (phone book) and phone call history	to connect to users' friends through integrated social platforms	-0.25	A
+com.kangaroo.logic	ACCESS_FINE_LOCATION	SOCIAL_GAMING	can use user's precise location	for the internal GAME engine	-0.2	A
+com.kaosu.i.battery.ppochi	BLUETOOTH	TARGETED_ADS	can connect to user's Bluetooth devices	for advertisement purpose	-0.8888888888888888	D
+com.leftover.CoinDozer	READ_PHONE_STATE	GAME_ENGINE	can read phone current state information like oncall or not, signal, carrier, device ID and phone number	to identify users for delivering targeted advertisement in game	-0.55	B
+com.letang.game103pp.cn	SEND_SMS	SNS	can send out SMS messages	for in-app purchase through premium SMS on social game platform	-0.65	C
+com.loloworks.llzbs	RECORD_AUDIO	SOCIAL_GAMING	can record audio through microphone on the phone	to support sending audio messages to friends in social game platform	0.7	N/A
+com.loloworks.llzbs	CAMERA	SOCIAL_GAMING	can use camera or flashlight on the phone	for unclear purpose in an integrated social game platform	-0.15	A
+com.loloworks.llzbs	ACCESS_FINE_LOCATION	SOCIAL_GAMING	can use user's precise location	for the internal GAME engine	-0.3	A
+com.lookout	MANAGE_ACCOUNTS	INTERNAL	can manage user's accounts on the phone	to login Antivirus & Security | Lookout	1.0	N/A
+com.mapbar.android.mapbarmap	MANAGE_ACCOUNTS	SNS	can manage user's accounts on the phone	to login social network sites like Facebook	-0.5	B
+com.mediafire.android	CAMERA	DEVELOPMENT_AID	can use camera or flashlight on the phone	to enable to take and upload photos directly in this app	1.2222222222222223	N/A
+com.meecel.feedreader.RssDemonAd	GET_ACCOUNTS	DEVELOPMENT_AID	can use user's accounts information stored on the phone	to import feeds from users' Google account	0.8666666666666667	N/A
+com.miniclip.eightballpool	READ_PHONE_STATE	SECONDARY_MARKET	can read phone current state information like oncall or not, signal, carrier, device ID and phone number	to identify users in order to connect with independent/secondary mobile app stores	-0.95	D
+com.miniclip.eightballpool	GET_ACCOUNTS	SECONDARY_MARKET	can use user's accounts information stored on the phone	to connect with independent/secondary mobile app stores	-0.7	C
+com.moaibot.sweetyheaven	RECORD_AUDIO	GAME_ENGINE	can record audio through microphone on the phone	to enable audio recording in game (though may not be used in Game)	-0.15	A
+com.myfknoll.draw.together	BLUETOOTH	SOCIAL_GAMING	can connect to user's Bluetooth devices	to enable features like connecting with other players or share game content through Bluetooth	1.2857142857142858	N/A
+com.mythlj.snakesally	BLUETOOTH	GAME_ENGINE	can connect to user's Bluetooth devices	to enable features like connecting with other players or share game content through Bluetooth	1.15	N/A
+com.netqin.ps	READ_PHONE_STATE	PAYMENT	can read phone current state information like oncall or not, signal, carrier, device ID and phone number	to identify users in payment transaction	-0.2777777777777778	A
+com.netqin.ps	SEND_SMS	PAYMENT	can send out SMS messages	for in-app purchase	-0.2222222222222222	A
+com.nimbuzz	MANAGE_ACCOUNTS	INTERNAL	can manage user's accounts on the phone	to login Nimbuzz account	0.7	N/A
+com.nqmobile.antivirus20	SEND_SMS	PAYMENT	can send out SMS messages	for in-app purchase	-0.5	B
+com.nqmobile.antivirus20	READ_PHONE_STATE	PAYMENT	can read phone current state information like oncall or not, signal, carrier, device ID and phone number	to identify users in payment transaction	-0.45	B
+com.nqmobile.antivirus20.multilang	SEND_SMS	PAYMENT	can send out SMS messages	for in-app purchase	-0.35	A
+com.nubee.japanlife	MANAGE_ACCOUNTS	SNS	can manage user's accounts on the phone	to login social network sites like Facebook	0.3333333333333333	N/A
+com.panapstudio.mojitsunagifree	BLUETOOTH	SOCIAL_GAMING	can connect to user's Bluetooth devices	to enable features like connecting with other players or share game content through Bluetooth	0.7894736842105263	N/A
+com.playphone.zombiemission	SEND_SMS	SNS	can send out SMS messages	for in-app purchase through premium SMS on social game platform	-0.4	B
+com.pnc.ecommerce.mobile	ACCESS_FINE_LOCATION	DEVELOPMENT_AID	can use user's precise location	to locate nearby PNC Bank Branch or ATM	0.9	N/A
+com.pnc.ecommerce.mobile	CAMERA	DEVELOPMENT_AID	can use camera or flashlight on the phone	to enable mobile deposit feature -- Use your camera equipped Android device with autofocus to deposit checks	1.65	N/A
+com.rastergrid.game.pocketsoccer	ACCESS_COARSE_LOCATION	SOCIAL_GAMING	can use user's approximate location	for customer analysis	-0.05	A
+com.redbull.RedBullAugmentedRacingReloaded	CAMERA	GAME_ENGINE	can use camera or flashlight on the phone	in order to use camera/flashlight in the game	0.35	N/A
+com.sbs.lamusica	SEND_SMS	UTILITY	can send out SMS messages	for unclear purpose	-1.6153846153846154	D
+com.sds.android.ttpod	ACCESS_FINE_LOCATION	SNS	can use user's precise location	for tagging location informaiton when users share the app content to social network sites like Facebook and Twitter	-0.36363636363636365	B
+com.sds.android.ttpod	ACCESS_COARSE_LOCATION	SNS	can use user's approximate location	for tagging location information when users share the app content to social network sites like Facebook and Twitter	-0.4444444444444444	B
+com.seven.integral.Z7	AUTHENTICATE_ACCOUNTS	SNS	can use user's account authentication information (like password) or create new accounts	to manage accounts on social network sites like Facebook	-0.35	A
+com.socialquantum.acityint	READ_PHONE_STATE	PAYMENT	can read phone current state information like oncall or not, signal, carrier, device ID and phone number	to identify users in payment transaction	-0.6	B
+com.softcube.dadsday	SEND_SMS	TARGETED_ADS	can send out SMS messages	for devlivering targeted advertisement	-0.7777777777777778	C
+com.softcube.screens	SEND_SMS	TARGETED_ADS	can send out SMS messages	for devlivering targeted advertisement	-0.5	B
+com.speaktoit.assistant	BLUETOOTH	MOBILE_ANALYTICS	can connect to user's Bluetooth devices	for app usage analytics	0.7	N/A
+com.spinmaster.techdeck	CAMERA	GAME_ENGINE	can use camera or flashlight on the phone	in order to use camera/flashlight in the game	0.9473684210526315	N/A
+com.splashpadmobile.battery	SEND_SMS	TARGETED_ADS	can send out SMS messages	for devlivering targeted advertisement	-0.65	C
+com.tatem.robosockets	SEND_SMS	SOCIAL_GAMING	can send out SMS messages	for in-app purchase through premium SMS on social game platform	-0.5	B
+com.teamlava.bakerystory	READ_PHONE_STATE	SECONDARY_MARKET	can read phone current state information like oncall or not, signal, carrier, device ID and phone number	to identify users in order to connect with independent/secondary mobile app stores	-0.95	D
+com.teamlava.restaurantstory	READ_PHONE_STATE	SECONDARY_MARKET	can read phone current state information like oncall or not, signal, carrier, device ID and phone number	to identify users in order to connect with independent/secondary mobile app stores	-0.8	C
+com.teamlava.restaurantstory	GET_ACCOUNTS	SECONDARY_MARKET	can use user's accounts information stored on the phone	to connect with independent/secondary mobile app stores	-0.7	C
+com.tommmi.freedjsoftware	RECORD_AUDIO	DEVELOPMENT_AID	can record audio through microphone on the phone	for unlcear purpose	-0.08333333333333333	A
+com.tommmi.freedjsoftware	READ_PHONE_STATE	DEVELOPMENT_AID	can read phone current state information like oncall or not, signal, carrier, device ID and phone number	for unlcear purpose	-1.3333333333333333	D
+com.tripadvisor.tripadvisor	MANAGE_ACCOUNTS	INTERNAL	can manage user's accounts on the phone	to login Tripadvisor	0.8947368421052632	N/A
+com.tumblr	AUTHENTICATE_ACCOUNTS	INTERNAL	can use user's account authentication information (like password) or create new accounts	to manage Tumblr account on users' phone	0.10526315789473684	N/A
+com.tumblr	MANAGE_ACCOUNTS	INTERNAL	can manage user's accounts on the phone	to login Tumblr	1.1	N/A
+com.twoo	ACCESS_COARSE_LOCATION	UTILITY	can use user's approximate location	to enable location-based features (like people nearby) in this app	1.15	N/A
+com.ubercab	ACCESS_COARSE_LOCATION	PAYMENT	can use user's approximate location	to get to know where users make online payment	0.9	N/A
+com.unityconceptapps.tcr.kiat	CAMERA	DEVELOPMENT_AID	can use camera or flashlight on the phone	for unclear purpose	-0.6	B
+com.unityconceptapps.tcr.kiat	READ_PHONE_STATE	DEVELOPMENT_AID	can read phone current state information like oncall or not, signal, carrier, device ID and phone number	for unlcear purpose	-1.0526315789473684	D
+com.unityconceptapps.tcr.kiat	ACCESS_FINE_LOCATION	DEVELOPMENT_AID	can use user's precise location	for unclear purpose	-1.15	D
+com.unityconceptapps.tcr.kiat	RECORD_AUDIO	DEVELOPMENT_AID	can record audio through microphone on the phone	for unlcear purpose	-1.263157894736842	D
+com.wantu.activity	ACCESS_FINE_LOCATION	SNS	can use user's precise location	for tagging location informaiton when users share the app content to social network sites like Facebook and Twitter	0.05263157894736842	N/A
+com.wantu.activity	ACCESS_COARSE_LOCATION	SNS	can use user's approximate location	for tagging location information when users share the app content to social network sites like Facebook and Twitter	0.5263157894736842	N/A
+com.webkey	SEND_SMS	DEVELOPMENT_AID	can send out SMS messages	to enable sending sms feature	-0.15	A
+com.whaleshark.retailmenot	BLUETOOTH	UTILITY	can connect to user's Bluetooth devices	for share coupons with friends	0.9	N/A
+com.xvalue.androtoolkit	ACCESS_FINE_LOCATION	SECONDARY_MARKET	can use user's precise location	for an independent/secondary app store to conduct market/customer analysis	-0.6	B
+com.xz.nc	SEND_SMS	SECONDARY_MARKET	can send out SMS messages	for in-app purchase through premium SMS on independent/secondary market	-0.4	B
+com.yahoo.mobile.client.android.im	MANAGE_ACCOUNTS	INTERNAL	can manage user's accounts on the phone	to login Yahoo Messenger	1.1	N/A
+com.yahoo.mobile.client.android.weather	MANAGE_ACCOUNTS	INTERNAL	can manage user's accounts on the phone	to login Yahoo Weather	0.65	N/A
+com.ygoar.ygodad	CAMERA	GAME_ENGINE	can use camera or flashlight on the phone	in order to use camera/flashlight in the game	0.75	N/A
+com.yodawnla.isMonster2	BLUETOOTH	UTILITY	can connect to user's Bluetooth devices	to enable fight your friends through Bluetooth	1.55	N/A
+com.zc.android	READ_CONTACTS	DEVELOPMENT_AID	can read user's contact list (phone book) and phone call history	search cars near one of contacts' address	-0.7	C
+com.zc.android	ACCESS_FINE_LOCATION	DEVELOPMENT_AID	can use user's precise location	to search for nearby Zipcars	1.0	N/A
+com.zeptolab.ctr.ads	GET_ACCOUNTS	SECONDARY_MARKET	can use user's accounts information stored on the phone	to connect with independent/secondary mobile app stores	-0.75	C
+com.zeptolab.ctr.ads	READ_PHONE_STATE	SECONDARY_MARKET	can read phone current state information like oncall or not, signal, carrier, device ID and phone number	to identify users in order to connect with independent/secondary mobile app stores	-0.7894736842105263	C
+com.zeptolab.ctrexperiments.ads	READ_PHONE_STATE	PAYMENT	can read phone current state information like oncall or not, signal, carrier, device ID and phone number	to identify users in payment transaction	-0.25	A
+com.zoosk.zoosk	READ_PHONE_STATE	PAYMENT	can read phone current state information like oncall or not, signal, carrier, device ID and phone number	to identify users in payment transaction	-0.3157894736842105	A
+com.zrgiu.antivirus	SEND_SMS	PAYMENT	can send out SMS messages	for in-app purchase	-0.05	A
+eu.nordeus.topeleven.android	READ_PHONE_STATE	PAYMENT	can read phone current state information like oncall or not, signal, carrier, device ID and phone number	to identify users in payment transaction	-0.25	A
+eu.nordeus.topeleven.android	SEND_SMS	PAYMENT	can send out SMS messages	for in-app purchase	-0.3333333333333333	A
+flypiggroup.zhainan2012	ACCESS_FINE_LOCATION	SECONDARY_MARKET	can use user's precise location	for an independent/secondary app store to conduct market/customer analysis	-1.2	D
+grandtheft.auto.vicecity.cheats.unofficial	READ_PHONE_STATE	DEVELOPMENT_AID	can read phone current state information like oncall or not, signal, carrier, device ID and phone number	for unclear purpose	-0.9230769230769231	D
+grandtheft.auto.vicecity.cheats.unofficial	RECORD_AUDIO	DEVELOPMENT_AID	can record audio through microphone on the phone	for unlcear purpose	-0.4166666666666667	B
+henrich.thandroid.floor	RECORD_AUDIO	GAME_ENGINE	can record audio through microphone on the phone	to enable audio recording in game (though may not be used in Game)	-0.3	A
+jp.naver.SJLGPP	READ_PHONE_STATE	GAME_ENGINE	can read phone current state information like oncall or not, signal, carrier, device ID and phone number	to identify users for delivering targeted advertisement in game	-0.8421052631578947	C
+jp.naver.SJLGWR	READ_PHONE_STATE	GAME_ENGINE	can read phone current state information like oncall or not, signal, carrier, device ID and phone number	to identify users for delivering targeted advertisement in game	-0.5	B
+jp.naver.linetools	ACCESS_FINE_LOCATION	DEVELOPMENT_AID	can use user's precise location	for unlcear purpose	-0.6	B
+jp.naver.linetools	CAMERA	DEVELOPMENT_AID	can use camera or flashlight on the phone	for features like Flashlight, Mirror, Magnifying Glass, Spaghetti Measurer and QR Code Reader	1.2	N/A
+mobi.browser.flashfox	AUTHENTICATE_ACCOUNTS	UTILITY	can use user's account authentication information (like password) or create new accounts	to manage Firefox account informaiton on users' phone	0.058823529411764705	N/A
+net.mobilecraft.realbasketball	READ_PHONE_STATE	GAME_ENGINE	can read phone current state information like oncall or not, signal, carrier, device ID and phone number	to identify users for delivering targeted advertisement in game	-0.75	C
+ns.feedmeworms	SEND_SMS	SOCIAL_GAMING	can send out SMS messages	for in-app purchase through premium SMS on social game platform	-0.8947368421052632	D
+se.tv4.tv4playtab	BLUETOOTH	TARGETED_ADS	can connect to user's Bluetooth devices	for advertisement purpose	0.09090909090909091	N/A
+smm.refill	SEND_SMS	UTILITY	can send out SMS messages	for STC and Zain balance transfer	0.1	N/A
+xz.com.dadisu	SEND_SMS	SECONDARY_MARKET	can send out SMS messages	for in-app purchase through premium SMS on independent/secondary market	-0.85	D
