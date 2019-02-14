@@ -10,17 +10,22 @@ dbPermission = client["privacygrading"]
 
 def getSensitivePairs(packageName):
   sensitivePermssionPatterns = ["FINE_LOC", "COARSE_LOC", "PHONE_STATE", "CONTACT", "SMS", "ACCOUNTS", "CAMERA", "RECORD_AUDIO", "BLUETOOTH", "CALENDAR", "CALL_LOG"]
-  print packageName
   permissionEntry = dbPermission.packagePair.find_one({"packagename": packageName})
-  pairs = permissionEntry["labeledPermissionPurposesPairs"]
-  #since not all permissions are sensitive permissions so we only keep sensitive pairs here
-  sensitivePairs = {}
-  for pattern in sensitivePermssionPatterns:
-    pairsPermissions = pairs.keys()
-    for permission in pairsPermissions:
-      if permission.find(pattern) != -1:
-        sensitivePairs[permission] = pairs[permission]
-  return sensitivePairs
+  if permissionEntry is not None:
+    pairs = permissionEntry["labeledPermissionPurposesPairs"]
+    #since not all permissions are sensitive permissions so we only keep sensitive pairs here
+    sensitivePairs = {}
+    for pattern in sensitivePermssionPatterns:
+        pairsPermissions = pairs.keys()
+        for permission in pairsPermissions:
+            if permission.find(pattern) != -1:
+                sensitivePairs[permission] = pairs[permission]
+    print pairs
+    print sensitivePairs
+    return sensitivePairs
+  else:
+    print("{} not found in packagePair".format(packageName))
+    return {}
 
 def getRateTable(rateTablePath = "data/avgCrowdSourceResult.csv"):
     """
@@ -56,16 +61,19 @@ def main(DATE, path = "", modules_dir = ""):
   for line in appListFile:
     packageName = line.rstrip("\n")
     sensitivePairs = getSensitivePairs(packageName)
-    if len(sensitivePairs) == 0:
-        print packageName
     for permission, purposes in sensitivePairs.iteritems():
       for purpose in purposes:
         #find the corresponding triple
-        pairScoreDF = crowdResultDF[(crowdResultDF["packageName"] == packageName) & (crowdResultDF["permission"] == permission) & (crowdResultDF["purpose"] == purpose)]
+        crowd_packagename = (crowdResultDF["packageName"] == packageName)
+        crowd_permission = (crowdResultDF["permission"] == permission)
+        crowd_purpose = (crowdResultDF["purpose"] == purpose)
+        pairScoreDF = crowdResultDF[crowd_packagename & crowd_permission & crowd_purpose]
         if pairScoreDF.shape[0] == 0:
           #pairs not in first round crowd analysis
           rate = 0.0
-          score = scoreDf[(scoreDf["permission"] == permission) & (scoreDf["purpose"] == purpose)]["comfortScore"]
+          score_permission = (scoreDf["permission"] == permission)
+          score_purpose = (scoreDf["purpose"] == purpose)
+          score = scoreDf[score_permission & score_purpose]["comfortScore"]
           assert score.size <= 1
           if score.size == 1:
             rate = score.iloc[0]
@@ -79,7 +87,8 @@ def main(DATE, path = "", modules_dir = ""):
           assert pairScoreDF.shape[0] == 1
           outputPairsLst.append(pairScoreDF)
   outputPairsDF = pd.concat(outputPairsLst)
-  outputPairsDF.sort(["packageName"]).to_csv("comfortScorePerPair%s.csv"%DATE, sep="\t", index=False)
+  outputPairsDF.sort_values(by=["packageName"])\
+    .to_csv("comfortScorePerPair%s.csv"%DATE, sep="\t", index=False)
 
 
 # wrapper around main function

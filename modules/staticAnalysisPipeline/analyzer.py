@@ -4,6 +4,7 @@ import os
 from multiprocessing import Pool
 import traceback
 import multiprocessing_logging
+import shutil
 
 # sys path hacking to import from other repos
 import sys
@@ -88,8 +89,9 @@ def analyzer(apkList):
         os.makedirs(os.path.dirname(logPath))
 
     outputPath = "staticAnalysisRuns/" + now
-    if not os.path.exists(outputPath):
-        os.makedirs(outputPath)
+    if os.path.exists(outputPath):
+        shutil.rmtree(outputPath)
+    os.makedirs(outputPath)
 
     # in case the crawler breaks, append to the list.
     analyzedApkFilePath = outputPath + '/' + 'filelist.txt'
@@ -120,7 +122,9 @@ def analyzer(apkList):
             updatedApkList.append(line.strip("\n"))
 
     extractApp.extractPackagePair(updatedApkList, os.getcwd())
+    print("extractApp.extractPackagePair done")
     rateApp.transRateToLevel()
+    print("rateApp.transRateToLevel done")
 
     histFileName = "hist_" + now + ".csv"
     histFileDir = outputPath + "/data/hist"
@@ -128,16 +132,22 @@ def analyzer(apkList):
         os.makedirs(histFileDir)
     outputHistogramFile = open(histFileDir + "/" + histFileName, 'w')
     rateApp.generateHistData(200, outputHistogramFile)
+    print("rateApp.generateHistData done")
     outputHistogramFile.close()
 
     # run playstore analysis part
     analyze.main(analyzedApkFilePath)
+    print("playstoreAnalysis analyze done")
 
-    # run crowd analysis part for top apps
+    # TODO run crowd analysis part for top apps
+    """
     getSensitivePairs.main(now,
       os.path.dirname(getSensitivePairs.__file__) + "/",
       os.getcwd() + "/")
+    print("getSensitivePairs.main done")
     getSummedScore.main(now)
+    print("getSummedScore.main done")
+    """
 
 """
 Gets a list of APKs from a file of APK UUIDs

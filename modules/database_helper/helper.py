@@ -6,6 +6,8 @@ import logging
 import json
 import os
 from datetime import datetime
+from collections import defaultdict
+import pprint
 
 from dependencies.protobuf_to_dict.protobuf_to_dict.convertor import protobuf_to_dict
 from dependencies.app_object import App
@@ -15,6 +17,7 @@ from modules.database_helper.util import details_to_dict
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     level=logging.INFO)
+pp = pprint.PrettyPrinter(indent=4)
 
 class DbHelper:
     def __init__(self):
@@ -95,18 +98,30 @@ class DbHelper:
     def get_all_apps_to_download(self):
         """
         Returns a list of package_names for all of the apps that need to be
-        downloaded + analyzed + decompiled
+        downloaded + decompiled + analyzed
+
+        Only return document with info of newest version of app
         """
-        app = self.__apk_info_collection.find(
+        apps = self.__apk_info_collection.find(
             {
                 "date_downloaded": None,
                 "removed": False,
             },
             {
                 "_id": 0,
-                "package_name": 1
+                "package_name": 1,
+                "version_code": 1,
             })
-        return [a['package_name'] for a in app]
+
+        app_versions = {}
+        for app in apps:
+            if app["package_name"] not in app_versions:
+                app_versions[app["package_name"]] = int(app["version_code"])
+            else:
+                if int(app["version_code"]) > app_versions[app["package_name"]]:
+                    app_versions[app["package_name"]] = int(app["version_code"])
+
+        return list(app_versions.keys())
 
     def get_all_apps_to_analyze(self):
         """

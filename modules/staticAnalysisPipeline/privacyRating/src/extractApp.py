@@ -72,7 +72,7 @@ def extractPackagePair(updatedApkList, reposPath):
     cnt = 0
     for packagename in updatedApkList:
         cnt += 1
-        print cnt, packagename, "extract"
+        #print cnt, packagename, "extract"
 
         #make sure permission in apkInfo is the version analyzed. Do not update apkInfo before extractApp.py run
         apkInfoEntry = dbAndroidApp.apkInfo.find_one({'package_name':packagename},
@@ -83,12 +83,13 @@ def extractPackagePair(updatedApkList, reposPath):
                 })
         if "updatedTimestamp" not in apkInfoEntry:
             # compatability with date_last_scraped
-            updatedTimestamp = datetime.datetime.fromtimestamp(apkInfoEntry["date_last_scraped"])
+            updatedTimestamp = datetime.datetime.strptime(apkInfoEntry["date_last_scraped"],
+                "%Y%m%dT%H%M")
         else:
             updatedTimestamp = apkInfoEntry['updatedTimestamp']
 
         #if app does not require permission, it wont have a permission field in entry
-        manifestPermissions =  apkInfoEntry.get('permission', [])
+        manifestPermissions =  apkInfoEntry.get('permissions', [])
         manifestPermissions = [permission.lstrip('android.permission.') for permission in manifestPermissions if permission.startswith('android.permission.')]
         #for rating, will be stored in db
         labeledPermissionPurposesDict = {}
@@ -117,7 +118,20 @@ def extractPackagePair(updatedApkList, reposPath):
 
         rate, negativePermissionPurposeDict = calculateRateforOneApp(labeledPermissionPurposesDict,
             reposPath + "/privacyGradePrediction")
-        packagePairEntry = {'packagename': packagename, 'labeledPermissionPurposesPairs': {key: list(value) for key, value in labeledPermissionPurposesDict.iteritems()}, 'permissionExternalPackagesPairs': {key: list(value) for key, value in permissionExternalPackageDict.iteritems()}, 'negativePermissionPurposesPairs': {key: list(value) for key, value in negativePermissionPurposeDict.iteritems()}, 'manifestPermissions': manifestPermissions, 'updatedTimestamp' : updatedTimestamp}
+        packagePairEntry = {
+            'packagename': packagename,
+            'labeledPermissionPurposesPairs': {
+                key: list(value) for key, value in labeledPermissionPurposesDict.iteritems()
+            },
+            'permissionExternalPackagesPairs': {
+                key: list(value) for key, value in permissionExternalPackageDict.iteritems()
+            },
+            'negativePermissionPurposesPairs': {
+                key: list(value) for key, value in negativePermissionPurposeDict.iteritems()
+            },
+            'manifestPermissions': manifestPermissions,
+            'updatedTimestamp' : updatedTimestamp,
+        }
         packagePairEntry['rate'] = rate
 
         dbPrivacyGrading.packagePair.update({'packagename': packagename}, packagePairEntry, upsert=True)

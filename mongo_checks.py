@@ -5,7 +5,7 @@ from collections import defaultdict
 from bson.objectid import ObjectId
 from modules.scraper.uuid_generator import generate_uuids
 from datetime import datetime
-
+from collections import defaultdict
 
 def stuff():
     #"""
@@ -140,6 +140,41 @@ def null_upload_date_checks():
     print(len(new_names.difference(old_names)))
     return
 
+def latest_vers_download_check():
+    cursor = android_app_db.apkInfo.find(
+        {},
+        {
+            "package_name": 1,
+            "upload_date": 1,
+            "version_code": 1,
+            "date_downloaded": 1,
+            "removed": 1,
+        })
+
+    download_cursor = android_app_db.apkInfo.find(
+        {
+            "date_downloaded": None,
+            "removed": False
+        },
+        {
+            "package_name": 1,
+        })
+    next_round_apps = set([app["package_name"] for app in download_cursor])
+
+    app_versions = defaultdict(list)
+    for app in cursor:
+        app_versions[app["package_name"]].append(app)
+
+    for app_name in app_versions:
+        versions = sorted(app_versions[app_name], key=lambda k: k["version_code"], reverse=True)
+        if versions[0]["date_downloaded"] is None and app_name not in next_round_apps:
+            # no other version should be downloaded too
+            if len(versions) > 1:
+                second_downloaded = versions[1]["date_downloaded"] is not None
+                for v in versions[2:]:
+                    if v["date_downloaded"] is not None and not second_downloaded:
+                        print("name: {}, removed: {} has weird downloads".format(app_name, v["removed"]))
+                        print(versions)
 
 if __name__ == "__main__":
     dh = MongoClient(host=constants.DB_HOST,
@@ -150,6 +185,5 @@ if __name__ == "__main__":
     old_android_app_db = dh["old_androidApp"]
     dbhelper = DbHelper()
 
-    null_upload_date_checks()
-
+    latest_vers_download_check()
 
