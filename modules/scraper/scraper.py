@@ -239,6 +239,10 @@ class Scraper:
     # ***************** #
     # other useful functions
     # ***************** #
+    def scrape_missing(self, app_names):
+        missing_names = self.__db_helper.check_apps_missing(app_names)
+        self.scrape_apps(missing_names)
+
     def check_removed(self, app_names):
         """
         Returns list of app names that have been removed from the play store

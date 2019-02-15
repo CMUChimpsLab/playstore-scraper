@@ -300,7 +300,8 @@ class DbHelper:
                 upsert=True)
 
         # Also update top field in main db
-        self.__apk_info_collection.update_many({"packageName": {'$in': new_top_list}},
+        self.__apk_info_collection.update_many(
+            {"packageName": {'$in': new_top_list}},
             {'$set': {"hasBeenTop": True}})
 
     def update_list_of_names(self):
@@ -480,3 +481,10 @@ class DbHelper:
 
         return updated
 
+    def check_apps_missing(self, app_names):
+        apps_in_db = self.__apk_info_collection.find(
+            {"packageName": {'$in': app_names}},
+            {"packageName": 1})
+        
+        return list(set(app_names).difference(list(apps_in_db)))
+        
