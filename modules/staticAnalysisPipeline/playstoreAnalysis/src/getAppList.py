@@ -17,7 +17,7 @@ def getDeveloperTopApps(developer, size):
   for entry in appDb.apkDetails.find({"details.appDetails.developerName":developer}).sort('aggregateRating.ratingsCount',-1).limit(200):
       packageName = entry['details']['appDetails']['packageName']
       title = entry["title"].encode("utf-8")
-      packagePairEntry = db.packagePair.find_one({'packagename': packageName}, {"_id":0})
+      packagePairEntry = db.packagePair.find_one({'packageName': packageName}, {"_id":0})
       if packagePairEntry != None and count < size:
           print >> sys.stderr, packageName
           packagePairEntry["updatedTimestamp"] = int(time.mktime(packagePairEntry["updatedTimestamp"].timetuple())) * 1000
@@ -32,7 +32,7 @@ def getTopApps(size):
   for entry in appDb.apkDetails.find().sort('aggregateRating.ratingsCount',-1).limit(2*size):
       packageName = entry['details']['appDetails']['packageName']
       title = entry["title"].encode("utf-8")
-      packagePairEntry = db.packagePair.find_one({'packagename': packageName}, {"_id":0})
+      packagePairEntry = db.packagePair.find_one({'packageName': packageName}, {"_id":0})
       if packagePairEntry != None and count < size:
           print >> sys.stderr, packageName
           packagePairEntry["updatedTimestamp"] = int(time.mktime(packagePairEntry["updatedTimestamp"].timetuple())) * 1000
@@ -48,7 +48,7 @@ def getTop100AppsUnusualPermissionAndPurposes():
   #for kind in ['permissionExternalPackagesPairs', 'labeledPermissionPurposesPairs', 'negativePermissionPurposesPairs']:
     packageName = entry['details']['appDetails']['packageName']
     title = entry['title']
-    packagePairEntry = db.packagePair.find_one({'packagename': packageName})
+    packagePairEntry = db.packagePair.find_one({'packageName': packageName})
     if packagePairEntry != None:
       sys.stdout.write((title + '|' + packageName).encode('utf-8'))
       count += 1

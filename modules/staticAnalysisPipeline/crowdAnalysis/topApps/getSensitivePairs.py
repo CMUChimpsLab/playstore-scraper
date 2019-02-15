@@ -9,18 +9,22 @@ client["admin"].authenticate(USERNAME, PASSWORD)
 dbPermission = client["privacygrading"]
 
 def getSensitivePairs(packageName):
-  sensitivePermssionPatterns = ["FINE_LOC", "COARSE_LOC", "PHONE_STATE", "CONTACT", "SMS", "ACCOUNTS", "CAMERA", "RECORD_AUDIO", "BLUETOOTH", "CALENDAR", "CALL_LOG"]
-  permissionEntry = dbPermission.packagePair.find_one({"packagename": packageName})
-  if permissionEntry is not None:
-    pairs = permissionEntry["labeledPermissionPurposesPairs"]
-    #since not all permissions are sensitive permissions so we only keep sensitive pairs here
-    sensitivePairs = {}
-    for pattern in sensitivePermssionPatterns:
+  sensitivePermissionPatterns = ["FINE_LOC", "COARSE_LOC", "PHONE_STATE", "CONTACT", "SMS", 
+    "ACCOUNTS", "CAMERA", "RECORD_AUDIO", "BLUETOOTH", "CALENDAR", "CALL_LOG"]
+
+  sensitivePairs = {}
+  permissionEntries = dbPermission.packagePair.find({"packageName": packageName})
+  if permissionEntries is not None and permissionEntries.count() > 0:
+    for permEntry in permissionEntries:
+      pairs = permissionEntry["labeledPermissionPurposesPairs"]
+      #since not all permissions are sensitive permissions so we only keep sensitive pairs here
+      for pattern in sensitivePermissionPatterns:
         pairsPermissions = pairs.keys()
         for permission in pairsPermissions:
-            if permission.find(pattern) != -1:
-                sensitivePairs[permission] = pairs[permission]
-    print pairs
+          if permission.find(pattern) != -1:
+            sensitivePairs[permission] = pairs[permission]
+      print pairs
+    
     print sensitivePairs
     return sensitivePairs
   else:

@@ -41,7 +41,8 @@ class StaticAnalyzer:
             return "NA"
         
         
-    def __init__ (self, fileName, outFileName, packages, dbMgr, noprefixfilename, a, d, dx):
+    def __init__ (self, fileName, vc, outFileName, packages, dbMgr, 
+                  noprefixfilename, a, d, dx):
         ###a = apk.APK(fileName)
         ###d = dvm.DalvikVMFormat (a.get_dex())
         ###dx = uVMAnalysis (d)
@@ -62,6 +63,8 @@ class StaticAnalyzer:
             self.main_package_name  = (mpn[:200] + '..')
         else:
             self.main_package_name = mpn
+
+        self.version_code = vc
             
         '''
         Keeping main package name within range of mysql datatype
@@ -125,7 +128,9 @@ class StaticAnalyzer:
                 if isinstance(path, PathVar) :
                     is_external = (ex3.search(dst_class_name) == None)
                     package = self.findandprint (packages, dst_class_name)
-                    dbMgr.insertPermissionInfo(self.main_package_name, self.fileName, i, is_external, dst_class_name, package, "NA")
+                    dbMgr.insertPermissionInfo(self.main_package_name, 
+                        self.version_code, self.fileName, i, is_external, 
+                        dst_class_name, package, "NA")
                 else:
                     src, src_method_name, src_descriptor = path.get_src( cm )
                     package = self.findandprint(packages, src)
@@ -134,5 +139,7 @@ class StaticAnalyzer:
                     else:
                         src_class_name = src
                     is_external = (ex3.search(src_class_name) == None)
-                    dbMgr.insertPermissionInfo(self.main_package_name, self.fileName, i, is_external, dst_class_name, package, src_class_name)
+                    dbMgr.insertPermissionInfo(self.main_package_name, 
+                        self.version_code, self.fileName, i, is_external, 
+                        dst_class_name, package, src_class_name)
        

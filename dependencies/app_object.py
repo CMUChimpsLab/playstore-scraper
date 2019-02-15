@@ -6,47 +6,47 @@ class App:
     Represents a single app and metadata we want to store, with conversion
     methods from the metadata we get from the app store
     """
-    def __init__(self, uuid, package_name, version_code,
-                 title=None, developer_name=None, installation_size=None,
-                 contains_ads=None, category=None, content_rating=None,
-                 user_rating=None, permission=None, date_downloaded=None,
-                 date_last_scraped=None, analyses_completed=None,
-                 description_text=None, app_type=None, developer_email=None,
-                 file_obj=None, upload_date=None, recent_changes_html=None,
-                 major_version_number=None, developer_website=None,
-                 num_downloads=None, version_string=None, is_free=None):
+    def __init__(self, uuid, packageName, versionCode,
+                 title=None, developerName=None, installationSize=None,
+                 containsAds=None, category=None, contentRating=None,
+                 userRating=None, permissions=None, dateDownloaded=None,
+                 dateLastScraped=None, analysesCompleted=None,
+                 descriptionHtml=None, app_type=None, developerEmail=None,
+                 fileObj=None, uploadDate=None, recentChangesHtml=None,
+                 majorVersionNumber=None, developerWebsite=None,
+                 numDownloads=None, versionString=None, isFree=None):
 
-        if any(variable is None for variable in [uuid, package_name]):
-            raise AttributeError("The following cannot be None: uuid, package_name")
+        if any(variable is None for variable in [uuid, packageName]):
+            raise AttributeError("The following cannot be None: uuid, packageName")
 
         # These values should not be changed
         self.__dict__['uuid'] = uuid
-        self.__dict__['package_name'] = package_name
-        self.__dict__['version_code'] = version_code
-        self.__dict__['constants'] = ['uuid', 'package_name', 'version_code', 'constants']
+        self.__dict__['packageName'] = packageName
+        self.__dict__['versionCode'] = versionCode
+        self.__dict__['constants'] = ['uuid', 'packageName', 'versionCode', 'constants']
 
         self.title = title
-        self.developer_name = developer_name
-        self.installation_size = installation_size
+        self.developerName = developerName
+        self.installationSize = installationSize
         self.category = category
-        self.content_rating = content_rating
-        self.user_rating = user_rating
-        self.permission = permission
-        self.date_downloaded = date_downloaded
-        self.date_last_scraped = date_last_scraped
-        self.analyses_completed = analyses_completed
-        self.description_text = description_text
+        self.contentRating = contentRating
+        self.userRating = userRating
+        self.permissions = permissions
+        self.dateDownloaded = dateDownloaded
+        self.dateLastScraped = dateLastScraped
+        self.analysesCompleted = analysesCompleted
+        self.descriptionHtml = descriptionHtml
         self.app_type = app_type
-        self.developer_email = developer_email
-        self.file = file_obj
-        self.upload_date = upload_date
-        self.recent_changes_html = recent_changes_html
-        self.major_version_number = major_version_number
-        self.developer_website = developer_website
-        self.num_downloads = num_downloads
-        self.version_string = version_string
-        self.is_free = is_free
-        self.is_size_exceed = False
+        self.developerEmail = developerEmail
+        self.file = fileObj
+        self.uploadDate = uploadDate
+        self.recentChangesHtml = recentChangesHtml
+        self.majorVersionNumber = majorVersionNumber
+        self.developerWebsite = developerWebsite
+        self.numDownloads = numDownloads
+        self.versionString = versionString
+        self.isFree = isFree
+        self.isSizeExceed = False
 
     def __setattr__(self, name, value):
         if name in self.__dict__['constants']:
@@ -58,7 +58,7 @@ class App:
     def convert_to_App_Object(info_dict, uuid):
         """
         Translates a info_dict with the corresponding fields into an App object
-        And adds the uuid, and date_last_scraped as current time
+        And adds the uuid, and dateLastScraped as current time
         """
         if info_dict is None:
             return None
@@ -66,36 +66,36 @@ class App:
         app_details = info_dict["details"]["appDetails"]
         a_file = app_details.get("file", None)
         if a_file is not None and len(a_file) > 0:
-            a_file[0]["file_type"] = a_file[0].pop("fileType", None)
-            a_file[0]["version_code"] = a_file[0].pop("versionCode", None)
+            a_file[0]["fileType"] = a_file[0].pop("fileType", None)
+            a_file[0]["versionCode"] = a_file[0].pop("versionCode", None)
             a_file[0]["size"] = a_file[0].pop("size", None)
         if info_dict["offer"] is not None and len(info_dict["offer"]) > 0:
-            is_free = (not info_dict["offer"][0]["checkoutFlowRequired"])
+            isFree = (not info_dict["offer"][0]["checkoutFlowRequired"])
         else:
-            is_free = None
+            isFree = None
 
         app = App(uuid,
                   app_details["packageName"],
                   app_details.get("versionCode", None),
                   title=info_dict['title'],
-                  developer_name=app_details['developerName'],
-                  installation_size=app_details.get('installationSize', None),
+                  developerName=app_details['developerName'],
+                  installationSize=app_details.get('installationSize', None),
                   category=info_dict["relatedLinks"]["categoryInfo"]["appCategory"],
-                  user_rating=info_dict['aggregateRating'],
-                  permission=app_details.get('permission', []),
-                  date_last_scraped=info_dict['date_last_scraped'],
-                  description_text=info_dict['descriptionHtml'],
-                  content_rating=app_details.get("contentRating", None),
-                  app_type=app_details["appType"],
-                  developer_email=app_details.get("developerEmail", None),
-                  file_obj=a_file,
-                  upload_date=app_details.get("uploadDate", None),
-                  recent_changes_html=app_details.get("recentChangesHtml", None),
-                  major_version_number=app_details.get("majorVersionNumber", None),
-                  developer_website=app_details.get("developerWebsite", None),
-                  num_downloads=app_details.get("numDownloads", None),
-                  version_string=app_details.get("versionString", None),
-                  is_free=is_free)
+                  userRating=info_dict['aggregateRating'],
+                  permissions=app_details.get('permission', []),
+                  dateLastScraped=info_dict['dateLastScraped'],
+                  descriptionHtml=info_dict['descriptionHtml'],
+                  contentRating=app_details.get("contentRating", None),
+                  appType=app_details["appType"],
+                  developerEmail=app_details.get("developerEmail", None),
+                  fileObj=a_file,
+                  uploadDate=app_details.get("uploadDate", None),
+                  recentChangesHtml=app_details.get("recentChangesHtml", None),
+                  majorVersionNumber=app_details.get("majorVersionNumber", None),
+                  developerWebsite=app_details.get("developerWebsite", None),
+                  numDownloads=app_details.get("numDownloads", None),
+                  versionString=app_details.get("versionString", None),
+                  isFree=isFree)
 
         return app
 

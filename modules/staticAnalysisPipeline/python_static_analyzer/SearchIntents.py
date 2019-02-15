@@ -27,7 +27,7 @@ class Intents:
                 return package
         return "NA"
                 
-    def __init__(self, infile, outfile, packages, dbMgr, noprefixfilename, a, d, dx):
+    def __init__(self, infile, outfile, vc, packages, dbMgr, noprefixfilename, a, d, dx):
         '''
         Constructor
         '''
@@ -46,7 +46,8 @@ class Intents:
             self.main_package_name  = (mpn[:200] + '..')
         else:
             self.main_package_name = mpn
-                                        
+
+        self.version_code = vc      
         
         ###self.outHandle.write ("\n")
         ###self.outHandle.write ("---Package Name---\n")
@@ -118,7 +119,9 @@ class Intents:
                             else:
                                 strlink = link
                                 
-                            self.dbMgr.insertLinkInfo(self.main_package_name, self.fileName, strlink, False, dst, xpck)
+                            self.dbMgr.insertLinkInfo(self.main_package_name,
+                                self.version_code, self.fileName, strlink, 
+                                False, dst, xpck)
                     else:
                         _,linkStr = full
                         #print "EXTERNAL - ", link
@@ -133,7 +136,9 @@ class Intents:
                             else:
                                 strlink = link      
                                                    
-                            self.dbMgr.insertLinkInfo(self.main_package_name, self.fileName, strlink, True, dst, xpck)
+                            self.dbMgr.insertLinkInfo(self.main_package_name, 
+                                self.version_code, self.fileName, strlink, True, 
+                                dst, xpck)
                             
                     #access, idx = path[0]    
                     ###self.outHandle.write ('\n\n')

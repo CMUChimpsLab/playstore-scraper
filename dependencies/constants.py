@@ -70,8 +70,9 @@ LOG_FOLDER = "/home/privacy/logs"
 
 DB_HOST = 'localhost'
 DB_PORT = 27017
-APP_METADATA_DB = 'androidApp'
-STATIC_ANALYSIS_DB = 'staticAnalysis'
+APP_METADATA_DB = 'androidAppDB'
+PRIVACY_GRADING_DB = 'privacyGradingDB'
+STATIC_ANALYSIS_DB = 'staticAnalysisDB'
 
 DB_ROOT_USER = DB_USER
 DB_ROOT_PASS = DB_PASS

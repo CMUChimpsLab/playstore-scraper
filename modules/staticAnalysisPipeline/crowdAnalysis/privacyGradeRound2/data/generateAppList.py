@@ -20,7 +20,7 @@ def getAppsForPairs(pairPackageDict):
           packageNameRatingCntDict[packageName] = entry["aggregateRating"]["ratingsCount"]
     #Update the dict {pair1: {"packageList": [], "ratingCntList"[], "count": count}}
     for entry in dbPairs.packagePair.find(timeout = False):
-        packageName = entry["packagename"]
+        packageName = entry["packageName"]
         #filter apps already analyzed by Jialiu and in first round
         if packageName in exisitingTopAppList:
             continue 

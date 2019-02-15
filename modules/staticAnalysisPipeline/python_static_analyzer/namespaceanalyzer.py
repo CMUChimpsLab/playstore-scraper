@@ -63,7 +63,8 @@ class NameSpaceMgr:
             self.packages.append ("admob")
 
     
-    def execute (self, fileName, outFileName, dbMgr, noprefixfilename, category, a, d, dx):
+    def execute(self, fileName, vc, outFileName, dbMgr, noprefixfilename, 
+                category, a, d, dx):
         ###a = apk.APK(fileName)
         ###d = dvm.DalvikVMFormat (a.get_dex())
         ###dx = uVMAnalysis (d)
@@ -80,12 +81,13 @@ class NameSpaceMgr:
         
         
         self.dirEntries = []
-        self.main_package_name = ""
+        self.version_code = vc
         
         ######self.outHandle.write ("---Package Name---\n")
         '''
         Keeping main package name within range of mysql datatype
         '''
+        self.main_package_name = ""
         mpn = a.get_package()
         if len(mpn) > 250 :
             self.main_package_name  = (mpn[:200] + '..')
@@ -93,7 +95,7 @@ class NameSpaceMgr:
             self.main_package_name = mpn
             
         '''
-        Keeping main package name within range of mysql datatype
+        Keeping filename within range of mysql datatype
         '''
         if len(noprefixfilename) > 250 :
             self.fileName  = (noprefixfilename[:200] + '..')
@@ -267,7 +269,11 @@ class NameSpaceMgr:
                 name = (rootEntry.DirName[:200] + '..')
             else:
                 name = rootEntry.DirName
-            self.dbMgr.insert3rdPartyPackageInfo(self.main_package_name, self.fileName, name, self.category)
+            self.dbMgr.insert3rdPartyPackageInfo(self.main_package_name, 
+                self.version_code,
+                self.fileName, 
+                name, 
+                self.category)
             ###self.outHandle.write ("\n")
             self.alreadyPrinted.append (rootEntry.DirName)
             return
@@ -289,7 +295,11 @@ class NameSpaceMgr:
             return;
         elif ancestorLevel == 3:
             ###self.outHandle.write (str ("titanium"))
-            self.dbMgr.insert3rdPartyPackageInfo (self.main_package_name, self.fileName, "titanium", self.category)
+            self.dbMgr.insert3rdPartyPackageInfo(self.main_package_name, 
+                self.version_code,
+                self.fileName, 
+                "titanium",
+                self.category)
             self.alreadyPrinted.append ("titanium")
         elif ancestorLevel == 1:
             self.packages.append (rootEntry.DirName)
@@ -301,7 +311,11 @@ class NameSpaceMgr:
                 name = (rootEntry.DirName[:200] + '..')
             else:
                 name = rootEntry.DirName
-            self.dbMgr.insert3rdPartyPackageInfo (self.main_package_name, self.fileName, name, self.category)
+            self.dbMgr.insert3rdPartyPackageInfo(self.main_package_name,
+                self.version_code,
+                self.fileName,
+                name,
+                self.category)
             ###self.outHandle.write ("\n")
             self.alreadyPrinted.append (rootEntry.DirName)
         else:

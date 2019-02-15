@@ -2,6 +2,8 @@ from pymongo import MongoClient
 from modules.database_helper.helper import DbHelper
 
 def fix(uuid, helper=None, client=None):
+    print(" DON'T USE FOR NOW ")
+    return
     if helper is None:
         helper = DbHelper()
     if client is None:
@@ -9,10 +11,10 @@ def fix(uuid, helper=None, client=None):
     else:
         d = client
     db = d.staticAnalysisBad
-    thirdpackages = db['Test_3rd_party_packages'].find({'filename': uuid+'.apk'}, {'externalpackagename': 1, '_id': 0})
+    thirdpackages = db['thirdPartyPackages'].find({'filename': uuid+'.apk'}, {'externalpackagename': 1, '_id': 0})
     l = [i['externalpackagename'] for i in thirdpackages]
     helper.insert_analysis_into_db(uuid, l, '3rd_party_packages')
-    db['Test_3rd_party_packages'].delete_many({'filename': uuid+'.apk'})
+    db['thirdPartyPackages'].delete_many({'filename': uuid+'.apk'})
     # Do same for other dbs
 
     url = db['Test_linkurl'].find({'filename': uuid+'.apk'}, {'is_external': 1, 'triggered_by_code': 1, 'link_url': 1, '_id': 0})

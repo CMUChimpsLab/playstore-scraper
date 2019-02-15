@@ -12,7 +12,6 @@ import pprint
 from dependencies.protobuf_to_dict.protobuf_to_dict.convertor import protobuf_to_dict
 from dependencies.app_object import App
 import dependencies.constants as constants
-from modules.database_helper.util import details_to_dict
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
@@ -50,7 +49,7 @@ class DbHelper:
         Convert uuid for an app to its package name
         """
         cursor = self.__apk_info_collection.find({"uuid": str(uuid)})
-        return cursor[0]["package_name"] # uuid should always correlate to an app
+        return cursor[0]["packageName"] # uuid should always correlate to an app
 
 
     # ************************************************************************ #
@@ -61,22 +60,15 @@ class DbHelper:
         Finds the uuids for all of the apps we have yet to analyze at all
         Perhaps add functionality for specific analyses later
         """
-        apps = self.__apk_info_collection.find({}, {"_id": 0, "uuid": 1, "package_name": 1})
-        return [(app["package_name"], app["uuid"]) for app in apps]
+        apps = self.__apk_info_collection.find({}, {"_id": 0, "uuid": 1, "packageName": 1})
+        return [(app["packageName"], app["uuid"]) for app in apps]
 
     def get_removed_names_from_database(self):
         """
         Retrieve the names of all the apps from the database
         """
         cursor = self.__apk_info_collection.find()
-        return [entry["package_name"] for entry in cursor if entry["removed"]]
-
-    def get_uuids_to_analyze(self):
-        """
-        Gets a list of UUIDs that need static analysis
-        """
-        cursor = self.__apk_info_collection.find({"analyses_completed": None})
-        return [entry["uuid"] for entry in cursor]
+        return [entry["packageName"] for entry in cursor if entry["removed"]]
 
     def get_all_apps_from_database(self):
         """
@@ -91,8 +83,8 @@ class DbHelper:
         Returns a list of UUIDs for all apps that have been downloaded
         """
         app = self.__apk_info_collection.find(
-            {'date_downloaded': {"$ne": None}},
-            {'_id': 0, 'package_name': 1})
+            {"dateDownloaded": {"$ne": None}},
+            {'_id': 0, "packageName": 1})
         return [a['uuid'] for a in app]
 
     def get_all_apps_to_download(self):
@@ -104,22 +96,22 @@ class DbHelper:
         """
         apps = self.__apk_info_collection.find(
             {
-                "date_downloaded": None,
+                "dateDownloaded": None,
                 "removed": False,
             },
             {
                 "_id": 0,
-                "package_name": 1,
-                "version_code": 1,
+                "packageName": 1,
+                "versionCode": 1,
             })
 
         app_versions = {}
         for app in apps:
-            if app["package_name"] not in app_versions:
-                app_versions[app["package_name"]] = int(app["version_code"])
+            if app["packageName"] not in app_versions:
+                app_versions[app["packageName"]] = int(app["versionCode"])
             else:
-                if int(app["version_code"]) > app_versions[app["package_name"]]:
-                    app_versions[app["package_name"]] = int(app["version_code"])
+                if int(app["versionCode"]) > app_versions[app["packageName"]]:
+                    app_versions[app["packageName"]] = int(app["versionCode"])
 
         return list(app_versions.keys())
 
@@ -128,8 +120,14 @@ class DbHelper:
         Finds the uuids for all of the apps we have yet to analyze at all
         Perhaps add functionality for specific analyses later
         """
-        app = self.__apk_info_collection.find({'analyses_completed': None}, {'_id': 0, 'uuid': 1})
-        return [a['uuid'] for a in app]
+        app = self.__apk_info_collection.find(
+            {"analysesCompleted": None}, 
+            {
+                '_id': 0, 
+                'uuid': 1,
+                "versionCode": 1,
+            })
+        return [(a['uuid'], a["versionCode"]) for a in app]
 
     def get_package_names_to_update(self, count=0):
         """
@@ -145,7 +143,7 @@ class DbHelper:
                     "$or": [{"removed": False}, {"removed": {"$exists": False}}],
                 },
                 {
-                    'package_name': 1,
+                    "packageName": 1,
                     '_id': 0,
                 }) \
             .limit(count)
@@ -157,14 +155,14 @@ class DbHelper:
         Takes in a list of package_names and gets the uuids corresponding to
         those filenames
         """
-        query = {'package_name': {'$in': apps}, 'date_downloaded': None}
-        projection = {'package_name': 1, 'uuid': 1}
+        query = {"packageName": {'$in': apps}, "dateDownloaded": None}
+        projection = {"packageName": 1, 'uuid': 1}
         cursor = self.__apk_info_collection \
             .find(query, projection) \
-            .sort([('date_last_scraped', pymongo.DESCENDING)])
+            .sort([("dateLastScraped", pymongo.DESCENDING)])
         cursor = list(cursor)
         if cursor != []:
-            return [[x['package_name'], x['uuid']] for x in cursor]
+            return [[x["packageName"], x['uuid']] for x in cursor]
         return []
 
     def get_metadata_in_json(self, OUTPUT_FILE):
@@ -183,7 +181,7 @@ class DbHelper:
         """
         Gets a list of all current top apps from each category
         """
-        cursor = self.__top_apps.find({"currently_top": True}, {"_id": 1})
+        cursor = self.__top_apps.find({"currentlyTop": True}, {"_id": 1})
         return list(cursor)
 
     def get_top_apps(self):
@@ -206,8 +204,10 @@ class DbHelper:
                 new_names.append(i)
         return new_names
 
-    def getManiFestPermissions(self, packagename):
-        return self.__apk_info_collection.find_one({'package_name': packagename}, {'permissions':1})['permissions']
+    def getManiFestPermissions(self, package_name):
+        return self.__apk_info_collection.find_one(
+            {"packageName": package_name}, 
+            {'permissions':1})['permissions']
 
 
     # ************************************************************************ #
@@ -218,7 +218,7 @@ class DbHelper:
         Uses the given doc to update a document with the given package name in
         the apkInfo collection
         """
-        self.__apk_info_collection.update_one({"package_name": packageName}, doc)
+        self.__apk_info_collection.update_one({"packageName": packageName}, doc)
 
     def insert_analysis_into_db(self, uuid, value, collection_name):
         """
@@ -247,26 +247,26 @@ class DbHelper:
             logger.error("App with uuid {0} already exists".format(app_info['uuid']))
             return
 
-        if self.is_app_top(app_info['package_name']) or not self.is_app_in_db(app_info['package_name']):
+        if self.is_app_top(app_info["packageName"]) or not self.is_app_in_db(app_info["packageName"]):
             # only want to maintain multiple versions for top apps
             new_id = self.__apk_info_collection.insert_one(app_info)
             self.__apk_details_collection.insert_one(app_details)
-            if not self.is_app_in_db(app_info['package_name']):
-                self.__package_names_list.insert_one({'_id': app_info['package_name']})
-            logger.info("Inserted {} into db".format(app_info["package_name"]))
+            if not self.is_app_in_db(app_info["packageName"]):
+                self.__package_names_list.insert_one({'_id': app_info["packageName"]})
+            logger.info("Inserted {} into db".format(app_info["packageName"]))
         else:
             # Is in the database, but not a top app, so just update
             old_entries = self.__apk_info_collection.find(
-                {'package_name': app_info['package_name']},
-                {"uuid": 1, "package_name": 1, "upload_date": 1})
+                {"packageName": app_info["packageName"]},
+                {"uuid": 1, "packageName": 1, "uploadDate": 1})
 
             old_uuid = None
             newest_upload = None
             for entry in old_entries:
                 try:
-                    time_obj = datetime.strptime(entry["upload_date"], "%d %b %Y")
+                    time_obj = datetime.strptime(entry["uploadDate"], "%d %b %Y")
                 except ValueError:
-                    time_obj = datetime.strptime(entry["upload_date"], "%b %d, %Y")
+                    time_obj = datetime.strptime(entry["uploadDate"], "%b %d, %Y")
 
                 if newest_upload is None or time_obj > newest_upload:
                     newest_upload = time_obj
@@ -276,7 +276,7 @@ class DbHelper:
                     {"uuid": old_uuid},
                     {"$set": app_info})
             self.__apk_details_collection.update_one(
-                {"details.appDetails.packageName": app_info["package_name"]},
+                {"details.appDetails.packageName": app_info["packageName"]},
                 {"$set": app_details})
 
             # Remove old files
@@ -286,78 +286,57 @@ class DbHelper:
             zip_path = "/" + old_uuid[0] + "/" + old_uuid + ".zip"
             if os.path.isfile(constants.DECOMPILE_FOLDER + zip_path):
                 os.remove(constants.DECOMPILE_FOLDER + zip_path)
-            logger.info("Replaced {} in db".format(app_info["package_name"]))
+            logger.info("Replaced {} in db".format(app_info["packageName"]))
 
     def update_top_apps(self, new_top_list):
         """
         Update the list of top apps to include possible new ones, and change
         the status of old ones. _id is package_name, makes for faster querying
         """
-        self.__top_apps.update_many({}, {'$set': {'currently_top': False}})
+        self.__top_apps.update_many({}, {'$set': {"currentlyTop": False}})
         for name in new_top_list:
             self.__top_apps.update_one({'_id': name},
-                {'$set': {'_id': name, 'currently_top': True}},
+                {'$set': {'_id': name, "currentlyTop": True}},
                 upsert=True)
 
         # Also update top field in main db
-        self.__apk_info_collection.update_many({'package_name': {'$in': new_top_list}},
-            {'$set': {'has_been_top': True}})
+        self.__apk_info_collection.update_many({"packageName": {'$in': new_top_list}},
+            {'$set': {"hasBeenTop": True}})
 
     def update_list_of_names(self):
         """
         Meant for one-time use to update the packageNames collection
         """
-        ls = self.__apk_info_collection.find({}, {'_id': 0, 'package_name': 1})
-        names = list(set(sorted([i['package_name'] for i in ls])))
+        ls = self.__apk_info_collection.find({}, {'_id': 0, "packageName": 1})
+        names = list(set(sorted([i["packageName"] for i in ls])))
         names = [{'_id': i} for i in names if len(i) > 0]
         self.__package_names_list.insert(names)
 
-    def insert3rdPartyPackageInfo (self, packagename, filename, externalpackagename, category):
-        self.__static_analysis_db.Test_3rd_party_packages.insert({
-            'packagename': packagename,
-            'filename': filename,
-            'externalpackagename': externalpackagename,
-            'category': category
-        })
-        #print "Rows affected after inserting 3rdpartypackage - " + str (rows_affected)
-
-    def insertPermissionInfo (self, packagename, filename, permission, is_external, dest, externalpackagename, src):
-        self.__static_analysis_db.Test_permissionlist.insert({
-            'packagename': packagename,
-            'filename': filename,
-            'permission': permission,
-            'is_external': is_external,
-            'dest': dest,
-            'externalpackagename':externalpackagename,
-            'src': src
-        })
-        #print "Rows affected after inserting permission - " + str (rows_affected)
-
-    def insertLinkInfo (self, packagename, filename, link_url, is_external, triggered_by_code, externalpackagename):
-        link_url = link_url.decode('UTF-8', 'ignore')
-        self.__static_analysis_db.Test_linkurl.insert({
-            'packagename': packagename,
-            'filename': filename,
-            'link_url': link_url,
-            'is_external': is_external,
-            'triggered_by_code': triggered_by_code,
-            'externalpackagename': externalpackagename
-        })
-        #print "Rows affected after inserting permission - " + str (rows_affected)
-
-    def deleteEntry (self, packagename):
+    def deleteEntry (self, package_name, version_code):
         """
         Deletes a database entry for anything related to static analysis
         """
-        self.__static_analysis_db.Test_linkurl.remove({'packagename': packagename})
-        self.__static_analysis_db.Test_permissionlist.remove({'packagename': packagename})
-        self.__static_analysis_db.Test_3rd_party_packages.remove({'packagename': packagename})
+        self.__static_analysis_db.linkUrl.remove(
+            {
+                "packageName": package_name,
+                "versionCode": version_code,
+            })
+        self.__static_analysis_db.permissionList.remove(
+            {
+                "packageName": package_name,
+                "versionCode": version_code,
+            })
+        self.__static_analysis_db.thirdPartyPackages.remove(
+            {
+                "packageName": package_name,
+                "versionCode": version_code,
+            })
 
     def delete_metadata_entry(self, package_name):
         """
         Deletes database entries related to app metadata
         """
-        self.__apk_info_collection.remove({"package_name": package_name})
+        self.__apk_info_collection.remove({"packageName": package_name})
         self.__apk_details_collection.remove({"details.appDetails.packageName": package_name})
         self.__package_names_list.remove({"_id": package_name})
         self.__top_apps.remove({"_id": package_name})
@@ -374,8 +353,8 @@ class DbHelper:
         """
 
         res = self.__apk_info_collection.update_many(
-            {"package_name": app_name},
-            {'$set': {'date_last_scraped': date_last_scraped}})
+            {"packageName": app_name},
+            {'$set': {"dateLastScraped": date_last_scraped}})
 
     def update_app_as_removed(self, app_name):
         """
@@ -383,7 +362,7 @@ class DbHelper:
         being removed
         """
         res = self.__apk_info_collection.update_many(
-                {"package_name": app_name},
+                {"packageName": app_name},
                 {"$set": {"removed": True}})
 
     def update_app_as_not_removed(self, app_name):
@@ -392,7 +371,7 @@ class DbHelper:
         not removed and still in the Play Store
         """
         res = self.__apk_info_collection.update_many(
-                {"package_name": app_name},
+                {"packageName": app_name},
                 {"$set": {"removed": False}})
 
     def update_no_download_country(self, uuid):
@@ -402,7 +381,7 @@ class DbHelper:
         """
         res = self.__apk_info_collection.update_one(
                 {"uuid": uuid},
-                {"$set": {"no_download_country": True}})
+                {"$set": {"noDownloadCountry": True}})
         if res.matched_count != 1:
             logger.error("update_no_download {}: Expected 1 document to be matched, instead {} was".format(
                 uuid, str(res.matched_count)))
@@ -412,16 +391,19 @@ class DbHelper:
         Updates which analyses have been done for app with uuid passed in,
         with the analyses list in new_analyses
         """
-        if list(self.__apk_info_collection.find({'uuid': uuid}, {'_id': 0, 'analyses_completed': 1}))[0]['analyses_completed'] is None:
+        doc = self.__apk_info_collection.find_one(
+            {'uuid': uuid}, 
+            {'_id': 0, "analysesCompleted": 1})
+        if doc is not None and doc["analysesCompleted"] is None:
             self.__apk_info_collection.update_one(
                 {'uuid': uuid},
-                {'$set': {'analyses_completed': new_analyses}}
+                {'$set': {"analysesCompleted": new_analyses}}
             )
             logger.info("set new analyses for %s " % uuid)
         else:
             self.__apk_info_collection.update_one(
                 {'uuid': uuid},
-                {'$addToSet': {'analyses_completed': {'$each': new_analyses}}}
+                {'$addToSet': {"analysesCompleted": {'$each': new_analyses}}}
             )
 
     def set_download_date(self, uuid, download_completion_time):
@@ -433,7 +415,7 @@ class DbHelper:
             uuid = uuid[:-4]
         res = self.__apk_info_collection.update_one(
             {'uuid': uuid},
-            {'$set': {'date_downloaded': download_completion_time}}
+            {'$set': {"dateDownloaded": download_completion_time}}
         )
         if res.modified_count > 0:
             logger.info("Updated download time for {}".format(uuid))
@@ -451,7 +433,7 @@ class DbHelper:
         Kinda useless now.
         """
         cursor = self.__apk_info_collection \
-            .find({'package_name': pkg_name, 'version_code': version_code})
+            .find({"packageName": pkg_name, "versionCode": version_code})
         return len(list(cursor)) != 0
 
     def is_app_in_db(self, pkg_name):
@@ -469,7 +451,7 @@ class DbHelper:
         """
         cursor = self.__top_apps.find({
             '_id': pkg_name,
-            "currently_top": True})
+            "currentlyTop": True})
         return len(list(cursor)) != 0
 
     def is_uuid_top(self, uuid):
@@ -480,7 +462,7 @@ class DbHelper:
         if l == []:
             logger.error("App with uuid %s not found" % uuid)
             return False
-        pkg_name = l[0]['package_name']
+        pkg_name = l[0]["packageName"]
         return self.is_app_top(pkg_name)
 
     def check_app_to_update(self, app_name, new_version_code):
@@ -489,11 +471,11 @@ class DbHelper:
         Checks against all version_codes in case version varies by device
         """
         # return latest version in case is a top app with multiple documents
-        app_versions= self.__apk_info_collection.find({"package_name": app_name},
-                {"_id": 0, "uuid": 1, "version_code": 1})
+        app_versions= self.__apk_info_collection.find({"packageName": app_name},
+                {"_id": 0, "uuid": 1, "versionCode": 1})
         updated = True
         for app in app_versions:
-            if app.get("version_code", None) == new_version_code:
+            if app.get("versionCode", None) == new_version_code:
                 updated = False
 
         return updated

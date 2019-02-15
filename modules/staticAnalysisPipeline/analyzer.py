@@ -28,7 +28,7 @@ import playstoreAnalysis.src.analyze as analyze
 import crowdAnalysis.topApps.getSensitivePairs as getSensitivePairs
 import crowdAnalysis.topApps.getSummedScore as getSummedScore
 from modules.database_helper.helper import DbHelper
-from dependencies.constants import PROCESS_NO, LOG_FOLDER
+from dependencies.constants import PROCESS_NO, LOG_FOLDER, DOWNLOAD_FOLDER
 
 def staticAnalysis((apkEntry, outputPath)):
     logger = logging.getLogger(__name__)
@@ -38,7 +38,9 @@ def staticAnalysis((apkEntry, outputPath)):
     try:
         outputPath = outputPath + '/'
         fileName = apkEntry["uuid"] + '.apk'
+        appVersion = apkEntry["versionCode"]
         path = apkEntry['fileDir']
+
         tokens = namespaceanalyzer.NameSpaceMgr.GetTokensStatic (path, '/')
         category =  tokens[len (tokens) - 1]
         filename = path + '/' + fileName
@@ -54,33 +56,37 @@ def staticAnalysis((apkEntry, outputPath)):
         dx = uVMAnalysis (d)
 
         #remove old db entry in static analysis db
-        dbHelper.deleteEntry(packageName)
+        dbHelper.deleteEntry(packageName, appVersion)
 
-        packages = instance.execute (filename, outFileName, dbHelper, fileName, category, a, d, dx)
+        packages = instance.execute(filename, appVersion, outFileName, dbHelper, 
+            fileName, category, a, d, dx)
 
         outfile_perm = '/permissions.txt'
         outfile_perm = outputPath + outfile_perm
-        permission.StaticAnalyzer (filename, outfile_perm, packages, dbHelper, fileName, a, d, dx)
+        permission.StaticAnalyzer(filename, appVersion, outfile_perm, packages, 
+            dbHelper, fileName, a, d, dx)
 
         outfile_links = '/links.txt'
         outfile_links = outputPath + outfile_links
-        SearchIntents.Intents(filename, outfile_links, packages, dbHelper, fileName, a, d, dx)
-        dbHelper.apk_info_update_with_doc({'$set': {'isApkUpdated': False}}, packageName)
+        SearchIntents.Intents(filename, outfile_links, appVersion, packages, 
+            dbHelper, fileName, a, d, dx)
 
         logger.info("FileName Analyzed :"  + fileName)
-        return packageName
+        return (packageName, appVersion)
     except:
         e = traceback.format_exc()
         logger.error("Main : Exception occured for " + packageName)
         logger.error(e)
         logger.error("\n")
-        return ""
+        return None
 
 """
 Runs the pipeline static analyses on uuid_list and uses dbhelper to insert
 results in the database
 """
 def analyzer(apkList):
+    logger = logging.getLogger(__name__)
+
     # set up path constants
     # now = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
     now = "DEBUG_NEW" # TEMP, TODO REMOVE
@@ -97,21 +103,13 @@ def analyzer(apkList):
     analyzedApkFilePath = outputPath + '/' + 'filelist.txt'
     analyzedApkFile = open(analyzedApkFilePath, "w+")
 
-    '''
-    Example of how the various entries are made into the database
-    dbHelper.insert3rdPartyPackageInfo("testpackage", "testfilename", "testexternalpackage")
-    dbHelper.insertPermissionInfo('testpackage', 'testfilename', 'testpermission', True, 'testdest', 'testexternalpackagename', 'testsrc')
-    dbHelper.insertLinkInfo('testpackage', 'testfilename', 'testlink', True, 'testdest', 'testexternalpackagename')
-    '''
-    logger = logging.getLogger(__name__)
-
     # run static analysis part
     apkList = [(entry, outputPath) for entry in apkList]
     multiprocessing_logging.install_mp_handler(logger)
     pool = Pool(PROCESS_NO)
-    for package_name in pool.imap(staticAnalysis, apkList):
-        if package_name != "":
-            analyzedApkFile.write(package_name + '\n')
+    for name_vc_tup in pool.imap(staticAnalysis, apkList):
+        if name_vc_tup != None:
+            analyzedApkFile.write("{},{}\n".format(name_vc_tup[0], name_vc_tup[1]))
             analyzedApkFile.flush()
 
     # run rating part
@@ -119,7 +117,7 @@ def analyzer(apkList):
     updatedApkList = []
     with open(analyzedApkFilePath) as f:
         for line in f:
-            updatedApkList.append(line.strip("\n"))
+            updatedApkList.append(line.strip("\n").split(","))
 
     extractApp.extractPackagePair(updatedApkList, os.getcwd())
     print("extractApp.extractPackagePair done")
@@ -157,7 +155,12 @@ def getUuidsFromFile(uuidListFile):
     apkList_f = open(uuidListFile)
     for line in apkList_f:
         pair = line.strip('\n').split(' ')
-        apkList.append({'uuid': pair[0][:-4], "fileDir": pair[1]})
+        apkList.append(
+            {
+                "uuid": pair[0][:-4], 
+                "versionCode": pair[1], 
+                "fileDir": pair[2]
+            })
     apkList_f.close()
 
     return apkList
@@ -167,8 +170,18 @@ Gets a list of APKs from a file of APK UUIDs
 """
 def getUuidsFromDb():
     dbHelper = DbHelper()
+    app_list = dbHelper.get_all_apps_to_analyze()
 
-    return dbHelper.get_uuids_to_analyze()
+    apkList = []
+    for (uuid, vc) in app_list:
+        apkList.append(
+            {
+                "uuid": uuid, 
+                "versionCode": vc, 
+                "fileDir": DOWNLOAD_FOLDER + "/" + uuid[0] + "/" + uuid[1]
+            })
+
+    return apkList
 
 if __name__ == "__main__":
     """
@@ -182,11 +195,6 @@ if __name__ == "__main__":
         uuidList = getUuidsFromFile(uuidListFile)
         print uuidList
     else:
-        uuidList = []
-        for uuid in getUuidsFromDb():
-            uuidList.append({
-                "uuid": str(uuid) + ".apk",
-                "fileDir": "/home/privacy/nas/apps"
-            })
-
+        uuidList = getUuidsFromDb()
+            
     analyzer(uuidList)

@@ -20,7 +20,7 @@ with open("./data/mapping/purposeUTILITYMapping") as f:
 def getOneApkInfo(packageName):
   sensitivePermssionPatterns = ["FINE_LOC", "COARSE_LOC", "PHONE_STATE", "CONTACT", "SMS", "ACCOUNTS", "CAMERA", "RECORD_AUDIO", "BLUETOOTH", "CALENDAR", "CALL_LOG"]
   appEntry = dbApp.apkDetails.find_one({"details.appDetails.packageName":packageName})
-  permissionEntry = dbPermission.packagePair.find_one({"packagename": packageName})
+  permissionEntry = dbPermission.packagePair.find_one({"packageName": packageName})
   #print appEntry
   title = appEntry["title"]
   appType = appEntry["details"]["appDetails"]["appType"]

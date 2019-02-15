@@ -215,10 +215,10 @@ class Scraper:
                 info_data = []
                 if not bulk:
                     for app_details in detail_data:
-                        dict_details = protobuf_to_dict(app_details)
-                        if "descriptionHtml" in dict_details:
-                            dict_details["descriptionHtml"] = dict_details["descriptionHtml"].encode("utf8")
-                        info_data.append(dict_details)
+                        dd = protobuf_to_dict(app_details)
+                        if "descriptionHtml" in dd:
+                            dd["descriptionHtml"] = dd["descriptionHtml"].encode("utf8")
+                        info_data.append(dd)
                 else:
                     # detail_data is just info if bulk is False
                     info_data = detail_data
@@ -227,7 +227,7 @@ class Scraper:
                 # and returns that list of them
                 for app in info_data:
                     if app is not None:
-                        app['date_last_scraped'] = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
+                        app['dateLastScraped'] = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
                         app["updatedTimestamp"] = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
                 uuids = generate_uuids(len(info_data))
                 app_list = [App.convert_to_App_Object(d, uuid) for (d, uuid) in zip(info_data, uuids)]

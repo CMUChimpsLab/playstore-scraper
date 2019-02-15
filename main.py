@@ -32,47 +32,6 @@ def crawler_test():
     crawler.get_top_apps_list()
 
 # ***************** #
-# helper functions
-# ***************** #
-def download_decompile_apk(name):
-    dec = Decompiler(use_database=True, compress=True)
-    down = Downloader()
-    logger.info("Downloading %s" % name)
-    uuid_list = down.download(apps_list=[name])
-    decomp_time = dec.decompile(uuid_list)
-    if len(decomp_time) > 0 and decomp_time[0] is not None:
-        logger.info("{} decompiled at {}".format(name, decomp_time))
-
-def to_file_for_analysis(uuid_list):
-    """
-    Writes a file with appropriate format to feed to analysis pipeline
-    :param uuid_list: List of uuids to analyze (without apk extension)
-    Returns the file name of the file written to
-    """
-    fname = "apks.txt"
-    with open(fname, 'w') as f:
-        for uuid in uuid_list:
-            if not uuid.endswith('apk'):
-                uuid = uuid+'.apk'
-            f.write(uuid + ' ' + DOWNLOAD_FOLDER + "/" + uuid[0] + "/" + uuid[1])
-
-    return fname
-
-def download_decompile_all():
-    """
-    Downloads all not downloaded apps, then decompiles all that are a top app
-    """
-    logger.info("Downloading...")
-    d = Downloader()
-    downloaded_uuids = d.download_all_from_db()
-    logger.info("...done\n")
-
-    logger.info("Decompiling {} apps...".format(len(downloaded_uuids)))
-    dec = Decompiler(use_database=True, compress=True)
-    dec.decompile(downloaded_uuids)
-    logger.info("...done\n")
-
-# ***************** #
 # smaller CLI command functions
 # ***************** #
 def download_all(args):
@@ -122,10 +81,10 @@ def put_top_apps_in_db(args):
 def analyze(args):
     # static analysis
     helper = DbHelper()
-    uuid_list = helper.get_all_apps_to_analyze()[0:1]
+    app_list = helper.get_all_apps_to_analyze()[0:1]
 
     os.chdir("modules/staticAnalysisPipeline")
-    fname = to_file_for_analysis(uuid_list)
+    fname = to_file_for_analysis(app_list)
     python_2_env = os.environ.copy()
     python_2_env["PIPENV_IGNORE_VIRTUALENVS"] = "1"
     subprocess.call(["pipenv", "install", "--dev"], env=python_2_env)
@@ -134,6 +93,7 @@ def analyze(args):
     sys.exit(0)
 
     # fix database schemas
+    # TODO is this still necessary?
     dbhelper = DbHelper()
     for uuid in uuid_list:
         # Pass dbhelper and client to avoid a large amount of open connections
@@ -193,6 +153,48 @@ def full_pipeline(args):
     os.environ["PIPENV_IGNORE_VIRTUALENVS"] = "1" # allow analysis pipeline to have own env
     analyze()
     logger.info("...analysis done")
+
+# ***************** #
+# helper functions
+# ***************** #
+def download_decompile_apk(name):
+    dec = Decompiler(use_database=True, compress=True)
+    down = Downloader()
+    logger.info("Downloading %s" % name)
+    uuid_list = down.download(apps_list=[name])
+    decomp_time = dec.decompile(uuid_list)
+    if len(decomp_time) > 0 and decomp_time[0] is not None:
+        logger.info("{} decompiled at {}".format(name, decomp_time))
+
+def to_file_for_analysis(app_list):
+    """
+    Writes a file with appropriate format to feed to analysis pipeline
+    :param app_list: List of uuids and their version codes to analyze (without apk extension)
+    Returns the file name of the file written to
+    """
+    fname = "apks.txt"
+    with open(fname, 'w') as f:
+        for (uuid, vc) in app_list:
+            if not uuid.endswith('apk'):
+                uuid = uuid+'.apk'
+            f.write(uuid + ' ' + vc + ' ' + 
+                DOWNLOAD_FOLDER + "/" + uuid[0] + "/" + uuid[1])
+
+    return fname
+
+def download_decompile_all():
+    """
+    Downloads all not downloaded apps, then decompiles all that are a top app
+    """
+    logger.info("Downloading...")
+    d = Downloader()
+    downloaded_uuids = d.download_all_from_db()
+    logger.info("...done\n")
+
+    logger.info("Decompiling {} apps...".format(len(downloaded_uuids)))
+    dec = Decompiler(use_database=True, compress=True)
+    dec.decompile(downloaded_uuids)
+    logger.info("...done\n")
 
 # ***************** #
 # set up CLI argparser
