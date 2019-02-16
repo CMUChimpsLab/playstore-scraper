@@ -1,6 +1,7 @@
 from pymongo import MongoClient
 import dependencies.constants as constants
 from modules.database_helper.helper import DbHelper
+from modules.scraper.scraper import Scraper
 from collections import defaultdict
 from bson.objectid import ObjectId
 from modules.scraper.uuid_generator import generate_uuids
@@ -176,14 +177,40 @@ def latest_vers_download_check():
                         print("name: {}, removed: {} has weird downloads".format(app_name, v["removed"]))
                         print(versions)
 
+def top_apps_check():
+    app_infos = android_app_db.apkInfo.find({"hasBeenTop": True}, {"packageName": 1})
+    all_app_infos = android_app_db.apkInfo.find({}, {"packageName": 1})
+    top_apps = android_app_db.topApps.find({})
+    app_infos_names = set([a["packageName"] for a in app_infos])
+    all_app_infos_names = set([a["packageName"] for a in all_app_infos])
+    top_apps_names = set([a["_id"] for a in top_apps])
+
+    missing = []
+    no_top_entry = top_apps_names.difference(app_infos_names)
+    missing = no_top_entry.difference(all_app_infos_names)
+    not_missing = no_top_entry.intersection(all_app_infos_names)
+    print(len(no_top_entry), len(missing), len(not_missing))
+
+def mark_removed_top_apps():
+    app_infos = android_app_db.apkInfo.find({"removed": True}, {"packageName": 1})
+    top_apps = android_app_db.topApps.find({})
+    app_infos_names = set([a["packageName"] for a in app_infos])
+    top_apps_names = set([a["_id"] for a in top_apps])
+    removed_top_apps = top_apps_names.intersection(app_infos_names)
+    print(len(removed_top_apps))
+    print(android_app_db.topApps.update_many(
+        {"_id": {"$in": list(removed_top_apps)}},
+        {"$set": {"removed": True}}).modified_count)
+
 if __name__ == "__main__":
     dh = MongoClient(host=constants.DB_HOST,
         port=constants.DB_PORT,
         username=constants.DB_ROOT_USER,
         password=constants.DB_ROOT_PASS)
+    s = Scraper()
     android_app_db = dh[constants.APP_METADATA_DB]
     old_android_app_db = dh["old_androidApp"]
     dbhelper = DbHelper()
 
-    latest_vers_download_check()
+    mark_removed_top_apps()
 

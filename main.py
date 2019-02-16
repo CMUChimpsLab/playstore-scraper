@@ -69,6 +69,8 @@ def download_and_decompile(args):
 
 def update_top_list(args):
     d = DbHelper()
+    s = Scraper()
+
     new_top_list = crawler.get_top_apps_list()
     s.scrape_missing(new_top_list)
     d.update_top_apps(new_top_list)
@@ -82,7 +84,9 @@ def put_top_apps_in_db(args):
 def analyze(args):
     # static analysis
     helper = DbHelper()
-    app_list = helper.get_all_apps_to_analyze()[0:1]
+    #app_list = helper.get_all_apps_to_analyze()
+    app_list = [("95f3f13df6864cdc810fa429bae0d164", 15090021), ("b1c70539eb6b4d148e0a7af7616d503f", 5089036)]
+    print(app_list)
 
     os.chdir("modules/staticAnalysisPipeline")
     fname = to_file_for_analysis(app_list)
@@ -180,8 +184,7 @@ def to_file_for_analysis(app_list):
         for (uuid, vc) in app_list:
             if not uuid.endswith('apk'):
                 uuid = uuid+'.apk'
-            f.write(uuid + ' ' + vc + ' ' + 
-                DOWNLOAD_FOLDER + "/" + uuid[0] + "/" + uuid[1])
+            f.write("{} {} {}/{}/{}\n".format(uuid, str(vc), DOWNLOAD_FOLDER, uuid[0], uuid[1]))
 
     return fname
 

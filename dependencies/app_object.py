@@ -11,7 +11,7 @@ class App:
                  containsAds=None, category=None, contentRating=None,
                  userRating=None, permissions=None, dateDownloaded=None,
                  dateLastScraped=None, analysesCompleted=None,
-                 descriptionHtml=None, app_type=None, developerEmail=None,
+                 descriptionHtml=None, appType=None, developerEmail=None,
                  fileObj=None, uploadDate=None, recentChangesHtml=None,
                  majorVersionNumber=None, developerWebsite=None,
                  numDownloads=None, versionString=None, isFree=None):
@@ -36,7 +36,7 @@ class App:
         self.dateLastScraped = dateLastScraped
         self.analysesCompleted = analysesCompleted
         self.descriptionHtml = descriptionHtml
-        self.app_type = app_type
+        self.appType = appType
         self.developerEmail = developerEmail
         self.file = fileObj
         self.uploadDate = uploadDate

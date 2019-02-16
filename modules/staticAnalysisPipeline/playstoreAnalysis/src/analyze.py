@@ -12,18 +12,18 @@ def updateStatTable(client, listName, topKList, itemKey):
     itemList = [entry.get(itemKey, '') for entry in copyTopKList]
     for entry in copyTopKList:
         entry.pop(itemKey, '')
-    resultTable = client['privacygrading']['statList']
+    resultTable = client['privacyGradingDB']['statList']
     resultTable.update(
         {
-            'listName': listName, 
+            'listName': listName,
             'itemKey': itemKey
-        }, 
+        },
         {
-            'listName': listName, 
-            'itemKey': itemKey, 
-            'itemList': itemList, 
+            'listName': listName,
+            'itemKey': itemKey,
+            'itemList': itemList,
             'values': copyTopKList
-        }, 
+        },
         upsert = True)
 
 def getTopK(client, dbName, collectionName, selector, sorter, listName, k = 10):
@@ -46,13 +46,17 @@ def getTopkKFromAList(client, appList, dbName, collectionName, selector, sorter,
     top_k = getTopK(client, dbName, collectionName, selector, sorter, listName, k)
 
     top_k_names = [entry["packageName"] for entry in top_k]
-    while len(set(appList) & set(top_k_names)) < k0:
+    app_list_names = [a[0] for a in appList]
+    print(collectionName, selector)
+    print(appList, app_list_names, top_k, top_k_names)
+    while len(set(app_list_names) & set(top_k_names)) < k0:
         #Double K value every round until top apps from the list reach k
+        print(k, k0, k_upperBound)
         assert k <= k_upperBound, "cannott get %s from appList, consider use a smaller value" % k0
         k = 2*k
         top_k = getTopK(client, dbName, collectionName, selector, sorter, listName, k)
         top_k_names = [entry["packageName"] for entry in top_k]
-    
+
     topKListInAppList = []
     for entry in top_k:
         if k0 == 0:
@@ -66,7 +70,7 @@ def getTopkKFromAList(client, appList, dbName, collectionName, selector, sorter,
 
 def getTopKAppWithLib(client, appList, libTypeList, appCategoryList, listName, k = 10):
     """
-    3rd party considered here may not use any sensitive permissions, so may not 
+    3rd party considered here may not use any sensitive permissions, so may not
     be on PrivacyGrade.org individual app page.
     """
     appTable = client['androidAppDB']['apkInfo']
@@ -113,7 +117,7 @@ def getTopKAppWithLib(client, appList, libTypeList, appCategoryList, listName, k
                 libList.append(entry['externalPack'])
 
     #ensure app is from appList given
-    appList = list(set(appList) & set(categoryAppList)) 
+    appList = list(set(appList) & set(categoryAppList))
     appLibTable = client['staticAnalysisDB']['thirdPartyPackages']
     appLibDict = {}
     for app in appList:
@@ -123,13 +127,13 @@ def getTopKAppWithLib(client, appList, libTypeList, appCategoryList, listName, k
                 libSet.add(entry['externalPackageName'])
 
         appLibDict[app] = len(libSet)
-    
+
     appLibCounter = Counter(appLibDict)
     topKList = []
     for pair in appLibCounter.most_common(k):
         topKList.append(
             {
-                'nameVersionTuple':pair[0], 
+                'nameVersionTuple':pair[0],
                 'number of lib': pair[1]
             })
 
@@ -160,24 +164,24 @@ def getAggregateRatingList(client, appList, outputDir):
         for (app_name, app_version) in appList:
             entry = table.find_one(
                 {
-                    'details.appDetails.packageName': app_name, 
-                    'details.appDetails.versionCode': app_version, 
+                    'details.appDetails.packageName': app_name,
+                    'details.appDetails.versionCode': app_version,
                     'aggregateRating': {'$exists':True}
-                }, 
+                },
                 {
-                    'aggregateRating':1, 
+                    'aggregateRating':1,
                     'details.appDetails.packageName':1
                 })
             if entry:
                 rateEntry = entry['aggregateRating']
-                line = ','.join([entry['details']['appDetails']['packageName'], 
-                    str(rateEntry.get('starRating', '')), 
+                line = ','.join([entry['details']['appDetails']['packageName'],
+                    str(rateEntry.get('starRating', '')),
                     str(rateEntry.get('oneStarRatings', '')),
-                    str(rateEntry.get('twoStarRatings', '')), 
-                    str(rateEntry.get('threeStarRatings', '')), 
+                    str(rateEntry.get('twoStarRatings', '')),
+                    str(rateEntry.get('threeStarRatings', '')),
                     str(rateEntry.get('fourStarRatings', '')),
-                    str(rateEntry.get('fiveStarRatings', '')), 
-                    str(rateEntry.get('ratingsCount', '')), 
+                    str(rateEntry.get('fiveStarRatings', '')),
+                    str(rateEntry.get('ratingsCount', '')),
                     str(rateEntry.get('commentCount', ''))])
                 line += "\n"
                 f.write(line)
@@ -191,14 +195,14 @@ def getTopPermissions(client, appList, outputDir):
     for (app_name, app_version) in appList:
         entry = table.find_one(
             {
-                'packageName': app, 
+                'packageName': app_name,
                 'versionCode': app_version,
-                'permissions': {'$exists':True}, 
+                'permissions': {'$exists':True},
                 'category': {'$exists':True}
-            }, 
+            },
             {
-                'packageName':1, 
-                'permissions':1, 
+                'packageName':1,
+                'permissions':1,
                 'category':1
             })
         if entry:
@@ -206,7 +210,7 @@ def getTopPermissions(client, appList, outputDir):
             category = entry['category']
             for ctgry in category:
                 ctgryNumberSum[ctgry] = ctgryNumberSum.get(ctgry,0) + 1
-            
+
             totalNumber += 1
 
             for p in permission:
@@ -214,7 +218,7 @@ def getTopPermissions(client, appList, outputDir):
                 for ctgry in category:
                     if not ctgryDict.has_key(ctgry):
                         ctgryDict[ctgry] = {}
-                    
+
                     ctgryDict[ctgry][p] = ctgryDict.get(ctgry, {}).get(p, 0) + 1
 
     for ctgry in ctgryDict:
@@ -254,11 +258,11 @@ def main(appListFile):
     with open(appListFile) as f:
         appVersionTuples = f.read().strip('\n ').split('\n')
         appList = [tuple(tup.split(",")) for tup in appVersionTuples]
-  
-    #generate statList in privacygrading db
+
+    #generate statList in privacyGradingDB
     topKEntry = getTopkKFromAList(client,
         appList,
-        "privacygrading",
+        "privacyGradingDB",
         'packagePair',
         {},
         [('rate',1)],

@@ -77,8 +77,6 @@ STATIC_ANALYSIS_DB = 'staticAnalysisDB'
 DB_ROOT_USER = DB_USER
 DB_ROOT_PASS = DB_PASS
 
-TOP_APPS_COLL = 'topApps'
-
 # parallelism related constants
 THREAD_NO = 10
 PROCESS_NO = 2

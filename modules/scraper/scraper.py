@@ -56,7 +56,7 @@ class Scraper:
 
         with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
             res = executor.map(self.efficient_scrape_thread_worker,
-                    zip(range(0, len(package_names)), package_names))
+                    range(0, len(package_names)), package_names)
             counter = 0
             for future in res:
                 counter += 1
@@ -64,12 +64,10 @@ class Scraper:
                     logger.info("completed results {} to {} out of {}".format(
                         counter - RESULT_CHUNK, counter, len(package_names)))
 
-    def efficient_scrape_thread_worker(self, index_name_tuple):
+    def efficient_scrape_thread_worker(self, index, package_name):
         """
         thread worker for efficient scrape function
         """
-        index = index_name_tuple[0]
-        package_name = index_name_tuple[1]
         if self.__db_helper.is_app_in_db(package_name):
             logger.info("%s already in database, skipping efficient" % package_name)
             return
@@ -104,7 +102,8 @@ class Scraper:
                 return
 
         with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
-            executor.map(self.bulk_scrape_thread_worker, zip(range(0, len(package_names)), package_names))
+            executor.map(self.bulk_scrape_thread_worker,
+                    range(0, len(package_names)), package_names)
 
     def bulk_scrape_thread_worker(self, index, package_name):
         """
@@ -142,7 +141,8 @@ class Scraper:
                 return
 
         with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
-            executor.map(self.scrape_thread_worker, zip(range(0, len(package_names)), package_names))
+            executor.map(self.scrape_thread_worker,
+                    range(0, len(package_names)), package_names)
 
     def scrape_thread_worker(self, index, package_name):
         """

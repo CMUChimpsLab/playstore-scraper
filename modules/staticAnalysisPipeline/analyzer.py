@@ -58,17 +58,17 @@ def staticAnalysis((apkEntry, outputPath)):
         #remove old db entry in static analysis db
         dbHelper.deleteEntry(packageName, appVersion)
 
-        packages = instance.execute(filename, appVersion, outFileName, dbHelper, 
+        packages = instance.execute(filename, appVersion, outFileName, dbHelper,
             fileName, category, a, d, dx)
 
         outfile_perm = '/permissions.txt'
         outfile_perm = outputPath + outfile_perm
-        permission.StaticAnalyzer(filename, appVersion, outfile_perm, packages, 
+        permission.StaticAnalyzer(filename, appVersion, outfile_perm, packages,
             dbHelper, fileName, a, d, dx)
 
         outfile_links = '/links.txt'
         outfile_links = outputPath + outfile_links
-        SearchIntents.Intents(filename, outfile_links, appVersion, packages, 
+        SearchIntents.Intents(filename, outfile_links, appVersion, packages,
             dbHelper, fileName, a, d, dx)
 
         logger.info("FileName Analyzed :"  + fileName)
@@ -157,8 +157,8 @@ def getUuidsFromFile(uuidListFile):
         pair = line.strip('\n').split(' ')
         apkList.append(
             {
-                "uuid": pair[0][:-4], 
-                "versionCode": pair[1], 
+                "uuid": pair[0][:-4],
+                "versionCode": pair[1],
                 "fileDir": pair[2]
             })
     apkList_f.close()
@@ -176,8 +176,8 @@ def getUuidsFromDb():
     for (uuid, vc) in app_list:
         apkList.append(
             {
-                "uuid": uuid, 
-                "versionCode": vc, 
+                "uuid": uuid,
+                "versionCode": vc,
                 "fileDir": DOWNLOAD_FOLDER + "/" + uuid[0] + "/" + uuid[1]
             })
 
@@ -193,8 +193,7 @@ if __name__ == "__main__":
     if len(sys.argv) >= 2:
         uuidListFile = sys.argv[1]
         uuidList = getUuidsFromFile(uuidListFile)
-        print uuidList
     else:
         uuidList = getUuidsFromDb()
-            
+
     analyzer(uuidList)

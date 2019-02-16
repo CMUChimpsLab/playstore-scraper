@@ -127,9 +127,11 @@ def convert_old_to_new():
 def underscore_to_camel():
     # apkInfo
     print("going through apkInfo")
-    new_apk_infos = android_app_db.apkInfo.find()
+    new_apk_infos = android_app_db.apkInfo.find({"packageName": {"$exists": False}})
     for a in new_apk_infos:
-        print(a)
+        if "packageName" in a:
+            continue
+
         new_a = {}
         new_a["_id"] = a["_id"]
         new_a["uuid"] = a["uuid"]
@@ -151,36 +153,40 @@ def underscore_to_camel():
         new_a["developerWebsite"] = a["developer_website"]
         new_a["numDownloads"] = a["num_downloads"]
         new_a["versionString"] = a["version_string"]
-        new_a["isDownloaded"] = a["is_downloaded"]
+        new_a["isDownloaded"] = a.get("is_downloaded", False)
         new_a["isFree"] = a["is_free"]
         new_a["isSizeExceed"] = a["is_size_exceed"]
         new_a["recentChangesHtml"] = a["recent_changes_html"]
-        new_a["removed"] = a["removed"]
+        new_a["removed"] = a.get("removed", None)
         new_a["userRating"] = a["user_rating"]
 
         # replace
         android_app_db.apkInfo.replace_one({"_id": a["_id"]}, new_a)
-        break
 
     # topApps
     print("going through topApps")
     top_apps = android_app_db.topApps.find()
     for a in top_apps:
-        print(a)
+        if "currentlyTop" in a:
+            continue
+
         a["currentlyTop"] = a["currently_top"]
         a.pop("currently_top")
         android_app_db.topApps.replace_one({"_id": a["_id"]}, a)
-        break
 
     # privacyGradingDB.labeledThirdParty
     print("going through labeledThirdParty")
     third_party = privacy_grading_db.labeledThirdParty.find()
-    for a in top_apps:
+    for a in third_party:
+        if "externalPack" in a:
+            continue
+
         new_a = {}
         new_a["_id"] = a["_id"]
         new_a["website"] = a["website"]
         new_a["externalPack"] = a["externalpack"]
         new_a["apiType"] = a["apitype"]
+        privacy_grading_db.labeledThirdParty.replace_one({"_id": a["_id"]}, new_a)
 
 if __name__ == "__main__":
     dh = MongoClient(host=constants.DB_HOST,

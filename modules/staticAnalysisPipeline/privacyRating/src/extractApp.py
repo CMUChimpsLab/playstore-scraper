@@ -17,10 +17,12 @@ def extractPackagePair(updatedApkList, reposPath):
         # print cnt, package_name, version_code, "extract"
 
         #make sure permission in apkInfo is the version analyzed. Do not update apkInfo before extractApp.py run
+
+        print(package_name, version_code)
         apkInfoEntry = dbAndroidApp.apkInfo.find_one(
                 {
                     "packageName": package_name,
-                    "versionCode": version_code
+                    "versionCode": int(version_code)
                 },
                 {
                     "permissions": 1,
@@ -84,14 +86,14 @@ def extractPackagePair(updatedApkList, reposPath):
             'versionCode': version_code,
             'labeledPermissionPurposesPairs': {
                 key: list(value) for key, value in labeledPermissionPurposesDict.iteritems()
-            }, 
+            },
             'permissionExternalPackagesPairs': {
                 key: list(value) for key, value in permissionExternalPackageDict.iteritems()
-            }, 
+            },
             'negativePermissionPurposesPairs': {
                 key: list(value) for key, value in negativePermissionPurposeDict.iteritems()
-            }, 
-            'manifestPermissions': manifestPermissions, 
+            },
+            'manifestPermissions': manifestPermissions,
             'updatedTimestamp' : updatedTimestamp,
             'rate': rate,
         }
@@ -99,8 +101,8 @@ def extractPackagePair(updatedApkList, reposPath):
             {
                 'packageName': package_name,
                 'versionCode': version_code
-            }, 
-            packagePairEntry, 
+            },
+            packagePairEntry,
             upsert=True)
 
 
@@ -116,7 +118,7 @@ if __name__ == "__main__":
     updatedApkList = []
     if len(sys.argv) > 3 and sys.argv[3] == "rebuild":
         entries = dbAndroidApp.apkInfo.find(
-            {"isApkUpdated": False}, 
+            {"isApkUpdated": False},
             {"package_name":1, "isDownloaded":1})
         for entry in entries:
             if entry['isDownloaded'] == True:
