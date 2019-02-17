@@ -202,6 +202,14 @@ def mark_removed_top_apps():
         {"_id": {"$in": list(removed_top_apps)}},
         {"$set": {"removed": True}}).modified_count)
 
+def binary_to_string():
+    app_infos = android_app_db.apkInfo.find({"descriptionHtml": {"$type": 5}}, {"descriptionHtml": 1})
+    for a in app_infos:
+        print(a["_id"])
+        str_desc = a["descriptionHtml"].decode("utf-8")
+        android_app_db.apkInfo.update_one(
+            {"_id": a["_id"]}, {"$set": {"descriptionHtml": str_desc}})
+
 if __name__ == "__main__":
     dh = MongoClient(host=constants.DB_HOST,
         port=constants.DB_PORT,
@@ -212,5 +220,5 @@ if __name__ == "__main__":
     old_android_app_db = dh["old_androidApp"]
     dbhelper = DbHelper()
 
-    mark_removed_top_apps()
+    binary_to_string()
 

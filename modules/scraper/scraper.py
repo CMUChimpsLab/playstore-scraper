@@ -150,7 +150,7 @@ class Scraper:
         """
         if self.__db_helper.is_app_in_db(package_name):
             logger.info("%s already in database, skipping scrape" % package_name)
-            return
+            # return
 
         app_metadata = self.get_metadata_for_apps([package_name])
         if app_metadata is not None:
@@ -215,10 +215,7 @@ class Scraper:
                 info_data = []
                 if not bulk:
                     for app_details in detail_data:
-                        dd = protobuf_to_dict(app_details)
-                        if "descriptionHtml" in dd:
-                            dd["descriptionHtml"] = dd["descriptionHtml"].encode("utf8")
-                        info_data.append(dd)
+                        info_data.append(protobuf_to_dict(app_details))
                 else:
                     # detail_data is just info if bulk is False
                     info_data = detail_data
@@ -230,6 +227,8 @@ class Scraper:
                         app['dateLastScraped'] = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
                         app["updatedTimestamp"] = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
                 uuids = generate_uuids(len(info_data))
+
+                print(type(info_data[0]["descriptionHtml"]))
                 app_list = [App.convert_to_App_Object(d, uuid) for (d, uuid) in zip(info_data, uuids)]
 
                 return [app_list, detail_data]

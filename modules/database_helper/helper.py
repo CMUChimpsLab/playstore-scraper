@@ -231,6 +231,7 @@ class DbHelper:
         logger.info("App with uuid {0} analyzed and put into {1}".format(uuid, collection_name))
 
     def insert_app_into_db(self, app_info_obj, app_details=None):
+        print("inserting")
         """
         Inserts the metadata for an application into the database
         :param app: An object of class App
@@ -239,8 +240,7 @@ class DbHelper:
         app_info["removed"] = False
         app_info.pop('constants')
         app_details = protobuf_to_dict(app_details)
-        if "descriptionHtml" in app_details:
-            app_details["descriptionHtml"] = app_details["descriptionHtml"].encode("utf8")
+        return
 
         if list(self.__apk_info.find({'uuid': app_info['uuid']})):
             logger.error("App with uuid {0} already exists".format(app_info['uuid']))
