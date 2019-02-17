@@ -18,7 +18,6 @@ def extractPackagePair(updatedApkList, reposPath):
 
         #make sure permission in apkInfo is the version analyzed. Do not update apkInfo before extractApp.py run
 
-        print(package_name, version_code)
         apkInfoEntry = dbAndroidApp.apkInfo.find_one(
                 {
                     "packageName": package_name,

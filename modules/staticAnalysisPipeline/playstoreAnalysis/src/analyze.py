@@ -47,11 +47,8 @@ def getTopkKFromAList(client, appList, dbName, collectionName, selector, sorter,
 
     top_k_names = [entry["packageName"] for entry in top_k]
     app_list_names = [a[0] for a in appList]
-    print(collectionName, selector)
-    print(appList, app_list_names, top_k, top_k_names)
     while len(set(app_list_names) & set(top_k_names)) < k0:
         #Double K value every round until top apps from the list reach k
-        print(k, k0, k_upperBound)
         assert k <= k_upperBound, "cannott get %s from appList, consider use a smaller value" % k0
         k = 2*k
         top_k = getTopK(client, dbName, collectionName, selector, sorter, listName, k)
@@ -159,7 +156,7 @@ def getAggregateRatingList(client, appList, outputDir):
     with open(outputDir + "/ratingAndComment.csv", "w") as f:
         headers = ("packageName,starRating,oneStarRating,twoStarRating,"
                    "threeStarRating,fourStarRating,fiveStarRating,ratingsCount,"
-                   "commentCount")
+                   "commentCount\n")
         f.write(headers)
         for (app_name, app_version) in appList:
             entry = table.find_one(

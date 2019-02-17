@@ -84,9 +84,7 @@ def put_top_apps_in_db(args):
 def analyze(args):
     # static analysis
     helper = DbHelper()
-    #app_list = helper.get_all_apps_to_analyze()
-    app_list = [("95f3f13df6864cdc810fa429bae0d164", 15090021), ("b1c70539eb6b4d148e0a7af7616d503f", 5089036)]
-    print(app_list)
+    app_list = helper.get_all_apps_to_analyze()
 
     os.chdir("modules/staticAnalysisPipeline")
     fname = to_file_for_analysis(app_list)

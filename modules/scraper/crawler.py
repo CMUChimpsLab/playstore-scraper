@@ -68,7 +68,7 @@ def get_app_privacy_policy():
     if not os.path.exists(PRIVACY_POLICY_FOLDER):
         os.makedirs(PRIVACY_POLICY_FOLDER)
     f = open(failed_crawl_file, "w+")
-    f.write("packageName,uuid")
+    f.write("packageName,uuid\n")
     f.close()
 
     helper = DbHelper()
@@ -98,10 +98,10 @@ def privacy_policy_thread_worker(package_name, uuid):
                 PRIVACY_POLICY_FOLDER, uuid[0], uuid[1], uuid))
         except:
             with open(failed_crawl_file, "a") as f:
-                f.write("{},{}".format(package_name, uuid))
+                f.write("{},{}\n".format(package_name, uuid))
     else:
         with open(failed_crawl_file, "a") as f:
-            f.write("{},{}".format(package_name, uuid))
+            f.write("{},{}\n".format(package_name, uuid))
 
 # **************************************************************************** #
 # helper functions
