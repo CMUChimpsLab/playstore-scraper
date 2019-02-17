@@ -50,6 +50,14 @@ class DbHelper:
         cursor = self.__apk_info.find({"uuid": str(uuid)})
         return cursor[0]["packageName"] # uuid should always correlate to an app
 
+    def app_name_to_uuids(self, package_name):
+        """
+        Convert packageName to list of uuids, from newest to oldest version
+        """
+        cursor = self.__apk_info\
+                .find({"packageName": str(package_name)}, {"_id": 0, "uuid": 1})\
+                .sort([("versionCode", pymongo.DESCENDING)])
+        return [a["uuid"] for a in cursor]
 
     # ************************************************************************ #
     #  GETS
@@ -148,6 +156,29 @@ class DbHelper:
             .limit(count)
 
         return list(cursor)
+
+    def get_package_names_policy_crawl(self):
+        """
+        Grabs a list of all unique package_names from the database to crawl
+        privacy policies for
+        the ones which have been most recently scraped to see if there are
+        any updates for these apps. Returned as a dataframe, mainly used by
+        Updater.
+        """
+        # Still needs sorting
+        cursor = self.__apk_info.aggregate([
+                {
+                    "$match": {
+                        "$or": [
+                            {"privacyPolicyCrawled": False},
+                            {"privacyPolicyCrawled": {"$exists": False}},
+                        ]}
+                },
+                {"$group": {"_id": "$packageName"}},
+                {"$project": {"packageName": "$_id"}}
+            ])
+
+        return [a["packageName"] for a in cursor]
 
     def get_filename_mappings(self, apps):
         """

@@ -1,6 +1,7 @@
 import logging
 import time
 import os
+from functools import partial
 
 # fix import errors from using python2 for analysis pipeline
 try:
@@ -60,7 +61,7 @@ def top_app_crawl_thread_worker(cat):
 # **************************************************************************** #
 # crawling privacy policies
 # **************************************************************************** #
-def get_app_privacy_policy():
+def get_app_privacy_policy(app_list=None):
     logger.info("Starting privacy policy crawl")
 
     # log file of package_names of failed crawls
@@ -72,11 +73,13 @@ def get_app_privacy_policy():
     f.close()
 
     helper = DbHelper()
-    app_list = helper.get_all_app_names_uuids()
-    with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
-        executor.map(privacy_policy_thread_worker, app_list)
+    if app_list is None:
+        app_list = helper.get_package_names_policy_crawl()
 
-def privacy_policy_thread_worker(package_name, uuid):
+    with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
+        executor.map(partial(privacy_policy_thread_worker, helper), app_list)
+
+def privacy_policy_thread_worker(helper, package_name):
     failed_crawl_file = PRIVACY_POLICY_FOLDER + "/failed_packages.csv"
     url = "https://play.google.com/store/apps/details?id={}".format(package_name)
     page_contents = crawl_url(url)
@@ -93,15 +96,18 @@ def privacy_policy_thread_worker(package_name, uuid):
             break
 
     if policy_url is not None:
+        uuid = helper.app_name_to_uuids(package_name)[0]
         try:
-            request.urlretrieve(policy_url, "{}/{}/{}/{}_privacy_policy.html".format(
-                PRIVACY_POLICY_FOLDER, uuid[0], uuid[1], uuid))
-        except:
+            dest = "{}/{}/{}/{}_privacy_policy.html".format(
+                PRIVACY_POLICY_FOLDER, uuid[0], uuid[1], uuid)
+            request.urlretrieve(policy_url, dest)
+            logger.info("crawled {} policy".format(uuid))
+        except Exception as e:
             with open(failed_crawl_file, "a") as f:
-                f.write("{},{}\n".format(package_name, uuid))
+                f.write("{},{} crawl failed with {}\n".format(package_name, uuid, e))
     else:
         with open(failed_crawl_file, "a") as f:
-            f.write("{},{}\n".format(package_name, uuid))
+            f.write("{},{} policy not found on app page\n".format(package_name, uuid))
 
 # **************************************************************************** #
 # helper functions
