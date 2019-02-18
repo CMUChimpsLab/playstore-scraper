@@ -59,6 +59,18 @@ class DbHelper:
                 .sort([("versionCode", pymongo.DESCENDING)])
         return [a["uuid"] for a in cursor]
 
+    def get_details_id_for_uuid(self, uuid):
+        info_cursor = self.__apk_info.find_one(
+            {"uuid": uuid}, 
+            {"_id": 0, "packageName": 1, "versionCode": 1})
+        details_cursor = self.__apk_details.find_one(
+            {
+                "details.appDetails.packageName": info_cursor["packageName"],
+                "details.appDetails.versionCode": info_cursor["versionCode"],
+            })
+
+        return details_cursor["_id"]
+
     # ************************************************************************ #
     #  GETS
     # ************************************************************************ #
@@ -108,6 +120,7 @@ class DbHelper:
             },
             {
                 "_id": 0,
+                "uuid": 1,
                 "packageName": 1,
                 "versionCode": 1,
             })
@@ -115,12 +128,12 @@ class DbHelper:
         app_versions = {}
         for app in apps:
             if app["packageName"] not in app_versions:
-                app_versions[app["packageName"]] = int(app["versionCode"])
+                app_versions[app["packageName"]] = (app["uuid"], int(app["versionCode"]))
             else:
-                if int(app["versionCode"]) > app_versions[app["packageName"]]:
-                    app_versions[app["packageName"]] = int(app["versionCode"])
+                if int(app["versionCode"]) > app_versions[app["packageName"]][1]:
+                    app_versions[app["packageName"]] = (app["uuid"], int(app["versionCode"]))
 
-        return list(app_versions.keys())
+        return [(a[1][0], a[0]) for a in app_versions]
 
     def get_all_apps_to_analyze(self):
         """
@@ -180,21 +193,6 @@ class DbHelper:
 
         return [a["packageName"] for a in cursor]
 
-    def get_filename_mappings(self, apps):
-        """
-        Takes in a list of package_names and gets the uuids corresponding to
-        those filenames
-        """
-        query = {"packageName": {'$in': apps}, "dateDownloaded": None}
-        projection = {"packageName": 1, 'uuid': 1}
-        cursor = self.__apk_info \
-            .find(query, projection) \
-            .sort([("dateLastScraped", pymongo.DESCENDING)])
-        cursor = list(cursor)
-        if cursor != []:
-            return [[x["packageName"], x['uuid']] for x in cursor]
-        return []
-
     def get_metadata_in_json(self, OUTPUT_FILE):
         """
         This dumps all of the metadata into a JSON file if you want an easy
@@ -250,17 +248,6 @@ class DbHelper:
         """
         self.__apk_info.update_one({"packageName": packageName}, doc)
 
-    def insert_analysis_into_db(self, uuid, value, collection_name):
-        """
-        Inserts results of an analysis into the analysis database, under the
-        collection identified by collection_name and the result for the app
-        with uuid passed in, with result being 'value' (as we do not know what
-        the type might be).
-        """
-        collection = self.__static_analysis_db[collection_name]
-        collection.insert_one({'uuid': uuid, 'analysisResult': value})
-        logger.info("App with uuid {0} analyzed and put into {1}".format(uuid, collection_name))
-
     def insert_app_into_db(self, app_info_obj, app_details=None):
         print("inserting")
         """
@@ -302,11 +289,14 @@ class DbHelper:
                     newest_upload = time_obj
                     old_uuid = entry["uuid"]
 
+            print(old_uuid. self.get_matching_details_id(old_uuid))
+            return
+
             new_id = self.__apk_info.update_one(
                     {"uuid": old_uuid},
                     {"$set": app_info})
             self.__apk_details.update_one(
-                {"details.appDetails.packageName": app_info["packageName"]},
+                {"_id": self.get_matching_details_id(old_uuid)},
                 {"$set": app_details})
 
             # Remove old files
@@ -463,26 +453,6 @@ class DbHelper:
         if res.matched_count != 1:
             logger.error("update_no_download {}: Expected 1 document to be matched, instead {} was".format(
                 uuid, str(res.matched_count)))
-
-    def update_analyses_done(self, uuid, new_analyses):
-        """
-        Updates which analyses have been done for app with uuid passed in,
-        with the analyses list in new_analyses
-        """
-        doc = self.__apk_info.find_one(
-            {'uuid': uuid},
-            {'_id': 0, "analysesCompleted": 1})
-        if doc is not None and doc["analysesCompleted"] is None:
-            self.__apk_info.update_one(
-                {'uuid': uuid},
-                {'$set': {"analysesCompleted": new_analyses}}
-            )
-            logger.info("set new analyses for %s " % uuid)
-        else:
-            self.__apk_info.update_one(
-                {'uuid': uuid},
-                {'$addToSet': {"analysesCompleted": {'$each': new_analyses}}}
-            )
 
     def set_download_date(self, uuid, download_completion_time):
         """

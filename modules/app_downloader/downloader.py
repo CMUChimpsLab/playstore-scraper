@@ -77,7 +77,7 @@ class Downloader:
 
         return downloaded_uuids
 
-    def download_thread_worker(self, force_download, app_name):
+    def download_thread_worker(self, force_download, app):
         """
         thread worker for downloading app
         """
@@ -90,7 +90,6 @@ class Downloader:
 
         # Quick fix for adding file extensions to downloaded apps
         app_extension = ".apk"
-        app = self.__database_helper.get_filename_mappings([app_name])[0] # prevent RAM error
         uuid = app[1]
         if not app[1].endswith(app_extension):
             app[1] += ".apk"

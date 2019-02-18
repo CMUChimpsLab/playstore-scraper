@@ -61,7 +61,7 @@ def top_app_crawl_thread_worker(cat):
 # **************************************************************************** #
 # crawling privacy policies
 # **************************************************************************** #
-def get_app_privacy_policy(app_list=None):
+def crawl_app_privacy_policies(app_list=None):
     logger.info("Starting privacy policy crawl")
 
     # log file of package_names of failed crawls

@@ -32,9 +32,6 @@ class App:
         self.contentRating = contentRating
         self.userRating = userRating
         self.permissions = permissions
-        self.dateDownloaded = dateDownloaded
-        self.dateLastScraped = dateLastScraped
-        self.analysesCompleted = analysesCompleted
         self.descriptionHtml = descriptionHtml
         self.appType = appType
         self.developerEmail = developerEmail
@@ -45,8 +42,14 @@ class App:
         self.developerWebsite = developerWebsite
         self.numDownloads = numDownloads
         self.versionString = versionString
+        self.isDownloaded = False
         self.isFree = isFree
         self.isSizeExceed = False
+        self.privacyPolicyCrawled = False
+        self.removed = False
+        self.dateDownloaded = dateDownloaded
+        self.dateLastScraped = dateLastScraped
+        self.analysesCompleted = analysesCompleted
 
     def __setattr__(self, name, value):
         if name in self.__dict__['constants']:

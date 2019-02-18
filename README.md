@@ -53,9 +53,6 @@ Contained in the database_helper folder, this module is the only interface for c
 ### Decompiler
 This script uses apktool (be sure to set up previously with `apktool_setup.py`) to decompile apks that have been downloaded. Most of the specific documentation is in the file, but the idea is some analyses are done on the decompiled version of the apps. Some we may want to decompile on the fly and as needed (because of space concerns), but many can be pre-decompiled and kept (mainly the most popular/important apps). 
 
-### Pipeline
-This contains the analysis scripts with how they work currently.`analyzer.py` essentially is called whenever we wish to do an analysis on the uuids passed in. Right now, it has to use legacy code from `python_static_analyzer` that is in python2.7, so it has to make a separate system call and is kinda messy.
-
 ### Updater
 This module basically goes through and rescrapes every app to see if any have new versions available. If there are some new versions available, it will insert a new row into the database representing the metadata and uuid for these new versions. In a separate part it should hopefully be picked up by the downloader to download, then decompiler to decompile, and then pipeline to analyze it.
 
