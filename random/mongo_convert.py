@@ -1,6 +1,8 @@
 import sys
 from pymongo import MongoClient
 from collections import defaultdict
+from bson.objectid import ObjectId
+from datetime import datetime
 
 import dependencies.constants as constants
 from modules.database_helper.helper import DbHelper
@@ -188,6 +190,210 @@ def underscore_to_camel():
         new_a["apiType"] = a["apitype"]
         privacy_grading_db.labeledThirdParty.replace_one({"_id": a["_id"]}, new_a)
 
+def extra_details_to_info():
+    all_apk_details = android_app_db.apkDetails.find({},
+        {"details.appDetails.packageName": 1, "_id": 1,
+         "details.appDetails.versionCode": 1, "details.appDetails.uploadDate": 1})
+    apk_details_set = set([a["details"]["appDetails"]["packageName"] for a in all_apk_details])
+    all_apk_infos = list(android_app_db.apkInfo.find({},
+        {"packageName": 1, "_id": 1, "versionCode": 1, "dateLastScraped": 1, "uploadDate": 1}))
+    apk_infos_set = set([a["packageName"] for a in all_apk_infos])
+
+    for a_name in apk_details_set.difference(apk_infos_set):
+        details = android_app_db.apkDetails.find({"details.appDetails.packageName": a_name})
+        for d_a in details:
+            print(a_name)
+            if d_a["offer"] is not None and len(d_a["offer"]) > 0:
+                isFree = (not d_a["offer"][0]["checkoutFlowRequired"])
+            else:
+                isFree = None
+
+            a = {}
+            d_a_det = d_a["details"]["appDetails"]
+            a["uuid"] = generate_uuids(1)[0]
+            a["packageName"] = d_a_det["packageName"]
+            a["versionCode"] = d_a_det.get("versionCode", None)
+            a["title"] = d_a["title"]
+            a["developerName"] = d_a_det["developerName"]
+            a["installationSize"] = d_a_det.get("installationSize", None)
+            if "relatedLinks" in d_a:
+                a["category"] = d_a["relatedLinks"]["categoryInfo"]["appCategory"]
+            else:
+                a["category"] = None
+            a["contentRating"] = d_a.get("contentRating", None)
+            a["userRating"] = d_a['aggregateRating']
+            a["permissions"] = d_a_det.get("permission", [])
+            a["descriptionHtml"] = d_a["descriptionHtml"]
+            a["appType"] = d_a_det["appType"]
+            a["developerEmail"] = d_a_det.get("developerEmail", None)
+            a["file"] = d_a_det.get("file", None)
+            a["uploadDate"] = d_a_det.get("uploadDate", None)
+            a["recentChangesHtml"] = d_a_det.get("recentChangesHtml", None)
+            a["majorVersionNumber"] = d_a_det.get("majorVersionNumber", None)
+            a["developerWebsite"] = d_a_det.get("developerWebsite", None)
+            a["numDownloads"] = d_a_det.get("numDownloads", None)
+            a["versionString"] = d_a_det.get("versionString", None)
+
+            # add code for new fields
+            a["isDownloaded"] = False
+            a["isFree"] = isFree
+            a["isSizeExceed"] = False
+            a["privacyPolicyCrawled"] = False
+            a["removed"] = False
+            a["dateDownloaded"] = None
+            a["dateLastScraped"] = "00010101T0000"
+            a["analysesCompleted"] = False
+
+            # replace
+            android_app_db.apkInfo.insert_one(a)
+
+def email_to_name():
+    with open("to_email") as f:
+        package_names = f.read().strip("\n").split("\n")
+
+        for name in package_names:
+            print(name)
+            details = android_app_db.apkDetails.find_one({"details.appDetails.packageName": name})
+            android_app_db.apkInfo.update_one({"packageName": name},
+                {"$set": {"developerName": details["details"]["appDetails"]["developerName"]}})
+
+def extra_details_versions_to_info():
+    all_apk_details = list(android_app_db.apkDetails.find({},
+        {"details.appDetails.packageName": 1, "_id": 1,
+         "details.appDetails.versionCode": 1, "details.appDetails.uploadDate": 1}))
+    apk_details_names = [a["details"]["appDetails"]["packageName"] for a in all_apk_details]
+    apk_details_set = set(apk_details_names)
+    apk_details_dict = defaultdict(list)
+    for a in all_apk_details:
+        apk_details_dict[a["details"]["appDetails"]["packageName"]].append((a["_id"],
+                a["details"]["appDetails"].get("versionCode", None),
+                a["details"]["appDetails"].get("uploadDate", None)))
+    print("got details")
+
+    all_apk_infos = list(android_app_db.apkInfo.find({},
+        {"packageName": 1, "_id": 1, "versionCode": 1, "dateLastScraped": 1, "uploadDate": 1}))
+    apk_infos_names = [a["packageName"] for a in all_apk_infos]
+    apk_infos_set = set(apk_infos_names)
+    apk_infos_dict = defaultdict(list)
+    for a in all_apk_infos:
+        apk_infos_dict[a["packageName"]].append((a["versionCode"], a["uploadDate"]))
+    print("got info")
+
+    details_freq_dict = {}
+    for a in apk_details_names:
+        if a not in details_freq_dict:
+            details_freq_dict[a] = 1
+        else:
+            details_freq_dict[a] += 1
+    info_freq_dict = {}
+    for a in apk_infos_names:
+        if a not in info_freq_dict:
+            info_freq_dict[a] = 1
+        else:
+            info_freq_dict[a] += 1
+
+    for a in apk_details_set:
+        """
+        if a not in info_freq_dict:
+            print("not in")
+            print(apk_details_dict[a])
+        """
+        if details_freq_dict[a] > info_freq_dict[a]:
+            to_insert_id = []
+            for versions in apk_details_dict[a]:
+                if (versions[1], versions[2]) not in apk_infos_dict[a]:
+                    to_insert_id.append(versions[0])
+
+            for d_id in to_insert_id:
+                print(d_id)
+                d_a = android_app_db.apkDetails.find_one({"_id": ObjectId(d_id)})
+
+                if d_a["offer"] is not None and len(d_a["offer"]) > 0:
+                    isFree = (not d_a["offer"][0]["checkoutFlowRequired"])
+                else:
+                    isFree = None
+
+                a = {}
+                d_a_det = d_a["details"]["appDetails"]
+                a["uuid"] = generate_uuids(1)[0]
+                a["packageName"] = d_a_det["packageName"]
+                print(d_a_det["packageName"])
+                a["versionCode"] = d_a_det.get("versionCode", None)
+                a["title"] = d_a["title"]
+                a["developerName"] = d_a_det["developerName"]
+                a["installationSize"] = d_a_det.get("installationSize", None)
+                if "relatedLinks" in d_a:
+                    a["category"] = d_a["relatedLinks"]["categoryInfo"]["appCategory"]
+                else:
+                    a["category"] = None
+                a["contentRating"] = d_a.get("contentRating", None)
+                a["userRating"] = d_a.get('aggregateRating', None)
+                a["permissions"] = d_a_det.get("permission", [])
+                a["descriptionHtml"] = d_a["descriptionHtml"]
+                a["appType"] = d_a_det["appType"]
+                a["developerEmail"] = d_a_det.get("developerEmail", None)
+                a["file"] = d_a_det.get("file", None)
+                a["uploadDate"] = d_a_det.get("uploadDate", None)
+                a["recentChangesHtml"] = d_a_det.get("recentChangesHtml", None)
+                a["majorVersionNumber"] = d_a_det.get("majorVersionNumber", None)
+                a["developerWebsite"] = d_a_det.get("developerWebsite", None)
+                a["numDownloads"] = d_a_det.get("numDownloads", None)
+                a["versionString"] = d_a_det.get("versionString", None)
+
+                # add code for new fields
+                a["isDownloaded"] = False
+                a["isFree"] = isFree
+                a["isSizeExceed"] = False
+                a["privacyPolicyCrawled"] = False
+                a["removed"] = False
+                a["dateDownloaded"] = None
+                a["dateLastScraped"] = "00010101T0000"
+                a["analysesCompleted"] = False
+
+                # replace
+                android_app_db.apkInfo.insert_one(a)
+
+def upload_date_format():
+    all_apk_details = android_app_db.apkDetails.find({},
+        {
+            "_id": 1,
+            "details.appDetails.packageName": 1,
+            "details.appDetails.uploadDate": 1
+        })
+    all_apk_infos = android_app_db.apkInfo.find({},
+            {"_id": 1, "packageName": 1, "uploadDate": 1})
+
+    cnt = 0
+    total = all_apk_infos.count()
+    for a in all_apk_infos:
+        try:
+            if "uploadDate" in a and a["uploadDate"] is not None:
+                time_obj = datetime.strptime(a["uploadDate"], "%b %d, %Y")
+                time_format = datetime.strftime(time_obj, "%d %b %Y")
+                android_app_db.apkInfo.update_one({"_id": a["_id"]},
+                    {"$set": {"uploadDate": time_format}})
+                if cnt % 1000 == 0:
+                    print("{}/{} info".format(cnt, total))
+        except ValueError:
+            continue
+        cnt += 1
+
+    cnt = 0
+    total = all_apk_details.count()
+    for a in all_apk_details:
+        try:
+            if ("uploadDate" in a["details"]["appDetails"] and
+                    a["details"]["appDetails"]["uploadDate"] is not None):
+                time_obj = datetime.strptime(a["details"]["appDetails"]["uploadDate"], "%b %d, %Y")
+                time_format = datetime.strftime(time_obj, "%d %b %Y")
+                android_app_db.apkDetails.update_one({"_id": a["_id"]},
+                    {"$set": {"details.appDetails.uploadDate": time_format}})
+                if cnt % 1000 == 0:
+                    print("{}/{} details".format(cnt, total))
+        except ValueError:
+            continue
+        cnt += 1
+
 if __name__ == "__main__":
     dh = MongoClient(host=constants.DB_HOST,
         port=constants.DB_PORT,
@@ -197,5 +403,4 @@ if __name__ == "__main__":
     privacy_grading_db = dh[constants.PRIVACY_GRADING_DB]
     dbhelper = DbHelper()
 
-    # convert_old_to_new()
-    underscore_to_camel()
+    upload_date_format()

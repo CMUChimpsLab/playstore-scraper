@@ -61,7 +61,7 @@ class DbHelper:
 
     def get_details_id_for_uuid(self, uuid):
         info_cursor = self.__apk_info.find_one(
-            {"uuid": uuid}, 
+            {"uuid": uuid},
             {"_id": 0, "packageName": 1, "versionCode": 1})
         details_cursor = self.__apk_details.find_one(
             {
@@ -115,8 +115,10 @@ class DbHelper:
         """
         apps = self.__apk_info.find(
             {
-                "dateDownloaded": None,
-                "removed": False,
+                "$and": [{
+                    "dateDownloaded": None,
+                    "removed": False,
+                }]
             },
             {
                 "_id": 0,
@@ -141,7 +143,9 @@ class DbHelper:
         Perhaps add functionality for specific analyses later
         """
         app = self.__apk_info.find(
-            {"analysesCompleted": None},
+            {
+                "$or": [{"analysesCompleted": None}, {"analysesCompleted": False}]
+            },
             {
                 '_id': 0,
                 'uuid': 1,
@@ -249,7 +253,6 @@ class DbHelper:
         self.__apk_info.update_one({"packageName": packageName}, doc)
 
     def insert_app_into_db(self, app_info_obj, app_details=None):
-        print("inserting")
         """
         Inserts the metadata for an application into the database
         :param app: An object of class App
@@ -258,11 +261,20 @@ class DbHelper:
         app_info["removed"] = False
         app_info.pop('constants')
         app_details = protobuf_to_dict(app_details)
-        return
 
         if list(self.__apk_info.find({'uuid': app_info['uuid']})):
             logger.error("App with uuid {0} already exists".format(app_info['uuid']))
             return
+
+        """
+        if self.is_app_top(app_info["packageName"]) or not self.is_app_in_db(app_info["packageName"]):
+            # only want to maintain multiple versions for top apps
+            logger.info("Fake Inserted {} into db".format(app_info["packageName"]))
+        else:
+            # Is in the database, but not a top app, so just update
+            logger.info("Fake Replaced {} in db".format(app_info["packageName"]))
+        return
+        """
 
         if self.is_app_top(app_info["packageName"]) or not self.is_app_in_db(app_info["packageName"]):
             # only want to maintain multiple versions for top apps
@@ -289,14 +301,12 @@ class DbHelper:
                     newest_upload = time_obj
                     old_uuid = entry["uuid"]
 
-            print(old_uuid. self.get_matching_details_id(old_uuid))
-            return
-
+            details_id = self.get_details_id_for_uuid(old_uuid)
             new_id = self.__apk_info.update_one(
                     {"uuid": old_uuid},
                     {"$set": app_info})
             self.__apk_details.update_one(
-                {"_id": self.get_matching_details_id(old_uuid)},
+                {"_id": details_id},
                 {"$set": app_details})
 
             # Remove old files
@@ -363,10 +373,18 @@ class DbHelper:
                 upsert=True)
 
         # Also update top field in main db
-        num_updated = self.__apk_info.update_many(
+        res = self.__apk_info.update_many(
             {"packageName": {'$in': new_top_list}},
             {'$set': {"hasBeenTop": True}})
-        logger.info("marked {} as hasBeenTop in apkInfo".format(num_updated))
+        logger.info("marked {} as hasBeenTop in apkInfo".format(res.modified_count))
+
+        # mark any removed top apps
+        apk_info_top_names = set([a["packageName"] for a in self.__apk_info\
+                .find({"packageName": {"$in": new_top_list}})])
+        removed_top = set(new_top_list).difference(apk_info_top_names)
+        res = self.__top_apps.update_many(
+            {"_id": {'$in': new_top_list}}, {'$set': {"removed": True}})
+        logger.info("marked {} as removed in topApps".format(res.modified_count))
 
     def update_list_of_names(self):
         """
@@ -528,8 +546,13 @@ class DbHelper:
 
         return updated
 
-    def check_apps_missing(self, app_names):
-        app_names = set(app_names)
+    def check_apps_missing(self, app_names, check_top_removed=False):
+        if check_top_removed:
+            removed_top_apps = set([a["_id"] for a in self.__top_apps.find({"removed": True})])
+            app_names = set(app_names).difference(removed_top_apps)
+        else:
+            app_names = set(app_names)
+
         apps_in_db = self.__apk_info.find(
             {"packageName": {'$in': list(app_names)}},
             {"packageName": 1})

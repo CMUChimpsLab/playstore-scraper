@@ -38,9 +38,9 @@ class Updater:
         if self.input_file is None:
             # dicts representing each app and info e.g. current version code, uuid, etc.
             to_update = self.__db_helper.get_package_names_to_update(0)
-            apps = [app["package_name"] for app in to_update]
+            apps = [app["packageName"] for app in to_update]
         else:
-            apps = pd.read_csv(self.input_file, names=['package_name'])['package_name'].tolist()
+            apps = pd.read_csv(self.input_file, names=['packageName'])['packageName'].tolist()
 
         logger.info("Starting bulk update...")
         s = Scraper()
@@ -65,17 +65,17 @@ class Updater:
                 logger.error("app {} has been removed".format(app_name))
                 self.__db_helper.update_app_as_removed(app_name)
                 return
-            if new_app.package_name != app_name: # TODO why
+            if new_app.packageName != app_name: # TODO why
                 logger.error("mismatching package names")
                 return
 
-            if new_app.version_code is None or new_app.upload_date is None:
+            if new_app.versionCode is None or new_app.uploadDate is None:
                 # TODO add crawler code here to fix this, ignore for now
-                logger.warning("{} - null version_code or upload_date, ignoring".format(app_name))
+                logger.warning("{} - null versionCode or uploadDate, ignoring".format(app_name))
                 return
 
-            if new_app.version_code is not None:
-                info_vc = metadata[0][0].version_code
+            if new_app.versionCode is not None:
+                info_vc = metadata[0][0].versionCode
                 details_dict = protobuf_to_dict(metadata[1][0])
                 if info_vc != details_dict["details"]["appDetails"]["versionCode"]:
                     logger.error("VERSION MISMATCH for {}".format(app_name))
@@ -84,11 +84,12 @@ class Updater:
                     return
 
                 # check version code to see if app is updated
-                updated = self.__db_helper.check_app_to_update(app_name, new_app.version_code)
+                updated = self.__db_helper.check_app_to_update(app_name, new_app.versionCode)
             else:
                 # if not provided just assume is updated
                 updated = True
 
+            updated = True
             if updated:
                 # scrape and insert new data
                 self.__db_helper.insert_app_into_db(metadata[0][0], metadata[1][0])

@@ -228,7 +228,6 @@ class Scraper:
                         app["updatedTimestamp"] = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
                 uuids = generate_uuids(len(info_data))
 
-                print(type(info_data[0]["descriptionHtml"]))
                 app_list = [App.convert_to_App_Object(d, uuid) for (d, uuid) in zip(info_data, uuids)]
 
                 return [app_list, detail_data]
@@ -238,8 +237,8 @@ class Scraper:
     # ***************** #
     # other useful functions
     # ***************** #
-    def scrape_missing(self, app_names):
-        missing_names = self.__db_helper.check_apps_missing(app_names)
+    def scrape_missing(self, app_names, check_top_removed=False):
+        missing_names = self.__db_helper.check_apps_missing(app_names, check_top_removed)
         self.scrape_apps(missing_names)
 
     def check_removed(self, app_names):

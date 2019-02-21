@@ -11,7 +11,6 @@ import multiprocessing_logging
 from modules.app_downloader.downloader import Downloader
 from modules.database_helper.helper import DbHelper
 from modules.decompiler.decompiler import Decompiler
-from modules.db_fixer.dbfixer import fix
 from modules.scraper import crawler
 from modules.scraper.scraper import Scraper
 from modules.updater.updater import Updater
@@ -106,7 +105,7 @@ def full_pipeline(args):
     d = DbHelper()
     s = Scraper()
     new_top_list = crawler.get_top_apps_list()
-    s.scrape_missing(new_top_list)
+    s.scrape_missing(new_top_list, check_top_removed=True)
     d.update_top_apps(new_top_list)
 
     if kickoff == True:
@@ -234,7 +233,7 @@ d_parser = subparsers.add_parser("de",
     help="decompile apps listed in file",
     description="Decompiles apps listed in the file if is a top app")
 decompile_args = d_parser.add_mutually_exclusive_group(required=True)
-decompile_args.add_argument("-f", "--fname", 
+decompile_args.add_argument("-f", "--fname",
     help="file of apps to download (package names)")
 decompile_args.add_argument("-d", "--downloaded",
     action="store_true",
@@ -261,10 +260,10 @@ fp_parser = subparsers.add_parser("fp",
     aliases=["full-pipeline"],
     help="entire app data and analysis pipeline",
     description="Entire pipeline from scraping data about apps to analysis of them")
-fp_parser.add_argument("-k", "--kickoff", 
-    action="store_true", 
+fp_parser.add_argument("-k", "--kickoff",
+    action="store_true",
     help="true if is first run, false otherwise")
-fp_parser.add_argument("-f", "--fname", 
+fp_parser.add_argument("-f", "--fname",
     help="file name to scrape from, otherwise use crawler to get package names")
 fp_parser.set_defaults(func=full_pipeline)
 
