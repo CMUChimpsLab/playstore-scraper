@@ -9,7 +9,7 @@ import pprint
 
 from modules.scraper.scraper import Scraper
 from modules.database_helper.helper import DbHelper
-from dependencies.constants import THREAD_NO
+from dependencies.constants import THREAD_NO, BULK_CHUNK
 from dependencies.protobuf_to_dict.protobuf_to_dict.convertor import protobuf_to_dict
 from dependencies.app_object import App
 
@@ -43,19 +43,36 @@ class Updater:
             apps = pd.read_csv(self.input_file, names=['packageName'])['packageName'].tolist()
 
         logger.info("Starting bulk update...")
-        s = Scraper()
+        self.s = Scraper()
+        total_apps_no = len(apps)
         with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
-            return executor.map(partial(self.update_all_thread_worker, s),
-                    range(0, len(apps)), apps)
+            res = executor.map(self.update_all_thread_worker,
+                    range(0, total_apps_no), apps)
 
-    def update_all_thread_worker(self, s, index, app_name):
+            app_names = []
+            counter = 0
+            for future in res:
+                if future is not None:
+                    app_names.append(future)
+
+                counter += 1
+                if counter % BULK_CHUNK == 0:
+                    logger.info("updated {} to {} out of {}".format(
+                        counter - BULK_CHUNK, counter, total_apps_no))
+
+        self.__db_helper.update_apps_as_not_removed(app_names)
+        self.__db_helper.update_date_last_scraped(app_names,
+            datetime.datetime.utcnow().strftime("%Y%m%dT%H%M"))
+
+    def update_all_thread_worker(self, index, app_name):
         # bulk scrape to check for updates
+        s = self.s
         try:
             metadata = s.get_metadata_for_apps([app_name], bulk=False)
             if metadata is None:
                 # app probably removed
                 logger.error("can't find metadata for apps")
-                self.__db_helper.update_app_as_removed(app_name)
+                self.__db_helper.update_apps_as_removed([app_name])
                 return
 
             num_updated = 0
@@ -89,14 +106,13 @@ class Updater:
                 # if not provided just assume is updated
                 updated = True
 
-            updated = True
             if updated:
                 # scrape and insert new data
                 self.__db_helper.insert_app_into_db(metadata[0][0], metadata[1][0])
                 num_updated = num_updated + 1
-            self.__db_helper.update_app_as_not_removed(app_name)
-            self.__db_helper.update_date_last_scraped_for_app(app_name,
-                datetime.datetime.utcnow().strftime("%Y%m%dT%H%M"))
+                return app_name
+            else:
+                return None
         except Exception as e:
             logger.error("{} - {}".format(app_name, str(e)))
 

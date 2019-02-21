@@ -428,7 +428,7 @@ class DbHelper:
     # ************************************************************************ #
     # FIELD UPDATES
     # ************************************************************************ #
-    def update_date_last_scraped_for_app(self, app_name, date_last_scraped):
+    def update_date_last_scraped(self, app_names, date_last_scraped):
         """
         Update the metadata in the database for an application
         :param date_last_scraped: Timestamp indicating when the last check for a new version of the app was made
@@ -436,28 +436,28 @@ class DbHelper:
         """
 
         res = self.__apk_info.update_many(
-            {"packageName": app_name},
+            {"packageName": {"$in": app_names}},
             {'$set': {"dateLastScraped": date_last_scraped}})
 
-    def update_app_as_removed(self, app_name):
+    def update_apps_as_removed(self, app_names):
         """
         Update the metadata in the database for an application to reflect it as
         being removed
         """
         apk_info_res = self.__apk_info.update_many(
-                {"packageName": app_name},
+                {"packageName": {"$in": app_names}},
                 {"$set": {"removed": True}})
         top_app_res = self.__top_apps.update_many(
-                {"_id": app_name},
+                {"_id": {"$in": app_names}},
                 {"$set": {"removed": True}})
 
-    def update_app_as_not_removed(self, app_name):
+    def update_apps_as_not_removed(self, app_names):
         """
         Update the metadata in the database for an application to reflect it as
         not removed and still in the Play Store
         """
         res = self.__apk_info.update_many(
-                {"packageName": app_name},
+                {"packageName": {"$in": app_names}},
                 {"$set": {"removed": False}})
 
     def update_no_download_country(self, uuid):
