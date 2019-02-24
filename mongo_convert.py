@@ -394,6 +394,20 @@ def upload_date_format():
             continue
         cnt += 1
 
+def policy_crawl_to_status():
+    apk_infos = android_app_db.apkInfo.find({}, {"privacyPolicyCrawled"})
+    for a in apk_infos:
+        policy_status = {
+            "crawled": a.get("privacyPolicyCrawled", None),
+            "failureReason": None
+        }
+        android_app_db.apkInfo.update_one(
+            {"_id": a["_id"]},
+            {"$set": {"privacyPolicyStatus": policy_status}})
+        android_app_db.apkInfo.update_one(
+            {"_id": a["_id"]},
+            {"$unset": {"privacyPolicyCrawled": ""}})
+
 if __name__ == "__main__":
     dh = MongoClient(host=constants.DB_HOST,
         port=constants.DB_PORT,
@@ -403,4 +417,4 @@ if __name__ == "__main__":
     privacy_grading_db = dh[constants.PRIVACY_GRADING_DB]
     dbhelper = DbHelper()
 
-    upload_date_format()
+    policy_crawl_to_status()

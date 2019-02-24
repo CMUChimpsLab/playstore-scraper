@@ -49,6 +49,8 @@ class Downloader:
         haven't been downloaded, and downloads them.
         """
         apps = self.__database_helper.get_all_apps_to_download()
+        print(len(apps))
+        return
         with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
             res = executor.map(partial(self.download_thread_worker, False), apps)
             downloaded_uuids = []
@@ -84,8 +86,8 @@ class Downloader:
         global token_refreshing
         global lock
 
-        if isinstance(app_name, list):
-            logger.error("App should be a str package_name")
+        if not isinstance(app, list):
+            logger.error("App should be a list of (packageName, uuid)")
             return
 
         # Quick fix for adding file extensions to downloaded apps

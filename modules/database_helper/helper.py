@@ -82,6 +82,34 @@ class DbHelper:
         apps = self.__apk_info.find({}, {"_id": 0, "uuid": 1, "packageName": 1})
         return [(app["packageName"], app["uuid"]) for app in apps]
 
+    def get_newest_apps(self, not_removed=False):
+        """
+        Gets the document associated with the most recent version of each app
+
+        Params:
+         - not_removed: specifies whether or not to only get apps that are not removed
+        """
+        if not_removed:
+            match_query = {"$or": [
+                    {"removed": False},
+                    {"removed": {"$exists": False}},
+                ]}
+        else:
+            match_query = {}
+
+        max_app_vcs = self.__apk_info.aggregate([
+                {"$match": match_query},
+                {
+                    "$group": {
+                        "_id": "$packageName",
+                        "maxVC": {"$max": "$versionCode"},
+                    }
+                },
+                {"$project": {"packageName": "$_id", "maxVC": 1}},
+            ])
+
+        return max_app_vcs
+
     def get_removed_names_from_database(self):
         """
         Retrieve the names of all the apps from the database
@@ -113,29 +141,32 @@ class DbHelper:
 
         Only return document with info of newest version of app
         """
-        apps = self.__apk_info.find(
+        max_app_vcs = self.get_newest_apps(not_removed=True)
+        max_names = []
+        max_vcs = []
+        max_name_vc_tups = set()
+        for a in max_app_vcs:
+            max_names.append(a["packageName"])
+            max_vcs.append(a["maxVC"])
+            max_name_vc_tups.add((a["packageName"], a["maxVC"]))
+
+        apps_to_download = []
+        app_vcs = self.__apk_info.find(
             {
-                "$and": [{
-                    "dateDownloaded": None,
-                    "removed": False,
-                }]
+                "$and": [
+                    {"packageName": {"$in": max_names}},
+                    {"versionCode": {"$in": max_vcs}},
+                ],
             },
-            {
-                "_id": 0,
-                "uuid": 1,
-                "packageName": 1,
-                "versionCode": 1,
-            })
+            {"packageName": 1, "uuid": 1})
+        for a in app_vcs:
+            if (a["packageName"], a["versionCode"]) not in max_name_vc_tups:
+                continue
 
-        app_versions = {}
-        for app in apps:
-            if app["packageName"] not in app_versions:
-                app_versions[app["packageName"]] = (app["uuid"], int(app["versionCode"]))
-            else:
-                if int(app["versionCode"]) > app_versions[app["packageName"]][1]:
-                    app_versions[app["packageName"]] = (app["uuid"], int(app["versionCode"]))
+            if a["dateDownloaded"] is None:
+                apps_to_download.append([a["packageName"], a["uuid"]])
 
-        return [(a[1][0], a[0]) for a in app_versions]
+        return apps_to_download
 
     def get_all_apps_to_analyze(self):
         """
@@ -178,24 +209,41 @@ class DbHelper:
         """
         Grabs a list of all unique package_names from the database to crawl
         privacy policies for
-        the ones which have been most recently scraped to see if there are
-        any updates for these apps. Returned as a dataframe, mainly used by
-        Updater.
-        """
-        # Still needs sorting
-        cursor = self.__apk_info.aggregate([
-                {
-                    "$match": {
-                        "$or": [
-                            {"privacyPolicyCrawled": False},
-                            {"privacyPolicyCrawled": {"$exists": False}},
-                        ]}
-                },
-                {"$group": {"_id": "$packageName"}},
-                {"$project": {"packageName": "$_id"}}
-            ])
 
-        return [a["packageName"] for a in cursor]
+        Returns info for newest version
+        """
+        max_app_vcs = self.get_newest_apps(not_removed=True)
+        max_names = []
+        max_vcs = []
+        max_name_vc_tups = set()
+        for a in max_app_vcs:
+            max_names.append(a["packageName"])
+            max_vcs.append(a["maxVC"])
+            max_name_vc_tups.add((a["packageName"], a["maxVC"]))
+
+        apps_to_crawl_policy = []
+        i = 0
+        while i < len(max_names):
+            print(i)
+            max_i = min(i + 5000, len(max_names))
+            app_vcs = self.__apk_info.find(
+                {
+                    "$and": [
+                        {"packageName": {"$in": max_names[i:max_i]}},
+                        {"versionCode": {"$in": max_vcs[i:max_i]}},
+                    ],
+                },
+                {"packageName": 1, "versionCode": 1, "privacyPolicyStatus": 1})
+            for a in app_vcs:
+                if (a["packageName"], a["versionCode"]) not in max_name_vc_tups:
+                    continue
+
+                if (not a["privacyPolicyStatus"]["crawled"] and
+                        a["privacyPolicyStatus"]["failureReason"] is None):
+                    apps_to_crawl_policy.append(a["packageName"])
+            i += 5000
+
+        return apps_to_crawl_policy
 
     def get_metadata_in_json(self, OUTPUT_FILE):
         """
@@ -428,13 +476,33 @@ class DbHelper:
     # ************************************************************************ #
     # FIELD UPDATES
     # ************************************************************************ #
+    def update_policy_crawled(self, uuids):
+        """
+        Update the privacyPolicyStatus.crawled field in the database for an
+        application
+        :param uuids: List of uuids to update date for
+        """
+        res = self.__apk_info.update_many(
+            {"uuid": {"$in": uuids}},
+            {'$set': {"privacyPolicyStatus.crawled": True}})
+
+    def update_policy_crawl_failure(self, uuid, reason):
+        """
+        Update the privacyPolicyStatus.failureReason field in the database for an
+        application
+        :param uuid: uuid to update date for
+        :param reason: reason why crawling policy for uuid failed
+        """
+        res = self.__apk_info.update_one(
+            {"uuid": uuid},
+            {'$set': {"privacyPolicyStatus.failureReason": reason}})
+
     def update_date_last_scraped(self, app_names, date_last_scraped):
         """
         Update the metadata in the database for an application
         :param date_last_scraped: Timestamp indicating when the last check for a new version of the app was made
-        :param uuid: The identifier associated with a particular app and version
+        :param app_names: List of app names to update date for
         """
-
         res = self.__apk_info.update_many(
             {"packageName": {"$in": app_names}},
             {'$set': {"dateLastScraped": date_last_scraped}})

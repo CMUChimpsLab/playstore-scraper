@@ -5,19 +5,31 @@ from functools import partial
 
 # fix import errors from using python2 for analysis pipeline
 try:
+    from concurrent.futures import ThreadPoolExecutor, as_completed
     import urllib
     import urllib.request as request
-    from concurrent.futures import ThreadPoolExecutor
     from bs4 import BeautifulSoup
+    import socket
+    import requests
 except ImportError:
     pass
 
 from modules.database_helper.helper import DbHelper
-from dependencies.constants import CATEGORIES, THREAD_NO, PRIVACY_POLICY_FOLDER
+from dependencies.constants import CATEGORIES, THREAD_NO, PRIVACY_POLICY_FOLDER, BULK_CHUNK
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     level=logging.INFO)
+
+# **************************************************************************** #
+# custom http error for ease of use
+# **************************************************************************** #
+class HttpError(Exception):
+    def __init__(self, code):
+        self.code = code
+
+    def __str__(self):
+        return repr(self.code)
 
 # **************************************************************************** #
 # crawling top apps
@@ -64,25 +76,31 @@ def top_app_crawl_thread_worker(cat):
 def crawl_app_privacy_policies(app_list=None):
     logger.info("Starting privacy policy crawl")
 
-    # log file of package_names of failed crawls
-    failed_crawl_file = PRIVACY_POLICY_FOLDER + "/failed_packages.csv"
-    if not os.path.exists(PRIVACY_POLICY_FOLDER):
-        os.makedirs(PRIVACY_POLICY_FOLDER)
-    f = open(failed_crawl_file, "w+")
-    f.write("packageName,uuid\n")
-    f.close()
-
     helper = DbHelper()
     if app_list is None:
         app_list = helper.get_package_names_policy_crawl()
 
     with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
-        executor.map(partial(privacy_policy_thread_worker, helper), app_list)
+        res = executor.map(partial(privacy_policy_thread_worker, helper), app_list)
+        counter = 0
+        for future in res:
+            counter += 1
+            if counter % BULK_CHUNK == 0:
+                logger.info("crawled {} to {} out of {}".format(
+                    counter - BULK_CHUNK, counter, len(app_list)))
 
 def privacy_policy_thread_worker(helper, package_name):
     failed_crawl_file = PRIVACY_POLICY_FOLDER + "/failed_packages.csv"
+    uuid = helper.app_name_to_uuids(package_name)[0]
     url = "https://play.google.com/store/apps/details?id={}".format(package_name)
-    page_contents = crawl_url(url)
+    try:
+        page_contents = crawl_url(url)
+    except HttpError as e:
+        if e.code == 404:
+            helper.update_apps_as_removed([package_name])
+        elif e.code == 408:
+            helper.update_policy_crawl_failure(uuid, "policy url timed out")
+        return
 
     policy_url = None
     for line in page_contents.split("\n"):
@@ -96,41 +114,66 @@ def privacy_policy_thread_worker(helper, package_name):
             break
 
     if policy_url is not None:
-        uuid = helper.app_name_to_uuids(package_name)[0]
         try:
             dest = "{}/{}/{}/{}_privacy_policy.html".format(
                 PRIVACY_POLICY_FOLDER, uuid[0], uuid[1], uuid)
-            request.urlretrieve(policy_url, dest)
-            logger.info("crawled {} policy".format(uuid))
+            with open(dest, "wb") as f:
+                f.write(requests.get(policy_url, allow_redirects=True, timeout=10).content)
+            helper.update_policy_crawled([uuid])
+            logger.info("got {},{} policy".format(package_name, uuid))
+        except urllib.error.HTTPError as e:
+            logger.error("{},{} - {} error".format(package_name, uuid, e.code))
+            helper.update_policy_crawl_failure(uuid, failure)
+        except urllib.error.URLError as e:
+            logger.error("{},{} - {}".format(package_name, uuid, str(e.reason)))
+            helper.update_policy_crawl_failure(uuid, str(e.reason))
+        except requests.exceptions.Timeout:
+            logger.error("{},{} timed out".format(package_name, uuid))
+            helper.update_policy_crawl_failure(uuid, "policy page timed out")
         except Exception as e:
-            with open(failed_crawl_file, "a") as f:
-                f.write("{},{} crawl failed with {}\n".format(package_name, uuid, e))
+            logger.error("{},{} - {}".format(package_name, uuid, str(e)))
+            helper.update_policy_crawl_failure(uuid, str(e))
     else:
-        with open(failed_crawl_file, "a") as f:
-            f.write("{},{} policy not found on app page\n".format(package_name, uuid))
+        helper.update_policy_crawl_failure(uuid, "policy not found on store page")
 
 # **************************************************************************** #
 # helper functions
 # **************************************************************************** #
-def crawl_url(url):
+def crawl_url(url, timeout=10):
+    e_code = None
     while True:
         try:
-            page_contents = request.urlopen(url).read()
+            page_contents = request.urlopen(url, timeout=timeout).read()
             page_contents = page_contents.decode('utf-8')
             return page_contents
         except urllib.error.HTTPError as e:
             if e.code == 404:
                 # not valid
-                logger.error("URL {} not valid".format(url))
+                logger.error("URL {} got 404 error, not valid".format(url))
+                e_code = e.code
                 break
             elif e.code == 500:
                 # no more items that match
+                logger.error("URL {} got 500 error".format(url))
+                e_code = e.code
                 break
             elif e.code == 429:
                 # hit rate limit so sleep
                 logger.error("hit rate limit, sleeping")
                 time.sleep(60)
                 continue
+        except socket.timeout as e:
+            logger.error("URL {} timed out".format(url))
+            e_code = 408
+        except urllib.error.URLError as e:
+            if isinstance(e.reason, socket.timeout):
+                logger.error("URL {} timed out".format(url))
+                e_code = 408
+            else:
+                logger.error("URL {} got error {}".format(url, e))
+
+    if e_code is not None:
+        raise HttpError(e_code)
 
 def package_name_scrape(page_contents):
     """

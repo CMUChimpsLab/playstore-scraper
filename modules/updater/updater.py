@@ -80,7 +80,7 @@ class Updater:
             if new_app is None:
                 # app is removed
                 logger.error("app {} has been removed".format(app_name))
-                self.__db_helper.update_app_as_removed(app_name)
+                self.__db_helper.update_apps_as_removed(app_name)
                 return
             if new_app.packageName != app_name: # TODO why
                 logger.error("mismatching package names")

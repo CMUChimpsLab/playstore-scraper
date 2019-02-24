@@ -104,6 +104,7 @@ def full_pipeline(args):
     # start by updating top apps
     d = DbHelper()
     s = Scraper()
+    """
     new_top_list = crawler.get_top_apps_list()
     s.scrape_missing(new_top_list, check_top_removed=True)
     d.update_top_apps(new_top_list)
@@ -131,6 +132,8 @@ def full_pipeline(args):
 
     # crawl privacy policies
     crawler.crawl_app_privacy_policies()
+    """
+    print(len(d.get_package_names_policy_crawl()))
 
     # download/decompile
     logger.info("Starting download and decompile...")
