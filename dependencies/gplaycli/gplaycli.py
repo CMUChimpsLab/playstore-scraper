@@ -193,6 +193,24 @@ class GPlaycli:
         return token, gsfid
 
     @hooks.connected
+    def get_app_reviews(self, pkg_name, nb_results=0, offset=0):
+        """
+        Gets reviews for app with name pkg_name
+
+        Params:
+            pkg_name - name of app
+            nb_results - number of reviews to get
+            offseet - offset of reviews to start getting at
+
+        Returns:
+            reviews - dict of reviews crawled
+            next_url_params - dict of `nb_results` and `offset` values to use 
+                              for next page of reviews
+        """
+        reviews, next_url_params = self.api.reviews(pkg_name, nb_results=nb_results, offset=offset)
+        return (reviews, next_url_params)
+
+    @hooks.connected
     def get_doc_apk_details(self, pkg_todownload, bulk=False):
         details = []
         if not bulk:
