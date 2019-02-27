@@ -42,6 +42,7 @@ class Downloader:
 
         # This config file is used by the GPlaycli module to determine the authentication token
         self.__config_file = GPLAYCLI_CONFIG_FILE_PATH
+        self.__api = gplaycli.GPlaycli(config_file=self.__config_file)
 
     def download_all_from_db(self):
         """
@@ -49,7 +50,6 @@ class Downloader:
         haven't been downloaded, and downloads them.
         """
         apps = self.__database_helper.get_all_apps_to_download()
-        print(len(apps))
         with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
             res = executor.map(partial(self.download_thread_worker, False), apps)
             downloaded_uuids = []
@@ -104,18 +104,18 @@ class Downloader:
                 datetime.datetime.fromtimestamp(download_time).strftime("%Y%m%dT%H%M"))
             return uuid
 
-        api = gplaycli.GPlaycli(config_file=self.__config_file)
-        api.set_download_folder(self.__download_folder + "/" + app_dir)
-
+        download_folder = self.__download_folder + "/" + app_dir
         downloaded_uuids = set()
         while True:
             try:
                 logger.info("Downloading app - {} as {}".format(app[0], app[1]))
-                downloaded_uuids, fails = api.download_with_errors([app])
+                downloaded_uuids, fails = self.__api.download_with_errors([app],
+                        download_folder)
 
                 # check if any failed downloads should be retried
                 retry = False
-                for (failed_uuid, e) in fails:
+                for (failed_item, e) in fails:
+                    failed_uuid = failed_item[1][:-len(app_extension)]
                     if type(e) != SystemError and ("Being throttled" in e.value or "Server busy" in e.value):
                         logger.info("{} throttled or busy, retrying".format(app[0]))
                         retry = True
@@ -126,7 +126,7 @@ class Downloader:
                             # acquired lock so refresh token
                             token_refreshing = True
                             time.sleep(5)
-                            api.refresh_token()
+                            self.__api.refresh_token()
                             token_refreshing = False
                             lock.release()
                         else:
@@ -135,9 +135,13 @@ class Downloader:
                             while token_refreshing:
                                 time.sleep(0.5)
                             lock.release()
-                    #elif "purchases are not supported in your country" in e.value:
-                    #     mark as wrong country
-                    #    self.__database_helper.update_no_download_country(uuid)
+                    else:
+                        if type(e) == SystemError:
+                            fail_reason = str(e)
+                        else:
+                            fail_reason = str(e.value).split(".")[0]
+                        self.__database_helper.update_apk_info_field_uuid(failed_uuid,
+                            "downloadFailReason", fail_reason)
 
                 if retry:
                     continue

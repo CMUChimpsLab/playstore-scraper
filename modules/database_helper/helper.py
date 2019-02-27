@@ -113,8 +113,19 @@ class DbHelper:
 
         Only return document with info of newest version of app
         """
-        apk_infos = self.__apk_info.find({"removed": False},
-                {"packageName": 1, "versionCode": 1, "uuid": 1, "dateDownloaded": 1})
+        apk_infos = self.__apk_info.find({
+                "$and": [
+                    {"removed": False},
+                    {"isFree": True},
+                ],
+            },
+            {
+                "packageName": 1,
+                "versionCode": 1,
+                "uuid": 1,
+                "dateDownloaded": 1,
+                "downloadFailReason": 1,
+            })
 
         app_versions = {}
         for a in apk_infos:
@@ -123,7 +134,7 @@ class DbHelper:
                 app_versions[a["packageName"]] = [vc,
                         a["packageName"],
                         a["uuid"],
-                        a["dateDownloaded"] is None]
+                        a["dateDownloaded"] is None and a["downloadFailReason"] is None]
 
         return [[a[1], a[2]] for a in app_versions.values() if a[3]]
 
@@ -426,6 +437,20 @@ class DbHelper:
             {"uuid": {"$in": uuids}},
             {'$set': {"privacyPolicyStatus.crawled": True}})
 
+    def update_apk_info_field_uuid(self, uuid, field_name, field_value):
+        """
+        Updates the field and value as specified for document matching uuid
+        in apkInfo collection
+
+        Params:
+         - uuid: uuid to update document field for
+         - field_name: field name to update
+         - field_value: value to update field to
+        """
+        res = self.__apk_info.update_one(
+            {"uuid": uuid},
+            {"$set": {field_name: field_value}})
+
     def update_policy_crawl_failure(self, uuid, reason):
         """
         Update the privacyPolicyStatus.failureReason field in the database for an
@@ -467,18 +492,6 @@ class DbHelper:
         res = self.__apk_info.update_many(
                 {"packageName": {"$in": app_names}},
                 {"$set": {"removed": False}})
-
-    def update_no_download_country(self, uuid):
-        """
-        Update the metadata in the database for an application to reflect it as
-        not downloadable because of country location
-        """
-        res = self.__apk_info.update_one(
-                {"uuid": uuid},
-                {"$set": {"noDownloadCountry": True}})
-        if res.matched_count != 1:
-            logger.error("update_no_download {}: Expected 1 document to be matched, instead {} was".format(
-                uuid, str(res.matched_count)))
 
     def set_download_date(self, uuid, download_completion_time):
         """

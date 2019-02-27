@@ -99,6 +99,7 @@ class GPlaycli:
             self.configparser.get("Cache", "token", fallback="token.cache"))
         self.api = None
         self.token_passed = False
+        self.download_folder = None
         self.locale = self.configparser.get("Locale", "locale", fallback="en_GB")
         self.timezone = self.configparser.get("Locale", "timezone", fallback="CEST")
 
@@ -203,16 +204,16 @@ class GPlaycli:
         return details
 
     @hooks.connected
-    def download(self, pkg_todownload):
+    def download(self, pkg_todownload, custom_download_dir=None):
         """
         helper function that ignores errors return and just returns downloaded
         uuids
         """
-        uuids, errors = self.download_with_errors(pkg_todownload)
+        uuids, errors = self.download_with_errors(pkg_todownload, custom_download_dir)
         return uuids
 
     @hooks.connected
-    def download_with_errors(self, pkg_todownload):
+    def download_with_errors(self, pkg_todownload, custom_download_dir=None):
         """
 		Download apks from the pkg_todownload list
 
@@ -234,6 +235,7 @@ class GPlaycli:
             # remove whitespaces before and after package name
             pkg_todownload[index][0] = pkg_todownload[index][0].strip('\r\n ')
 
+        """
         # BulkDetails requires only one HTTP request
         # Get APK info from store
         details = list()
@@ -247,33 +249,33 @@ class GPlaycli:
             logger.info("Token has expired while downloading. Retrieving a new one.")
             self.refresh_token()
             details = self.api.bulkDetails([pkg[0] for pkg in pkg_todownload])
+        """
         position = 1
-        for detail, item in zip(details, pkg_todownload):
+        for item in pkg_todownload:
             packagename, filename = item
 
             logger.info("%s / %s %s", position, len(pkg_todownload), packagename)
 
             # Check for download folder
             download_folder = self.download_folder
+            if custom_download_dir is not None:
+                download_folder = custom_download_dir
             if not os.path.isdir(download_folder):
                 os.makedirs(download_folder, exist_ok=True)
 
             # Download
             try:
+                """
                 if detail['offer'][0]['checkoutFlowRequired']:
                     method = self.api.delivery
                 else:
-                    method = self.api.download
-                data_iter = method(packagename,
-                                   expansion_files=self.addfiles_enable)
+                """
+                data_iter = self.api.download(packagename,
+                        expansion_files=self.addfiles_enable)
                 success_downloads.append(packagename)
             except IndexError as exc:
-                logger.error("Error while downloading %s : this package does not exist, "
-                             "try to search it via --search before",
-                             packagename)
                 unavail_downloads.append((item, exc))
             except Exception as exc:
-                logger.error("Error while downloading %s : %s", packagename, exc)
                 failed_downloads.append((item, exc))
             else:
                 if filename is None:
@@ -598,10 +600,10 @@ class GPlaycli:
             for pkg, exception in failed_downloads:
                 package_name, filename = pkg
                 if filename is not None:
-                    message += "\n%s : %s" % (filename, package_name)
+                    message += "\n%s,%s" % (filename, package_name)
                 else:
-                    message += "\n%s" % package_name
-                message += "\n%s\n" % exception
+                    message += package_name
+                message += " : %s" % exception
             logger.error(message)
 
     def write_logfiles(self, success, failed, unavail):
