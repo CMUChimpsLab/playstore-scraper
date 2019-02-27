@@ -491,6 +491,36 @@ def check_app_info_dups():
             print("delete ", id_not_use)
             android_app_db.apkInfo.remove({"_id": id_not_use})
 
+def check_download_dups():
+    cursor = android_app_db.apkInfo.find(
+            {"dateDownloaded": {"$ne": None}},
+            {"packageName": 1, "uuid": 1})
+    app_downloads = defaultdict(list)
+    for a in cursor:
+        app_downloads[a["packageName"]].append(a["uuid"])
+
+    for a in app_downloads:
+        if len(app_downloads[a]) > 1:
+            print(a, app_downloads[a])
+
+def check_top_removed():
+    x = android_app_db.topApps.update_one({"_id": "com.google.android.gms"}, {"$set": {"removed": True}})
+    print(x.modified_count, x.matched_count)
+    top_cursor = android_app_db.topApps.find({"removed": True})
+    top_names = [t["_id"] for t in top_cursor]
+    info_cursor = android_app_db.apkInfo.find(
+            {"packageName": {"$in": top_names}},
+            {"packageName": 1, "removed": 1})
+    info_names = [i["packageName"] for i in info_cursor]
+    print(len(set(top_names)), len(set(top_names).difference(set(info_names))))
+    for i in info_cursor:
+        if not i["removed"]:
+            print(i)
+            break
+    for i in set(top_names).difference(set(info_names)):
+        print(i)
+        break
+
 if __name__ == "__main__":
     dh = MongoClient(host=constants.DB_HOST,
         port=constants.DB_PORT,
@@ -500,4 +530,4 @@ if __name__ == "__main__":
     android_app_db = dh[constants.APP_METADATA_DB]
     dbhelper = DbHelper()
 
-    check_app_info_dups()
+    check_top_removed()

@@ -133,7 +133,6 @@ def full_pipeline(args):
     # crawl privacy policies
     crawler.crawl_app_privacy_policies()
     """
-    print(len(d.get_package_names_policy_crawl()))
 
     # download/decompile
     logger.info("Starting download and decompile...")
