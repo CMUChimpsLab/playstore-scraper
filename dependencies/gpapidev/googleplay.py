@@ -503,6 +503,8 @@ class GooglePlayAPI(object):
             path += "&o=%d" % int(offset)
         if(filterByDevice):
             path += "&dfil=1"
+
+        print(path)
         data = self.executeRequestApi2(path)
         output = []
         for rev in data.payload.reviewResponse.getResponse.review:
@@ -518,7 +520,14 @@ class GooglePlayAPI(object):
                       'commentId': rev.commentId,
                       'author': author}
             output.append(review)
-        return output
+
+        # get parameters for next page, if exists
+        next_page_params = {}
+        for param_str in data.payload.reviewResponse.nextPageUrl.split("&")[1:]:
+            param_and_val = param_str.split("=")
+            next_page_params[param_and_val[0]] = param_and_val[1]
+
+        return output, next_page_params
 
     def _deliver_data(self, url, cookies):
         headers = self.getDefaultHeaders()

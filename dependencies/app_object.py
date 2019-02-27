@@ -42,6 +42,7 @@ class App:
         self.developerWebsite = developerWebsite
         self.numDownloads = numDownloads
         self.versionString = versionString
+        self.hasBeenTop = False
         self.isDownloaded = False
         self.isFree = isFree
         self.isSizeExceed = False

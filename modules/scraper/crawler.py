@@ -11,15 +11,20 @@ try:
     from bs4 import BeautifulSoup
     import socket
     import requests
+    import pprint
+    pp = pprint.PrettyPrinter(indent=4)
 except ImportError:
     pass
 
 from modules.database_helper.helper import DbHelper
 from dependencies.constants import CATEGORIES, THREAD_NO, PRIVACY_POLICY_FOLDER, BULK_CHUNK
+from dependencies.gplaycli import gplaycli
+from dependencies import GPLAYCLI_CONFIG_FILE_PATH
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     level=logging.INFO)
+
 
 # **************************************************************************** #
 # custom http error for ease of use
@@ -47,9 +52,8 @@ def get_top_apps_list():
         res = executor.map(top_app_crawl_thread_worker, CATEGORIES)
         for r in res:
             pkg_list.extend(r)
-            pkg_list = list(set(pkg_list))
 
-    return pkg_list
+    return list(set(pkg_list))
 
 def top_app_crawl_thread_worker(cat):
     # have to get 0 -> 100 then 100 -> 199 then 199 -> 318 (google doesn't like
@@ -84,6 +88,7 @@ def crawl_app_privacy_policies(app_list=None):
     if app_list is None:
         app_list = helper.get_package_names_policy_crawl()
 
+    helper = None
     with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
         res = executor.map(partial(privacy_policy_thread_worker, helper), app_list)
         counter = 0
@@ -139,6 +144,36 @@ def privacy_policy_thread_worker(helper, package_name):
             helper.update_policy_crawl_failure(uuid, str(e))
     else:
         helper.update_policy_crawl_failure(uuid, "policy not found on store page")
+
+# **************************************************************************** #
+# crawling app reviews
+# **************************************************************************** #
+def crawl_reviews(app_list, max_reviews=20):
+    api = gplaycli.GPlaycli(config_file=GPLAYCLI_CONFIG_FILE_PATH)
+
+    with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
+        res = executor.map(partial(review_thread_worker, api, max_reviews), app_list)
+        all_reviews = {}
+        for future in res:
+            all_reviews[future[0]] = future[1]
+
+        return all_reviews
+
+def review_thread_worker(api, max_reviews, app_name):
+    all_reviews = []
+    n_param = max_reviews
+    o_param = 0
+    while True:
+        (reviews, next_url_params) = api.get_app_reviews(app_name, 
+            nb_results=n_param, offset=o_param)
+        all_reviews.extend(reviews)
+
+        if "n" not in next_url_params or "o" not in next_url_params:
+            break
+        n_param = next_url_params["n"]
+        o_param = next_url_params["o"]
+
+    return (app_name, all_reviews)
 
 # **************************************************************************** #
 # helper functions

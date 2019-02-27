@@ -1,3 +1,3 @@
-from modules.scraper.crawler import get_app_privacy_policy
-get_app_privacy_policy()
+import modules.scraper.crawler as crawler
 
+crawler.crawl_reviews(["com.facebook.katana"])
