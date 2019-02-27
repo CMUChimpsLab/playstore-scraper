@@ -63,11 +63,15 @@ def top_app_crawl_thread_worker(cat):
     for f in free:
         for start, num in zip(starts, nums):
             new_url = url.format(cat, f, start, num)
-            page_contents = crawl_url(new_url)
+            try:
+                page_contents = crawl_url(new_url)
+            except HttpError as e:
+                continue
             curr_list.extend(list(set(package_name_scrape(page_contents))))
 
         logger.info("Category {} {} done, {} apps".format(cat, f, len(curr_list)))
         pkg_list.extend(curr_list)
+
     return pkg_list
 
 # **************************************************************************** #

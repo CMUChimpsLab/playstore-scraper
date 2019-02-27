@@ -50,7 +50,6 @@ class Downloader:
         """
         apps = self.__database_helper.get_all_apps_to_download()
         print(len(apps))
-        return
         with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
             res = executor.map(partial(self.download_thread_worker, False), apps)
             downloaded_uuids = []

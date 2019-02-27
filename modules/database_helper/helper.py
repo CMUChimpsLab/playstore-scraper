@@ -82,34 +82,6 @@ class DbHelper:
         apps = self.__apk_info.find({}, {"_id": 0, "uuid": 1, "packageName": 1})
         return [(app["packageName"], app["uuid"]) for app in apps]
 
-    def get_newest_apps(self, not_removed=False):
-        """
-        Gets the document associated with the most recent version of each app
-
-        Params:
-         - not_removed: specifies whether or not to only get apps that are not removed
-        """
-        if not_removed:
-            match_query = {"$or": [
-                    {"removed": False},
-                    {"removed": {"$exists": False}},
-                ]}
-        else:
-            match_query = {}
-
-        max_app_vcs = self.__apk_info.aggregate([
-                {"$match": match_query},
-                {
-                    "$group": {
-                        "_id": "$packageName",
-                        "maxVC": {"$max": "$versionCode"},
-                    }
-                },
-                {"$project": {"packageName": "$_id", "maxVC": 1}},
-            ])
-
-        return max_app_vcs
-
     def get_removed_names_from_database(self):
         """
         Retrieve the names of all the apps from the database
@@ -141,32 +113,19 @@ class DbHelper:
 
         Only return document with info of newest version of app
         """
-        max_app_vcs = self.get_newest_apps(not_removed=True)
-        max_names = []
-        max_vcs = []
-        max_name_vc_tups = set()
-        for a in max_app_vcs:
-            max_names.append(a["packageName"])
-            max_vcs.append(a["maxVC"])
-            max_name_vc_tups.add((a["packageName"], a["maxVC"]))
+        apk_infos = self.__apk_info.find({"removed": False},
+                {"packageName": 1, "versionCode": 1, "uuid": 1, "dateDownloaded": 1})
 
-        apps_to_download = []
-        app_vcs = self.__apk_info.find(
-            {
-                "$and": [
-                    {"packageName": {"$in": max_names}},
-                    {"versionCode": {"$in": max_vcs}},
-                ],
-            },
-            {"packageName": 1, "uuid": 1})
-        for a in app_vcs:
-            if (a["packageName"], a["versionCode"]) not in max_name_vc_tups:
-                continue
+        app_versions = {}
+        for a in apk_infos:
+            vc = a["versionCode"] if a["versionCode"] is not None else 0
+            if a["packageName"] not in app_versions or vc > app_versions[a["packageName"]][0]:
+                app_versions[a["packageName"]] = [vc,
+                        a["packageName"],
+                        a["uuid"],
+                        a["dateDownloaded"] is None]
 
-            if a["dateDownloaded"] is None:
-                apps_to_download.append([a["packageName"], a["uuid"]])
-
-        return apps_to_download
+        return [[a[1], a[2]] for a in app_versions.values() if a[3]]
 
     def get_all_apps_to_analyze(self):
         """
@@ -212,38 +171,18 @@ class DbHelper:
 
         Returns info for newest version
         """
-        max_app_vcs = self.get_newest_apps(not_removed=True)
-        max_names = []
-        max_vcs = []
-        max_name_vc_tups = set()
-        for a in max_app_vcs:
-            max_names.append(a["packageName"])
-            max_vcs.append(a["maxVC"])
-            max_name_vc_tups.add((a["packageName"], a["maxVC"]))
-
-        apps_to_crawl_policy = []
-        i = 0
-        while i < len(max_names):
-            print(i)
-            max_i = min(i + 5000, len(max_names))
-            app_vcs = self.__apk_info.find(
-                {
-                    "$and": [
-                        {"packageName": {"$in": max_names[i:max_i]}},
-                        {"versionCode": {"$in": max_vcs[i:max_i]}},
-                    ],
-                },
+        apk_infos = self.__apk_info.find({"removed": False},
                 {"packageName": 1, "versionCode": 1, "privacyPolicyStatus": 1})
-            for a in app_vcs:
-                if (a["packageName"], a["versionCode"]) not in max_name_vc_tups:
-                    continue
 
-                if (not a["privacyPolicyStatus"]["crawled"] and
-                        a["privacyPolicyStatus"]["failureReason"] is None):
-                    apps_to_crawl_policy.append(a["packageName"])
-            i += 5000
+        app_versions = {}
+        for a in apk_infos:
+            vc = a["versionCode"] if a["versionCode"] is not None else 0
+            if a["packageName"] not in app_versions or vc > app_versions[a["packageName"]][0]:
+                to_crawl = (not a["privacyPolicyStatus"]["crawled"] and
+                        a["privacyPolicyStatus"]["failureReason"] is None)
+                app_versions[a["packageName"]] = [vc, a["packageName"], to_crawl]
 
-        return apps_to_crawl_policy
+        return [a[1] for a in app_versions.values() if a[2]]
 
     def get_metadata_in_json(self, OUTPUT_FILE):
         """
@@ -314,15 +253,10 @@ class DbHelper:
             logger.error("App with uuid {0} already exists".format(app_info['uuid']))
             return
 
-        """
-        if self.is_app_top(app_info["packageName"]) or not self.is_app_in_db(app_info["packageName"]):
-            # only want to maintain multiple versions for top apps
-            logger.info("Fake Inserted {} into db".format(app_info["packageName"]))
-        else:
-            # Is in the database, but not a top app, so just update
-            logger.info("Fake Replaced {} in db".format(app_info["packageName"]))
-        return
-        """
+        # mark as not removed if was marked as removed in topApps
+        self.__top_apps.update_one(
+                {"_id": app_info["packageName"]},
+                {"$set": {"removed": False}})
 
         if self.is_app_top(app_info["packageName"]) or not self.is_app_in_db(app_info["packageName"]):
             # only want to maintain multiple versions for top apps
@@ -417,7 +351,7 @@ class DbHelper:
         self.__top_apps.update_many({}, {'$set': {"currentlyTop": False}})
         for name in new_top_list:
             self.__top_apps.update_one({'_id': name},
-                {'$set': {'_id': name, "currentlyTop": True}},
+                    {'$set': {'_id': name, "currentlyTop": True, "removed": False}},
                 upsert=True)
 
         # Also update top field in main db
@@ -428,8 +362,14 @@ class DbHelper:
 
         # mark any removed top apps
         apk_info_top_names = set([a["packageName"] for a in self.__apk_info\
-                .find({"packageName": {"$in": new_top_list}})])
+                .find({
+                    "$and": [
+                        {"packageName": {"$in": new_top_list}},
+                        {"removed": False}
+                    ]
+                })])
         removed_top = set(new_top_list).difference(apk_info_top_names)
+        print(len(removed_top), len(set(new_top_list)))
         res = self.__top_apps.update_many(
             {"_id": {'$in': new_top_list}}, {'$set': {"removed": True}})
         logger.info("marked {} as removed in topApps".format(res.modified_count))
