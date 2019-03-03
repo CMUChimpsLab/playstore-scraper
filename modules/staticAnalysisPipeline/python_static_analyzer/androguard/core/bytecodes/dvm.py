@@ -7219,9 +7219,10 @@ class ClassManager(object):
        This class is used to access to all elements (strings, type, proto ...) of the dex format
     """
 
-    def __init__(self, vm, config):
+    def __init__(self, vm, config, suppress_parse_warning):
         self.vm = vm
         self.buff = vm
+        self.suppress_string_map_parse_warnings = suppress_parse_warning
 
         self.decompiler_ob = None
         self.vmanalysis_ob = None
@@ -7363,10 +7364,6 @@ class ClassManager(object):
             return "AG:IS: invalid string"
 
     def get_raw_string(self, idx):
-        #pp.pprint(self.__manage_item)
-        #max_key = len(self.__manage_item["TYPE_STRING_ID_ITEM"])
-        #key_range = list(range(0, max_key))
-        #print(set(key_range).difference(set(keyspace)))
         try:
             off = self.__manage_item["TYPE_STRING_ID_ITEM"][
                 idx].get_string_data_off()
@@ -7375,11 +7372,6 @@ class ClassManager(object):
                 bytecode.Warning("unknown string item @ %d" % (idx))
             return "AG:IS: invalid string"
 
-        #pp.pprint(self.__strings_off)
-        #keyspace = list(self.__strings_off.keys())
-        #max_key = max(keyspace)
-        #key_range = list(range(0, max_key))
-        #print(set(key_range).difference(set(keyspace)))
         try:
             return self.__strings_off[off].get()
         except KeyError:
@@ -7665,7 +7657,8 @@ class DalvikVMFormat(bytecode._Bytecode):
           DalvikVMFormat(read("classes.dex"))
     """
 
-    def __init__(self, buff, decompiler=None, config=None, using_api=None):
+    def __init__(self, buff, decompiler=None, config=None, using_api=None,
+                 suppress_parse_warning=False):
         # to allow to pass apk object ==> we do not need to pass additionally
         # target version
         if isinstance(buff, APK):
@@ -7685,7 +7678,7 @@ class DalvikVMFormat(bytecode._Bytecode):
                            "RECODE_ASCII_STRING_METH": CONF["RECODE_ASCII_STRING_METH"],
                            "LAZY_ANALYSIS": CONF["LAZY_ANALYSIS"]}
 
-        self.CM = ClassManager(self, self.config)
+        self.CM = ClassManager(self, self.config, suppress_parse_warning)
         self.CM.set_decompiler(decompiler)
 
         self._preload(buff)

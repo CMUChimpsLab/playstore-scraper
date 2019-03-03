@@ -50,7 +50,7 @@ def staticAnalysis(entry_path_tup):
           a = apk.APK(filename, zipmodule=2)
         """
         a = apk.APK(filename)
-        d = dvm.DalvikVMFormat(a.get_dex())
+        d = dvm.DalvikVMFormat(a.get_dex(), suppress_parse_warning=True)
         dx = uVMAnalysis(d)
 
         #remove old db entry in static analysis db
