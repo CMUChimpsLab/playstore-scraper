@@ -15,8 +15,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import androguard.decompiler.dad.util as util
+
 
 class IRForm(object):
+
     def __init__(self):
         self.var_map = {}
         self.type = None
@@ -71,7 +74,8 @@ class IRForm(object):
 
 
 class Constant(IRForm):
-    def __init__(self, value, atype, int_value=None):
+
+    def __init__(self, value, atype, int_value=None, descriptor=None):
         self.v = 'c%s' % value
         self.cst = value
         if int_value is None:
@@ -79,6 +83,8 @@ class Constant(IRForm):
         else:
             self.cst2 = int_value
         self.type = atype
+
+        self.clsdesc = descriptor
 
     def get_used_vars(self):
         return []
@@ -98,7 +104,7 @@ class Constant(IRForm):
                 return visitor.visit_constant('false')
             else:
                 return visitor.visit_constant('true')
-        elif self.type == 'class':
+        elif self.type == 'Ljava/lang/Class;':
             return visitor.visit_base_class(self.cst, data=self.cst)
         elif self.type in 'IJB':
             return visitor.visit_constant(self.cst2)
@@ -110,9 +116,12 @@ class Constant(IRForm):
 
 
 class BaseClass(IRForm):
-    def __init__(self, name):
+
+    def __init__(self, name, descriptor=None):
         self.v = 'c%s' % name
         self.cls = name
+
+        self.clsdesc = descriptor
 
     def is_const(self):
         return True
@@ -125,6 +134,7 @@ class BaseClass(IRForm):
 
 
 class Variable(IRForm):
+
     def __init__(self, value):
         self.v = value
         self.declared = False
@@ -151,6 +161,7 @@ class Variable(IRForm):
 
 
 class Param(Variable):
+
     def __init__(self, value, atype):
         super(Param, self).__init__(value)
         self.declared = True
@@ -168,6 +179,7 @@ class Param(Variable):
 
 
 class ThisParam(Param):
+
     def __init__(self, value, atype):
         super(ThisParam, self).__init__(value, atype)
         self.this = True
@@ -180,6 +192,7 @@ class ThisParam(Param):
 
 
 class AssignExpression(IRForm):
+
     def __init__(self, lhs, rhs):
         super(AssignExpression, self).__init__()
         if lhs:
@@ -229,6 +242,7 @@ class AssignExpression(IRForm):
 
 
 class MoveExpression(IRForm):
+
     def __init__(self, lhs, rhs):
         super(MoveExpression, self).__init__()
         self.lhs = lhs.v
@@ -285,6 +299,7 @@ class MoveExpression(IRForm):
 
 
 class MoveResultExpression(MoveExpression):
+
     def __init__(self, lhs, rhs):
         super(MoveResultExpression, self).__init__(lhs, rhs)
 
@@ -304,6 +319,7 @@ class MoveResultExpression(MoveExpression):
 
 
 class ArrayStoreInstruction(IRForm):
+
     def __init__(self, rhs, array, index, _type):
         super(ArrayStoreInstruction, self).__init__()
         self.rhs = rhs.v
@@ -337,7 +353,6 @@ class ArrayStoreInstruction(IRForm):
         self.var_map.pop(old)
         self.var_map[new.v] = new
 
-
     def replace(self, old, new):
         v_m = self.var_map
         if old in v_m:
@@ -362,17 +377,21 @@ class ArrayStoreInstruction(IRForm):
 
     def __str__(self):
         v_m = self.var_map
-        return '%s[%s] = %s' % (v_m[self.array], v_m[self.index], v_m[self.rhs])
+        return '%s[%s] = %s' % (
+            v_m[self.array], v_m[self.index], v_m[self.rhs])
 
 
 class StaticInstruction(IRForm):
+
     def __init__(self, rhs, klass, ftype, name):
         super(StaticInstruction, self).__init__()
         self.rhs = rhs.v
-        self.cls = klass
+        self.cls = util.get_type(klass)
         self.ftype = ftype
         self.name = name
         self.var_map[rhs.v] = rhs
+
+        self.clsdesc = klass
 
     def has_side_effect(self):
         return True
@@ -405,18 +424,21 @@ class StaticInstruction(IRForm):
                 v_m[old] = new
 
     def __str__(self):
-      return '%s.%s = %s' % (self.cls, self.name, self.var_map[self.rhs])
+        return '%s.%s = %s' % (self.cls, self.name, self.var_map[self.rhs])
 
 
 class InstanceInstruction(IRForm):
+
     def __init__(self, rhs, lhs, klass, atype, name):
         super(InstanceInstruction, self).__init__()
         self.lhs = lhs.v
         self.rhs = rhs.v
         self.atype = atype
-        self.cls = klass
+        self.cls = util.get_type(klass)
         self.name = name
         self.var_map.update([(lhs.v, lhs), (rhs.v, rhs)])
+
+        self.clsdesc = klass
 
     def has_side_effect(self):
         return True
@@ -432,8 +454,8 @@ class InstanceInstruction(IRForm):
 
     def visit(self, visitor):
         v_m = self.var_map
-        return visitor.visit_put_instance(v_m[self.lhs],
-                                          self.name, v_m[self.rhs], data=self.atype)
+        return visitor.visit_put_instance(
+            v_m[self.lhs], self.name, v_m[self.rhs], data=self.atype)
 
     def replace_var(self, old, new):
         if self.lhs == old:
@@ -469,6 +491,7 @@ class InstanceInstruction(IRForm):
 
 
 class NewInstance(IRForm):
+
     def __init__(self, ins_type):
         super(NewInstance, self).__init__()
         self.type = ins_type
@@ -490,7 +513,8 @@ class NewInstance(IRForm):
 
 
 class InvokeInstruction(IRForm):
-    def __init__(self, clsname, name, base, rtype, ptype, args):
+
+    def __init__(self, clsname, name, base, rtype, ptype, args, triple):
         super(InvokeInstruction, self).__init__()
         self.cls = clsname
         self.name = name
@@ -501,6 +525,9 @@ class InvokeInstruction(IRForm):
         self.var_map[base.v] = base
         for arg in args:
             self.var_map[arg.v] = arg
+
+        self.triple = triple
+        assert(triple[1] == name)
 
     def get_type(self):
         if self.name == '<init>':
@@ -572,26 +599,29 @@ class InvokeInstruction(IRForm):
     def __str__(self):
         v_m = self.var_map
         return '%s.%s(%s)' % (v_m[self.base], self.name,
-                                ', '.join('%s' % v_m[i] for i in self.args))
+                              ', '.join('%s' % v_m[i] for i in self.args))
 
 
 class InvokeRangeInstruction(InvokeInstruction):
-    def __init__(self, clsname, name, rtype, ptype, args):
+
+    def __init__(self, clsname, name, rtype, ptype, args, triple):
         base = args.pop(0)
         super(InvokeRangeInstruction, self).__init__(clsname, name, base,
-                                                    rtype, ptype, args)
+                                                     rtype, ptype, args, triple)
 
 
 class InvokeDirectInstruction(InvokeInstruction):
-    def __init__(self, clsname, name, base, rtype, ptype, args):
+
+    def __init__(self, clsname, name, base, rtype, ptype, args, triple):
         super(InvokeDirectInstruction, self).__init__(clsname, name, base,
-                                                    rtype, ptype, args)
+                                                      rtype, ptype, args, triple)
 
 
 class InvokeStaticInstruction(InvokeInstruction):
-    def __init__(self, clsname, name, base, rtype, ptype, args):
+
+    def __init__(self, clsname, name, base, rtype, ptype, args, triple):
         super(InvokeStaticInstruction, self).__init__(clsname, name, base,
-                                                    rtype, ptype, args)
+                                                      rtype, ptype, args, triple)
 
     def get_used_vars(self):
         v_m = self.var_map
@@ -602,6 +632,7 @@ class InvokeStaticInstruction(InvokeInstruction):
 
 
 class ReturnInstruction(IRForm):
+
     def __init__(self, arg):
         super(ReturnInstruction, self).__init__()
         self.arg = arg
@@ -647,6 +678,7 @@ class ReturnInstruction(IRForm):
 
 
 class NopExpression(IRForm):
+
     def __init__(self):
         pass
 
@@ -661,6 +693,7 @@ class NopExpression(IRForm):
 
 
 class SwitchExpression(IRForm):
+
     def __init__(self, src, branch):
         super(SwitchExpression, self).__init__()
         self.src = src.v
@@ -695,11 +728,14 @@ class SwitchExpression(IRForm):
 
 
 class CheckCastExpression(IRForm):
-    def __init__(self, arg, _type):
+
+    def __init__(self, arg, _type, descriptor=None):
         super(CheckCastExpression, self).__init__()
         self.arg = arg.v
         self.var_map[arg.v] = arg
-        self.type = _type
+        self.type = descriptor
+
+        self.clsdesc = descriptor
 
     def is_const(self):
         return self.var_map[self.arg].is_const()
@@ -708,7 +744,8 @@ class CheckCastExpression(IRForm):
         return self.var_map[self.arg].get_used_vars()
 
     def visit(self, visitor):
-        return visitor.visit_check_cast(self.var_map[self.arg], self.type)
+        return visitor.visit_check_cast(self.var_map[self.arg],
+                                        util.get_type(self.type))
 
     def replace_var(self, old, new):
         self.arg = new.v
@@ -732,11 +769,13 @@ class CheckCastExpression(IRForm):
 
 
 class ArrayExpression(IRForm):
+
     def __init__(self):
         super(ArrayExpression, self).__init__()
 
 
 class ArrayLoadExpression(ArrayExpression):
+
     def __init__(self, arg, index, _type):
         super(ArrayLoadExpression, self).__init__()
         self.array = arg.v
@@ -755,7 +794,7 @@ class ArrayLoadExpression(ArrayExpression):
         return visitor.visit_aload(v_m[self.array], v_m[self.idx])
 
     def get_type(self):
-        return self.var_map[self.array].get_type()[1:]
+        return self.var_map[self.array].get_type().replace('[', '', 1)
 
     def replace_var(self, old, new):
         if self.array == old:
@@ -792,6 +831,7 @@ class ArrayLoadExpression(ArrayExpression):
 
 
 class ArrayLengthExpression(ArrayExpression):
+
     def __init__(self, array):
         super(ArrayLengthExpression, self).__init__()
         self.array = array.v
@@ -828,6 +868,7 @@ class ArrayLengthExpression(ArrayExpression):
 
 
 class NewArrayExpression(ArrayExpression):
+
     def __init__(self, asize, atype):
         super(NewArrayExpression, self).__init__()
         self.size = asize.v
@@ -865,6 +906,7 @@ class NewArrayExpression(ArrayExpression):
 
 
 class FilledArrayExpression(ArrayExpression):
+
     def __init__(self, asize, atype, args):
         super(FilledArrayExpression, self).__init__()
         self.size = asize
@@ -902,10 +944,10 @@ class FilledArrayExpression(ArrayExpression):
                     v_m[new.value()] = new
                     new_args = []
                     for arg in self.args:
-                      if arg == old:
-                          new_args.append(new.v)
-                      else:
-                          new_args.append(arg)
+                        if arg == old:
+                            new_args.append(new.v)
+                        else:
+                            new_args.append(arg)
                     self.args = new_args
                 else:
                     v_m[old] = new
@@ -922,6 +964,7 @@ class FilledArrayExpression(ArrayExpression):
 
 
 class FillArrayExpression(ArrayExpression):
+
     def __init__(self, reg, value):
         super(FillArrayExpression, self).__init__()
         self.reg = reg.v
@@ -959,6 +1002,7 @@ class FillArrayExpression(ArrayExpression):
 
 
 class RefExpression(IRForm):
+
     def __init__(self, ref):
         super(RefExpression, self).__init__()
         self.ref = ref.v
@@ -989,6 +1033,7 @@ class RefExpression(IRForm):
 
 
 class MoveExceptionExpression(RefExpression):
+
     def __init__(self, ref, _type):
         super(MoveExceptionExpression, self).__init__(ref)
         self.type = _type
@@ -1016,6 +1061,7 @@ class MoveExceptionExpression(RefExpression):
 
 
 class MonitorEnterExpression(RefExpression):
+
     def __init__(self, ref):
         super(MonitorEnterExpression, self).__init__(ref)
 
@@ -1024,6 +1070,7 @@ class MonitorEnterExpression(RefExpression):
 
 
 class MonitorExitExpression(RefExpression):
+
     def __init__(self, ref):
         super(MonitorExitExpression, self).__init__(ref)
 
@@ -1032,6 +1079,7 @@ class MonitorExitExpression(RefExpression):
 
 
 class ThrowExpression(RefExpression):
+
     def __init__(self, ref):
         super(ThrowExpression, self).__init__(ref)
 
@@ -1043,6 +1091,7 @@ class ThrowExpression(RefExpression):
 
 
 class BinaryExpression(IRForm):
+
     def __init__(self, op, arg1, arg2, _type):
         super(BinaryExpression, self).__init__()
         self.op = op
@@ -1065,7 +1114,7 @@ class BinaryExpression(IRForm):
     def visit(self, visitor):
         v_m = self.var_map
         return visitor.visit_binary_expression(self.op, v_m[self.arg1],
-                                                        v_m[self.arg2])
+                                               v_m[self.arg2])
 
     def replace_var(self, old, new):
         if self.arg1 == old:
@@ -1101,26 +1150,30 @@ class BinaryExpression(IRForm):
 
 
 class BinaryCompExpression(BinaryExpression):
+
     def __init__(self, op, arg1, arg2, _type):
         super(BinaryCompExpression, self).__init__(op, arg1, arg2, _type)
 
     def visit(self, visitor):
         v_m = self.var_map
         return visitor.visit_cond_expression(self.op, v_m[self.arg1],
-                                                      v_m[self.arg2])
+                                             v_m[self.arg2])
 
 
 class BinaryExpression2Addr(BinaryExpression):
+
     def __init__(self, op, dest, arg, _type):
         super(BinaryExpression2Addr, self).__init__(op, dest, arg, _type)
 
 
 class BinaryExpressionLit(BinaryExpression):
+
     def __init__(self, op, arg1, arg2):
         super(BinaryExpressionLit, self).__init__(op, arg1, arg2, 'I')
 
 
 class UnaryExpression(IRForm):
+
     def __init__(self, op, arg, _type):
         super(UnaryExpression, self).__init__()
         self.op = op
@@ -1159,8 +1212,10 @@ class UnaryExpression(IRForm):
 
 
 class CastExpression(UnaryExpression):
+
     def __init__(self, op, atype, arg):
         super(CastExpression, self).__init__(op, arg, atype)
+        self.clsdesc = atype
 
     def is_const(self):
         return self.var_map[self.arg].is_const()
@@ -1189,6 +1244,7 @@ CONDS = {
 
 
 class ConditionalExpression(IRForm):
+
     def __init__(self, op, arg1, arg2):
         super(ConditionalExpression, self).__init__()
         self.op = op
@@ -1214,7 +1270,7 @@ class ConditionalExpression(IRForm):
     def visit(self, visitor):
         v_m = self.var_map
         return visitor.visit_cond_expression(self.op, v_m[self.arg1],
-                                                      v_m[self.arg2])
+                                             v_m[self.arg2])
 
     def replace_var(self, old, new):
         if self.arg1 == old:
@@ -1250,6 +1306,7 @@ class ConditionalExpression(IRForm):
 
 
 class ConditionalZExpression(IRForm):
+
     def __init__(self, op, arg):
         super(ConditionalZExpression, self).__init__()
         self.op = op
@@ -1293,13 +1350,16 @@ class ConditionalZExpression(IRForm):
 
 
 class InstanceExpression(IRForm):
+
     def __init__(self, arg, klass, ftype, name):
         super(InstanceExpression, self).__init__()
         self.arg = arg.v
-        self.cls = klass
+        self.cls = util.get_type(klass)
         self.ftype = ftype
         self.name = name
         self.var_map[arg.v] = arg
+
+        self.clsdesc = klass
 
     def get_type(self):
         return self.ftype
@@ -1308,7 +1368,8 @@ class InstanceExpression(IRForm):
         return self.var_map[self.arg].get_used_vars()
 
     def visit(self, visitor):
-        return visitor.visit_get_instance(self.var_map[self.arg], self.name, data=self.ftype)
+        return visitor.visit_get_instance(
+            self.var_map[self.arg], self.name, data=self.ftype)
 
     def replace_var(self, old, new):
         self.arg = new.v
@@ -1332,11 +1393,14 @@ class InstanceExpression(IRForm):
 
 
 class StaticExpression(IRForm):
+
     def __init__(self, cls_name, field_type, field_name):
         super(StaticExpression, self).__init__()
-        self.cls = cls_name
+        self.cls = util.get_type(cls_name)
         self.ftype = field_type
         self.name = field_name
+
+        self.clsdesc = cls_name
 
     def get_type(self):
         return self.ftype
@@ -1349,4 +1413,3 @@ class StaticExpression(IRForm):
 
     def __str__(self):
         return '%s.%s' % (self.cls, self.name)
-

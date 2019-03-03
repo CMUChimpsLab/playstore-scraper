@@ -1,7 +1,9 @@
 import sys
+import os
 import datetime
 from MySQLdb import connect
 
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 from dbConfig import dbStaticAnalysis, dbPrivacyGrading, dbAndroidApp
 from rateApp import calculateRateforOneApp, transRateToLevel, generateHistData, getLevel
 
@@ -14,7 +16,7 @@ def extractPackagePair(updatedApkList, reposPath):
     cnt = 0
     for (package_name, version_code) in updatedApkList:
         cnt += 1
-        # print cnt, package_name, version_code, "extract"
+        # print(cnt, package_name, version_code, "extract")
 
         #make sure permission in apkInfo is the version analyzed. Do not update apkInfo before extractApp.py run
 
@@ -29,7 +31,7 @@ def extractPackagePair(updatedApkList, reposPath):
                     "dateLastScraped": 1
                 })
         if apkInfoEntry is None:
-            print "COULDN'T FIND", package_name, version_code
+            print("COULDN'T FIND", package_name, version_code)
             continue
 
         # compatability with date_last_scraped
@@ -84,13 +86,13 @@ def extractPackagePair(updatedApkList, reposPath):
             'packageName': package_name,
             'versionCode': version_code,
             'labeledPermissionPurposesPairs': {
-                key: list(value) for key, value in labeledPermissionPurposesDict.iteritems()
+                key: list(value) for key, value in labeledPermissionPurposesDict.items()
             },
             'permissionExternalPackagesPairs': {
-                key: list(value) for key, value in permissionExternalPackageDict.iteritems()
+                key: list(value) for key, value in permissionExternalPackageDict.items()
             },
             'negativePermissionPurposesPairs': {
-                key: list(value) for key, value in negativePermissionPurposeDict.iteritems()
+                key: list(value) for key, value in negativePermissionPurposeDict.items()
             },
             'manifestPermissions': manifestPermissions,
             'updatedTimestamp' : updatedTimestamp,
@@ -106,11 +108,11 @@ def extractPackagePair(updatedApkList, reposPath):
 
 
 if __name__ == "__main__":
-    print "MAIN MODULE ACCESS DEPRECATED FOR NOW, use through analyzer.py"
+    print("MAIN MODULE ACCESS DEPRECATED FOR NOW, use through analyzer.py")
     sys.exit(1)
 
     if len(sys.argv) < 3:
-        print "Usage: python extractApp.py < dependent repos path >, < apk list file > < rebuild (OPTIONAL)"
+        print("Usage: python extractApp.py < dependent repos path >, < apk list file > < rebuild (OPTIONAL)")
         sys.exit(1)
 
     reposPath = sys.argv[1]

@@ -28,10 +28,10 @@ def main(DATE):
 
     sumComfortScoreDF.sort(["rate"]).to_csv("comfortScorePerPackage%s.csv"%DATE, sep="\t", index=False)
 
-# wrapper around main function 
+# wrapper around main function
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print "Usage: python getSensitivePairs.py < date >"
+        print("Usage: python getSensitivePairs.py < date >")
         sys.exit(1)
-    
+
     main(sys.argv[1])

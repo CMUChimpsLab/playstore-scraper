@@ -61,6 +61,7 @@ class Downloader:
                         counter - RESULT_CHUNK, counter, len(apps)))
                 if future is not None:
                     downloaded_uuids.append(future)
+            logger.info("downloaded all out of {}".format(len(apps)))
 
             return downloaded_uuids
 

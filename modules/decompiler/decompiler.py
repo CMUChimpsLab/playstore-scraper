@@ -1,5 +1,6 @@
 import subprocess
 import os
+import sys
 import datetime
 import logging
 import pickle
@@ -11,7 +12,7 @@ import copyreg
 import types
 
 import modules.database_helper.helper as dbhelper
-from dependencies.constants import DECOMPILE_FOLDER, DOWNLOAD_FOLDER, PROCESS_NO
+from dependencies.constants import DECOMPILE_FOLDER, DOWNLOAD_FOLDER, PROCESS_NO, RESULT_CHUNK
 
 def _pickle_method(method):
     func_name = method.im_func.__name__
@@ -36,7 +37,7 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     level=logging.INFO)
 
-def decompile_process_worker(force_decompile, top_apps, fname):
+def decompile_process_worker(force_decompile, fname):
     """
     Process worker to actually decompile the apps
     defined at global scope to make pickle-friendly
@@ -46,14 +47,14 @@ def decompile_process_worker(force_decompile, top_apps, fname):
         app_dir = "/" + fname[0] + "/" + fname[1]
         decompiled_apps = os.listdir(DECOMP_FOLDER + "/" + fname[0])
         downloaded_apps = os.listdir(DOWN_FOLDER + app_dir)
-        if fname not in top_apps:
-            logger.info("File {} not a top app, not decompiling".format(fname))
+        if not force_decompile and (fname[:-len(app_extension)] + '.zip') in decompiled_apps:
+            logger.info("File %s already decompiled and compressed" % fname)
             return None
         elif not force_decompile and fname[:-len(app_extension)] in decompiled_apps:
-            logger.info("File %s already decompiled" % fname)
-            return None
-        elif not force_decompile and (fname[:-len(app_extension)] + '.zip') in decompiled_apps:
-            logger.info("File %s already decompiled and compressed" % fname)
+            logger.info("File %s already decompiled, compressing" % fname)
+            if (fname[:-len(app_extension)] + '.zip') not in decompiled_apps:
+                # assume should compress
+                compress_storage([fname[:-len(app_extension)]])
             return None
         elif fname not in downloaded_apps:
             logger.error("File %s not found" % fname)
@@ -103,7 +104,6 @@ def compress_storage(file_names, suffix_to_keep=['.xml', '.smali']):
             if res.returncode != 0:
                 logger.error("{}".format(res.stderr))
                 return
-            logger.info("...{} - done deleting non-needed files".format(i))
 
             # delete any now-empty directories
             del_empty_dir_cmd = ["find ", ". ", "-type ", "d ", "-empty ", "-delete"]
@@ -114,7 +114,7 @@ def compress_storage(file_names, suffix_to_keep=['.xml', '.smali']):
             if res.returncode != 0:
                 logger.error("{}".format(res.stderr))
                 return
-            logger.info("...{} - done deleting empty dirs".format(i))
+            logger.info("...{} - compress, done deleting unneeded".format(i))
 
             # zip and remove zipped directory
             os.chdir("..")
@@ -126,14 +126,13 @@ def compress_storage(file_names, suffix_to_keep=['.xml', '.smali']):
             if res.returncode != 0:
                 logger.error("{}".format(res.stderr))
                 return
-            logger.info("...{} - done zipping".format(i))
 
             rm_zipped_dir_cmd = ["rm ", "-rf ", "{}".format(i)]
             res = subprocess.run("".join(rm_zipped_dir_cmd), stderr=subprocess.PIPE, shell=True)
             if res.returncode != 0:
                 logger.error("{}".format(res.stderr))
                 return
-            logger.info("...{} - done removing original dir".format(i))
+            logger.info("...{} - compress, done zipping".format(i))
 
     os.chdir(a)
 
@@ -164,7 +163,7 @@ class Decompiler:
         self.__use_database = use_database
         self.__database_helper = dbhelper.DbHelper()
 
-    def decompile(self, file_names, force_decompile=False):
+    def decompile(self, file_names=None, force_decompile=False):
         """
         Decompiles the files specified
         :param file_names: list of file names to decompile (if doesn't include .apk extension, will be added), this list
@@ -174,10 +173,19 @@ class Decompiler:
         :return: list of decompile times and None entries for unsuccessful decompiles
         """
         app_extension = '.apk'
-        file_names = [f if f.endswith(app_extension) else f + app_extension for f in file_names]
+        to_decomp = set()
+        if file_names is not None:
+            apps = [f if f.endswith(app_extension) else f + app_extension for f in file_names]
 
-        # only want to decompile filenames which are top
-        top_apps = set([i for i in file_names if self.__database_helper.is_uuid_top(i[:-len(app_extension)])])
+            # only want to decompile filenames which are top
+            for i in apps:
+                if self.__database_helper.is_uuid_top(i[:-len(app_extension)]):
+                    to_decomp.add(i)
+        else:
+            top_app_names = self.__database_helper.get_top_apps()
+            name_to_uuid = self.__database_helper.app_names_to_uuids(top_app_names)
+            to_decomp = set([str(uuid) + app_extension for uuid in name_to_uuid.values()])
+        print(len(to_decomp))
 
         global DECOMP_FOLDER
         global DOWN_FOLDER
@@ -191,10 +199,12 @@ class Decompiler:
         p = multiprocessing.Pool(PROCESS_NO)
         decompile_completion_times = []
         count = 0
-        for decomp_time in p.imap(partial(decompile_process_worker, force_decompile, top_apps), file_names):
+        for decomp_time in p.imap(partial(decompile_process_worker, force_decompile), to_decomp):
             decompile_completion_times.append(decomp_time)
             count += 1
-            logger.info("{} / {} done decompiling".format(count, len(file_names)))
+            if count % RESULT_CHUNK == 0:
+                logger.info("{} / {} done decompiling".format(count, len(to_decomp)))
+        logger.info("all done decompiling")
 
         return decompile_completion_times
 
@@ -203,7 +213,7 @@ class Decompiler:
         Decompile apps with file names specified in the CSV file passed as a parameter
         :param filename: The filename (with path) for the CSV file.
                          The first line of the filename must be "fileName"
-        :return: A list of timestamps indicating the when the decompile was completed. 
+        :return: A list of timestamps indicating the when the decompile was completed.
                  If the decompile fails, a None value is inserted instead.
         """
         # get list of downloaded apps
@@ -224,7 +234,7 @@ class Decompiler:
         """
         Decompiles any apps that are downloaded but have not been decompiled
         :param (none)
-        :return: A list of timestamps indicating the when the decompile was completed. 
+        :return: A list of timestamps indicating the when the decompile was completed.
                  If the decompile fails, a None value is inserted instead.
         """
         downloaded_uuids = self.__database_helper.get_all_downloaded_app_uuids()

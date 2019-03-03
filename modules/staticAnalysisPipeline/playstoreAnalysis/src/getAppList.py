@@ -1,5 +1,5 @@
 import sys
-from pymongo import MongoClient 
+from pymongo import MongoClient
 import time
 import json
 from dbConfig import *
@@ -24,7 +24,7 @@ def getDeveloperTopApps(developer, size):
           lst.append(packagePairEntry)
           count += 1
   jsonFile.write(json.dumps(lst, sort_keys=True, indent=2))
-  
+
 def getTopApps(size):
   count = 0
   jsonFile = sys.stdout
@@ -56,7 +56,7 @@ def getTop100AppsUnusualPermissionAndPurposes():
       if count > 100:
         break
       index = 0
-      for permission, lst in packagePairEntry["negativePermissionPurposesPairs"].iteritems():
+      for permission, lst in packagePairEntry["negativePermissionPurposesPairs"].items():
         if len(lst) > 0:
           if index == 0:
             print '|', permission, '|', '|'.join(lst)
@@ -78,10 +78,10 @@ def getTopAppsPerCategory(k):
         count += 1
         if count > k:
           break
-        print '|'.join([str(count), categoryName, title, packageName, str(entry['aggregateRating']['ratingsCount']), apkInfoEntry.get('numDownloads', ''), apkInfoEntry['fileDir']]).encode('UTF-8') 
+        print '|'.join([str(count), categoryName, title, packageName, str(entry['aggregateRating']['ratingsCount']), apkInfoEntry.get('numDownloads', ''), apkInfoEntry['fileDir']]).encode('UTF-8')
     if count < k:
       print >> sys.stderr, "less than %d in "%k + categoryName
-    
+
 if __name__ == "__main__":
   getTopApps(50)
   #getDeveloperTopApps("Google Inc.", 20)

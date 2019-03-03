@@ -50,14 +50,35 @@ class DbHelper:
         cursor = self.__apk_info.find({"uuid": str(uuid)})
         return cursor[0]["packageName"] # uuid should always correlate to an app
 
-    def app_name_to_uuids(self, package_name):
+    def app_names_to_uuids(self, package_names):
         """
-        Convert packageName to list of uuids, from newest to oldest version
+        Convert packageNames to corresponding dict of UUIDs of most recent
+        versions
         """
-        cursor = self.__apk_info\
-                .find({"packageName": str(package_name)}, {"_id": 0, "uuid": 1})\
-                .sort([("versionCode", pymongo.DESCENDING)])
-        return [a["uuid"] for a in cursor]
+        cursor = self.__apk_info.aggregate([
+                {"$match": {"packageName": {"$in": package_names}}},
+                {"$group":
+                    {
+                        "_id": "$packageName",
+                        "uuids": {"$push": "$uuid"},
+                        "vcs": {"$push": {
+                            "$cond": [
+                                {"$ne": ["$versionCode", None]},
+                                "$versionCode",
+                                0,
+                            ],
+                        }},
+                    }
+                },
+            ])
+
+        app_uuid_dict = {}
+        for d in cursor:
+            uuid_vc_tup = list(zip(d["uuids"], d["vcs"]))
+            uuid = sorted(uuid_vc_tup, key=lambda tup: tup[1], reverse=True)[0][0]
+            app_uuid_dict[d["_id"]] = uuid
+
+        return app_uuid_dict
 
     def get_details_id_for_uuid(self, uuid):
         info_cursor = self.__apk_info.find_one(
@@ -145,7 +166,13 @@ class DbHelper:
         """
         app = self.__apk_info.find(
             {
-                "$or": [{"analysesCompleted": None}, {"analysesCompleted": False}]
+                "$and": [
+                    {"$or": [
+                        {"analysesCompleted": None},
+                        {"analysesCompleted": False}
+                    ]},
+                    {"dateDownloaded": {"$ne": None}},
+                ],
             },
             {
                 '_id': 0,
@@ -340,8 +367,8 @@ class DbHelper:
 
     def insertLinkInfo (self, packageName, versioncode, filename, link_url,
                         is_external, triggered_by_code, externalPackageName):
-        if type(link_url) != unicode:
-            link_url = link_url.decode("UTF-8", "ignore")
+        if type(link_url) != str:
+            link_url = str(link_url)
         self.__static_analysis_db.linkUrl.insert(
             {
                 "packageName": packageName,
@@ -367,22 +394,21 @@ class DbHelper:
 
         # Also update top field in main db
         res = self.__apk_info.update_many(
-            {"packageName": {'$in': new_top_list}},
+            {"packageName": {'$in': self.get_top_apps()}},
             {'$set': {"hasBeenTop": True}})
         logger.info("marked {} as hasBeenTop in apkInfo".format(res.modified_count))
 
         # mark any removed top apps
-        apk_info_top_names = set([a["packageName"] for a in self.__apk_info\
+        apk_info_names = set([a["packageName"] for a in self.__apk_info\
                 .find({
                     "$and": [
                         {"packageName": {"$in": new_top_list}},
                         {"removed": False}
                     ]
                 })])
-        removed_top = set(new_top_list).difference(apk_info_top_names)
-        print(len(removed_top), len(set(new_top_list)))
+        removed_top = set(new_top_list).difference(apk_info_names)
         res = self.__top_apps.update_many(
-            {"_id": {'$in': new_top_list}}, {'$set': {"removed": True}})
+            {"_id": {'$in': list(removed_top)}}, {'$set': {"removed": True}})
         logger.info("marked {} as removed in topApps".format(res.modified_count))
 
     def update_list_of_names(self):
@@ -450,6 +476,22 @@ class DbHelper:
         res = self.__apk_info.update_one(
             {"uuid": uuid},
             {"$set": {field_name: field_value}})
+
+    def update_apk_info_field_many_uuids(self, uuids, field_name, field_value):
+        """
+        Updates the field and value as specified for documents matching list of
+        uuids in apkInfo collection
+
+        Params:
+         - uuids: uuids to update document field for
+         - field_name: field name to update
+         - field_value: value to update field to
+        """
+        res = self.__apk_info.update_many(
+            {"uuid": {"$in": uuids}},
+            {"$set": {field_name: field_value}})
+        logger.info("Updated {} to {} for {} in apkInfo".format(
+            field_name, field_value, res.modified_count))
 
     def update_policy_crawl_failure(self, uuid, reason):
         """
@@ -567,10 +609,11 @@ class DbHelper:
 
         return updated
 
-    def check_apps_missing(self, app_names, check_top_removed=False):
-        if check_top_removed:
-            removed_top_apps = set([a["_id"] for a in self.__top_apps.find({"removed": True})])
-            app_names = set(app_names).difference(removed_top_apps)
+    def check_apps_missing(self, app_names, compare_top=False):
+        if compare_top:
+            top_apps = set([a["_id"] for a in self.__top_apps.find({})])
+            top_removed = set([a["_id"] for a in self.__top_apps.find({"removed": True})])
+            app_names = (set(app_names) - top_removed) | top_apps
         else:
             app_names = set(app_names)
 

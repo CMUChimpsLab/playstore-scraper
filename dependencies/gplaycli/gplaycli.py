@@ -205,7 +205,7 @@ class GPlaycli:
 
         Returns:
             reviews - dict of reviews crawled
-            next_url_params - dict of `nb_results` and `offset` values to use 
+            next_url_params - dict of `nb_results` and `offset` values to use
                               for next page of reviews
         """
         reviews, next_url_params = self.api.reviews(pkg_name, nb_results=nb_results, offset=offset)
@@ -338,7 +338,8 @@ class GPlaycli:
             self.write_logfiles(success_items, failed_items, unavail_items)
 
         self.print_failed(failed_downloads + unavail_downloads)
-        return to_download_items - failed_items, failed_downloads
+        return (to_download_items - failed_items - unavail_items,
+                failed_downloads + unavail_downloads)
 
     @hooks.connected
     def search(self, search_string, nb_results, free_only=True, include_headers=True):

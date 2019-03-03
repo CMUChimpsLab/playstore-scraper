@@ -63,6 +63,7 @@ class Scraper:
                 if counter % RESULT_CHUNK == 0:
                     logger.info("completed results {} to {} out of {}".format(
                         counter - RESULT_CHUNK, counter, len(package_names)))
+            logger.info("completed all out of {}".format(len(package_names)))
 
     def efficient_scrape_thread_worker(self, index, package_name):
         """
@@ -141,8 +142,15 @@ class Scraper:
                 return
 
         with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
-            executor.map(self.scrape_thread_worker,
+            res = executor.map(self.scrape_thread_worker,
                     range(0, len(package_names)), package_names)
+            counter = 0
+            for future in res:
+                counter += 1
+                if counter % RESULT_CHUNK == 0:
+                    logger.info("completed results {} to {} out of {}".format(
+                        counter - RESULT_CHUNK, counter, len(package_names)))
+            logger.info("completed all out of {}".format(len(package_names)))
 
     def scrape_thread_worker(self, index, package_name):
         """
@@ -157,7 +165,8 @@ class Scraper:
             if app_metadata[0] is None:
                 return
 
-            self.__db_helper.insert_app_into_db(app_metadata[0][0], app_metadata[1][0])
+            if len(app_metadata[0]) > 0 and len(app_metadata[1]) > 0:
+                self.__db_helper.insert_app_into_db(app_metadata[0][0], app_metadata[1][0])
 
             logger.info("App {}, {} scraped".format(index, package_name))
 
@@ -215,7 +224,12 @@ class Scraper:
                 info_data = []
                 if not bulk:
                     for app_details in detail_data:
-                        info_data.append(protobuf_to_dict(app_details))
+                        app_dict = protobuf_to_dict(app_details)
+                        if "installationSize" not in app_dict["details"]["appDetails"]:
+                            # pass bc indicates pre-register
+                            continue
+
+                        info_data.append(app_dict)
                 else:
                     # detail_data is just info if bulk is False
                     info_data = detail_data
@@ -237,8 +251,8 @@ class Scraper:
     # ***************** #
     # other useful functions
     # ***************** #
-    def scrape_missing(self, app_names, check_top_removed=False):
-        missing_names = self.__db_helper.check_apps_missing(app_names, check_top_removed)
+    def scrape_missing(self, app_names, compare_top=False):
+        missing_names = self.__db_helper.check_apps_missing(app_names, compare_top)
         self.scrape_apps(missing_names)
 
     def check_removed(self, app_names):

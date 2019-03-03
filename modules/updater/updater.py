@@ -59,6 +59,7 @@ class Updater:
                 if counter % BULK_CHUNK == 0:
                     logger.info("updated {} to {} out of {}".format(
                         counter - BULK_CHUNK, counter, total_apps_no))
+            logger.info("completed all out of {}".format(total_apps_no))
 
         self.__db_helper.update_apps_as_not_removed(app_names)
         self.__db_helper.update_date_last_scraped(app_names,

@@ -73,7 +73,7 @@ class App:
             a_file[0]["fileType"] = a_file[0].pop("fileType", None)
             a_file[0]["versionCode"] = a_file[0].pop("versionCode", None)
             a_file[0]["size"] = a_file[0].pop("size", None)
-        if info_dict["offer"] is not None and len(info_dict["offer"]) > 0:
+        if info_dict.get("offer", None) is not None and len(info_dict["offer"]) > 0:
             isFree = (not info_dict["offer"][0]["checkoutFlowRequired"])
         else:
             isFree = None

@@ -21,84 +21,102 @@ from struct import unpack, pack
 import textwrap
 
 import json
-from androconf import warning, error, CONF, enable_colors, remove_colors, save_colors, color_range
+from androguard.core.androconf import warning, error, CONF, enable_colors, \
+    remove_colors, save_colors, color_range
 
 
 def disable_print_colors():
-  colors = save_colors()
-  remove_colors()
-  return colors
+    colors = save_colors()
+    remove_colors()
+    return colors
 
 
 def enable_print_colors(colors):
-  enable_colors(colors)
+    enable_colors(colors)
 
 
 # Handle exit message
-def Exit( msg ):
+def Exit(msg):
     warning("Error : " + msg)
     raise("oops")
 
-def Warning( msg ):
+
+def Warning(msg):
     warning(msg)
 
-def _PrintBanner() :
+
+def _PrintBanner():
     print_fct = CONF["PRINT_FCT"]
     print_fct("*" * 75 + "\n")
 
-def _PrintSubBanner(title=None) :
-  print_fct = CONF["PRINT_FCT"]
-  if title == None :
-    print_fct("#" * 20 + "\n")
-  else :
-    print_fct("#" * 10 + " " + title + "\n")
 
-def _PrintNote(note, tab=0) :
-  print_fct = CONF["PRINT_FCT"]
-  note_color = CONF["COLORS"]["NOTE"]
-  normal_color = CONF["COLORS"]["NORMAL"]
-  print_fct("\t" * tab + "%s# %s%s" % (note_color, note, normal_color) + "\n")
+def _PrintSubBanner(title=None):
+    print_fct = CONF["PRINT_FCT"]
+    if title == None:
+        print_fct("#" * 20 + "\n")
+    else:
+        print_fct("#" * 10 + " " + title + "\n")
+
+
+def _PrintNote(note, tab=0):
+    print_fct = CONF["PRINT_FCT"]
+    note_color = CONF["COLORS"]["NOTE"]
+    normal_color = CONF["COLORS"]["NORMAL"]
+    print_fct("\t" * tab + "%s# %s%s" %
+              (note_color, note, normal_color) + "\n")
 
 # Print arg into a correct format
-def _Print(name, arg) :
+
+
+def _Print(name, arg):
+    return
     buff = name + " "
 
-    if type(arg).__name__ == 'int' :
+    if type(arg).__name__ == 'int':
         buff += "0x%x" % arg
-    elif type(arg).__name__ == 'long' :
+    elif type(arg).__name__ == 'long':
         buff += "0x%x" % arg
-    elif type(arg).__name__ == 'str' :
+    elif type(arg).__name__ == 'str':
         buff += "%s" % arg
-    elif isinstance(arg, SV) :
+    elif isinstance(arg, SV):
         buff += "0x%x" % arg.get_value()
-    elif isinstance(arg, SVs) :
+    elif isinstance(arg, SVs):
         buff += arg.get_value().__str__()
 
-    print buff
+    print(buff)
 
 
 def PrettyShowEx(exceptions):
     if len(exceptions) > 0:
         CONF["PRINT_FCT"]("Exceptions:\n")
         for i in exceptions:
-          CONF["PRINT_FCT"]("\t%s%s%s\n" % (CONF["COLORS"]["EXCEPTION"], i.show_buff(), CONF["COLORS"]["NORMAL"]))
+            CONF["PRINT_FCT"]("\t%s%s%s\n" % (
+                CONF["COLORS"]["EXCEPTION"], i.show_buff(),
+                CONF["COLORS"]["NORMAL"]))
 
 
 def _PrintXRef(tag, items):
-  print_fct = CONF["PRINT_FCT"]
-  for i in items:
-    print_fct("%s: %s %s %s %s\n" % (tag, i[0].get_class_name(), i[0].get_name(), i[0].get_descriptor(), ' '.join("%x" % j.get_idx() for j in i[1])))
+    print_fct = CONF["PRINT_FCT"]
+    for i in items:
+        print_fct(
+            "%s: %s %s %s %s\n" % (
+                tag, i[0].get_class_name(), i[0].get_name(),
+                i[0].get_descriptor(),
+                ' '.join("%x" % j.get_idx() for j in i[1])))
 
 
 def _PrintDRef(tag, items):
-  print_fct = CONF["PRINT_FCT"]
-  for i in items:
-    print_fct("%s: %s %s %s %s\n" % (tag, i[0].get_class_name(), i[0].get_name(), i[0].get_descriptor(), ' '.join("%x" % j for j in i[1])))
+    print_fct = CONF["PRINT_FCT"]
+    for i in items:
+        print_fct(
+            "%s: %s %s %s %s\n" % (
+                tag, i[0].get_class_name(), i[0].get_name(),
+                i[0].get_descriptor(), ' '.join("%x" % j for j in i[1])))
 
 
 def _PrintDefault(msg):
-  print_fct = CONF["PRINT_FCT"]
-  print_fct(msg)
+    print_fct = CONF["PRINT_FCT"]
+    print_fct(msg)
 
 
 def PrettyShow(m_a, basic_blocks, notes={}):
@@ -123,14 +141,18 @@ def PrettyShow(m_a, basic_blocks, notes={}):
         instructions = i.get_instructions()
         for ins in instructions:
             if nb in notes:
-              for note in notes[nb]:
-                _PrintNote(note, 1)
+                for note in notes[nb]:
+                    _PrintNote(note, 1)
 
-            print_fct("\t%s%-3d%s(%s%08x%s) " % (offset_color, nb, normal_color, offset_addr_color, idx, normal_color))
-            print_fct("%s%-20s%s" % (instruction_name_color, ins.get_name(), normal_color))
+            print_fct("\t%s%-3d%s(%s%08x%s) " % (
+                offset_color, nb,
+                normal_color, offset_addr_color, idx, normal_color))
+            print_fct("%s%-20s%s" %
+                      (instruction_name_color, ins.get_name(), normal_color))
 
             operands = ins.get_operands()
-            print_fct("%s" % ", ".join(m_a.get_vm().colorize_operands(operands, colors)))
+            print_fct("%s" % ", ".join(
+                m_a.get_vm().colorize_operands(operands, colors)))
 
             op_value = ins.get_op_value()
             if ins == instructions[-1] and i.childs:
@@ -138,15 +160,30 @@ def PrettyShow(m_a, basic_blocks, notes={}):
 
                 # packed/sparse-switch
                 if (op_value == 0x2b or op_value == 0x2c) and len(i.childs) > 1:
-                      values = i.get_special_ins(idx).get_values()
-                      print_fct("%s[ D:%s%s " % (branch_false_color, i.childs[0][2].get_name(), branch_color))
-                      print_fct(' '.join("%d:%s" % (values[j], i.childs[j + 1][2].get_name()) for j in range(0, len(i.childs) - 1)) + " ]%s" % normal_color)
+                    values = i.get_special_ins(idx).get_values()
+                    print_fct(
+                        "%s[ D:%s%s " % (
+                            branch_false_color,
+                            i.childs[0][2].get_name(), branch_color))
+                    print_fct(
+                        ' '.join("%d:%s" % (
+                            values[j],
+                            i.childs[j + 1][2].get_name())
+                            for j in range(
+                                0, len(i.childs) - 1)) + " ]%s" % normal_color)
                 else:
                     if len(i.childs) == 2:
-                        print_fct("%s[ %s%s " % (branch_false_color, i.childs[0][2].get_name(), branch_true_color))
-                        print_fct(' '.join("%s" % c[2].get_name() for c in i.childs[1:]) + " ]%s" % normal_color)
+                        print_fct("%s[ %s%s " % (branch_false_color, i.childs[
+                                  0][2].get_name(), branch_true_color))
+                        print_fct(
+                            ' '.join(
+                                "%s" % c[2].get_name()
+                                for c in i.childs[1:]) + " ]%s" % normal_color)
                     else:
-                        print_fct("%s[ " % branch_color + ' '.join("%s" % c[2].get_name() for c in i.childs) + " ]%s" % normal_color)
+                        print_fct(
+                            "%s[ " % branch_color + ' '.join(
+                                "%s" % c[2].get_name()
+                                for c in i.childs) + " ]%s" % normal_color)
 
             idx += ins.get_length()
             nb += 1
@@ -154,7 +191,10 @@ def PrettyShow(m_a, basic_blocks, notes={}):
             print_fct("\n")
 
         if i.get_exception_analysis():
-          print_fct("\t%s%s%s\n" % (exception_color, i.exception_analysis.show_buff(), normal_color))
+            print_fct(
+                "\t%s%s%s\n" % (
+                    exception_color,
+                    i.exception_analysis.show_buff(), normal_color))
 
         print_fct("\n")
 
@@ -191,20 +231,29 @@ def method2dot(mx, colors={}):
                         "registers_range": ("#999933", "#6666FF")
                         }
 
-    node_tpl = "\nstruct_%s [label=<\n<TABLE BORDER=\"0\" CELLBORDER=\"0\" CELLSPACING=\"3\">\n%s</TABLE>>];\n"
-    label_tpl = "<TR><TD ALIGN=\"LEFT\" BGCOLOR=\"%s\"> <FONT FACE=\"Times-Bold\" color=\"%s\">%x</FONT> </TD><TD ALIGN=\"LEFT\" BGCOLOR=\"%s\"> <FONT FACE=\"Times-Bold\" color=\"%s\">%s </FONT> %s </TD></TR>\n"
+    node_tpl = "\nstruct_%s [label=<\n<TABLE BORDER=\"0\" CELLBORDER=\"0\" "\
+        "CELLSPACING=\"3\">\n%s</TABLE>>];\n"
+    label_tpl = "<TR><TD ALIGN=\"LEFT\" BGCOLOR=\"%s\"> "\
+        "<FONT FACE=\"Times-Bold\" color=\"%s\">%x</FONT> </TD>"\
+        "<TD ALIGN=\"LEFT\" BGCOLOR=\"%s\"> <FONT FACE=\"Times-Bold\" "\
+        "color=\"%s\">%s </FONT> %s </TD></TR>\n"
     link_tpl = "<TR><TD PORT=\"%s\"></TD></TR>\n"
 
     edges_html = ""
     blocks_html = ""
 
     method = mx.get_method()
-    sha256 = hashlib.sha256("%s%s%s" % (mx.get_method().get_class_name(), mx.get_method().get_name(), mx.get_method().get_descriptor())).hexdigest()
+    sha256 = hashlib.sha256(
+        "%s%s%s" % (
+            mx.get_method().get_class_name(),
+            mx.get_method().get_name(),
+            mx.get_method().get_descriptor())).hexdigest()
 
     registers = {}
     if method.get_code():
         for DVMBasicMethodBlock in mx.basic_blocks.gets():
-            for DVMBasicMethodBlockInstruction in DVMBasicMethodBlock.get_instructions():
+            for DVMBasicMethodBlockInstruction in \
+                    DVMBasicMethodBlock.get_instructions():
                 operands = DVMBasicMethodBlockInstruction.get_operands(0)
                 for register in operands:
                     if register[0] == 0:
@@ -215,9 +264,10 @@ def method2dot(mx, colors={}):
 #            registers[i] = 0
 
     if registers:
-        registers_colors = color_range(colors["registers_range"][0],
-                                       colors["registers_range"][1],
-                                       len(registers))
+        registers_colors = color_range(
+            colors["registers_range"][0],
+            colors["registers_range"][1],
+            len(registers))
         for i in registers:
             registers[i] = registers_colors.pop(0)
 
@@ -225,18 +275,22 @@ def method2dot(mx, colors={}):
 
     for DVMBasicMethodBlock in mx.basic_blocks.gets():
         ins_idx = DVMBasicMethodBlock.start
-        block_id = hashlib.md5(sha256 + DVMBasicMethodBlock.get_name()).hexdigest()
+        block_id = hashlib.md5(
+            sha256 + DVMBasicMethodBlock.get_name()).hexdigest()
 
         content = link_tpl % 'header'
 
         for DVMBasicMethodBlockInstruction in DVMBasicMethodBlock.get_instructions():
             if DVMBasicMethodBlockInstruction.get_op_value() == 0x2b or DVMBasicMethodBlockInstruction.get_op_value() == 0x2c:
-                new_links.append((DVMBasicMethodBlock, ins_idx, DVMBasicMethodBlockInstruction.get_ref_off() * 2 + ins_idx))
+                new_links.append(
+                    (DVMBasicMethodBlock, ins_idx, DVMBasicMethodBlockInstruction.get_ref_off() * 2 + ins_idx))
             elif DVMBasicMethodBlockInstruction.get_op_value() == 0x26:
-                new_links.append((DVMBasicMethodBlock, ins_idx, DVMBasicMethodBlockInstruction.get_ref_off() * 2 + ins_idx))
+                new_links.append(
+                    (DVMBasicMethodBlock, ins_idx, DVMBasicMethodBlockInstruction.get_ref_off() * 2 + ins_idx))
 
             operands = DVMBasicMethodBlockInstruction.get_operands(ins_idx)
-            output = ", ".join(mx.get_vm().get_operand_html(i, registers, colors, escape, textwrap.wrap) for i in operands)
+            output = ", ".join(mx.get_vm().get_operand_html(
+                i, registers, colors, escape, textwrap.wrap) for i in operands)
 
             formatted_operands = DVMBasicMethodBlockInstruction.get_formatted_operands()
             if formatted_operands:
@@ -273,7 +327,8 @@ def method2dot(mx, colors={}):
         if (last_instru.get_op_value() == 0x2b or last_instru.get_op_value() == 0x2c) and len(DVMBasicMethodBlock.childs) > 1:
             val = colors["default_branch"]
             values = ["default"]
-            values.extend(DVMBasicMethodBlock.get_special_ins(ins_idx - last_instru.get_length()).get_values())
+            values.extend(DVMBasicMethodBlock.get_special_ins(
+                ins_idx - last_instru.get_length()).get_values())
 
         # updating dot edges
         for DVMBasicMethodBlockChild in DVMBasicMethodBlock.childs:
@@ -282,8 +337,10 @@ def method2dot(mx, colors={}):
             if values:
                 label_edge = values.pop(0)
 
-            child_id = hashlib.md5(sha256 + DVMBasicMethodBlockChild[-1].get_name()).hexdigest()
-            edges_html += "struct_%s:tail -> struct_%s:header  [color=\"%s\", label=\"%s\"];\n" % (block_id, child_id, val, label_edge)
+            child_id = hashlib.md5(
+                sha256 + DVMBasicMethodBlockChild[-1].get_name()).hexdigest()
+            edges_html += "struct_%s:tail -> struct_%s:header  [color=\"%s\", label=\"%s\"];\n" % (
+                block_id, child_id, val, label_edge)
             # color switch
             if val == colors["false_branch"]:
                 val = colors["true_branch"]
@@ -295,24 +352,31 @@ def method2dot(mx, colors={}):
             for exception_elem in exception_analysis.exceptions:
                 exception_block = exception_elem[-1]
                 if exception_block:
-                    exception_id = hashlib.md5(sha256 + exception_block.get_name()).hexdigest()
-                    edges_html += "struct_%s:tail -> struct_%s:header  [color=\"%s\", label=\"%s\"];\n" % (block_id, exception_id, "black", exception_elem[0])
+                    exception_id = hashlib.md5(
+                        sha256 + exception_block.get_name()).hexdigest()
+                    edges_html += "struct_%s:tail -> struct_%s:header  [color=\"%s\", label=\"%s\"];\n" % (
+                        block_id, exception_id, "black", exception_elem[0])
 
     for link in new_links:
         DVMBasicMethodBlock = link[0]
         DVMBasicMethodBlockChild = mx.basic_blocks.get_basic_block(link[2])
 
         if DVMBasicMethodBlockChild:
-            block_id = hashlib.md5(sha256 + DVMBasicMethodBlock.get_name()).hexdigest()
-            child_id = hashlib.md5(sha256 + DVMBasicMethodBlockChild.get_name()).hexdigest()
+            block_id = hashlib.md5(
+                sha256 + DVMBasicMethodBlock.get_name()).hexdigest()
+            child_id = hashlib.md5(
+                sha256 + DVMBasicMethodBlockChild.get_name()).hexdigest()
 
-            edges_html += "struct_%s:tail -> struct_%s:header  [color=\"%s\", label=\"data(0x%x) to @0x%x\", style=\"dashed\"];\n" % (block_id, child_id, "yellow", link[1], link[2])
+            edges_html += "struct_%s:tail -> struct_%s:header  [color=\"%s\", label=\"data(0x%x) to @0x%x\", style=\"dashed\"];\n" % (
+                block_id, child_id, "yellow", link[1], link[2])
 
-    method_label = method.get_class_name() + "." + method.get_name() + "->" + method.get_descriptor()
+    method_label = method.get_class_name() + "." + method.get_name() + \
+        "->" + method.get_descriptor()
 
     method_information = method.get_information()
     if method_information:
-        method_label += "\\nLocal registers v%d ... v%d" % (method_information["registers"][0], method_information["registers"][1])
+        method_label += "\\nLocal registers v%d ... v%d" % (
+            method_information["registers"][0], method_information["registers"][1])
         if "params" in method_information:
             for register, rtype in method_information["params"]:
                 method_label += "\\nparam v%d = %s" % (register, rtype)
@@ -347,7 +411,8 @@ def method2format(output, _format="png", mx=None, raw=None):
         data = method2dot(mx)
 
     # subgraphs cluster
-    buff += "subgraph cluster_" + hashlib.md5(output).hexdigest() + " {\nlabel=\"%s\"\n" % data['name']
+    buff += "subgraph cluster_" + \
+        hashlib.md5(output).hexdigest() + " {\nlabel=\"%s\"\n" % data['name']
     buff += data['nodes']
     buff += "}\n"
 
@@ -418,7 +483,8 @@ def vm2json(vm):
     return json.dumps(d)
 
 
-class TmpBlock:
+class TmpBlock(object):
+
     def __init__(self, name):
         self.name = name
 
@@ -449,7 +515,8 @@ def method2json_undirect(mx):
             c_ins = {}
             c_ins["idx"] = ins_idx
             c_ins["name"] = DVMBasicMethodBlockInstruction.get_name()
-            c_ins["operands"] = DVMBasicMethodBlockInstruction.get_operands(ins_idx)
+            c_ins["operands"] = DVMBasicMethodBlockInstruction.get_operands(
+                ins_idx)
 
             cblock["instructions"].append(c_ins)
             ins_idx += DVMBasicMethodBlockInstruction.get_length()
@@ -478,7 +545,8 @@ def method2json_direct(mx):
                 preblock = TmpBlock(DVMBasicMethodBlock.get_name() + "-pre")
 
                 cnblock = {}
-                cnblock["BasicBlockId"] = DVMBasicMethodBlock.get_name() + "-pre"
+                cnblock["BasicBlockId"] = DVMBasicMethodBlock.get_name() + \
+                    "-pre"
                 cnblock["start"] = DVMBasicMethodBlock.start
                 cnblock["notes"] = []
 
@@ -513,9 +581,11 @@ def method2json_direct(mx):
             c_ins = {}
             c_ins["idx"] = ins_idx
             c_ins["name"] = DVMBasicMethodBlockInstruction.get_name()
-            c_ins["operands"] = DVMBasicMethodBlockInstruction.get_operands(ins_idx)
+            c_ins["operands"] = DVMBasicMethodBlockInstruction.get_operands(
+                ins_idx)
 
-            c_ins["formatted_operands"] = DVMBasicMethodBlockInstruction.get_formatted_operands()
+            c_ins[
+                "formatted_operands"] = DVMBasicMethodBlockInstruction.get_formatted_operands()
 
             cblock["instructions"].append(c_ins)
 
@@ -540,7 +610,8 @@ def method2json_direct(mx):
             if DVMBasicMethodBlock.get_name() in hooks:
                 if DVMBasicMethodBlockChild[-1] in hooks[DVMBasicMethodBlock.get_name()]:
                     ok = True
-                    cblock["Edge"].append(hooks[DVMBasicMethodBlock.get_name()][0].get_name())
+                    cblock["Edge"].append(
+                        hooks[DVMBasicMethodBlock.get_name()][0].get_name())
 
             if not ok:
                 cblock["Edge"].append(DVMBasicMethodBlockChild[-1].get_name())
@@ -556,7 +627,8 @@ def method2json_direct(mx):
     return json.dumps(d)
 
 
-class SV:
+class SV(object):
+
     def __init__(self, size, buff):
         self.__size = size
         self.__value = unpack(self.__size, buff)[0]
@@ -564,67 +636,73 @@ class SV:
     def _get(self):
         return pack(self.__size, self.__value)
 
-    def __str__(self) :
+    def __str__(self):
         return "0x%x" % self.__value
 
-    def __int__(self) :
+    def __int__(self):
         return self.__value
 
-    def get_value_buff(self) :
+    def get_value_buff(self):
         return self._get()
 
-    def get_value(self) :
+    def get_value(self):
         return self.__value
 
-    def set_value(self, attr) :
+    def set_value(self, attr):
         self.__value = attr
 
-class SVs :
-    def __init__(self, size, ntuple, buff) :
+
+class SVs(object):
+
+    def __init__(self, size, ntuple, buff):
         self.__size = size
 
-        self.__value = ntuple._make( unpack( self.__size, buff ) )
+        self.__value = ntuple._make(unpack(self.__size, buff))
 
-    def _get(self) :
+    def _get(self):
         l = []
-        for i in self.__value._fields :
-            l.append( getattr( self.__value, i ) )
-        return pack( self.__size, *l)
+        for i in self.__value._fields:
+            l.append(getattr(self.__value, i))
+        return pack(self.__size, *l)
 
-    def _export(self) :
-        return [ x for x in self.__value._fields ]
+    def _export(self):
+        return [x for x in self.__value._fields]
 
-    def get_value_buff(self) :
+    def get_value_buff(self):
         return self._get()
 
-    def get_value(self) :
+    def get_value(self):
         return self.__value
 
-    def set_value(self, attr) :
-        self.__value = self.__value._replace( **attr )
+    def set_value(self, attr):
+        self.__value = self.__value._replace(**attr)
 
-    def __str__(self) :
+    def __str__(self):
         return self.__value.__str__()
 
-def object_to_str(obj) :
-    if isinstance(obj, str) :
+
+def object_to_str(obj):
+    if isinstance(obj, str):
         return obj
-    elif isinstance(obj, bool) :
+    elif isinstance(obj, bool):
         return ""
-    elif isinstance(obj, int) :
+    elif isinstance(obj, int):
         return pack("<L", obj)
-    elif obj == None :
+    elif obj == None:
         return ""
-    else :
-        #print type(obj), obj
+    else:
+        # print type(obj), obj
         return obj.get_raw()
 
-class MethodBC(object) :
-    def show(self, value) :
+
+class MethodBC(object):
+
+    def show(self, value):
         getattr(self, "show_" + value)()
 
 
-class BuffHandle:
+class BuffHandle(object):
+
     def __init__(self, buff):
         self.__buff = buff
         self.__idx = 0
@@ -642,26 +720,28 @@ class BuffHandle:
         data = self.read(size)
         return data
 
-    def read_b(self, size) :
-        return self.__buff[ self.__idx : self.__idx + size ]
+    def read_b(self, size):
+        return self.__buff[self.__idx: self.__idx + size]
 
     def read_at(self, offset, size):
-        return self.__buff[ offset : offset + size ]
+        return self.__buff[offset: offset + size]
 
-    def read(self, size) :
-        if isinstance(size, SV) :
+    def read(self, size):
+        if isinstance(size, SV):
             size = size.value
 
-        buff = self.__buff[ self.__idx : self.__idx + size ]
+        buff = self.__buff[self.__idx: self.__idx + size]
         self.__idx += size
 
         return buff
 
-    def end(self) :
+    def end(self):
         return self.__idx == len(self.__buff)
 
-class Buff :
-    def __init__(self, offset, buff) :
+
+class Buff(object):
+
+    def __init__(self, offset, buff):
         self.offset = offset
         self.buff = buff
 
@@ -669,8 +749,9 @@ class Buff :
 
 
 class _Bytecode(object):
+
     def __init__(self, buff):
-        try :
+        try:
             import psyco
             psyco.full()
         except ImportError:
@@ -679,52 +760,52 @@ class _Bytecode(object):
         self.__buff = buff
         self.__idx = 0
 
-    def read(self, size) :
-        if isinstance(size, SV) :
+    def read(self, size):
+        if isinstance(size, SV):
             size = size.value
 
-        buff = self.__buff[ self.__idx : self.__idx + size ]
+        buff = self.__buff[self.__idx: self.__idx + size]
         self.__idx += size
 
         return buff
 
-    def readat(self, off) :
-        if isinstance(off, SV) :
+    def readat(self, off):
+        if isinstance(off, SV):
             off = off.value
 
-        return self.__buff[ off : ]
+        return self.__buff[off:]
 
-    def read_b(self, size) :
-        return self.__buff[ self.__idx : self.__idx + size ]
+    def read_b(self, size):
+        return self.__buff[self.__idx: self.__idx + size]
 
-    def set_idx(self, idx) :
+    def set_idx(self, idx):
         self.__idx = idx
 
-    def get_idx(self) :
+    def get_idx(self):
         return self.__idx
 
-    def add_idx(self, idx) :
+    def add_idx(self, idx):
         self.__idx += idx
 
-    def register(self, type_register, fct) :
-        self.__registers[ type_register ].append( fct )
+    def register(self, type_register, fct):
+        self.__registers[type_register].append(fct)
 
-    def get_buff(self) :
+    def get_buff(self):
         return self.__buff
 
-    def length_buff(self) :
-        return len( self.__buff )
+    def length_buff(self):
+        return len(self.__buff)
 
-    def set_buff(self, buff) :
+    def set_buff(self, buff):
         self.__buff = buff
 
-    def save(self, filename) :
-        fd = open(filename, "w")
+    def save(self, filename):
         buff = self._save()
-        fd.write( buff )
-        fd.close()
+        with open(filename, "w") as fd:
+            fd.write(buff)
 
-def FormatClassToJava(input) :
+
+def FormatClassToJava(input):
     """
        Transoform a typical xml format class into java format
 
@@ -733,21 +814,24 @@ def FormatClassToJava(input) :
     """
     return "L" + input.replace(".", "/") + ";"
 
-def FormatClassToPython(input) :
+
+def FormatClassToPython(input):
     i = input[:-1]
     i = i.replace("/", "_")
     i = i.replace("$", "_")
 
     return i
 
-def FormatNameToPython(input) :
+
+def FormatNameToPython(input):
     i = input.replace("<", "")
     i = i.replace(">", "")
     i = i.replace("$", "_")
 
     return i
 
-def FormatDescriptorToPython(input) :
+
+def FormatDescriptorToPython(input):
     i = input.replace("/", "_")
     i = i.replace(";", "")
     i = i.replace("[", "")
@@ -758,8 +842,10 @@ def FormatDescriptorToPython(input) :
 
     return i
 
-class Node:
- def __init__(self, n, s):
-     self.id = n
-     self.title = s
-     self.children = []
+
+class Node(object):
+
+    def __init__(self, n, s):
+        self.id = n
+        self.title = s
+        self.children = []

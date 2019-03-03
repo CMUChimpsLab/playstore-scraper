@@ -266,9 +266,9 @@ def main(appListFile):
         "Apps with Lowest Privacy Grade",
         1)
     if len(topKEntry) > 0:
-        print ','.join([str(key) for key in topKEntry[0].keys()])
+        print(','.join([str(key) for key in topKEntry[0].keys()]))
         for entry in topKEntry:
-            print ','.join([str(value) for value in entry.values()])
+            print(','.join([str(value) for value in entry.values()]))
 
     topKEntry = getTopKAppWithLib(client,
         appList,
@@ -277,9 +277,9 @@ def main(appListFile):
         'Apps with Most Targeted Ads Libraries',
         1)
     if len(topKEntry) > 0:
-        print ','.join([str(key) for key in topKEntry[0].keys()])
+        print(','.join([str(key) for key in topKEntry[0].keys()]))
         for entry in topKEntry:
-            print ','.join([str(value) for value in entry.values()])
+            print(','.join([str(value) for value in entry.values()]))
 
     topKEntry = getTopKAppWithLib(client,
         appList,
@@ -288,9 +288,9 @@ def main(appListFile):
         'Apps with Most 3rd Party Libraries',
         1)
     if len(topKEntry) > 0:
-        print ','.join([str(key) for key in topKEntry[0].keys()])
+        print(','.join([str(key) for key in topKEntry[0].keys()]))
         for entry in topKEntry:
-            print ','.join([str(value) for value in entry.values()])
+            print(','.join([str(value) for value in entry.values()]))
 
     getTopPermissions(client, appList, outputDir)
     getInstallSizeList(client, appList, outputDir)
@@ -308,7 +308,7 @@ if __name__ == "__main__":
     * Remember move the output folder to statData folder
     """
     if len(sys.argv) < 2:
-        print "usage: python analyze.py < app list file >"
+        print("usage: python analyze.py < app list file >")
         sys.exit(1)
 
     main(sys.argv[1])

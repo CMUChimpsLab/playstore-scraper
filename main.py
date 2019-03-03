@@ -14,6 +14,7 @@ from modules.decompiler.decompiler import Decompiler
 from modules.scraper import crawler
 from modules.scraper.scraper import Scraper
 from modules.updater.updater import Updater
+from modules.staticAnalysisPipeline.analyzer import temp_analyzer
 from dependencies.constants import DOWNLOAD_FOLDER, THREAD_NO, LOG_FOLDER
 
 # ***************** #
@@ -74,7 +75,7 @@ def update_top_list(args):
     s = Scraper()
 
     new_top_list = crawler.get_top_apps_list()
-    s.scrape_apps(package_names=new_top_list)
+    s.scrape_missing(new_top_list, compare_top=True)
     d.update_top_apps(new_top_list)
 
 def analyze(args):
@@ -82,14 +83,21 @@ def analyze(args):
     helper = DbHelper()
     app_list = helper.get_all_apps_to_analyze()
 
+    app_list = [("c3e992a35a9e45f1b5fa2c21e9549541", 15090021)]
+    fname = to_file_for_analysis(app_list)
+    temp_analyzer(fname)
+    subprocess.call(["rm", fname])
+
+    """
     os.chdir("modules/staticAnalysisPipeline")
     fname = to_file_for_analysis(app_list)
     python_2_env = os.environ.copy()
     python_2_env["PIPENV_IGNORE_VIRTUALENVS"] = "1"
-    subprocess.call(["pipenv", "install", "--dev"], env=python_2_env)
+    subprocess.call(["pipenv", "install"], env=python_2_env)
     subprocess.call(["pipenv", "run", "python", "analyzer.py", fname], env=python_2_env)
     os.chdir("../..")
     subprocess.call(["rm", fname])
+    """
 
 # ***************** #
 # large pipeline CLI command functions
@@ -106,7 +114,7 @@ def full_pipeline(args):
     s = Scraper()
     """
     new_top_list = crawler.get_top_apps_list()
-    s.scrape_missing(new_top_list, check_top_removed=True)
+    s.scrape_missing(new_top_list, compare_top=True)
     d.update_top_apps(new_top_list)
 
     if kickoff == True:
@@ -133,6 +141,11 @@ def full_pipeline(args):
     # crawl privacy policies
     crawler.crawl_app_privacy_policies()
     """
+    # static analysis TODO remove this chunk later
+    logger.info("Starting analysis...")
+    os.environ["PIPENV_IGNORE_VIRTUALENVS"] = "1" # allow analysis pipeline to have own env
+    analyze(None)
+    logger.info("...analysis done")
 
     # download/decompile
     logger.info("Starting download and decompile...")
@@ -142,7 +155,7 @@ def full_pipeline(args):
     # static analysis
     logger.info("Starting analysis...")
     os.environ["PIPENV_IGNORE_VIRTUALENVS"] = "1" # allow analysis pipeline to have own env
-    analyze()
+    analyze(None)
     logger.info("...analysis done")
 
 # ***************** #
@@ -176,14 +189,18 @@ def download_decompile_all():
     """
     Downloads all not downloaded apps, then decompiles all that are a top app
     """
+    """
     logger.info("Downloading...")
     d = Downloader()
     downloaded_uuids = d.download_all_from_db()
     logger.info("...done\n")
+    """
 
-    logger.info("Decompiling {} apps...".format(len(downloaded_uuids)))
+    # logger.info("Decompiling {} apps...".format(len(downloaded_uuids)))
+    logger.info("Decompiling {} apps...".format("db"))
     dec = Decompiler(use_database=True, compress=True)
-    dec.decompile(downloaded_uuids)
+    # dec.decompile(downloaded_uuids)
+    dec.decompile()
     logger.info("...done\n")
 
 # ***************** #

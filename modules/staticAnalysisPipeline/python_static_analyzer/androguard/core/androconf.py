@@ -22,7 +22,12 @@ import types
 import random
 import string
 
-ANDROGUARD_VERSION = "2.0"
+from androguard.core.api_specific_resources.aosp_permissions.aosp_permissions \
+    import AOSP_PERMISSIONS
+from androguard.core.api_specific_resources.api_permission_mappings.\
+    api_permission_mappings import AOSP_PERMISSIONS_MAPPINGS
+
+ANDROGUARD_VERSION = "3.0"
 
 
 def is_ascii_problem(s):
@@ -33,7 +38,7 @@ def is_ascii_problem(s):
         return True
 
 
-class Color:
+class Color(object):
     Normal = "\033[0m"
     Black = "\033[30m"
     Red = "\033[31m"
@@ -61,14 +66,14 @@ CONF = {
     "TMP_DIRECTORY": "/tmp/",
 
     # Full python or mix python/c++ (native)
-    #"ENGINE" : "automatic",
+    # "ENGINE" : "automatic",
     "ENGINE": "python",
 
     "RECODE_ASCII_STRING": False,
     "RECODE_ASCII_STRING_METH": None,
 
     "DEOBFUSCATED_STRING": True,
-#    "DEOBFUSCATED_STRING_METH" : get_deobfuscated_string,
+    #    "DEOBFUSCATED_STRING_METH" : get_deobfuscated_string,
 
     "PATH_JARSIGNER": "jarsigner",
 
@@ -100,67 +105,69 @@ CONF = {
     "PRINT_FCT": sys.stdout.write,
     "LAZY_ANALYSIS": False,
     "MAGIC_PATH_FILE": None,
+
+    "DEFAULT_API": 19,
 }
 
 
 def default_colors(obj):
-  CONF["COLORS"]["OFFSET"] = obj.Yellow
-  CONF["COLORS"]["OFFSET_ADDR"] = obj.Green
-  CONF["COLORS"]["INSTRUCTION_NAME"] = obj.Yellow
-  CONF["COLORS"]["BRANCH_FALSE"] = obj.Red
-  CONF["COLORS"]["BRANCH_TRUE"] = obj.Green
-  CONF["COLORS"]["BRANCH"] = obj.Blue
-  CONF["COLORS"]["EXCEPTION"] = obj.Cyan
-  CONF["COLORS"]["BB"] = obj.Purple
-  CONF["COLORS"]["NOTE"] = obj.Red
-  CONF["COLORS"]["NORMAL"] = obj.Normal
+    CONF["COLORS"]["OFFSET"] = obj.Yellow
+    CONF["COLORS"]["OFFSET_ADDR"] = obj.Green
+    CONF["COLORS"]["INSTRUCTION_NAME"] = obj.Yellow
+    CONF["COLORS"]["BRANCH_FALSE"] = obj.Red
+    CONF["COLORS"]["BRANCH_TRUE"] = obj.Green
+    CONF["COLORS"]["BRANCH"] = obj.Blue
+    CONF["COLORS"]["EXCEPTION"] = obj.Cyan
+    CONF["COLORS"]["BB"] = obj.Purple
+    CONF["COLORS"]["NOTE"] = obj.Red
+    CONF["COLORS"]["NORMAL"] = obj.Normal
 
-  CONF["COLORS"]["OUTPUT"]["normal"] = obj.Normal
-  CONF["COLORS"]["OUTPUT"]["registers"] = obj.Normal
-  CONF["COLORS"]["OUTPUT"]["literal"] = obj.Green
-  CONF["COLORS"]["OUTPUT"]["offset"] = obj.Purple
-  CONF["COLORS"]["OUTPUT"]["raw"] = obj.Red
-  CONF["COLORS"]["OUTPUT"]["string"] = obj.Red
-  CONF["COLORS"]["OUTPUT"]["meth"] = obj.Cyan
-  CONF["COLORS"]["OUTPUT"]["type"] = obj.Blue
-  CONF["COLORS"]["OUTPUT"]["field"] = obj.Green
+    CONF["COLORS"]["OUTPUT"]["normal"] = obj.Normal
+    CONF["COLORS"]["OUTPUT"]["registers"] = obj.Normal
+    CONF["COLORS"]["OUTPUT"]["literal"] = obj.Green
+    CONF["COLORS"]["OUTPUT"]["offset"] = obj.Purple
+    CONF["COLORS"]["OUTPUT"]["raw"] = obj.Red
+    CONF["COLORS"]["OUTPUT"]["string"] = obj.Red
+    CONF["COLORS"]["OUTPUT"]["meth"] = obj.Cyan
+    CONF["COLORS"]["OUTPUT"]["type"] = obj.Blue
+    CONF["COLORS"]["OUTPUT"]["field"] = obj.Green
 
 
 def disable_colors():
-  """ Disable colors from the output (color = normal)"""
-  for i in CONF["COLORS"]:
-    if isinstance(CONF["COLORS"][i], dict):
-        for j in CONF["COLORS"][i]:
-            CONF["COLORS"][i][j] = Color.normal
-    else:
-        CONF["COLORS"][i] = Color.normal
+    """ Disable colors from the output (color = normal)"""
+    for i in CONF["COLORS"]:
+        if isinstance(CONF["COLORS"][i], dict):
+            for j in CONF["COLORS"][i]:
+                CONF["COLORS"][i][j] = Color.normal
+        else:
+            CONF["COLORS"][i] = Color.normal
 
 
 def remove_colors():
-  """ Remove colors from the output (no escape sequences)"""
-  for i in CONF["COLORS"]:
-    if isinstance(CONF["COLORS"][i], dict):
-        for j in CONF["COLORS"][i]:
-            CONF["COLORS"][i][j] = ""
-    else:
-        CONF["COLORS"][i] = ""
+    """ Remove colors from the output (no escape sequences)"""
+    for i in CONF["COLORS"]:
+        if isinstance(CONF["COLORS"][i], dict):
+            for j in CONF["COLORS"][i]:
+                CONF["COLORS"][i][j] = ""
+        else:
+            CONF["COLORS"][i] = ""
 
 
 def enable_colors(colors):
-  for i in colors:
-    CONF["COLORS"][i] = colors[i]
+    for i in colors:
+        CONF["COLORS"][i] = colors[i]
 
 
 def save_colors():
-  c = {}
-  for i in CONF["COLORS"]:
-    if isinstance(CONF["COLORS"][i], dict):
-        c[i] = {}
-        for j in CONF["COLORS"][i]:
-            c[i][j] = CONF["COLORS"][i][j]
-    else:
-        c[i] = CONF["COLORS"][i]
-  return c
+    c = {}
+    for i in CONF["COLORS"]:
+        if isinstance(CONF["COLORS"][i], dict):
+            c[i] = {}
+            for j in CONF["COLORS"][i]:
+                c[i][j] = CONF["COLORS"][i][j]
+        else:
+            c[i] = CONF["COLORS"][i]
+    return c
 
 
 def long2int(l):
@@ -172,72 +179,75 @@ def long2int(l):
 def long2str(l):
     """Convert an integer to a string."""
     if type(l) not in (types.IntType, types.LongType):
-        raise ValueError, 'the input must be an integer'
+        raise ValueError('the input must be an integer')
 
     if l < 0:
-        raise ValueError, 'the input must be greater than 0'
+        raise ValueError('the input must be greater than 0')
     s = ''
     while l:
-        s = s + chr(l & 255L)
+        s = s + chr(l & 255)
         l >>= 8
 
     return s
 
+
 def str2long(s):
     """Convert a string to a long integer."""
     if type(s) not in (types.StringType, types.UnicodeType):
-        raise ValueError, 'the input must be a string'
+        raise ValueError('the input must be a string')
 
-    l = 0L
+    l = 0
     for i in s:
         l <<= 8
         l |= ord(i)
 
     return l
 
-def random_string() :
-    return random.choice( string.letters ) + ''.join([ random.choice(string.letters + string.digits) for i in range(10 - 1) ] )
 
-def is_android(filename) :
+def random_string():
+    return random.choice(string.letters) + ''.join(
+        [random.choice(string.letters + string.digits) for i in range(10 - 1)])
+
+
+def is_android(filename):
     """Return the type of the file
 
         @param filename : the filename
-        @rtype : "APK", "DEX", "ELF", None 
+        @rtype : "APK", "DEX", "ELF", None
     """
     if not filename:
         return None
 
-    fd = open( filename, "r")
     val = None
+    with open(filename, "r") as fd:
+        f_bytes = fd.read()
+        val = is_android_raw(f_bytes)
 
-    f_bytes = fd.read(7)
-
-    val = is_android_raw( f_bytes )
-
-    fd.close()
     return val
+
 
 def is_android_raw(raw):
     val = None
-    f_bytes = raw[:7]
 
-    if f_bytes[0:2] == "PK":
+    if raw[0:2] == b"PK" or (
+            b'AndroidManifest.xml' in raw and b'META-INF/MANIFEST.MF' in raw):
         val = "APK"
-    elif f_bytes[0:3] == "dex":
+    elif raw[0:3] == b"dex":
         val = "DEX"
-    elif f_bytes[0:3] == "dey":
+    elif raw[0:3] == b"dey":
         val = "DEY"
-    elif f_bytes[0:7] == "\x7fELF\x01\x01\x01":
+    elif raw[0:7] == b"\x7fELF\x01\x01\x01":
         val = "ELF"
-    elif f_bytes[0:4] == "\x03\x00\x08\x00":
+    elif raw[0:4] == b"\x03\x00\x08\x00":
         val = "AXML"
-    elif f_bytes[0:4] == "\x02\x00\x0C\x00":
+    elif raw[0:4] == b"\x02\x00\x0C\x00":
         val = "ARSC"
 
     return val
 
-def is_valid_android_raw(raw) :
-  return raw.find("classes.dex") != -1
+
+def is_valid_android_raw(raw):
+    return raw.find(b"classes.dex") != -1
 
 # from scapy
 log_andro = logging.getLogger("andro")
@@ -245,54 +255,66 @@ console_handler = logging.StreamHandler()
 console_handler.setFormatter(logging.Formatter("%(levelname)s: %(message)s"))
 log_andro.addHandler(console_handler)
 log_runtime = logging.getLogger("andro.runtime")          # logs at runtime
-log_interactive = logging.getLogger("andro.interactive")  # logs in interactive functions
-log_loading = logging.getLogger("andro.loading")          # logs when loading andro
+log_interactive = logging.getLogger(
+    "andro.interactive")  # logs in interactive functions
+# logs when loading andro
+log_loading = logging.getLogger("andro.loading")
 
-def set_lazy() :
-  CONF["LAZY_ANALYSIS"] = True
 
-def set_debug() :
-    log_andro.setLevel( logging.DEBUG )
+def set_lazy():
+    CONF["LAZY_ANALYSIS"] = True
 
-def set_info() :
+
+def set_debug():
+    log_andro.setLevel(logging.DEBUG)
+
+
+def set_info():
     log_andro.setLevel(logging.INFO)
 
-def get_debug() :
+
+def get_debug():
     return log_andro.getEffectiveLevel() == logging.DEBUG
+
 
 def warning(x):
     log_runtime.warning(x)
     import traceback
     traceback.print_exc()
 
-def error(x) :
+
+def error(x):
     log_runtime.error(x)
     raise()
+
 
 def debug(x):
     log_runtime.debug(x)
 
+
 def info(x):
     log_runtime.info(x)
 
-def set_options(key, value) :
-    CONF[ key ] = value
 
-def save_to_disk(buff, output) :
-    fd = open(output, "w")
-    fd.write(buff)
-    fd.close()
+def set_options(key, value):
+    CONF[key] = value
 
-def rrmdir( directory ):
+
+def save_to_disk(buff, output):
+    with open(output, "w") as fd:
+        fd.write(buff)
+
+
+def rrmdir(directory):
     for root, dirs, files in os.walk(directory, topdown=False):
         for name in files:
             os.remove(os.path.join(root, name))
         for name in dirs:
             os.rmdir(os.path.join(root, name))
-    os.rmdir( directory )
+    os.rmdir(directory)
 
 
-def make_color_tuple( color ):
+def make_color_tuple(color):
     """
     turn something like "#000000" into 0,0,0
     or "#FFFFFF into "255,255,255"
@@ -305,11 +327,13 @@ def make_color_tuple( color ):
     G = int(G, 16)
     B = int(B, 16)
 
-    return R,G,B
+    return R, G, B
 
-def interpolate_tuple( startcolor, goalcolor, steps ):
+
+def interpolate_tuple(startcolor, goalcolor, steps):
     """
-    Take two RGB color sets and mix them over a specified number of steps.  Return the list
+    Take two RGB color sets and mix them over a specified number of steps.
+    Return the list
     """
     # white
 
@@ -327,7 +351,7 @@ def interpolate_tuple( startcolor, goalcolor, steps ):
 
     buffer = []
 
-    for i in range(0, steps +1):
+    for i in range(0, steps + 1):
         iR = R + (DiffR * i / steps)
         iG = G + (DiffG * i / steps)
         iB = B + (DiffB * i / steps)
@@ -344,16 +368,34 @@ def interpolate_tuple( startcolor, goalcolor, steps ):
         if len(hG) == 1:
             hG = "0" + hG
 
-        color = string.upper("#"+hR+hG+hB)
+        color = string.upper("#" + hR + hG + hB)
         buffer.append(color)
 
     return buffer
 
-def color_range( startcolor, goalcolor, steps ):
+
+def color_range(startcolor, goalcolor, steps):
     """
-    wrapper for interpolate_tuple that accepts colors as html ("#CCCCC" and such)
+    wrapper for interpolate_tuple that accepts colors as html
+    ("#CCCCC" and such)
     """
     start_tuple = make_color_tuple(startcolor)
     goal_tuple = make_color_tuple(goalcolor)
 
     return interpolate_tuple(start_tuple, goal_tuple, steps)
+
+
+def load_api_specific_resource_module(resource_name, api):
+    if resource_name == "aosp_permissions":
+        module = AOSP_PERMISSIONS
+    elif resource_name == "api_permission_mappings":
+        module = AOSP_PERMISSIONS_MAPPINGS
+    else:
+        error("Invalid resource: %s" % resource_name)
+
+    if not api:
+        api = CONF["DEFAULT_API"]
+    value = module.get(api)
+    if value:
+        return value
+    return module.get('9')

@@ -3,12 +3,16 @@ Created on Sep 21, 2012
 
 @author: psachdev
 '''
-from androguard.core.bytecodes import apk
-from androguard.core.bytecodes import dvm
-from androguard.core.analysis.analysis import *
-import DirStructHandler
-import PackageRules
+import os
+import sys
 import re
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+
+from python_static_analyzer.androguard.core.bytecodes import apk
+from python_static_analyzer.androguard.core.bytecodes import dvm
+from python_static_analyzer.androguard.core.analysis.analysis import *
+import python_static_analyzer.DirStructHandler as DirStructHandler
+import python_static_analyzer.PackageRules as PackageRules
 
 class NameSpaceMgr:
     '''

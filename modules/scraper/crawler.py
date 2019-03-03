@@ -100,7 +100,8 @@ def crawl_app_privacy_policies(app_list=None):
 
 def privacy_policy_thread_worker(helper, package_name):
     failed_crawl_file = PRIVACY_POLICY_FOLDER + "/failed_packages.csv"
-    uuid = helper.app_name_to_uuids(package_name)[0]
+    app_to_uuids = helper.app_names_to_uuids([package_name])
+    uuid = sorted(list(app_to_uuids.values())[0], reverse=True)[0]
     url = "https://play.google.com/store/apps/details?id={}".format(package_name)
     try:
         page_contents = crawl_url(url)
@@ -164,7 +165,7 @@ def review_thread_worker(api, max_reviews, app_name):
     n_param = max_reviews
     o_param = 0
     while True:
-        (reviews, next_url_params) = api.get_app_reviews(app_name, 
+        (reviews, next_url_params) = api.get_app_reviews(app_name,
             nb_results=n_param, offset=o_param)
         all_reviews.extend(reviews)
 

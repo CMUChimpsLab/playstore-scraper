@@ -9,7 +9,7 @@ client["admin"].authenticate(USERNAME, PASSWORD)
 dbPermission = client["privacygrading"]
 
 def getSensitivePairs(packageName):
-  sensitivePermissionPatterns = ["FINE_LOC", "COARSE_LOC", "PHONE_STATE", "CONTACT", "SMS", 
+  sensitivePermissionPatterns = ["FINE_LOC", "COARSE_LOC", "PHONE_STATE", "CONTACT", "SMS",
     "ACCOUNTS", "CAMERA", "RECORD_AUDIO", "BLUETOOTH", "CALENDAR", "CALL_LOG"]
 
   sensitivePairs = {}
@@ -23,9 +23,9 @@ def getSensitivePairs(packageName):
         for permission in pairsPermissions:
           if permission.find(pattern) != -1:
             sensitivePairs[permission] = pairs[permission]
-      print pairs
-    
-    print sensitivePairs
+      print(pairs)
+
+    print(sensitivePairs)
     return sensitivePairs
   else:
     print("{} not found in packagePair".format(packageName))
@@ -65,7 +65,7 @@ def main(DATE, path = "", modules_dir = ""):
   for line in appListFile:
     packageName = line.rstrip("\n")
     sensitivePairs = getSensitivePairs(packageName)
-    for permission, purposes in sensitivePairs.iteritems():
+    for permission, purposes in sensitivePairs.items():
       for purpose in purposes:
         #find the corresponding triple
         crowd_packagename = (crowdResultDF["packageName"] == packageName)
@@ -98,7 +98,7 @@ def main(DATE, path = "", modules_dir = ""):
 # wrapper around main function
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print "Usage: python getSensitivePairs.py < date >"
+        print("Usage: python getSensitivePairs.py < date >")
         sys.exit(1)
 
     main(sys.argv[1])
