@@ -1,1 +1,7 @@
-com.facebook.katana,138170440
+com.google.android.googlequicksearchbox,300900051
+com.google.android.street,36481
+com.google.android.gm,61011251
+com.google.android.apps.plus,421636052
+com.google.android.videos,40900101
+com.google.android.youtube,1402542440
+com.android.chrome,353808052

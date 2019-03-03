@@ -82,7 +82,7 @@ def staticAnalysis(entry_path_tup):
 Runs the pipeline static analyses on uuid_list and uses dbhelper to insert
 results in the database
 """
-def analyzer(apkList):
+def analyzer(apkList, process_no=PROCESS_NO):
     logger = logging.getLogger(__name__)
 
     # set up path constants
@@ -104,7 +104,7 @@ def analyzer(apkList):
     # run static analysis part
     apkList = [(entry, outputPath) for entry in apkList]
     multiprocessing_logging.install_mp_handler(logger)
-    pool = Pool(8)
+    pool = Pool(process_no)
     for name_vc_tup in pool.imap(staticAnalysis, apkList):
         if name_vc_tup != None:
             analyzedApkFile.write("{},{}\n".format(name_vc_tup[0], name_vc_tup[1]))
@@ -117,7 +117,6 @@ def analyzer(apkList):
         for line in f:
             updatedApkList.append(line.strip("\n").split(","))
 
-    print(updatedApkList)
     extractApp.extractPackagePair(updatedApkList,
         os.path.dirname(os.path.realpath(__file__)))
     print("extractApp.extractPackagePair done")
@@ -189,9 +188,9 @@ def getUuidsFromDb():
 
     return apkList
 
-def temp_analyzer(uuid_file):
+def analyzer_wrapper(uuid_file, process_no=PROCESS_NO):
     uuidList = getUuidsFromFile(uuid_file)
-    analyzer([uuidList[0]])
+    analyzer(uuidList, process_no=process_no)
 
 if __name__ == "__main__":
     """

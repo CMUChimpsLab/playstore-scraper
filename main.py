@@ -14,7 +14,7 @@ from modules.decompiler.decompiler import Decompiler
 from modules.scraper.crawler import Crawler
 from modules.scraper.scraper import Scraper
 from modules.updater.updater import Updater
-from modules.staticAnalysisPipeline.analyzer import temp_analyzer
+from modules.staticAnalysisPipeline.analyzer import analyzer_wrapper
 from dependencies.constants import DOWNLOAD_FOLDER, THREAD_NO, LOG_FOLDER
 
 # ***************** #
@@ -83,21 +83,9 @@ def analyze(args):
     helper = DbHelper()
     app_list = helper.get_all_apps_to_analyze()
 
-    app_list = [("7df9ee45c05948b39d639efc9fc75860", 138170440)]
     fname = to_file_for_analysis(app_list)
-    temp_analyzer(fname)
+    analyzer_wrapper(fname, process_no=6)
     subprocess.call(["rm", fname])
-
-    """
-    os.chdir("modules/staticAnalysisPipeline")
-    fname = to_file_for_analysis(app_list)
-    python_2_env = os.environ.copy()
-    python_2_env["PIPENV_IGNORE_VIRTUALENVS"] = "1"
-    subprocess.call(["pipenv", "install"], env=python_2_env)
-    subprocess.call(["pipenv", "run", "python", "analyzer.py", fname], env=python_2_env)
-    os.chdir("../..")
-    subprocess.call(["rm", fname])
-    """
 
 # ***************** #
 # large pipeline CLI command functions

@@ -7219,7 +7219,7 @@ class ClassManager(object):
        This class is used to access to all elements (strings, type, proto ...) of the dex format
     """
 
-    def __init__(self, vm, config, suppress_parse_warning):
+    def __init__(self, vm, config, suppress_parse_warning=False):
         self.vm = vm
         self.buff = vm
         self.suppress_string_map_parse_warnings = suppress_parse_warning
