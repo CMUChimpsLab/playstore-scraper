@@ -24,7 +24,8 @@ import configparser
 import warnings
 import threading
 from subprocess import PIPE, Popen
-from enum import IntEnumrequests
+from enum import IntEnum
+import requests
 
 from dependencies.gpapidev.googleplay import GooglePlayAPI
 from dependencies.gpapidev.googleplay import LoginError

@@ -1,1 +1,1 @@
-com.google.android.gms,15090021
+com.facebook.katana,138170440

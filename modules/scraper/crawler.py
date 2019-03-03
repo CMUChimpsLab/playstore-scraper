@@ -46,7 +46,7 @@ class HttpError(Exception):
 class Crawler():
     def __init__(self, concurrency=THREAD_NO):
         self.concurrency = concurrency
-    
+
     def init_eventlet_objs(self):
         # pool of greenthreads, executes tasks pushed to it
         self.pool = eventlet.GreenPool(self.concurrency)
@@ -55,14 +55,14 @@ class Crawler():
         self.results = eventlet.Queue()
         self.urls_seen = set()
         self.app_ids_seen = set()
-        
+
         # just a counter for statistics
         self.failed = 0
         self.cnt = 0
 
     def gt_callback(gt, *args, **kwargs):
         """
-        Callback used to insert results of function run in greenthread to 
+        Callback used to insert results of function run in greenthread to
         results queue
         """
         self.results.put(gt.wait())
@@ -95,7 +95,7 @@ class Crawler():
                 self.urls_seen.add(next_url)
                 self.app_ids_seen.add(app_id)
                 self.pool.spawn_n(self.fetch_all_links_thread_worker, next_url)
-                
+
         # goal is to get app_ids so return that
         return list(self.app_ids_seen)
 
@@ -116,7 +116,7 @@ class Crawler():
         soup = BeautifulSoup(page_contents, "lxml")
         all_links = []
         for href in soup.find_all("href"):
-            details_dev_re = (re.search(r'\/(details|dev)[?]', href) 
+            details_dev_re = (re.search(r'\/(details|dev)[?]', href)
                 and not re.search('reviewId', href))
             all_links.append(href)
 
@@ -155,14 +155,15 @@ class Crawler():
             if next_url:
                 gt = self.pool.spawn(self.top_app_crawl_thread_worker, next_url)
                 gt.link(self.gt_callback)
-        
+
         pkg_list = []
         while (not self.results.empty()):
             pkg_list.extend(self.results.get())
 
         return list(set(pkg_list))
 
-    def top_app_crawl_thread_worker(self, (cat, url_template)):
+    def top_app_crawl_thread_worker(self, cat_and_url):
+        cat, url_template = cat_and_url
         free = ['free', 'paid']
         starts = [0, 120, 199]
         nums = [120, 79, 120]
@@ -179,7 +180,7 @@ class Crawler():
 
             logger.info("Category {} {} done, {} apps".format(cat, f, len(pkg_list)))
             all_pkg_list.extend(pkg_list)
-        
+
         return list(set(all_pkg_list))
 
     # ************************************************************************ #
@@ -188,7 +189,7 @@ class Crawler():
     def crawl_app_privacy_policies(self, app_list=None):
         logger.info("Starting privacy policy crawl")
         self.init_eventlet_objs()
-        
+
         helper = DbHelper()
         if app_list is None:
             app_list = helper.get_package_names_policy_crawl()
@@ -267,20 +268,20 @@ class Crawler():
             if a:
                 gt = self.pool.spawn(partial(self.review_thread_worker, api, max_reviews), a)
                 gt.link(self.gt_callback)
-                
+
         all_reviews = {}
         while (not self.results.empty()):
             name, reviews = self.results.get()
             all_reviews[name] = reviews
 
         return all_reviews
-        
+
     def review_thread_worker(self, api, max_reviews, app_name):
         all_reviews = []
         n_param = max_reviews
         o_param = 0
         while True:
-            (reviews, next_url_params) = api.get_app_reviews(app_name, 
+            (reviews, next_url_params) = api.get_app_reviews(app_name,
                 nb_results=n_param, offset=o_param)
             all_reviews.extend(reviews)
 

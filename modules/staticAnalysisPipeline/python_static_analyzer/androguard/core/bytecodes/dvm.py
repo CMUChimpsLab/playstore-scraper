@@ -19,6 +19,7 @@ pp = pprint.PrettyPrinter(indent=4)
 
 from androguard.core import bytecode
 from androguard.core.bytecodes.apk import APK
+from androguard.core.bytecodes import mutf8
 from androguard.core.androconf import CONF, debug, warning, is_android_raw
 from androguard.util import read
 
@@ -86,6 +87,20 @@ TYPE_DESCRIPTOR = {
     'D': 'double',
 }
 
+
+def read_null_terminated_string(f):
+    """
+    Read a null terminated string from a file-like object.
+    :param f: file-like object
+    :rtype: bytearray
+    """
+    x = bytearray()
+    while True:
+        z = f.read(1)
+        if ord(z) == 0:
+            return x
+        else:
+            x.append(ord(z))
 
 def get_access_flags_string(value):
     """
@@ -1893,11 +1908,7 @@ class StringDataItem(object):
 
         self.utf16_size = readuleb128(buff)
 
-        self.data = utf8_to_string(buff, self.utf16_size)
-        expected = buff.read(1)
-        if expected != b'\x00':
-            warning('\x00 expected at offset: %x, found: %s' %
-                    (buff.get_idx(), expected))
+        self.data = read_null_terminated_string(buff)
 
     def get_utf16_size(self):
         """
@@ -1913,7 +1924,7 @@ class StringDataItem(object):
 
             :rtype: string
         """
-        return self.data
+        return self.data + b"\x00"
 
     def set_off(self, off):
         self.offset = off
@@ -1924,8 +1935,30 @@ class StringDataItem(object):
     def reload(self):
         pass
 
+    def get_unicode(self):
+        """
+        Returns an Unicode String
+        This is the actual string. Beware that some strings might be not
+        decodeable with usual UTF-16 decoder, as they use surrogates that are
+        not supported by python.
+        """
+        s = mutf8.decode(self.data)
+        assert len(s) == self.utf16_size, "UTF16 Length does not match!"
+
+        # Return a UTF16 String
+        return s
+
     def get(self):
-        return self.data
+        """
+        Returns a printable string.
+        In this case, all lonely surrogates are escaped, thus are represented in the
+        string as 6 characters: \\ud853
+        Valid surrogates are encoded as 32bit values, ie. \U00024f5c.
+        """
+        s = mutf8.decode(self.data)
+        assert len(s) == self.utf16_size, "UTF16 Length does not match!"
+        # log.debug("Decoding UTF16 string with IDX {}, utf16 length {} and hexdata '{}'.".format(self.offset, self.utf16_size, binascii.hexlify(self.data)))
+        return mutf8.patch_string(s)
 
     def show(self):
         bytecode._PrintSubBanner("String Data Item")
@@ -1936,10 +1969,20 @@ class StringDataItem(object):
         return []
 
     def get_raw(self):
-        return writeuleb128(self.utf16_size) + self.data
+        """
+        Returns the raw string including the ULEB128 coded length
+        and null byte string terminator
+        :return: bytes
+        """
+        return writeuleb128(self.utf16_size) + self.data + b"\x00"
 
     def get_length(self):
-        return len(writeuleb128(self.utf16_size)) + len(self.data)
+        """
+        Get the length of the raw string including the ULEB128 coded
+        length and the null byte terminator
+        :return: int
+        """
+        return len(writeuleb128(self.utf16_size)) + len(self.data) + 1
 
 
 class StringIdItem(object):
@@ -7328,7 +7371,8 @@ class ClassManager(object):
             off = self.__manage_item["TYPE_STRING_ID_ITEM"][
                 idx].get_string_data_off()
         except IndexError:
-            bytecode.Warning("unknown string item @ %d" % (idx))
+            if not self.suppress_string_map_parse_warnings:
+                bytecode.Warning("unknown string item @ %d" % (idx))
             return "AG:IS: invalid string"
 
         #pp.pprint(self.__strings_off)
@@ -7339,7 +7383,8 @@ class ClassManager(object):
         try:
             return self.__strings_off[off].get()
         except KeyError:
-            bytecode.Warning("unknown string item @ 0x%x(%d)" % (off, idx))
+            if not self.suppress_string_map_parse_warnings:
+                bytecode.Warning("unknown string item @ 0x%x(%d)" % (off, idx))
             return "AG:IS: invalid string"
 
     def get_type_list(self, off):
@@ -7986,7 +8031,7 @@ class DalvikVMFormat(bytecode._Bytecode):
 
     def get_methods(self):
         """
-          Return all method objects
+          Re all method objects
 
           :rtype: a list of :class:`EncodedMethod` objects
         """
@@ -8126,9 +8171,30 @@ class DalvikVMFormat(bytecode._Bytecode):
 
         return self.__cache_fields.get(key)
 
+    def get_strings_unicode(self):
+        """
+        Return all strings
+         This method will return pure UTF-16 strings. This is the "exact" same string as used in Java.
+        Those strings can be problematic for python, as they can contain surrogates as well as "broken"
+        surrogate pairs, ie single high or low surrogates.
+        Such a string can for example not be printed.
+        To avoid such problems, there is an escape mechanism to detect such lonely surrogates
+        and escape them in the string. Of course, this results in a different string than in the Java Source!
+         Use `get_strings()` as a general purpose and `get_strings_unicode()` if you require the exact string
+        from the Java Source.
+        You can always escape the string from `get_strings_unicode()` using the function
+        `androguard.core.bytecodes.mutf8.patch_string(s)`.
+         :rtype: a list with all strings used in the format (types, names ...)
+        """
+        for i in self.strings:
+            yield i.get_unicode()
+
     def get_strings(self):
         """
             Return all strings
+
+            The strings will have escaped surrogates, if only a single high or low surrogate is found.
+        Complete surrogates are put together into the representing 32bit character
 
             :rtype: a list with all strings used in the format (types, names ...)
         """

@@ -83,7 +83,7 @@ def analyze(args):
     helper = DbHelper()
     app_list = helper.get_all_apps_to_analyze()
 
-    app_list = [("c3e992a35a9e45f1b5fa2c21e9549541", 15090021)]
+    app_list = [("7df9ee45c05948b39d639efc9fc75860", 138170440)]
     fname = to_file_for_analysis(app_list)
     temp_analyzer(fname)
     subprocess.call(["rm", fname])
@@ -146,6 +146,7 @@ def full_pipeline(args):
     os.environ["PIPENV_IGNORE_VIRTUALENVS"] = "1" # allow analysis pipeline to have own env
     analyze(None)
     logger.info("...analysis done")
+    return
 
     # download/decompile
     logger.info("Starting download and decompile...")
