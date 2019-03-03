@@ -45,54 +45,63 @@ def getRateTable(rateTablePath = "data/avgCrowdSourceResult.csv"):
 
 
 def main(DATE, path = "", modules_dir = ""):
-  #use this dict to map permission and purpose to descriptive text for new pairs
-  externalPurposeTextMapping = eval(open(path + "data/mapping/purposeEXTERNALMapping").read())
-  permissionTextMapping = eval(open(path + "data/mapping/permissionTxtMapping").read())
-  """
-  use data from privacyGradePrediction/data/total/ThresholdCorrectCategory/cleanResponseTotalAdjusted.csv
-  calculate average score
-  """
-  responseDf = pd.read_csv(modules_dir + "privacyGradePrediction/data/total/ThresholdCorrectCategory/cleanResponseTotalAdjusted.csv", sep ="\t")
-  scoreDf = responseDf.groupby(["permission", "purpose"])["comfortScore"].mean().reset_index()
+    #use this dict to map permission and purpose to descriptive text for new pairs
+    externalPurposeTextMapping = eval(open(path + "data/mapping/purposeEXTERNALMapping").read())
+    permissionTextMapping = eval(open(path + "data/mapping/permissionTxtMapping").read())
+    """
+    use data from privacyGradePrediction/data/total/ThresholdCorrectCategory/cleanResponseTotalAdjusted.csv
+    calculate average score
+    """
+    responseDf = pd.read_csv(modules_dir + "privacyGradePrediction/data/total/ThresholdCorrectCategory/cleanResponseTotalAdjusted.csv", sep ="\t")
+    scoreDf = responseDf.groupby(["permission", "purpose"])["comfortScore"].mean().reset_index()
 
-  appListFile = open(path + "data/topAppsForPrivacyGradeRound1.csv")
-  crowdResultDF = pd.read_csv(path + "data/comfortScorePerPair.csv", sep="\t")
-  notExistInOldDataPairFile = open("newPairs%s.csv"%DATE, "w")
-  print >> notExistInOldDataPairFile, "packageName\tpermission\tpurpose\tpermissionText\tpurposeText\trate\tlevel"
-  outputPairsLst = []
-  #get rateTable
-  rateTable = getRateTable(path + "data/avgCrowdSourceResult.csv")
-  for line in appListFile:
-    packageName = line.rstrip("\n")
-    sensitivePairs = getSensitivePairs(packageName)
-    for permission, purposes in sensitivePairs.items():
-      for purpose in purposes:
-        #find the corresponding triple
-        crowd_packagename = (crowdResultDF["packageName"] == packageName)
-        crowd_permission = (crowdResultDF["permission"] == permission)
-        crowd_purpose = (crowdResultDF["purpose"] == purpose)
-        pairScoreDF = crowdResultDF[crowd_packagename & crowd_permission & crowd_purpose]
-        if pairScoreDF.shape[0] == 0:
-          #pairs not in first round crowd analysis
-          rate = 0.0
-          score_permission = (scoreDf["permission"] == permission)
-          score_purpose = (scoreDf["purpose"] == purpose)
-          score = scoreDf[score_permission & score_purpose]["comfortScore"]
-          assert score.size <= 1
-          if score.size == 1:
-            rate = score.iloc[0]
-          if purpose == "INTERNAL":
-            purposeText = "for internal use within the app's functionality"
-          else:
-            purposeText = externalPurposeTextMapping.get(permission, {}).get(purpose, "NaN")
-          print >> notExistInOldDataPairFile, "\t".join([packageName, permission, purpose, permissionTextMapping.get(permission, "NaN"), purposeText, str(rate), "N/A"])
-        else:
-          #At most one triple in old data
-          assert pairScoreDF.shape[0] == 1
-          outputPairsLst.append(pairScoreDF)
-  outputPairsDF = pd.concat(outputPairsLst)
-  outputPairsDF.sort_values(by=["packageName"])\
-    .to_csv("comfortScorePerPair%s.csv"%DATE, sep="\t", index=False)
+    appListFile = open(path + "data/topAppsForPrivacyGradeRound1.csv")
+    crowdResultDF = pd.read_csv(path + "data/comfortScorePerPair.csv", sep="\t")
+    with open("newPairs%s.csv"%DATE, "w") as f:
+        print("packageName\tpermission\tpurpose\tpermissionText\tpurposeText\trate\tlevel", file=f)
+        outputPairsLst = []
+        #get rateTable
+        rateTable = getRateTable(path + "data/avgCrowdSourceResult.csv")
+        for line in appListFile:
+            packageName = line.rstrip("\n")
+            sensitivePairs = getSensitivePairs(packageName)
+            for permission, purposes in sensitivePairs.items():
+            for purpose in purposes:
+                #find the corresponding triple
+                crowd_packagename = (crowdResultDF["packageName"] == packageName)
+                crowd_permission = (crowdResultDF["permission"] == permission)
+                crowd_purpose = (crowdResultDF["purpose"] == purpose)
+                pairScoreDF = crowdResultDF[crowd_packagename & crowd_permission & crowd_purpose]
+                if pairScoreDF.shape[0] == 0:
+                #pairs not in first round crowd analysis
+                rate = 0.0
+                score_permission = (scoreDf["permission"] == permission)
+                score_purpose = (scoreDf["purpose"] == purpose)
+                score = scoreDf[score_permission & score_purpose]["comfortScore"]
+                assert score.size <= 1
+                if score.size == 1:
+                    rate = score.iloc[0]
+                if purpose == "INTERNAL":
+                    purposeText = "for internal use within the app's functionality"
+                else:
+                    purposeText = externalPurposeTextMapping.get(permission, {}).get(purpose, "NaN")
+                print("\t".join([
+                        packageName, 
+                        permission, 
+                        purpose, 
+                        permissionTextMapping.get(permission, "NaN"), 
+                        purposeText, 
+                        str(rate), 
+                        "N/A",
+                    ]), 
+                    file=f)
+                else:
+                    #At most one triple in old data
+                    assert pairScoreDF.shape[0] == 1
+                    outputPairsLst.append(pairScoreDF)
+    outputPairsDF = pd.concat(outputPairsLst)
+    outputPairsDF.sort_values(by=["packageName"])\
+        .to_csv("comfortScorePerPair%s.csv"%DATE, sep="\t", index=False)
 
 
 # wrapper around main function

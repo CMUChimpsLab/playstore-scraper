@@ -19,7 +19,7 @@ def getDeveloperTopApps(developer, size):
       title = entry["title"].encode("utf-8")
       packagePairEntry = db.packagePair.find_one({'packageName': packageName}, {"_id":0})
       if packagePairEntry != None and count < size:
-          print >> sys.stderr, packageName
+          print(packageName, file=sys.stderr)
           packagePairEntry["updatedTimestamp"] = int(time.mktime(packagePairEntry["updatedTimestamp"].timetuple())) * 1000
           lst.append(packagePairEntry)
           count += 1
@@ -34,7 +34,7 @@ def getTopApps(size):
       title = entry["title"].encode("utf-8")
       packagePairEntry = db.packagePair.find_one({'packageName': packageName}, {"_id":0})
       if packagePairEntry != None and count < size:
-          print >> sys.stderr, packageName
+          print(packageName, file=sys.stderr)
           packagePairEntry["updatedTimestamp"] = int(time.mktime(packagePairEntry["updatedTimestamp"].timetuple())) * 1000
           lst.append(packagePairEntry)
           count += 1
@@ -80,7 +80,7 @@ def getTopAppsPerCategory(k):
           break
         print '|'.join([str(count), categoryName, title, packageName, str(entry['aggregateRating']['ratingsCount']), apkInfoEntry.get('numDownloads', ''), apkInfoEntry['fileDir']]).encode('UTF-8')
     if count < k:
-      print >> sys.stderr, "less than %d in "%k + categoryName
+      print("less than %d in "%k + categoryName, file=sys.stderr)
 
 if __name__ == "__main__":
   getTopApps(50)

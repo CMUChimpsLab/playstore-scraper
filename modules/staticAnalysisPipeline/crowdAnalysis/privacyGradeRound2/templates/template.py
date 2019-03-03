@@ -9,22 +9,24 @@ this method generates internal permission usage list so we can manually label th
 def generateManualLabelList(inputFileName):
     inputFile = open(inputFileName)
     outputFileName = inputFileName.replace("privacygraderound2", "purpose").replace(".input", "Mapping")
-    outputFile = open(outputFileName, "w")
     fields = inputFile.readline().rstrip("\n").split("\t")
+    
     cnt = 0
-    print >> outputFile, "["
-    for line in inputFile:
-        cnt += 1
-        lst = line.rstrip("\n").split("\t")
-        d = {}
-        d["packageName"] = lst[fields.index("packageName")]
-        d["permission"] = lst[fields.index("permission")]
-        d["permissionText"] = lst[fields.index("permissionText")]
-        d["purpose"] = lst[fields.index("purpose")]
-        d["purposeText"] = ""
-        #d["hitLink"] = "https://s3.amazonaws.com/privacygrade/privacygraderound1INTERNALHTML/%s.html"%cnt
-        print >> outputFile, d, ","
-    print >> outputFile, "]"
+    with open(outputFileName, "w") as f:
+        print("[", file=f)
+        for line in inputFile:
+            cnt += 1
+            lst = line.rstrip("\n").split("\t")
+            d = {}
+            d["packageName"] = lst[fields.index("packageName")]
+            d["permission"] = lst[fields.index("permission")]
+            d["permissionText"] = lst[fields.index("permissionText")]
+            d["purpose"] = lst[fields.index("purpose")]
+            d["purposeText"] = ""
+            print(d, ",", file=f)
+        print("]", file=f)
+
+    inputFile.close()
     
 """
 this method generates html with inputfile and template file

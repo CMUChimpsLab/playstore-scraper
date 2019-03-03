@@ -39,7 +39,7 @@ def generateListPerInstance(apkList, numberOfInstances):
     while count < apkPerInstance and len(apkList) > 0:
       count += 1
       entry = apkList.pop()
-      print >>f, entry[0], entry[1]
+      print(entry[0], entry[1], file=f)
     f.close()
     if len(apkList) == 0:
       return

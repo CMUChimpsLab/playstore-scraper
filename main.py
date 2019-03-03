@@ -11,7 +11,7 @@ import multiprocessing_logging
 from modules.app_downloader.downloader import Downloader
 from modules.database_helper.helper import DbHelper
 from modules.decompiler.decompiler import Decompiler
-from modules.scraper import crawler
+from modules.scraper.crawler import Crawler
 from modules.scraper.scraper import Scraper
 from modules.updater.updater import Updater
 from modules.staticAnalysisPipeline.analyzer import temp_analyzer

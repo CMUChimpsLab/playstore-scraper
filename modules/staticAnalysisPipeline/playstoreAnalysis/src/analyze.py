@@ -72,7 +72,7 @@ def getTopKAppWithLib(client, appList, libTypeList, appCategoryList, listName, k
     """
     appTable = client['androidAppDB']['apkInfo']
     categoryAppList = []
-    for i in xrange(0, len(appList), 5000):
+    for i in range(0, len(appList), 5000):
         # query in sublists of appList of size at most 5000
         subAppList = appList[i : min(i + 5000, len(appList))]
         subAppNames = [app[0] for app in subAppList]
@@ -213,18 +213,18 @@ def getTopPermissions(client, appList, outputDir):
             for p in permission:
                 totalCntDict[p] = totalCntDict.get(p, 0) + 1
                 for ctgry in category:
-                    if not ctgryDict.has_key(ctgry):
+                    if not ctgry in ctgryDict:
                         ctgryDict[ctgry] = {}
 
                     ctgryDict[ctgry][p] = ctgryDict.get(ctgry, {}).get(p, 0) + 1
 
     for ctgry in ctgryDict:
         with open(outputDir + '/permission/' + ctgry + '_permission.csv', 'w') as f:
-            print >> f, "permission", ',', "count"
-            print >> f, "SUM", ',', ctgryNumberSum[ctgry]
+            print("permission", ',', "count", file=f)
+            print("SUM", ',', ctgryNumberSum[ctgry], file=f)
             mostCommonPermissionCounter = Counter(ctgryDict[ctgry]).most_common()
             for (permission, count) in mostCommonPermissionCounter:
-                print >> f, permission.encode("utf-8"), ',', count
+                print(permission.encode("utf-8"), ',', count, file=f)
 
             #only keep count > 1 in db, all permissions are avallable in XXX_permission.csv
             topKList = []
@@ -234,11 +234,11 @@ def getTopPermissions(client, appList, outputDir):
             updateStatTable(client, 'Most Popular Permissions in %s'%(ctgry), topKList, 'permission')
 
     with open(outputDir + "/permission/total_permission.csv", "w") as f:
-        print >> f, "permission", ',', "count"
-        print >> f, "SUM", ',', totalNumber
+        print("permission", ',', "count", file=f)
+        print("SUM", ',', totalNumber, file=f)
         mostCommonPermissionCounter = Counter(totalCntDict).most_common()
         for (permission, count) in mostCommonPermissionCounter:
-            print >> f, permission.encode("utf-8"), ',', count
+            print(permission.encode("utf-8"), ',', count, file=f)
 
         #only keep count > 1 in db, all permissions are avallable in XXX_permission.csv
         topKList = []

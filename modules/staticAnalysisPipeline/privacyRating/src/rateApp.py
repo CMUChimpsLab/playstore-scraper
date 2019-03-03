@@ -47,9 +47,9 @@ def generateHistData(slotSize, outputFile, originalData = []):
                 index += 1
     while len(resultList) < len(slots):
         resultList.append(index)
-    print >> outputFile, slots[0], ',', 0
+    print(slots[0], ',', 0, file=outputFile)
     for i in range(1, len(slots)):
-        print >> outputFile, slots[i], ',', resultList[i] - resultList[i-1]
+        print(slots[i], ',', resultList[i] - resultList[i-1], file=outputFile)
 
 def getQuantile():
     #simple method to get slots

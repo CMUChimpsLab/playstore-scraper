@@ -8,22 +8,25 @@ this method generates internal permission usage list so we can manually label th
 """
 def generateINTERNALLabelList():
     inputFile = open("./templateInputFiles/privacygraderound1INTERNAL.input")
-    outPutFile = open("internalLabelList", "w")
     fields = inputFile.readline().rstrip("\n").split("\t")
     cnt = 0
-    print >> outPutFile, "["
-    for line in inputFile:
-        cnt += 1
-        lst = line.rstrip("\n").split("\t")
-        d = {}
-        d["packageName"] = lst[fields.index("packageName")]
-        d["permission"] = lst[fields.index("permission")]
-        d["permissionText"] = lst[fields.index("permissionText")]
-        d["purpose"] = lst[fields.index("purpose")]
-        d["purposeText"] = ""
-        d["hitLink"] = "https://s3.amazonaws.com/privacygrade/privacygraderound1INTERNALHTML/%s.html"%cnt
-        print >> outPutFile, d, ","
-    print >> outPutFile, "]"
+
+    with open("internalLabelList", "w") as f:
+        print("[", file=f)
+        for line in inputFile:
+            cnt += 1
+            lst = line.rstrip("\n").split("\t")
+            d = {}
+            d["packageName"] = lst[fields.index("packageName")]
+            d["permission"] = lst[fields.index("permission")]
+            d["permissionText"] = lst[fields.index("permissionText")]
+            d["purpose"] = lst[fields.index("purpose")]
+            d["purposeText"] = ""
+            d["hitLink"] = "https://s3.amazonaws.com/privacygrade/privacygraderound1INTERNALHTML/%s.html"%cnt
+            print(d, ",", file=f)
+        print("]", file=f)
+    
+    inputFile.close()
     
 """
 this method generates html with inputfile and template file

@@ -19,7 +19,6 @@ matplotlib = "*"
 "beautifulsoup4" = "*"
 lxml = "*"
 protobuf = "*"
-mysqlclient = "*"
 numpy = "*"
 pygments = "*"
 colorama = "*"
@@ -28,6 +27,7 @@ asn1crypto = ">=0.24.0"
 networkx = ">=1.11"
 pydot = ">=1.4.1"
 ipython = ">=5.0.0"
+eventlet = "*"
 
 [dev-packages]
 

@@ -29,8 +29,8 @@ for p in permissionList:
         p["description"] = re.sub(" +", " ", p["description"])
         p["label"] = descriptionTree.findall(".//*[@name=%s]"%("\""+ p["label"]+ "\""))[0].text.replace("\n","")
 
-print >> outputFile, "\t".join(sorted(p.keys()))
+print("\t".join(sorted(p.keys())), file=outputFile)
 for p in permissionList:
-    print >> outputFile, "\t".join([p[entry] for entry in sorted(p.keys())])
+    print("\t".join([p[entry] for entry in sorted(p.keys())]), file=outputFile)
 
 outputFile.close()

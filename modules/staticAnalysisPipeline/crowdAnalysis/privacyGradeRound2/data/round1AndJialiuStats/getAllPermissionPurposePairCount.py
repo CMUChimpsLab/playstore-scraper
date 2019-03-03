@@ -16,10 +16,10 @@ def getAllPairsCnt():
         pairsCntDict[permission + "\t" + purpose] = pairsCntDict.get(permission + "\t" + purpose, 0) + 1
 
   pairsCnt = Counter(pairsCntDict).most_common()
-  pairsCntFile = open("numberOfAppsPerPermissionPurposePair.csv", "w")
-  print >> pairsCntFile, "permission\tpurpose\tcount"
-  for pair in pairsCnt:
-    print >> pairsCntFile, pair[0], "\t", pair[1]
+  with open("numberOfAppsPerPermissionPurposePair.csv", "w") as f:
+    print("permission\tpurpose\tcount", file=f)
+    for pair in pairsCnt:
+        print(pair[0], "\t", pair[1], file=f)
 
 def getSensitivePermissionPairsCnt():
   sensitivePermissionPatterns = ["FINE_LOC", "COARSE_LOC", "PHONE_STATE", "CONTACT", "SMS", "ACCOUNTS", "CAMERA", "RECORD_AUDIO", "BLUETOOTH", "CALENDAR", "CALL_LOG"]

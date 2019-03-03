@@ -89,30 +89,32 @@ def postLanguageCheck():
     Run this as a post check if package's description contains over ratio of non-ascii text
     """
     packageList = open("./newPairPackageList.csv").read().rstrip("\n").split("\n")
-    nonEnglishPackageListFile = open("nonEnglishPackageList.csv", "w")
-    for packageName in packageList:
-        isNonEnglish = isDescriptionNonASCII(packageName)
-        if isNonEnglish:
-            print "%s contains too much Non ascii text"%packageName
-            print >> nonEnglishPackageListFile, packageName 
-        else:
-            continue
+    with open("nonEnglishPackageList.csv", "w") as f:
+        for packageName in packageList:
+            isNonEnglish = isDescriptionNonASCII(packageName)
+            if isNonEnglish:
+                print "%s contains too much Non ascii text"%packageName
+                print(packageName, file=f)
+            else:
+                continue
 
 if __name__ == "__main__":
     newPairPackageDict = initPairPackageDict()
     pairPackageDict = getAppsForPairs(newPairPackageDict)
-    pairPackageDictFile = open("newPairPackageDict", "w")
-    print >> pairPackageDictFile, "{"
-    packageSet = set()
-    for pair, pairEntry in pairPackageDict.iteritems():
-        print >> pairPackageDictFile, "\"%s\" :"%pair, pairEntry
-        packageSet = packageSet | set(pairEntry["packageList"])
-        if len(pairEntry["packageList"]) != pairEntry["count"]:
-            print "Warning: count does not match for %s"%pair
-    print >> pairPackageDictFile, "}"
-    packageFile = open("newPairPackageList.csv", "w")
-    print >> packageFile, "\n".join(list(packageSet))
-    pairPackageDictFile.close()
-    packageFile.close()
+
+    with open("newPairPackageDict", "w") as f:
+        print("{", file=f)
+        packageSet = set()
+        for pair, pairEntry in pairPackageDict.iteritems():
+            print("\"%s\" :"%pair, pairEntry, file=f)
+            packageSet = packageSet | set(pairEntry["packageList"])
+            if len(pairEntry["packageList"]) != pairEntry["count"]:
+                print "Warning: count does not match for %s"%pair
+        print("}", file=f)
+
+        packageFile = open("newPairPackageList.csv", "w")
+        print("\n".join(list(packageSet)), file=f)
+        packageFile.close()
+
     postLanguageCheck()
 
