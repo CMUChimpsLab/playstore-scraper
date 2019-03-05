@@ -1,3 +1,6 @@
+import eventlet
+eventlet.monkey_patch()
+
 import os, sys
 import logging.config
 import pandas as pd
@@ -82,6 +85,7 @@ def update(args):
 
         crawler = Crawler()
         new_top_list = crawler.get_top_apps_list()
+        print(new_top_list[0:100])
         return
         s.scrape_missing(new_top_list, compare_top=True)
         d.update_top_apps(new_top_list)
@@ -229,10 +233,10 @@ c_parser = subparsers.add_parser("c",
     help="crawl apps or specified resource",
     description="Crawl apps in the playstore or resource specified for apps")
 crawl_type = c_parser.add_mutually_exclusive_group(required=True)
-crawl_type.add_argument("-a", "--all", 
+crawl_type.add_argument("-a", "--all",
     action="store_true",
     help="crawl all apps from playstore to build database")
-crawl_type.add_argument("-p", "--policies", 
+crawl_type.add_argument("-p", "--policies",
     action="store_true",
     help="crawl privacy policy pages for apps in database")
 c_parser.set_defaults(func=crawl)
@@ -282,9 +286,9 @@ s_parser = subparsers.add_parser("s",
     help="scrape apps",
     description="Scrape apps listed in file")
 apps_spec = s_parser.add_mutually_exclusive_group(required=True)
-apps_spec.add_argument("-f", "--fname", 
+apps_spec.add_argument("-f", "--fname",
     help="file of apps to scrape (package names)")
-apps_spec.add_argument("-p", "--pname", 
+apps_spec.add_argument("-p", "--pname",
     help="package name to scrape, will PrettyPrint result. DOES NOT INSERT TO DB")
 scrape_method = s_parser.add_mutually_exclusive_group()
 scrape_method.add_argument("-b", "--bulk",
@@ -304,10 +308,10 @@ u_parser = subparsers.add_parser("u",
     help="update apps",
     description="Update apps currently in the database")
 update_type = u_parser.add_mutually_exclusive_group(required=True)
-update_type.add_argument("-a", "--all", 
+update_type.add_argument("-a", "--all",
     action="store_true",
     help="update all apps in database")
-update_type.add_argument("-t", "--top", 
+update_type.add_argument("-t", "--top",
     action="store_true",
     help="update only top apps in database")
 u_parser.set_defaults(func=update)

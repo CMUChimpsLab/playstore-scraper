@@ -6,17 +6,16 @@ import re
 
 # fix import errors from using python2 for analysis pipeline
 try:
-    from concurrent.futures import ThreadPoolExecutor, as_completed
-    import urllib
-    import urllib.request as request
-    from bs4 import BeautifulSoup
-    import socket
-    import requests
-    import pprint
     import eventlet
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    from bs4 import BeautifulSoup
+    import pprint
 
+    requests = eventlet.import_patched("requests")
+    urllib = eventlet.import_patched("urllib")
+    import urllib.request as request
     pp = pprint.PrettyPrinter(indent=4)
-except ImportError:
+except ImportError as e:
     pass
 
 from modules.database_helper.helper import DbHelper
@@ -147,17 +146,13 @@ class Crawler():
         free = ['free', 'paid']
         starts = [0, 120, 199]
         nums = [120, 79, 120]
+        pile = eventlet.GreenPile(self.pool)
         for c in CATEGORIES:
-            self.task_queue.put((c, url_template.format(c)))
-
-        while (not self.task_queue.empty()) or (self.pool.running() != 0):
-            next_url = self.task_queue.get()
-            if next_url:
-                gt = self.pool.spawn(self.top_app_crawl_thread_worker, next_url)
-                gt.link(self.gt_callback)
+            next_url = (c, url_template.format(c, "{}", "{}", "{}"))
+            pile.spawn(self.top_app_crawl_thread_worker, next_url)
 
         pkg_list = []
-        while (not self.results.empty()):
+        while (not self.results.empty()) or (self.pool.running() != 0):
             pkg_list.extend(self.results.get())
 
         return list(set(pkg_list))
@@ -181,7 +176,7 @@ class Crawler():
             logger.info("Category {} {} done, {} apps".format(cat, f, len(pkg_list)))
             all_pkg_list.extend(pkg_list)
 
-        return list(set(all_pkg_list))
+        self.results.put(list(set(all_pkg_list)))
 
     # ************************************************************************ #
     # crawling privacy policies
@@ -300,6 +295,7 @@ def crawl_url(url, timeout=10):
     while True:
         try:
             page_contents = request.urlopen(url, timeout=timeout).read()
+            #page_contents = requests.get(url, allow_redirects=True, timeout=10).content
             page_contents = page_contents.decode('utf-8')
             return page_contents
         except urllib.error.HTTPError as e:
