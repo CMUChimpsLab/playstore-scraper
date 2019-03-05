@@ -76,44 +76,42 @@ class Updater:
                 self.__db_helper.update_apps_as_removed([app_name])
                 return
 
-            num_updated = 0
-            new_app = metadata[0][0]
-            if new_app is None:
-                # app is removed
-                logger.error("app {} has been removed".format(app_name))
-                self.__db_helper.update_apps_as_removed(app_name)
-                return
-            if new_app.packageName != app_name: # TODO why
-                logger.error("mismatching package names")
-                return
-
-            if new_app.versionCode is None or new_app.uploadDate is None:
-                # TODO add crawler code here to fix this, ignore for now
-                logger.warning("{} - null versionCode or uploadDate, ignoring".format(app_name))
-                return
-
-            if new_app.versionCode is not None:
-                info_vc = metadata[0][0].versionCode
-                details_dict = protobuf_to_dict(metadata[1][0])
-                if info_vc != details_dict["details"]["appDetails"]["versionCode"]:
-                    logger.error("VERSION MISMATCH for {}".format(app_name))
-                    print(metadata[0][0])
-                    print(metadata[1][0])
+            for (new_info, new_detail) in metadata:
+                num_updated = 0
+                if new_info is None:
+                    # app is removed
+                    logger.error("app {} has been removed".format(app_name))
+                    self.__db_helper.update_apps_as_removed(app_name)
+                    return
+                if new_info.packageName != app_name: # TODO why
+                    logger.error("mismatching package names")
                     return
 
-                # check version code to see if app is updated
-                updated = self.__db_helper.check_app_to_update(app_name, new_app.versionCode)
-            else:
-                # if not provided just assume is updated
-                updated = True
+                if new_info.versionCode is None or new_info.uploadDate is None:
+                    # TODO add crawler code here to fix this, ignore for now
+                    logger.warning("{} - null versionCode or uploadDate, ignoring".format(app_name))
+                    return
 
-            if updated:
-                # scrape and insert new data
-                self.__db_helper.insert_app_into_db(metadata[0][0], metadata[1][0])
-                num_updated = num_updated + 1
-                return app_name
-            else:
-                return None
+                if new_info.versionCode is not None:
+                    info_vc = new_info.versionCode
+                    details_dict = protobuf_to_dict(new_detail)
+                    if info_vc != details_dict["details"]["appDetails"]["versionCode"]:
+                        logger.error("VERSION MISMATCH for {}".format(app_name))
+                        return
+
+                    # check version code to see if app is updated
+                    updated = self.__db_helper.check_app_to_update(app_name, new_info.versionCode)
+                else:
+                    # if not provided just assume is updated
+                    updated = True
+
+                if updated:
+                    # scrape and insert new data
+                    self.__db_helper.insert_app_into_db(new_info, new_detail)
+                    num_updated = num_updated + 1
+                    return app_name
+                else:
+                    return None
         except Exception as e:
             logger.error("{} - {}".format(app_name, str(e)))
 

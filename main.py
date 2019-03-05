@@ -7,6 +7,7 @@ import argparse
 import threading
 import datetime
 import multiprocessing_logging
+import pprint
 
 from modules.app_downloader.downloader import Downloader
 from modules.database_helper.helper import DbHelper
@@ -17,19 +18,7 @@ from modules.updater.updater import Updater
 from modules.staticAnalysisPipeline.analyzer import analyzer_wrapper
 from dependencies.constants import DOWNLOAD_FOLDER, THREAD_NO, LOG_FOLDER
 
-# ***************** #
-# DEPRECATED/UNUSED
-# ***************** #
-def bulk_scrape_names(args):
-    s = Scraper()
-    s.bulk_scrape_apps(package_names=args.package_names)
-
-def scrape_names(args):
-    s = Scraper()
-    s.scrape_apps(package_names=args.package_names)
-
-def crawler_test():
-    crawler.get_top_apps_list()
+pp = pprint.PrettyPrinter(indent=4)
 
 # ***************** #
 # smaller CLI command functions
@@ -51,32 +40,54 @@ def download_and_decompile(args):
     # ONLY DECOMPILES THE TOP APPS
     download_decompile_all()
 
-def crawl_policies(args):
-    crawler.crawl_app_privacy_policies()
+def crawl(args):
+    crawler = Crawler()
+    if args.all:
+        crawler.crawl_all_apps()
+    elif args.policies:
+        crawler.crawl_app_privacy_policies()
+    else:
+        print("must specify either -a (all) or -p (policies)")
+        sys.exit(1)
 
-def bulk_scrape_file(args):
-    s = Scraper(input_file=args.fname)
-    s.bulk_scrape_apps()
+def scrape(args):
+    if args.fname is not None:
+        s = Scraper(input_file=args.fname)
+        if args.bulk:
+            s.bulk_scrape_apps()
+        elif args.efficient:
+            s.efficient_scrape()
+        else:
+            s.scrape_apps()
+    elif args.pname is not None:
+        if args.bulk or args.efficient:
+            print("cannot specify any method except for -s for apps specified with -p")
+            sys.exit(1)
 
-def scrape_file(args):
-    s = Scraper(input_file=args.fname)
-    s.scrape_apps()
-
-def eff_scrape_file(args):
-    s = Scraper(input_file=args.fname)
-    s.efficient_scrape()
+        s = Scraper()
+        res = s.get_metadata_for_apps([args.pname], bulk=False)
+        pp.pprint("APP INFO")
+        pp.pprint(res[0][0])
+        pp.pprint("\n>>>>>>>>> ###################################### <<<<<<<<<\n")
+        pp.pprint("APP DETAILS")
+        pp.pprint(res[0][1])
 
 def update(args):
-    u = Updater()
-    u.update_apps_all()
+    if args.all:
+        u = Updater()
+        u.update_apps_all()
+    elif args.top:
+        d = DbHelper()
+        s = Scraper()
 
-def update_top_list(args):
-    d = DbHelper()
-    s = Scraper()
-
-    new_top_list = crawler.get_top_apps_list()
-    s.scrape_missing(new_top_list, compare_top=True)
-    d.update_top_apps(new_top_list)
+        crawler = Crawler()
+        new_top_list = crawler.get_top_apps_list()
+        return
+        s.scrape_missing(new_top_list, compare_top=True)
+        d.update_top_apps(new_top_list)
+    else:
+        print("must specify either -a (all) or -t (top)")
+        sys.exit(1)
 
 def analyze(args):
     # static analysis
@@ -205,7 +216,6 @@ subparsers = parser.add_subparsers(
     metavar="python main.py <command>",
     dest="subparser_name")
 
-
 # static analysis of apps not yet analyzed
 a_parser = subparsers.add_parser("a",
     aliases=["analyze"],
@@ -213,20 +223,19 @@ a_parser = subparsers.add_parser("a",
     description="Static analysis of apps not yet analyzed")
 a_parser.set_defaults(func=analyze)
 
-# bulk scrape apps in supplied file
-bs_parser = subparsers.add_parser("bs",
-    aliases=["bulk-scrape"],
-    help="bulk scrape apps",
-    description="Bulk scrape apps in supplied file")
-bs_parser.add_argument("fname", help="file of apps to scrape (package names)")
-bs_parser.set_defaults(func=bulk_scrape_file)
-
-# bulk scrape apps in supplied file
-bs_parser = subparsers.add_parser("cp",
-    aliases=["crawl-policies"],
-    help="crawl privacy policies for apps",
-    description="Crawl missing privacy policies for apps")
-bs_parser.set_defaults(func=crawl_policies)
+# crawl specified resource
+c_parser = subparsers.add_parser("c",
+    aliases=["crawl"],
+    help="crawl apps or specified resource",
+    description="Crawl apps in the playstore or resource specified for apps")
+crawl_type = c_parser.add_mutually_exclusive_group(required=True)
+crawl_type.add_argument("-a", "--all", 
+    action="store_true",
+    help="crawl all apps from playstore to build database")
+crawl_type.add_argument("-p", "--policies", 
+    action="store_true",
+    help="crawl privacy policy pages for apps in database")
+c_parser.set_defaults(func=crawl)
 
 # download all apps not downloaded in the database and decompile any top apps
 dd_parser = subparsers.add_parser("dd",
@@ -255,14 +264,6 @@ d_parser = subparsers.add_parser("dw",
     description="Download all apps not downloaded in the database")
 d_parser.set_defaults(func=download_all)
 
-# efficiently scrape apps in supplied file
-es_parser = subparsers.add_parser("es",
-    aliases=["efficient-scrape"],
-    help="efficiently scrape apps",
-    description="Efficiently scrape apps in supplied file")
-es_parser.add_argument("fname", help="file of apps to scrape (package names)")
-es_parser.set_defaults(func=eff_scrape_file)
-
 # entire app data and analysis pipeline
 fp_parser = subparsers.add_parser("fp",
     aliases=["full-pipeline"],
@@ -275,26 +276,40 @@ fp_parser.add_argument("-f", "--fname",
     help="file name to scrape from, otherwise use crawler to get package names")
 fp_parser.set_defaults(func=full_pipeline)
 
-# scrape apps in supplied file
+# scrape app specified or in supplied file in specified way
 s_parser = subparsers.add_parser("s",
     aliases=["scrape"],
     help="scrape apps",
     description="Scrape apps listed in file")
-s_parser.add_argument("fname", help="file of apps to scrape (package names)")
-s_parser.set_defaults(func=scrape_file)
-
-# update list of top apps
-t_parser = subparsers.add_parser("t",
-    aliases=["top"],
-    help="update top apps",
-    description="Update which apps are top apps",)
-t_parser.set_defaults(func=update_top_list)
+apps_spec = s_parser.add_mutually_exclusive_group(required=True)
+apps_spec.add_argument("-f", "--fname", 
+    help="file of apps to scrape (package names)")
+apps_spec.add_argument("-p", "--pname", 
+    help="package name to scrape, will PrettyPrint result. DOES NOT INSERT TO DB")
+scrape_method = s_parser.add_mutually_exclusive_group()
+scrape_method.add_argument("-b", "--bulk",
+    action="store_true",
+    help="performs bulk scrape, missing some information")
+scrape_method.add_argument("-e", "--efficient",
+    action="store_true",
+    help="performs scrape efficiently, doing bulk scrape to check for existence")
+scrape_method.add_argument("-s", "--scrape",
+    action="store_true",
+    help="performs regular scrape")
+s_parser.set_defaults(func=scrape)
 
 #update from database (using bulk update for speed)
 u_parser = subparsers.add_parser("u",
     aliases=["update"],
     help="update apps",
     description="Update apps currently in the database")
+update_type = u_parser.add_mutually_exclusive_group(required=True)
+update_type.add_argument("-a", "--all", 
+    action="store_true",
+    help="update all apps in database")
+update_type.add_argument("-t", "--top", 
+    action="store_true",
+    help="update only top apps in database")
 u_parser.set_defaults(func=update)
 
 if __name__ == '__main__':

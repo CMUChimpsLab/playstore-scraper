@@ -60,7 +60,7 @@ class Crawler():
         self.failed = 0
         self.cnt = 0
 
-    def gt_callback(gt, *args, **kwargs):
+    def gt_callback(self, gt, *args, **kwargs):
         """
         Callback used to insert results of function run in greenthread to
         results queue

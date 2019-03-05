@@ -1,7 +1,6 @@
 import sys
 import os
 import datetime
-from MySQLdb import connect
 
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 from dbConfig import dbStaticAnalysis, dbPrivacyGrading, dbAndroidApp

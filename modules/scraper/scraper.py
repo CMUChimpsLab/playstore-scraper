@@ -74,16 +74,8 @@ class Scraper:
             return
 
         res = self.get_metadata_for_apps(packages=[package_name], bulk=True)
-        if res is not None:
-            apps = res[0] # first item is from bulk
-            good_name = None
-            good_index = None
-            if apps[0] is not None:
-                good_name = package_name
-                good_index = index
-
-            if good_name is not None:
-                self.scrape_thread_worker(good_index, good_name)
+        if res is not None and res[0] is not None:
+            self.scrape_thread_worker(index, package_name)
 
     # ***************** #
     # bulk scraping related functions
@@ -94,7 +86,9 @@ class Scraper:
         function to get 1000 apps metadata at a time instead of 1 app at a
         time. Will automatically insert into database if not already in the
         database.
-        """
+
+        NOTE: DEPRECATED FOR NOW
+        
         if package_names is None:
             if self.input_file is not None:
                 package_names = pd.read_csv(self.input_file, names=['package_name'])['package_name'].tolist()
@@ -105,12 +99,17 @@ class Scraper:
         with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
             executor.map(self.bulk_scrape_thread_worker,
                     range(0, len(package_names)), package_names)
+        """
+
+        return "DEPRECATED"
 
     def bulk_scrape_thread_worker(self, index, package_name):
         """
         Uses the bulk scraping function. Does 1000 apps at a time then loops and
         adds them all to the database if not already in the database.
-        """
+
+        NOTE: DEPRECATED FOR NOW
+
         if self.__db_helper.is_app_in_db(package_name):
             logger.info("%s already in database, skipping bulk" % package_name)
             return
@@ -124,6 +123,9 @@ class Scraper:
             self.__db_helper.insert_app_into_db(app)
 
             logger.info("Apps {} bulk scraped".format(index))
+        """
+
+        return "DEPRECATED"
 
     # ***************** #
     # regular scraping related functions
@@ -162,13 +164,9 @@ class Scraper:
 
         app_metadata = self.get_metadata_for_apps([package_name])
         if app_metadata is not None:
-            if app_metadata[0] is None:
-                return
-
-            if len(app_metadata[0]) > 0 and len(app_metadata[1]) > 0:
-                self.__db_helper.insert_app_into_db(app_metadata[0][0], app_metadata[1][0])
-
-            logger.info("App {}, {} scraped".format(index, package_name))
+            for (app_info_obj, app_detail) in app_metadata:
+                self.__db_helper.insert_app_into_db(app_info_obj, app_detail)
+                logger.info("App {}, {} scraped".format(index, package_name))
 
     def get_metadata_for_apps(self, packages, bulk=False):
         """
@@ -230,21 +228,25 @@ class Scraper:
                             continue
 
                         info_data.append(app_dict)
+
+                    # Zips uuids with dictionaries in data array then makes them Apps
+                    # and returns that list of them
+                    for app in info_data:
+                        if app is not None:
+                            app['dateLastScraped'] = datetime.datetime.utcnow()\
+                                .strftime("%Y%m%dT%H%M")
+                            app["updatedTimestamp"] = datetime.datetime.utcnow()\
+                                .strftime("%Y%m%dT%H%M")
+                    uuids = generate_uuids(len(info_data))
+
+                    app_list = []
+                    for (d, uuid) in zip(info_data, uuids):
+                        app_list.append(App.convert_to_App_Object(d, uuid))
+
+                    return zip(app_list, detail_data)
                 else:
                     # detail_data is just info if bulk is False
-                    info_data = detail_data
-
-                # Zips uuids with dictionaries in data array then makes them Apps
-                # and returns that list of them
-                for app in info_data:
-                    if app is not None:
-                        app['dateLastScraped'] = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
-                        app["updatedTimestamp"] = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
-                uuids = generate_uuids(len(info_data))
-
-                app_list = [App.convert_to_App_Object(d, uuid) for (d, uuid) in zip(info_data, uuids)]
-
-                return [app_list, detail_data]
+                    return info_data
             else:
                 return None
 
