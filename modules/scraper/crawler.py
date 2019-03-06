@@ -13,7 +13,7 @@ try:
 
     requests = eventlet.import_patched("requests")
     urllib = eventlet.import_patched("urllib")
-    import urllib.request as request
+    socket = eventlet.import_patched("socket")
     pp = pprint.PrettyPrinter(indent=4)
 except ImportError as e:
     pass
@@ -71,6 +71,7 @@ class Crawler():
     # ************************************************************************ #
     def crawl_all_apps(self, root_urls=None):
         self.init_eventlet_objs()
+        pile = eventlet.GreenPile(self.pool)
 
         if root_urls is None:
             # default root is at main apps page
@@ -93,7 +94,7 @@ class Crawler():
 
                 self.urls_seen.add(next_url)
                 self.app_ids_seen.add(app_id)
-                self.pool.spawn_n(self.fetch_all_links_thread_worker, next_url)
+                pile.spawn(self.fetch_all_links_thread_worker, next_url)
 
         # goal is to get app_ids so return that
         return list(self.app_ids_seen)
@@ -137,16 +138,13 @@ class Crawler():
         > 320
         """
         self.init_eventlet_objs()
+        pile = eventlet.GreenPile(self.pool)
         logger.info("Starting top apps crawl")
 
         # have to get 0 -> 100 then 100 -> 199 then 199 -> 318 (google doesn't like
         # num to be > 120 and start to be > 199. Idk why.
         url_template = ("https://play.google.com/store/apps/category/{}"
             "/collection/topselling_{}?hl=en&gl=us&start={}&num={}")
-        free = ['free', 'paid']
-        starts = [0, 120, 199]
-        nums = [120, 79, 120]
-        pile = eventlet.GreenPile(self.pool)
         for c in CATEGORIES:
             next_url = (c, url_template.format(c, "{}", "{}", "{}"))
             pile.spawn(self.top_app_crawl_thread_worker, next_url)
@@ -183,26 +181,23 @@ class Crawler():
     # ************************************************************************ #
     def crawl_app_privacy_policies(self, app_list=None):
         logger.info("Starting privacy policy crawl")
-        self.init_eventlet_objs()
 
         helper = DbHelper()
         if app_list is None:
             app_list = helper.get_package_names_policy_crawl()
-        for a in app_list:
-            self.task_queue.put(a)
 
-        counter = 0
-        while (not self.task_queue.empty()) or (self.pool.running() != 0):
-            a = self.task_queue.get()
-            if a:
-                self.pool.spawn_n(partial(self.privacy_policy_thread_worker, helper), a)
+        helper = None
+        with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
+            res = executor.map(partial(self.privacy_policy_thread_worker, helper), app_list)
+            counter = 0
+            for future in res:
                 counter += 1
                 if counter % BULK_CHUNK == 0:
-                    logger.info("crawled policies for {} to {} out of {}".format(
+                    logger.info("crawled {} to {} out of {}".format(
                         counter - BULK_CHUNK, counter, len(app_list)))
 
+
     def privacy_policy_thread_worker(self, helper, package_name):
-        failed_crawl_file = PRIVACY_POLICY_FOLDER + "/failed_packages.csv"
         uuid = helper.app_name_to_uuids(package_name)[0]
         url = "https://play.google.com/store/apps/details?id={}".format(package_name)
         try:
@@ -253,6 +248,7 @@ class Crawler():
     # ************************************************************************ #
     def crawl_reviews(self, app_list, max_reviews=20):
         self.init_eventlet_objs()
+        pile = eventlet.GreenPile(self.pool)
         api = gplaycli.GPlaycli(config_file=GPLAYCLI_CONFIG_FILE_PATH)
 
         for a in app_list:
@@ -261,11 +257,10 @@ class Crawler():
         while (not self.task_queue.empty()) or (self.pool.running() != 0):
             a = self.task_queue.get()
             if a:
-                gt = self.pool.spawn(partial(self.review_thread_worker, api, max_reviews), a)
-                gt.link(self.gt_callback)
+                pile.spawn(partial(self.review_thread_worker, api, max_reviews), a)
 
         all_reviews = {}
-        while (not self.results.empty()):
+        while (not self.results.empty()) or (self.pool.running() != 0):
             name, reviews = self.results.get()
             all_reviews[name] = reviews
 
@@ -285,7 +280,7 @@ class Crawler():
             n_param = next_url_params["n"]
             o_param = next_url_params["o"]
 
-        return (app_name, all_reviews)
+        self.results.put((app_name, all_reviews))
 
 # **************************************************************************** #
 # helper functions
@@ -294,10 +289,11 @@ def crawl_url(url, timeout=10):
     e_code = None
     while True:
         try:
-            page_contents = request.urlopen(url, timeout=timeout).read()
-            #page_contents = requests.get(url, allow_redirects=True, timeout=10).content
-            page_contents = page_contents.decode('utf-8')
-            return page_contents
+            resp = requests.get(url, allow_redirects=True, timeout=10)
+            if resp.status_code != 200:
+                resp.raise_for_status()
+
+            return resp.content.decode('utf-8')
         except urllib.error.HTTPError as e:
             if e.code == 404:
                 # not valid
