@@ -1,6 +1,7 @@
 import logging
 import time
 import os
+import sys
 from functools import partial
 import re
 
@@ -8,7 +9,7 @@ import re
 try:
     import eventlet
     from concurrent.futures import ThreadPoolExecutor, as_completed
-    from bs4 import BeautifulSoup
+    from bs4 import BeautifulSoup, SoupStrainer
     import pprint
 
     requests = eventlet.import_patched("requests")
@@ -73,30 +74,39 @@ class Crawler():
         self.init_eventlet_objs()
         pile = eventlet.GreenPile(self.pool)
 
+        prog = 0
+        last_check = time.time()
         if root_urls is None:
             # default root is at main apps page
             self.task_queue.put("https://play.google.com/store/apps")
+            for c in CATEGORIES:
+                self.task_queue.put("https://play.google.com/store/apps/category/{}".format(c))
         else:
             for url in root_urls:
                 self.task_queue.put(url)
 
-        while not self.task_queue.empty() or self.pool.running() != 0:
-            next_url = self.task_queue.get()
+        while (not self.task_queue.empty()) or (self.pool.running() != 0):
+            try:
+                next_url = self.task_queue.get(timeout=5)
+            except eventlet.queue.Empty:
+                break
 
             # if we have a new URL, then we spawn another green thread for fetching the content
             if next_url:
-                if next_url in self.urls_seen:
-                    continue
-
-                app_id = str(next_url).split("?id=")[-1]
-                if app_id in self.app_ids_seen:
-                    continue
-
-                self.urls_seen.add(next_url)
-                self.app_ids_seen.add(app_id)
                 pile.spawn(self.fetch_all_links_thread_worker, next_url)
 
+            last_print_delta = time.time() - last_check
+            if len(self.app_ids_seen) >= prog:
+                logger.info("crawled {} apps".format(len(self.app_ids_seen)))
+                prog += BULK_CHUNK
+                last_check = time.time()
+            elif last_print_delta > 30:
+                logger.info("crawled {} apps".format(len(self.app_ids_seen)))
+                last_check = time.time()
+
         # goal is to get app_ids so return that
+        print(len(self.app_ids_seen))
+        sys.exit(0)
         return list(self.app_ids_seen)
 
     def fetch_all_links_thread_worker(self, url):
@@ -113,19 +123,23 @@ class Crawler():
             return
 
         # fetches links by regular expressions, want app and publisher links.
-        soup = BeautifulSoup(page_contents, "lxml")
-        all_links = []
-        for href in soup.find_all("href"):
-            details_dev_re = (re.search(r'\/(details|dev)[?]', href)
-                and not re.search('reviewId', href))
-            all_links.append(href)
+        soup = BeautifulSoup(page_contents, "lxml",
+                parse_only=SoupStrainer("a", href=True))
+        for link in soup.find_all("a"):
+            href = link["href"]
+            if "category" in href:
+                href = href.split("https://play.google.com")[-1]
 
-        # pushing new links down task_queue for processing later
-        for link in all_links:
-            if not link:
-                continue
-            elif link.startswith('/'):
-                self.task_queue.put("https://play.google.com" + link)
+            url = "https://play.google.com" + href
+            relevant_re = r'^\/.*\/((details|developer)/?|category)'
+            relevant_match = (re.search(relevant_re, href) and not re.search('reviewId', href))
+            if relevant_match and url not in self.urls_seen:
+                self.urls_seen.add(url)
+                if "details?id" in url:
+                    app_id = str(url).split("details?id=")[-1]
+                    self.app_ids_seen.add(app_id)
+
+                self.task_queue.put(url)
 
     # ************************************************************************ #
     # crawling top apps
@@ -255,7 +269,11 @@ class Crawler():
             self.task_queue.put(a)
 
         while (not self.task_queue.empty()) or (self.pool.running() != 0):
-            a = self.task_queue.get()
+            try:
+                a = self.task_queue.get(timeout=5)
+            except eventlet.queue.Empty:
+                break
+
             if a:
                 pile.spawn(partial(self.review_thread_worker, api, max_reviews), a)
 
