@@ -28,11 +28,14 @@ class DbHelper:
             username=constants.DB_ROOT_USER,
             password=constants.DB_ROOT_PASS)
         self.__android_app_db = self.__client[constants.APP_METADATA_DB]
-        self.__static_analysis_db = self.__client[constants.STATIC_ANALYSIS_DB]
         self.__apk_info = self.__android_app_db.apkInfo
         self.__apk_details = self.__android_app_db.apkDetails
         self.__package_names = self.__android_app_db.packageNames
         self.__top_apps = self.__android_app_db.topApps
+
+        self.__static_analysis_db = self.__client[constants.STATIC_ANALYSIS_DB]
+        self.__link_url = self.__static_analysis_db.linkUrl
+        self.__third_party_packages = self.__static_analysis_db.thirdPartyPackages
 
     def close(self):
         """
@@ -164,7 +167,7 @@ class DbHelper:
         Finds the uuids for all of the apps we have yet to analyze at all
         Perhaps add functionality for specific analyses later
         """
-        app = self.__apk_info.find(
+        app_infos = self.__apk_info.find(
             {
                 "$and": [
                     {"$or": [
@@ -175,11 +178,24 @@ class DbHelper:
                 ],
             },
             {
-                '_id': 0,
-                'uuid': 1,
+                "_id": 0,
+                "uuid": 1,
+                "packageName": 1,
                 "versionCode": 1,
             })
-        return [(a['uuid'], a["versionCode"]) for a in app]
+        tup_to_uuid = {}
+        for a in app_infos:
+            tup_to_uuid[(a["packageName"], a["versionCode"])] = (a["uuid"], a["versionCode"])
+        info_entries = set(list(tup_to_uuid.keys()))
+
+        link_urls = self.__link_url.find({}, {"packageName": 1, "versionCode": 1})
+        link_url_entries = set([(l["packageName"], l["versionCode"]) for l in link_urls])
+        third_parties = self.__third_party_packages.find({}, {"packageName": 1, "versionCode": 1})
+        third_party_entries = set([(t["packageName"], l["versionCode"]) for l in third_parties])
+
+        unanalyzed_entries = info_entries - (link_url_entries | third_party_entries)
+
+        return [tup_to_uuid[u] for u in unanalyzed_entries]
 
     def get_package_names_to_update(self, count=0):
         """

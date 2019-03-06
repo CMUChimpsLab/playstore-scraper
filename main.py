@@ -97,6 +97,8 @@ def analyze(args):
     # static analysis
     helper = DbHelper()
     app_list = helper.get_all_apps_to_analyze()
+    print(len(app_list))
+    sys.exit(0)
 
     fname = to_file_for_analysis(app_list)
     analyzer_wrapper(fname, process_no=6)
