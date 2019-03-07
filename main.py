@@ -1,13 +1,15 @@
 import eventlet
-eventlet.monkey_patch()
+#eventlet.monkey_patch(socket=True, thread=True)
+#eventlet.monkey_patch(thread=True)
 
+from importlib import reload
 import os, sys
 import logging.config
 import pandas as pd
 import subprocess
-from concurrent.futures import ThreadPoolExecutor
+#from concurrent.futures import ThreadPoolExecutor
 import argparse
-import threading
+#import threading
 import datetime
 import multiprocessing_logging
 import pprint
@@ -44,6 +46,7 @@ def download_and_decompile(args):
     download_decompile_all()
 
 def crawl(args):
+    eventlet.monkey_patch()
     crawler = Crawler()
     if args.all:
         crawler.crawl_all_apps()
@@ -76,6 +79,7 @@ def scrape(args):
         pp.pprint(res[0][1])
 
 def update(args):
+    eventlet.monkey_patch()
     if args.all:
         u = Updater()
         u.update_apps_all()
@@ -96,12 +100,11 @@ def update(args):
 def analyze(args):
     # static analysis
     helper = DbHelper()
-    app_list = helper.get_all_apps_to_analyze()
-    print(len(app_list))
-    sys.exit(0)
+    app_list = helper.get_all_apps_for_full_analysis()
+    logger.info(len(app_list))
 
     fname = to_file_for_analysis(app_list)
-    analyzer_wrapper(fname, process_no=6)
+    analyzer_wrapper(fname, process_no=12)
     subprocess.call(["rm", fname])
 
 # ***************** #

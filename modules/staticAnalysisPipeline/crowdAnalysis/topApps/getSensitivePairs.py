@@ -4,7 +4,7 @@ import sys
 
 from dbConfig import *
 
-client = MongoClient("localhost", 27017)
+client = MongoClient(HOSTNAME, 27017)
 client["admin"].authenticate(USERNAME, PASSWORD)
 dbPermission = client["privacygrading"]
 

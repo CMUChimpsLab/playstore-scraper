@@ -27,7 +27,7 @@ asn1crypto = ">=0.24.0"
 networkx = ">=1.11"
 pydot = ">=1.4.1"
 ipython = ">=5.0.0"
-"57435b5" = {file = "https://github.com/eventlet/eventlet/archive/5739f73ce8c9af9cab128dc1258f2c6b1ee56cbb.zip"}
+eventlet = "*"
 
 [dev-packages]
 

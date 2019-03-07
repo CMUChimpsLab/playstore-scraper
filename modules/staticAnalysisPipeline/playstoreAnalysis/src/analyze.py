@@ -220,7 +220,7 @@ def getTopPermissions(client, appList, outputDir):
 
     for ctgry in ctgryDict:
         with open(outputDir + '/permission/' + ctgry + '_permission.csv', 'w') as f:
-            print("permission", ',', "count", file=f)
+            print("permission", ",", "count", file=f)
             print("SUM", ',', ctgryNumberSum[ctgry], file=f)
             mostCommonPermissionCounter = Counter(ctgryDict[ctgry]).most_common()
             for (permission, count) in mostCommonPermissionCounter:
@@ -248,7 +248,7 @@ def getTopPermissions(client, appList, outputDir):
         updateStatTable(client, 'Most Popular Permissions', topKList, 'permission')
 
 def main(appListFile):
-    client = MongoClient('localhost',27017)
+    client = MongoClient(HOSTNAME, 27017)
     client["admin"].authenticate(USERNAME, PASSWORD)
     outputDir = os.path.dirname(os.path.realpath(appListFile))
     os.makedirs(outputDir + "/permission/")

@@ -3,6 +3,8 @@ Created on Oct 24, 2012
 
 @author: psachdev
 '''
+import sys
+
 from androguard.core.bytecodes import apk
 from androguard.core.bytecodes import dvm
 from androguard.core.analysis.analysis import *
@@ -14,7 +16,7 @@ class Intents:
     3. Apply the filter to every entry read if it matched the regular expression then print it in file
     4. Using the package array containing list of all packages found in apk print the corresponding package in which link is formed
        This is using Path Variable analysis
-       When you read the tainted string you also the address at which its present 
+       When you read the tainted string you also the address at which its present
        Use that address to get the class name
        and then see under which package that class name belongs
     '''
@@ -26,7 +28,7 @@ class Intents:
                 ###self.outHandle.write (package)
                 return package
         return "NA"
-                
+
     def __init__(self, infile, outfile, vc, packages, dbMgr, noprefixfilename, a, d, dx):
         '''
         Constructor
@@ -34,9 +36,9 @@ class Intents:
         ###a = apk.APK(infile)
         ###d = dvm.DalvikVMFormat (a.get_dex())
         ###dx = uVMAnalysis (d)
-        
+
         #self.outHandle = open (outfile, 'a+')
-        
+
         ex1 = re.compile ("http://")
         mpn = a.get_package()
         '''
@@ -47,13 +49,18 @@ class Intents:
         else:
             self.main_package_name = mpn
 
-        self.version_code = vc      
-        
+        try:
+            a = int(vc)
+        except ValueError:
+            print(vc, mpn)
+            sys.exit(1)
+        self.version_code = vc
+
         ###self.outHandle.write ("\n")
         ###self.outHandle.write ("---Package Name---\n")
         #print self.main_package_name
-        
-        
+
+
         '''
         Keeping main package name within range of mysql datatype
         '''
@@ -61,28 +68,28 @@ class Intents:
             self.fileName  = (noprefixfilename[:200] + '..')
         else:
             self.fileName = noprefixfilename
-        
+
         ###self.outHandle.write(infile)
         ex3 = re.compile (self.main_package_name)
-        
+
         self.dbMgr = dbMgr
         #print 'URL - '
         x = dx.get_tainted_variables().get_strings()
         analysis = dx.get_vm()
         #cm = analysis.get_class_manager()
         ###self.outHandle.write ('\n')
-        
+
         for full in x:
             s,_ = full
             string = repr(s.get_info())
             if ex1.search (string) != None:
                 paths = s.get_paths()
-               
+
                 for path in paths:
                     m_idx = path[1]
                     method = analysis.get_cm_method( m_idx )
                     ###self.outHandle.write ("   %s->%s %s" % (method[0], method[1], method[2][0] + method[2][1]))
-                    
+
                     '''
                     Keeping external package within range of mysql datatype
                     '''
@@ -91,19 +98,19 @@ class Intents:
                             xpck = (xpackage[:200] + '..')
                     else:
                             xpck = xpackage
-                        
-    
+
+
                     '''
                     Keeping destination class within range of mysql datatype
-   		              '''                 
+   		              '''
                     if len(method[0]) > 250 :
                             dst = (method[0][:200] + '..')
                     elif method[0].find('$')!=-1 :
                             dst = "NA"
                     else:
                             dst = method[0]
-                    
-                                    
+
+
                     #print method
                     if ex3.search(method[0]) != None:
                         _,linkStr = full
@@ -118,9 +125,9 @@ class Intents:
                                 strlink = (link[:200] + '..')
                             else:
                                 strlink = link
-                                
+
                             self.dbMgr.insertLinkInfo(self.main_package_name,
-                                self.version_code, self.fileName, strlink, 
+                                self.version_code, self.fileName, strlink,
                                 False, dst, xpck)
                     else:
                         _,linkStr = full
@@ -134,13 +141,13 @@ class Intents:
                             if len(link) > 250 :
                                 strlink = (link[:200] + '..')
                             else:
-                                strlink = link      
-                                                   
-                            self.dbMgr.insertLinkInfo(self.main_package_name, 
-                                self.version_code, self.fileName, strlink, True, 
+                                strlink = link
+
+                            self.dbMgr.insertLinkInfo(self.main_package_name,
+                                self.version_code, self.fileName, strlink, True,
                                 dst, xpck)
-                            
-                    #access, idx = path[0]    
+
+                    #access, idx = path[0]
                     ###self.outHandle.write ('\n\n')
         #self.outHandle.close()
-        
+

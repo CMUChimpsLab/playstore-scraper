@@ -68,7 +68,7 @@ DECOMPILE_FOLDER = '/home/privacy/nas/apps_decompiled'
 PRIVACY_POLICY_FOLDER = '/home/privacy/nas/policy_htmls'
 LOG_FOLDER = "/home/privacy/logs"
 
-DB_HOST = 'localhost'
+DB_HOST = 'app-analysis.andrew.cmu.edu'
 DB_PORT = 27017
 APP_METADATA_DB = 'androidAppDB'
 PRIVACY_GRADING_DB = 'privacyGradingDB'

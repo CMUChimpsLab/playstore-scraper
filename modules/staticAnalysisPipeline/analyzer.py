@@ -84,6 +84,7 @@ results in the database
 """
 def analyzer(apkList, process_no=PROCESS_NO):
     logger = logging.getLogger(__name__)
+    dbHelper = DbHelper()
 
     # set up path constants
     # now = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
@@ -115,13 +116,18 @@ def analyzer(apkList, process_no=PROCESS_NO):
     updatedApkList = []
     with open(analyzedApkFilePath) as f:
         for line in f:
-            updatedApkList.append(line.strip("\n").split(","))
+            updatedApkList.append(tuple(line.strip("\n").split(",")))
+    db_ungraded = dbHelper.get_all_apps_to_grade()
+    updatedApkList.extend(db_ungraded)
+    updatedApkList = list(set(updatedApkList))
+    updatedApkList = [list(u) for u in updatedApkList]
+    logger.info(len(updatedApkList))
 
     extractApp.extractPackagePair(updatedApkList,
         os.path.dirname(os.path.realpath(__file__)))
-    print("extractApp.extractPackagePair done")
+    logger.info("extractApp.extractPackagePair done")
     rateApp.transRateToLevel()
-    print("rateApp.transRateToLevel done")
+    logger.info("rateApp.transRateToLevel done")
 
     histFileName = "hist_" + now + ".csv"
     histFileDir = outputPath + "/data/hist"
@@ -129,25 +135,24 @@ def analyzer(apkList, process_no=PROCESS_NO):
         os.makedirs(histFileDir)
     outputHistogramFile = open(histFileDir + "/" + histFileName, 'w')
     rateApp.generateHistData(200, outputHistogramFile)
-    print("rateApp.generateHistData done")
+    logger.info("rateApp.generateHistData done")
     outputHistogramFile.close()
 
     # run playstore analysis part
     analyze.main(analyzedApkFilePath)
-    print("playstoreAnalysis analyze done")
+    logger.info("playstoreAnalysis analyze done")
 
     # TODO run crowd analysis part for top apps
     """
     getSensitivePairs.main(now,
       os.path.dirname(getSensitivePairs.__file__) + "/",
       os.getcwd() + "/")
-    print("getSensitivePairs.main done")
+    logger.info("getSensitivePairs.main done")
     getSummedScore.main(now)
-    print("getSummedScore.main done")
+    logger.info("getSummedScore.main done")
     """
 
     # mark apps as analyzed
-    dbHelper = DbHelper()
     uuids = [tup[0]["uuid"] for tup in apkList]
     dbHelper.update_apk_info_field_many_uuids(
             uuids, "analysesCompleted", True)

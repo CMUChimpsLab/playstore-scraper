@@ -23,7 +23,9 @@ scraper/scraper-server/node_modules
 apps_decompiled
 decompiler/apktool
 decompiler/apktool\.jar
+apks.txt
 
+**/dbConfig.py
 secrets\.py
 .vscode
 

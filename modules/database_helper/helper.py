@@ -162,7 +162,7 @@ class DbHelper:
 
         return [[a[1], a[2]] for a in app_versions.values() if a[3]]
 
-    def get_all_apps_to_analyze(self):
+    def get_all_apps_for_full_analysis(self):
         """
         Finds the uuids for all of the apps we have yet to analyze at all
         Perhaps add functionality for specific analyses later
@@ -189,13 +189,35 @@ class DbHelper:
         info_entries = set(list(tup_to_uuid.keys()))
 
         link_urls = self.__link_url.find({}, {"packageName": 1, "versionCode": 1})
-        link_url_entries = set([(l["packageName"], l["versionCode"]) for l in link_urls])
+        link_url_entries = set([(l["packageName"], int(l["versionCode"])) for l in link_urls])
         third_parties = self.__third_party_packages.find({}, {"packageName": 1, "versionCode": 1})
-        third_party_entries = set([(t["packageName"], l["versionCode"]) for l in third_parties])
+        third_party_entries = set([(t["packageName"], int(t["versionCode"])) for t in third_parties])
 
         unanalyzed_entries = info_entries - (link_url_entries | third_party_entries)
-
         return [tup_to_uuid[u] for u in unanalyzed_entries]
+
+    def get_all_apps_to_grade(self):
+        """
+        Finds uuids for apps that need to be graded
+        """
+        app_infos = self.__apk_info.find(
+            {
+                "$and": [
+                    {"$or": [
+                        {"analysesCompleted": None},
+                        {"analysesCompleted": False}
+                    ]},
+                    {"dateDownloaded": {"$ne": None}},
+                ],
+            },
+            {
+                "_id": 0,
+                "uuid": 1,
+                "packageName": 1,
+                "versionCode": 1,
+            })
+
+        return [(a["packageName"], a["versionCode"]) for a in app_infos]
 
     def get_package_names_to_update(self, count=0):
         """
