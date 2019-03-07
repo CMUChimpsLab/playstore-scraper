@@ -1,11 +1,10 @@
 from pymongo import MongoClient
 import pandas as pd
 import sys
+from dependencies.constants import DB_HOST, DB_ROOT_USER, DB_ROOT_PASS
 
-from dbConfig import *
-
-client = MongoClient(HOSTNAME, 27017)
-client["admin"].authenticate(USERNAME, PASSWORD)
+client = MongoClient(DB_HOST, 27017)
+client["admin"].authenticate(DB_ROOT_USER, DB_ROOT_PASS)
 dbPermission = client["privacygrading"]
 
 def getSensitivePairs(packageName):

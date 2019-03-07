@@ -2,10 +2,10 @@ import sys
 from pymongo import MongoClient
 import time
 import json
-from dbConfig import *
+from dependencies.constants import DB_HOST, DB_ROOT_USER, DB_ROOT_PASS
 
-client = MongoClient('localhost',27017)
-client["admin"].authenticate(USERNAME, PASSWORD)
+client = MongoClient(DB_HOST, 27017)
+client["admin"].authenticate(DB_ROOT_USER, DB_ROOT_PASS)
 
 db = client['privacygrading']
 appDb = client['androidApp']

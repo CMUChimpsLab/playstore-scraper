@@ -1,6 +1,6 @@
 """
 This script will do
-1. get a full list of apks which has not been analyzed by our static analysis code. 
+1. get a full list of apks which has not been analyzed by our static analysis code.
 2. split the list into several small lists for each instance
 Remote instance will do analysis for its list
 The list format
@@ -14,11 +14,13 @@ from pymongo import MongoClient
 import datetime
 import os
 import errno
-import dbConfig
+import dependencies.constants as constants
 today = str(datetime.date.today()).replace('-','')
 outPutPath = "notAnalyzed/" + today + '/'
 
-db = dbConfig.androidAppDB
+client = MongoClient(constants.DB_HOST, 27017)
+client["admin"].authenticate(constants.DB_ROOT_USER, constants.DB_ROOT_PASS)
+db = client["androidApp"]
 
 def getNonAnalyzedApks():
   apkList = []
@@ -27,9 +29,9 @@ def getNonAnalyzedApks():
   return apkList
 
 def generateListPerInstance(apkList, numberOfInstances):
-  try: 
+  try:
     os.makedirs(outPutPath)
-  except OSError as exc: 
+  except OSError as exc:
     if exc.errno == errno.EEXIST and os.path.isdir(outPutPath):
         pass
   apkPerInstance = len(apkList)/numberOfInstances + 1

@@ -2,9 +2,11 @@ import numpy as np
 import json
 import random
 import pandas as pd
-from dbConfig import dbPrivacyGrading
+from pymongo import MongoClient
+from dependencies.constants import DB_HOST, DB_ROOT_USER, DB_ROOT_PASS
 
-db = dbPrivacyGrading
+client = MongoClient(DB_HOST, 27017)
+db = client["privacyGradingDB"]
 
 #calculate Rate for one entry each time; also return negativePermissioniPurposeDict
 def calculateRateforOneApp(labeledPermissionPurposesDict, repoPath):

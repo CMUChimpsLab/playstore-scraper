@@ -4,8 +4,7 @@ import copy
 import sys
 import re
 import os
-
-from dbConfig import *
+from dependencies.constants import DB_HOST, DB_ROOT_USER, DB_ROOT_PASS
 
 def updateStatTable(client, listName, topKList, itemKey):
     copyTopKList = copy.deepcopy(topKList)
@@ -248,8 +247,8 @@ def getTopPermissions(client, appList, outputDir):
         updateStatTable(client, 'Most Popular Permissions', topKList, 'permission')
 
 def main(appListFile):
-    client = MongoClient(HOSTNAME, 27017)
-    client["admin"].authenticate(USERNAME, PASSWORD)
+    client = MongoClient(DB_HOST, 27017)
+    client["admin"].authenticate(DB_ROOT_USER, DB_ROOT_PASS)
     outputDir = os.path.dirname(os.path.realpath(appListFile))
     os.makedirs(outputDir + "/permission/")
     with open(appListFile) as f:

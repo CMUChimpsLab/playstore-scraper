@@ -3,8 +3,14 @@ import os
 import datetime
 
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
-from dbConfig import dbStaticAnalysis, dbPrivacyGrading, dbAndroidApp
 from rateApp import calculateRateforOneApp, transRateToLevel, generateHistData, getLevel
+from dependencies.constants import DB_HOST, DB_ROOT_USER, DB_ROOT_PASS
+from pymongo import MongoClient
+
+client = MongoClient(DB_HOST, 27017)
+dbAndroidApp = client["androidAppDB"]
+dbPrivacyGrading = client["privacyGradingDB"]
+dbStaticAnalysis = client["staticAnalysisDB"]
 
 #this is used to build packagePair table
 def extractPackagePair(updatedApkList, reposPath):

@@ -1,5 +1,5 @@
 import eventlet
-#eventlet.monkey_patch(socket=True, thread=True)
+eventlet.monkey_patch(thread=False)
 #eventlet.monkey_patch(thread=True)
 
 from importlib import reload
