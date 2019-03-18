@@ -1,10 +1,10 @@
 from pymongo import MongoClient
 import dependencies.constants as constants
-from modules.database_helper.helper import DbHelper
-from modules.scraper.scraper import Scraper
+from core.db.helper import DbHelper
+from core.scraper.scraper import Scraper
 from collections import defaultdict
 from bson.objectid import ObjectId
-from modules.scraper.uuid_generator import generate_uuids
+from core.scraper.uuid_generator import generate_uuids
 from datetime import datetime
 from collections import defaultdict
 import os

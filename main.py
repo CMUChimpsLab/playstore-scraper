@@ -14,13 +14,13 @@ import datetime
 import multiprocessing_logging
 import pprint
 
-from modules.app_downloader.downloader import Downloader
-from modules.database_helper.helper import DbHelper
-from modules.decompiler.decompiler import Decompiler
-from modules.scraper.crawler import Crawler
-from modules.scraper.scraper import Scraper
-from modules.updater.updater import Updater
-from modules.staticAnalysisPipeline.analyzer import analyzer_wrapper
+from core.downloader.downloader import Downloader
+from core.db.helper import DbHelper
+from core.decompiler.decompiler import Decompiler
+from core.scraper.crawler import Crawler
+from core.scraper.scraper import Scraper
+from core.updater.updater import Updater
+from core.analyzer.analyzer import analyzer_wrapper
 from dependencies.constants import DOWNLOAD_FOLDER, THREAD_NO, LOG_FOLDER
 
 pp = pprint.PrettyPrinter(indent=4)

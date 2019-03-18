@@ -1,9 +1,9 @@
 from pymongo import MongoClient
 import dependencies.constants as constants
-from modules.database_helper.helper import DbHelper
+from core.db.helper import DbHelper
 from collections import defaultdict
 from bson.objectid import ObjectId
-from modules.scraper.uuid_generator import generate_uuids
+from core.scraper.uuid_generator import generate_uuids
 from datetime import datetime
 import os
 

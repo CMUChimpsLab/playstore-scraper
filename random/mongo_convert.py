@@ -5,8 +5,8 @@ from bson.objectid import ObjectId
 from datetime import datetime
 
 import dependencies.constants as constants
-from modules.database_helper.helper import DbHelper
-from modules.scraper.uuid_generator import generate_uuids
+from core.db.helper import DbHelper
+from core.scraper.uuid_generator import generate_uuids
 
 def convert_old_to_new():
     """
