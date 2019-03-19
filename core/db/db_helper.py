@@ -9,9 +9,9 @@ from datetime import datetime
 from collections import defaultdict
 import pprint
 
-from dependencies.protobuf_to_dict.protobuf_to_dict.convertor import protobuf_to_dict
-from dependencies.app_object import App
-import dependencies.constants as constants
+from common.protobuf_to_dict.protobuf_to_dict.convertor import protobuf_to_dict
+from common.app_object import App
+import common.constants as constants
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
@@ -185,7 +185,7 @@ class DbHelper:
             })
         tup_to_uuid = {}
         for a in app_infos:
-            tup_to_uuid[(a["packageName"], a["versionCode"])] = (a["uuid"], a["versionCode"])
+            tup_to_uuid[(a["packageName"], a["versionCode"])] = a["uuid"]
         info_entries = set(list(tup_to_uuid.keys()))
 
         link_urls = self.__link_url.find({}, {"packageName": 1, "versionCode": 1})
@@ -194,7 +194,7 @@ class DbHelper:
         third_party_entries = set([(t["packageName"], int(t["versionCode"])) for t in third_parties])
 
         unanalyzed_entries = info_entries - (link_url_entries | third_party_entries)
-        return [tup_to_uuid[u] for u in unanalyzed_entries]
+        return [(u[0], tup_to_uuid[u], u[1]) for u in unanalyzed_entries]
 
     def get_all_apps_to_grade(self):
         """

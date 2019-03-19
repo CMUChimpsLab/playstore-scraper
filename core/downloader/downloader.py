@@ -7,12 +7,12 @@ from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 import threading
 
-import dependencies.gplaycli.gplaycli as gplaycli
-from dependencies.constants import DOWNLOAD_FOLDER, THREAD_NO, RESULT_CHUNK
-from dependencies.app_object import App
+import common.gplaycli.gplaycli as gplaycli
+from common.constants import DOWNLOAD_FOLDER, THREAD_NO, RESULT_CHUNK
+from common.app_object import App
 import core.scraper.uuid_generator as uuid_generator
-from core.db.helper import DbHelper
-from dependencies import GPLAYCLI_CONFIG_FILE_PATH
+from core.db.db_helper import DbHelper
+from common import GPLAYCLI_CONFIG_FILE_PATH
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',

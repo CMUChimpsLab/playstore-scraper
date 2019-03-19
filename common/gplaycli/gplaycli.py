@@ -27,9 +27,9 @@ from subprocess import PIPE, Popen
 from enum import IntEnum
 import requests
 
-from dependencies.gpapidev.googleplay import GooglePlayAPI
-from dependencies.gpapidev.googleplay import LoginError
-from dependencies.gpapidev.googleplay import RequestError
+from common.gpapidev.googleplay import GooglePlayAPI
+from common.gpapidev.googleplay import LoginError
+from common.gpapidev.googleplay import RequestError
 from google.protobuf.message import DecodeError
 from pkg_resources import get_distribution, DistributionNotFound
 from pyaxmlparser import APK

@@ -21,8 +21,8 @@ import privacyRating.src.rateApp as rateApp
 import playstoreAnalysis.src.analyze as analyze
 import crowdAnalysis.topApps.getSensitivePairs as getSensitivePairs
 import crowdAnalysis.topApps.getSummedScore as getSummedScore
-from core.db.helper import DbHelper
-from dependencies.constants import PROCESS_NO, LOG_FOLDER, DOWNLOAD_FOLDER
+from core.db.db_helper import DbHelper
+from common.constants import PROCESS_NO, LOG_FOLDER, DOWNLOAD_FOLDER
 
 def staticAnalysis(entry_path_tup):
     apkEntry, outputPath = entry_path_tup
@@ -78,11 +78,11 @@ def staticAnalysis(entry_path_tup):
         logger.error("\n")
         return None
 
-"""
-Runs the pipeline static analyses on uuid_list and uses dbhelper to insert
-results in the database
-"""
 def analyzer(apkList, process_no=PROCESS_NO):
+    """
+    Runs the pipeline static analyses on uuid_list and uses dbhelper to insert
+    results in the database
+    """
     logger = logging.getLogger(__name__)
     dbHelper = DbHelper()
 
@@ -157,45 +157,45 @@ def analyzer(apkList, process_no=PROCESS_NO):
     dbHelper.update_apk_info_field_many_uuids(
             uuids, "analysesCompleted", True)
 
-"""
-Gets a list of APKs from a file of APK UUIDs
-"""
 def getUuidsFromFile(uuidListFile):
+    """
+    Gets a list of APKs from a file of APK UUIDs
+    """
     apkList = []
     apkList_f = open(uuidListFile)
     for line in apkList_f:
         pair = line.strip('\n').split(' ')
         apkList.append(
             {
-                "uuid": pair[0][:-4],
-                "versionCode": pair[1],
-                "fileDir": pair[2]
+                "packageName": pair[0],
+                "uuid": pair[1][:-4],
+                "versionCode": pair[2],
+                "fileDir": pair[3],
             })
     apkList_f.close()
 
     return apkList
 
-"""
-Gets a list of APKs from a file of APK UUIDs
-"""
 def getUuidsFromDb():
+    """
+    Gets a list of APKs from database
+    """
     dbHelper = DbHelper()
-    app_list = dbHelper.get_all_apps_to_analyze()
+    app_list = dbHelper.get_all_apps_for_full_analysis()
 
-    apkList = []
-    for (uuid, vc) in app_list:
-        apkList.append(
+    apk_list = []
+    for (name, uuid, vc) in app_list:
+        if uuid.endswith('apk'):
+            uuid = uuid[:-4]
+        apk_list.append(
             {
+                "packageName": name,
                 "uuid": uuid,
                 "versionCode": vc,
-                "fileDir": DOWNLOAD_FOLDER + "/" + uuid[0] + "/" + uuid[1]
+                "fileDir": "{}/{}/{}".format(DOWNLOAD_FOLDER, uuid[0], uuid[1]),
             })
 
-    return apkList
-
-def analyzer_wrapper(uuid_file, process_no=PROCESS_NO):
-    uuidList = getUuidsFromFile(uuid_file)
-    analyzer(uuidList, process_no=process_no)
+    return apk_list
 
 if __name__ == "__main__":
     """

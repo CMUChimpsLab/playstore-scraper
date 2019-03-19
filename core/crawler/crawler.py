@@ -19,10 +19,10 @@ try:
 except ImportError as e:
     pass
 
-from core.db.helper import DbHelper
-from dependencies.constants import CATEGORIES, THREAD_NO, PRIVACY_POLICY_FOLDER, BULK_CHUNK
-from dependencies.gplaycli import gplaycli
-from dependencies import GPLAYCLI_CONFIG_FILE_PATH
+from core.db.db_helper import DbHelper
+from common.constants import CATEGORIES, THREAD_NO, PRIVACY_POLICY_FOLDER, BULK_CHUNK
+from common.gplaycli import gplaycli
+from common import GPLAYCLI_CONFIG_FILE_PATH
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',

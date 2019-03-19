@@ -5,15 +5,15 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 import threading
 
-from dependencies.app_object import App
+from common.app_object import App
 from .uuid_generator import generate_uuids
-from core.db.helper import DbHelper
-from dependencies.gpapidev.googleplay import RequestError
-import dependencies.gpapidev.utils as utils
-from dependencies.gplaycli import gplaycli
-from dependencies import GPLAYCLI_CONFIG_FILE_PATH
-from dependencies.constants import THREAD_NO, RESULT_CHUNK, BULK_CHUNK
-from dependencies.protobuf_to_dict.protobuf_to_dict.convertor import protobuf_to_dict
+from core.db.db_helper import DbHelper
+from common.gpapidev.googleplay import RequestError
+import common.gpapidev.utils as utils
+from common.gplaycli import gplaycli
+from common import GPLAYCLI_CONFIG_FILE_PATH
+from common.constants import THREAD_NO, RESULT_CHUNK, BULK_CHUNK
+from common.protobuf_to_dict.protobuf_to_dict.convertor import protobuf_to_dict
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
@@ -324,12 +324,12 @@ class Scraper:
                 for i in range(0, len(detail_data)):
                     if detail_data[i] is None:
                         removed_app_names.append(package_names[i])
-                        self.__db_helper.update_app_as_removed(package_names[i])
             else:
                 logger.error("Empty details for {}, sleep and retry".format(package_names[0]))
                 time.sleep(5)
                 continue
 
+            self.__db_helper.update_apps_as_removed(removed_app_names)
             return removed_app_names
 
 if __name__ == '__main__':

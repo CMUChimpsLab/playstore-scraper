@@ -1,33 +1,31 @@
 import eventlet
 eventlet.monkey_patch(thread=False)
-#eventlet.monkey_patch(thread=True)
 
-from importlib import reload
 import os, sys
 import logging.config
 import pandas as pd
 import subprocess
-#from concurrent.futures import ThreadPoolExecutor
 import argparse
-#import threading
 import datetime
 import multiprocessing_logging
 import pprint
 
-from core.downloader.downloader import Downloader
-from core.db.helper import DbHelper
+from core.crawler.crawler import Crawler
+from core.db.db_helper import DbHelper
 from core.decompiler.decompiler import Decompiler
-from core.scraper.crawler import Crawler
+from core.downloader.downloader import Downloader
 from core.scraper.scraper import Scraper
-from core.updater.updater import Updater
-from core.analyzer.analyzer import analyzer_wrapper
-from dependencies.constants import DOWNLOAD_FOLDER, THREAD_NO, LOG_FOLDER
+from core.scraper.updater import Updater
+
+from core.pipelines import analysis_pipeline, full_pipeline
+from common.helpers import download_decompile_all
+from common.constants import DOWNLOAD_FOLDER, THREAD_NO, LOG_FOLDER
 
 pp = pprint.PrettyPrinter(indent=4)
 
-# ***************** #
-# smaller CLI command functions
-# ***************** #
+# **************************************************************************** #
+# CLI COMMAND FUNCTIONS
+# **************************************************************************** #
 def download_all(args):
     d = Downloader()
     d.download_all_from_db()
@@ -97,124 +95,9 @@ def update(args):
         print("must specify either -a (all) or -t (top)")
         sys.exit(1)
 
-def analyze(args):
-    # static analysis
-    helper = DbHelper()
-    app_list = helper.get_all_apps_for_full_analysis()
-    logger.info(len(app_list))
-
-    fname = to_file_for_analysis(app_list)
-    analyzer_wrapper(fname, process_no=12)
-    subprocess.call(["rm", fname])
-
-# ***************** #
-# large pipeline CLI command functions
-# ***************** #
-def full_pipeline(args):
-    kickoff = args.kickoff
-    fname = args.fname
-    if not kickoff and args.fname is not None:
-        logger.error("Can't use updater with -f option")
-        return
-
-    # start by updating top apps
-    d = DbHelper()
-    s = Scraper()
-    """
-    new_top_list = crawler.get_top_apps_list()
-    s.scrape_missing(new_top_list, compare_top=True)
-    d.update_top_apps(new_top_list)
-
-    if kickoff == True:
-        s = None
-        if fname == None:
-            # use crawler to get list of package names
-            logger.error("Crawler for package names not implemented yet")
-            return
-        else:
-            # use specified file of package names
-            s = Scraper(input_file=fname)
-
-        # use scraper
-        logger.info("Starting efficient scrape...")
-        s.efficient_scrape()
-        logger.info("...efficient scrape done")
-    else:
-        # use updater
-        logger.info("Starting updater...")
-        u = Updater()
-        u.update_apps_all()
-        logger.info("...update done")
-
-    # crawl privacy policies
-    crawler.crawl_app_privacy_policies()
-    """
-    # static analysis TODO remove this chunk later
-    logger.info("Starting analysis...")
-    os.environ["PIPENV_IGNORE_VIRTUALENVS"] = "1" # allow analysis pipeline to have own env
-    analyze(None)
-    logger.info("...analysis done")
-    return
-
-    # download/decompile
-    logger.info("Starting download and decompile...")
-    download_decompile_all()
-    logger.info("...download and decompile done")
-
-    # static analysis
-    logger.info("Starting analysis...")
-    os.environ["PIPENV_IGNORE_VIRTUALENVS"] = "1" # allow analysis pipeline to have own env
-    analyze(None)
-    logger.info("...analysis done")
-
-# ***************** #
-# helper functions
-# ***************** #
-def download_decompile_apk(name):
-    dec = Decompiler(use_database=True, compress=True)
-    down = Downloader()
-    logger.info("Downloading %s" % name)
-    uuid_list = down.download(apps_list=[name])
-    decomp_time = dec.decompile(uuid_list)
-    if len(decomp_time) > 0 and decomp_time[0] is not None:
-        logger.info("{} decompiled at {}".format(name, decomp_time))
-
-def to_file_for_analysis(app_list):
-    """
-    Writes a file with appropriate format to feed to analysis pipeline
-    :param app_list: List of uuids and their version codes to analyze (without apk extension)
-    Returns the file name of the file written to
-    """
-    fname = "apks.txt"
-    with open(fname, 'w') as f:
-        for (uuid, vc) in app_list:
-            if not uuid.endswith('apk'):
-                uuid = uuid+'.apk'
-            f.write("{} {} {}/{}/{}\n".format(uuid, str(vc), DOWNLOAD_FOLDER, uuid[0], uuid[1]))
-
-    return fname
-
-def download_decompile_all():
-    """
-    Downloads all not downloaded apps, then decompiles all that are a top app
-    """
-    """
-    logger.info("Downloading...")
-    d = Downloader()
-    downloaded_uuids = d.download_all_from_db()
-    logger.info("...done\n")
-    """
-
-    # logger.info("Decompiling {} apps...".format(len(downloaded_uuids)))
-    logger.info("Decompiling {} apps...".format("db"))
-    dec = Decompiler(use_database=True, compress=True)
-    # dec.decompile(downloaded_uuids)
-    dec.decompile()
-    logger.info("...done\n")
-
-# ***************** #
-# set up CLI argparser
-# ***************** #
+# **************************************************************************** #
+# CLI ARGPARSE DEFINITION
+# **************************************************************************** #
 formatter = lambda prog: argparse.HelpFormatter(prog, max_help_position=30)
 parser = argparse.ArgumentParser(prog="PROG",
     description="App Analysis",
@@ -225,13 +108,7 @@ subparsers = parser.add_subparsers(
     metavar="python main.py <command>",
     dest="subparser_name")
 
-# static analysis of apps not yet analyzed
-a_parser = subparsers.add_parser("a",
-    aliases=["analyze"],
-    help="static analysis of apps",
-    description="Static analysis of apps not yet analyzed")
-a_parser.set_defaults(func=analyze)
-
+# ****************************** SMALL COMMANDS ****************************** #
 # crawl specified resource
 c_parser = subparsers.add_parser("c",
     aliases=["crawl"],
@@ -273,18 +150,6 @@ d_parser = subparsers.add_parser("dw",
     description="Download all apps not downloaded in the database")
 d_parser.set_defaults(func=download_all)
 
-# entire app data and analysis pipeline
-fp_parser = subparsers.add_parser("fp",
-    aliases=["full-pipeline"],
-    help="entire app data and analysis pipeline",
-    description="Entire pipeline from scraping data about apps to analysis of them")
-fp_parser.add_argument("-k", "--kickoff",
-    action="store_true",
-    help="true if is first run, false otherwise")
-fp_parser.add_argument("-f", "--fname",
-    help="file name to scrape from, otherwise use crawler to get package names")
-fp_parser.set_defaults(func=full_pipeline)
-
 # scrape app specified or in supplied file in specified way
 s_parser = subparsers.add_parser("s",
     aliases=["scrape"],
@@ -320,6 +185,26 @@ update_type.add_argument("-t", "--top",
     action="store_true",
     help="update only top apps in database")
 u_parser.set_defaults(func=update)
+
+# ***************************** PIPELINE COMMAND ***************************** #
+# static analysis of apps not yet analyzed
+a_parser = subparsers.add_parser("ap",
+    aliases=["analysis-pipeline"],
+    help="static analysis of apps",
+    description="Static analysis of apps not yet analyzed")
+a_parser.set_defaults(func=analysis_pipeline)
+
+# entire app data and analysis pipeline
+fp_parser = subparsers.add_parser("fp",
+    aliases=["full-pipeline"],
+    help="entire app data and analysis pipeline",
+    description="Entire pipeline from scraping data about apps to analysis of them")
+fp_parser.add_argument("-k", "--kickoff",
+    action="store_true",
+    help="true if is first run, false otherwise")
+fp_parser.add_argument("-f", "--fname",
+    help="file name to scrape from, otherwise use crawler to get package names")
+fp_parser.set_defaults(func=full_pipeline)
 
 if __name__ == '__main__':
     args = parser.parse_args()

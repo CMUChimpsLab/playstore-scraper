@@ -4,8 +4,8 @@ from collections import defaultdict
 from bson.objectid import ObjectId
 from datetime import datetime
 
-import dependencies.constants as constants
-from core.db.helper import DbHelper
+import common.constants as constants
+from core.db.db_helper import DbHelper
 from core.scraper.uuid_generator import generate_uuids
 
 def convert_old_to_new():

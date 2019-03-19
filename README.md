@@ -1,5 +1,4 @@
 # Playstore Scraper and Downloader
----
 
 The scraper collects metadata for top free listing from each category. The playstore lists only 540 apps in each list.
 
@@ -60,5 +59,4 @@ This module basically goes through and rescrapes every app to see if any have ne
 Here is where I have been putting a lot of scripts that basically run other scripts. Essentially the scripts here will do some combination of downloading, decompiling, and analyzing the apps that have not been, by grabbing names and calling the other modules where it sees fit. Once command line functionality is implemented for each module, this may no longer be needed, but is an easy way to run through each app and download, decompile, and/or analyze it. Creates thread pools to run the more intensive tasks in parallel.
 
 ## How it all works together
-
 Essentially the idea here is to build up a server with all of the app metadata and downloaded/decompiled apks and sample analyses for anyone to use. The scraper is used to keep updated metadata from the store, the updater is used to figure out when we need new versions for apps, the downloader nabs the apks for everything, the decompiler decompiles them, and the pipeline/analzer will analyze them. All of these processes are meant to be running in parallel, mainly the updater and controller, but need to be adapted a bit more to be able to be run as a cronjob sort of setup every once in a while.

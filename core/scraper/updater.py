@@ -8,10 +8,10 @@ import sys
 import pprint
 
 from core.scraper.scraper import Scraper
-from core.db.helper import DbHelper
-from dependencies.constants import THREAD_NO, BULK_CHUNK
-from dependencies.protobuf_to_dict.protobuf_to_dict.convertor import protobuf_to_dict
-from dependencies.app_object import App
+from core.db.db_helper import DbHelper
+from common.constants import THREAD_NO, BULK_CHUNK
+from common.protobuf_to_dict.protobuf_to_dict.convertor import protobuf_to_dict
+from common.app_object import App
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
@@ -20,8 +20,8 @@ pp = pprint.PrettyPrinter(indent=4)
 
 class Updater:
     """
-    Keeps iterating over the database till the script is interrupted and collecting meta-data for apps
-    that have previously been scraped.
+    Keeps iterating over the database till the script is interrupted and 
+    collecting meta-data for apps that have previously been scraped.
     """
 
     def __init__(self, input_file=None):

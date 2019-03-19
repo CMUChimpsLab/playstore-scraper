@@ -11,8 +11,8 @@ import multiprocessing_logging
 import copyreg
 import types
 
-import core.db.helper as dbhelper
-from dependencies.constants import DECOMPILE_FOLDER, DOWNLOAD_FOLDER, PROCESS_NO, RESULT_CHUNK
+import core.db.db_helper as dbhelper
+from common.constants import DECOMPILE_FOLDER, DOWNLOAD_FOLDER, PROCESS_NO, RESULT_CHUNK
 
 def _pickle_method(method):
     func_name = method.im_func.__name__
