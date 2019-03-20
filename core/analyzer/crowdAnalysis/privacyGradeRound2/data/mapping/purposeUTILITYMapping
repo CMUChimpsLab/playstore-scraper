@@ -1,0 +1,12 @@
+[
+  {"packageName":"com.twoo", "permission":"ACCESS_COARSE_LOCATION", "purpose":"UTILITY", "purposeText":"to enable location-based features (like people nearby) in this app"},
+  {"packageName":"com.handmark.tweetcaster", "permission":"ACCESS_COARSE_LOCATION", "purpose":"UTILITY", "purposeText":"to enable location-based features (like tweet nearby) in this app"},
+  {"packageName":"mobi.browser.flashfox", "permission":"AUTHENTICATE_ACCOUNTS", "purpose":"UTILITY", "purposeText":"to manage Firefox account informaiton on users' phone"},
+  {"packageName":"com.amazon.kindle", "permission":"AUTHENTICATE_ACCOUNTS", "purpose":"UTILITY", "purposeText":"to manage Amazon account information on users' phone"},
+  {"packageName":"com.amazon.mp3", "permission":"AUTHENTICATE_ACCOUNTS", "purpose":"UTILITY", "purposeText":"to manage Amazon account information on users' phone"},
+  {"packageName":"smm.refill", "permission":"SEND_SMS", "purpose":"UTILITY", "purposeText":"for STC and Zain balance transfer"},
+  {"packageName":"com.sbs.lamusica", "permission":"SEND_SMS", "purpose":"UTILITY", "purposeText":"for unclear purpose"},
+  {"packageName":"com.yodawnla.isMonster2", "permission":"BLUETOOTH", "purpose":"UTILITY", "purposeText":"to enable fight your friends through Bluetooth"},
+  {"packageName":"com.whaleshark.retailmenot", "permission":"BLUETOOTH", "purpose":"UTILITY", "purposeText":"for share coupons with friends"},
+  {"packageName":"com.amazon.kindle", "permission":"MANAGE_ACCOUNTS", "purpose":"UTILITY", "purposeText":"to login Amazon account"}
+]

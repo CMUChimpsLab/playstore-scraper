@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
+    <script type='text/javascript' src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/js/start.js?v=1' type='text/javascript'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/js/jquery-1.7.2.min.js'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/bootstrap/js/bootstrap.js'></script>
+    <link href='https://s3.amazonaws.com/privacygrade/static/bootstrap/css/bootstrap.css' rel='stylesheet'>
+    <style type='text/css'>
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+    </style>
+    <link href='https://s3.amazonaws.com/privacygrade/static/bootstrap/css/bootstrap-responsive.css' rel='stylesheet'>
+    <title>Mobile app privacy comfort</title>
+
+    <!-- Le styles -->
+    <link href='https://s3.amazonaws.com/privacygrade/static/css/start.css?v=1' rel='stylesheet'> 
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src='http://html5shim.googlecode.com/svn/trunk/html5.js'></script>
+    <![endif]-->
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+  </head>
+  <body id = 'body'>
+
+    <div id='appInfo' class='span9 offset3'>
+<h3>Instruction</h3>
+<p class='instuction'> Please read the mobile app description carefully and look at the application screenshots <br>then answer the questions below. HIT will be rejected if you just click through. </p>
+<h4 style='margin-left:20px'>Kindle</h4>
+<img class="icon" src=https://lh4.ggpht.com/Z_MFZtfSUcvJQLzaRHWyC5odolUoCiV1COzjvOM4fE5uGtWSO1yvf6ta7NlrlC36ag alt="icon image">
+<h4>App Screenshots</h4>
+<div id='screenShots'>
+<table border='0' width='65%'>
+  <tbody>
+    <tr>
+      <td>
+        <img class='imageCell' src=https://lh3.ggpht.com/AUzg68bkMRZZv1vgmzzzh-pWclm3_jIN9yYbr3XkfHkqqHCTCkvV1bBFSsczySNNLWdD alt='screen shot' >
+      </td>
+      <td>
+        <img class='imageCell' src=https://lh5.ggpht.com/Syhn33O2PlVSRh5iuMb0mZiyZpE3uL20d3E-c5dtPUflAB929EhBkPiuGiQGg52QghY alt='screen shot' >
+      </td>
+      <td>
+        <img class='imageCell' src=https://lh6.ggpht.com/qWjw-uPqCH8NrBFikPVowCBNdmcg77ZdzObkxdCZk2G9Fu731v4nDTUGVjB6mWQUTQ alt='screen shot' >
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+  
+<h4>App Description</h4>
+<div id='descrption' class='span8'>
+  <p>The Kindle app puts over a million books at your fingertips.  It’s the app for every reader, whether you’re a book reader, magazine reader, or newspaper reader—and you don’t need to own a Kindle to use it.  Choose from over a million Kindle books from the Kindle Store or enjoy popular magazines like The Economist and Reader’s Digest with high-resolution color images.*<p>• Read Free Books—Choose from thousands of free ebooks such as Pride &amp; Prejudice or The Adventures of Sherlock Holmes.<p>• Shop for Books—Easily shop for ebooks, including new releases and New York Times Best Sellers.<p>• Use the Built-In Dictionary, Google, and Wikipedia—The Kindle app has a built-in dictionary that allows you to look up words instantly while you’re reading your ebooks.  Simply tap and hold a word to view its definition or use the Google and Wikipedia links to get more information.<p>• Sync Your eBooks—The Kindle app lets you read the same book across devices and automatically syncs where you left off so you can start reading on one device and pick up where you left off on another device.  The app syncs your furthest page read, bookmarks, notes, and highlights between Android, PC, Mac, iPad, iPhone, iPod touch, BlackBerry, Windows Phone 8, and any of our Kindle devices using our Whispersync technology. <p>• Sample Books Before You Buy—Read the first chapter of a book for free before you decide to buy.<p>• Customize Your Reading—Choose your preferred font size, screen brightness, background color, and orientation (portrait or landscape) to read your books.<p>• Borrow eBooks from the Library—Check out ebooks from your local library and have them delivered wirelessly to your Kindle app.<p>• Read print replica textbooks on Android tablets.  Print Replica Kindle books maintain the rich formatting and layout of their related print editions and provide features to help students study smarter including ability to highlight passages, add margin notes, and search for keywords.  Whispersync technology saves and synchronizes your bookmarks, notes, and highlights across your devices.<p>* Selection for U.S. users only; selection and price of ebooks and e-periodicals vary by country.</p>
+</div>
+<hr class="span8">
+</div>
+<div class="span8 offset3">
+<h4>Questions</h4>
+<form name='mturk_form' method='post' id='mturk_form' action='https://www.mturk.com/mturk/externalSubmit'  onsubmit='return checkformbeforesubmit();' style="margin-left:20px">
+  <input type='hidden' value='' name='assignmentId' id='assignmentId'>
+  <input type='hidden' name='packageName' value='com.amazon.kindle' id="packageName"> 
+  <input type='hidden' name='permissionType' value='MANAGE_ACCOUNTS' id="permissionType"> 
+  <input type='hidden' name='purposeType' value='UTILITY' id="purposeType"> 
+  <input type='hidden' name='permissionText' value="can manage user's accounts on the phone" id="permissionText"> 
+  <input type='hidden' name='purposeText' value="to login Amazon account" id="purposeText"> 
+  <div id='Q1'>
+    <h5>Question 1</h5>
+      <p>What category do you think this mobile app belongs to?<span style='color:red'>(required)</span></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='GAME'> Game Application<br></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='APPLICATION'> Non-game Application<br></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='Content: Book, Music or Video'> Content: Book, Music or Video<br></p>
+      <input type='hidden' name='Q1realCategory' value=APPLICATION> 
+  </div>
+  <div id='Q2' style='margin-top:20px'>
+    <h5>Question 2</h5>
+    <p>Based on our analysis, Kindle <strong><span style='color:blue'>can manage user's accounts on the phone</span></strong> <strong>to login Amazon account</strong>. </p>
+    <p>Suppose you have installed Kindle on your smart phone, do you feel comfortable when it <strong><span style='color:blue'>can manage user's accounts on the phone</span></strong> <strong>to login Amazon account</strong>. <span style='color:red'>(required)</span> </p>
+    <p><input type='radio' name='Q2comfortQuestion' value='2'> Very comfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='1'> Somewhat comfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='-1'> Somewhat uncomfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='-2'> Very uncomfortable<br></p>
+  </div>
+  <div id="Q3" style='margin-top:20px'>
+    <h5>Question 3</h5>
+    <p>Please provide any comments you may have below, we appreciate your input!</p>
+    <textarea rows="3" cols="80" name="Q2comment"></textarea>
+  </div>
+  <p id='error_msg' class='alert' style='display:none'>**Please answer all the required questions.**</p>
+  <p><input type='submit' id='submitButton' value='Submit' /></p>
+</form>
+<script language='Javascript'>turkSetAssignmentID();</script>
+</div>
+
+</body>
+</html>

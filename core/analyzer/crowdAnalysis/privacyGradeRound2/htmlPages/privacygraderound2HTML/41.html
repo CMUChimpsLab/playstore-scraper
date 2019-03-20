@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
+    <script type='text/javascript' src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/js/start.js?v=1' type='text/javascript'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/js/jquery-1.7.2.min.js'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/bootstrap/js/bootstrap.js'></script>
+    <link href='https://s3.amazonaws.com/privacygrade/static/bootstrap/css/bootstrap.css' rel='stylesheet'>
+    <style type='text/css'>
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+    </style>
+    <link href='https://s3.amazonaws.com/privacygrade/static/bootstrap/css/bootstrap-responsive.css' rel='stylesheet'>
+    <title>Mobile app privacy comfort</title>
+
+    <!-- Le styles -->
+    <link href='https://s3.amazonaws.com/privacygrade/static/css/start.css?v=1' rel='stylesheet'> 
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src='http://html5shim.googlecode.com/svn/trunk/html5.js'></script>
+    <![endif]-->
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+  </head>
+  <body id = 'body'>
+
+    <div id='appInfo' class='span9 offset3'>
+<h3>Instruction</h3>
+<p class='instuction'> Please read the mobile app description carefully and look at the application screenshots <br>then answer the questions below. HIT will be rejected if you just click through. </p>
+<h4 style='margin-left:20px'>Fruit Shooter Crush</h4>
+<img class="icon" src=https://lh6.ggpht.com/o2ocGvfenvfKl7gX3ZzFrAl4Id-grNhSK34Vlk9B2V-30vuo-V-t7zoEiTBt5TqwNQ alt="icon image">
+<h4>App Screenshots</h4>
+<div id='screenShots'>
+<table border='0' width='65%'>
+  <tbody>
+    <tr>
+      <td>
+        <img class='imageCell' src=https://lh6.ggpht.com/NYlpWHBf1ftqQaw7EFfQpL8RYjZrmZ2rimZzRCyDYq8IMNqU7dPHUdga7GmW8pUw6g alt='screen shot' >
+      </td>
+      <td>
+        <img class='imageCell' src=https://lh6.ggpht.com/qt1q96AlTPv4X1a6GgyKQ_I1jxhBVWAhk1SeUKZ_VnH2jJfNaL0tjNZDIMG6DoKr_fU alt='screen shot' >
+      </td>
+      <td>
+        <img class='imageCell' src="" alt='screen shot' >
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+  
+<h4>App Description</h4>
+<div id='descrption' class='span8'>
+  <p>Try fun and simple &quot;Bubble Shooter&quot; game Fruit Shooter Blast lovely made by Fruit crush games<p>The best interpretation of the classic &quot;Bubble Shooter&quot; game with beautiful graphics and guaranteed hours of fun! Innovative design, interesting game-play, and relaxing jungle ambiance sounds make this a must-have game on your Android Device. Pop batches of funny looking fruits by tossing other fruits at them and matching sets of three or more fruits of the same color. Moreover, you can tack your high scores in the scoreboard. It is so addictive you can play for hours!<p>Tap on two or more adjacent candy to make them crush, and try to scoring as many points as possible!<p>*Beautiful and extraordinary fruits theme graphics<br>*Specifically designed for touch-screen phones<br>*Hours of entertainment on your mobile phone<p>We love creating apps, and want to keep them free forever. In order to keep our development running we are using a search service to generate some revenue from this free app. This app will add a couple search links on your device in the form of an icon, bookmark link and browser homepage. You may delete them easily (drag to the trash or delete the link for the browser), if you choose to use them, thanks!<p>Supported OS versions: 1.5, 1.6, 2.1, 2.2, 2.3<br>Supported screen resolutions: 240x320, 320x480, 480x800, 480x854<br>Game Style:Crush Game</p>
+</div>
+<hr class="span8">
+</div>
+<div class="span8 offset3">
+<h4>Questions</h4>
+<form name='mturk_form' method='post' id='mturk_form' action='https://www.mturk.com/mturk/externalSubmit'  onsubmit='return checkformbeforesubmit();' style="margin-left:20px">
+  <input type='hidden' value='' name='assignmentId' id='assignmentId'>
+  <input type='hidden' name='packageName' value='com.fruit.shooter.legend' id="packageName"> 
+  <input type='hidden' name='permissionType' value='READ_CONTACTS' id="permissionType"> 
+  <input type='hidden' name='purposeType' value='SECONDARY_MARKET' id="purposeType"> 
+  <input type='hidden' name='permissionText' value="can read user's contact list (phone book) and phone call history" id="permissionText"> 
+  <input type='hidden' name='purposeText' value="for unclear purpose" id="purposeText"> 
+  <div id='Q1'>
+    <h5>Question 1</h5>
+      <p>What category do you think this mobile app belongs to?<span style='color:red'>(required)</span></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='GAME'> Game Application<br></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='APPLICATION'> Non-game Application<br></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='Content: Book, Music or Video'> Content: Book, Music or Video<br></p>
+      <input type='hidden' name='Q1realCategory' value=GAME> 
+  </div>
+  <div id='Q2' style='margin-top:20px'>
+    <h5>Question 2</h5>
+    <p>Based on our analysis, Fruit Shooter Crush <strong><span style='color:blue'>can read user's contact list (phone book) and phone call history</span></strong> <strong>for unclear purpose</strong>. </p>
+    <p>Suppose you have installed Fruit Shooter Crush on your smart phone, do you feel comfortable when it <strong><span style='color:blue'>can read user's contact list (phone book) and phone call history</span></strong> <strong>for unclear purpose</strong>. <span style='color:red'>(required)</span> </p>
+    <p><input type='radio' name='Q2comfortQuestion' value='2'> Very comfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='1'> Somewhat comfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='-1'> Somewhat uncomfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='-2'> Very uncomfortable<br></p>
+  </div>
+  <div id="Q3" style='margin-top:20px'>
+    <h5>Question 3</h5>
+    <p>Please provide any comments you may have below, we appreciate your input!</p>
+    <textarea rows="3" cols="80" name="Q2comment"></textarea>
+  </div>
+  <p id='error_msg' class='alert' style='display:none'>**Please answer all the required questions.**</p>
+  <p><input type='submit' id='submitButton' value='Submit' /></p>
+</form>
+<script language='Javascript'>turkSetAssignmentID();</script>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,6 @@
+lassoLars_scaled
+result of pair regression DF
+testSize: 130.0, avgMSE: 0.187191014985 regMSE: 0.187191014985
+Final result with purpose only regression
+Final result with hybrid with pair regression
+=========================================================
