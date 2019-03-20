@@ -34,7 +34,6 @@ def get_plugins(rel_plugin_folder):
     import_path = rel_plugin_folder.replace("/", ".").rstrip(".")
 
     plugins = []
-    print(plugin_folder, rel_plugin_folder, import_path)
     plugin_locations = os.listdir(plugin_folder)
     for plugin_name in plugin_locations:
         location = os.path.join(plugin_folder, plugin_name)

@@ -3,6 +3,7 @@ import json
 import random
 import pandas as pd
 from pymongo import MongoClient
+
 from common.constants import DB_HOST, DB_ROOT_USER, DB_ROOT_PASS
 
 client = MongoClient(DB_HOST, 27017)

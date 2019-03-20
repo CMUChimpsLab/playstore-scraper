@@ -6,12 +6,11 @@ to be parsed and analyzed as specified
 """
 
 import os
-import sys
-print(sys.path)
 from multiprocessing import Queue, Process, Value
 import logging
 import subprocess
 from lxml import etree
+import queue
 
 from common import constants
 from core.analyzer.python_static_analyzer.androguard.util import getxml_value
@@ -33,22 +32,24 @@ class APKParser:
         apk_list: list of dicts with at least <packageName> and <uuid> key each
 
         parser_fn:
-         - input: 
+         - input:
              - instance of APKObject
          - output:
-             - instance of APKObject with next_arg attribute set to an arbitrary 
+             - instance of APKObject with next_arg attribute set to an arbitrary
                result (dev's responsibility to make sure it works)
 
         analysis_fn
-         - input: 
+         - input:
              - instance of APKObject with next_arg set from parser_fn
          - output:
-             - instance of APKObject with next_arg attribute set to an arbitrary 
+             - instance of APKObject with next_arg attribute set to an arbitrary
                result (dev's responsibility to make sure it works)
         """
         self.parser_fn = parser_fn
         self.analysis_fn = analysis_fn
         self.retrieve_dir = os.path.abspath("tmp")
+        if not os.path.exists(self.retrieve_dir):
+            os.makedirs(self.retrieve_dir)
 
         self.apk_obj_list = []
         for a in apk_list:
@@ -66,7 +67,7 @@ class APKParser:
         get_done_flag = Value("i", 0)
         parse_analyze_proc_no = int((process_no - 2)/2)
 
-        get_apks_proc = Process(target=self.get_apks, 
+        get_apks_proc = Process(target=self.get_apks,
             args=(self.apk_obj_list, retrieved_apks, to_local))
         get_apks_proc.start()
 
@@ -82,8 +83,8 @@ class APKParser:
             analyze_proc.start()
             analyze_apks_procs.append(analyze_proc)
 
-        del_apks_proc = Process(target=self.delete_retrieved_apks, 
-            args=(get_done_flag, finished_apks))
+        del_apks_proc = Process(target=self.delete_retrieved_apks,
+            args=(get_done_flag, finished_apks, to_local))
         del_apks_proc.start()
 
         # once get_apks_proc done, signal by setting get_done_flag to 1
@@ -97,10 +98,13 @@ class APKParser:
 
     def get_apks(self, apk_list, retrieved_apks, to_local):
         for a in apk_list:
-            decompile_loc = os.path.join(constants.DECOMPILE_FOLDER, 
+            decompile_loc = os.path.join(constants.DECOMPILE_FOLDER,
                 a.uuid[0], "{}.zip".format(a.uuid))
             if to_local:
-                cp_res = subprocess.run(" ".join(["cp", decompile_loc, self.retrieve_dir]))
+                cp_res = subprocess.run(" ".join(["cp", decompile_loc, self.retrieve_dir]),
+                        stdout=subprocess.DEVNULL,
+                        stderr=subprocess.PIPE,
+                        shell=True)
                 if cp_res.returncode != 0:
                     logger.error("cp err for {}: {}".format(a.package_name, cp_res.stderr))
                     continue
@@ -109,53 +113,78 @@ class APKParser:
             else:
                 zip_loc = decompile_loc
 
-            out_loc = os.path.join(self.retrieve_dir, a.uuid)
-            unzip_res = subprocess.run(" ".join(["unzip", zip_loc, "-d", out_loc]))
+            unzip_res = subprocess.run(" ".join(["unzip", zip_loc, "-d", self.retrieve_dir]),
+                        stdout=subprocess.DEVNULL,
+                        stderr=subprocess.PIPE,
+                        shell=True)
             if unzip_res.returncode != 0:
                 logger.error("unzip err for {}: {}".format(a.package_name, unzip_res.stderr))
                 continue
-            
-            a.unzip_path = out_loc
+
+            a.unzip_path = os.path.join(self.retrieve_dir, a.uuid)
             retrieved_apks.put(a)
 
     def parse_apks(self, get_done_flag, retrieved_apks, parsed_results):
-        while ((get_done_flag.value == 0) or 
+        while ((get_done_flag.value == 0) or
                 (get_done_flag.value == 1 and not retrieved_apks.empty())):
             # loop until get_done_flag is 1 and retrieved_apks is empty
-            apk = retrieved_apks.get()
-            parse_res = self.parser_fn(apk)
+            try:
+                apk = retrieved_apks.get(block=True, timeout=5)
+            except queue.Empty:
+                continue
+            try:
+                parse_res = self.parser_fn(apk)
+            except Exception as e:
+                logger.error("parser_fn failed: {} - {}".format(apk.package_name, e))
+                int("a")
+                continue
             apk.next_arg = parse_res
             parsed_results.put(apk)
 
     def analyze_apks(self, get_done_flag, parsed_results, finished_apks):
-        while ((get_done_flag.value == 0) or 
+        while ((get_done_flag.value == 0) or
                 (get_done_flag.value == 1 and not parsed_results.empty())):
             # loop until get_done_flag is 1 and parsed_results is empty
-            parsed_apk = parsed_results.get()
+            try:
+                parsed_apk = parsed_results.get(block=True, timeout=5)
+            except queue.Empty:
+                continue
             try:
                 analysis_res = self.analysis_fn(parsed_apk)
                 if analysis_res is None:
                     # assume already caught exception in analysis_fn
                     continue
 
+                print(analysis_res)
                 parsed_apk.next_arg = analysis_res
                 finished_apks.put(parsed_apk)
             except Exception as e:
                 logger.error("Analysis error: {} - {}".format(parsed_apk.package_name, e))
                 continue
 
-    def delete_retrieved_apks(self, get_done_flag, finished_apks):
-        while ((get_done_flag.value == 0) or 
+    def delete_retrieved_apks(self, get_done_flag, finished_apks, to_local):
+        while ((get_done_flag.value == 0) or
                 (get_done_flag.value == 1 and not finished_apks.empty())):
             # loop until get_done_flag is 1 and finished_apks is empty
-            analyzed_apk = finished_apks.get()
-            decompile_loc = os.path.join(constants.DECOMPILE_FOLDER, 
-                analyzed_apk.uuid[0], "{}.zip".format(analyzed_apk.uuid))
-            rm_res = subprocess.run(" ".join(["rm", decompile_loc]))
-            if rm_res.returncode != 0:
-                logger.error("rm err for {}: {}".format(analyzed_apk.package_name, rm_res.stderr))
+            try:
+                analyzed_apk = finished_apks.get(block=True, timeout=5)
+            except queue.Empty:
                 continue
-            rm_res = subprocess.run(" ".join(["rm", "-rf", analyzed_apk.unzip_path]))
+
+            if to_local:
+                decompile_loc = os.path.join(self.retrieve_dir, "{}.zip".format(analyzed_apk.uuid))
+                rm_res = subprocess.run(" ".join(["rm", decompile_loc]),
+                        stdout=subprocess.DEVNULL,
+                        stderr=subprocess.PIPE,
+                        shell=True)
+                if rm_res.returncode != 0:
+                    logger.error("rm err for {}: {}".format(analyzed_apk.package_name, rm_res.stderr))
+                    continue
+
+            rm_res = subprocess.run(" ".join(["rm", "-rf", analyzed_apk.unzip_path]),
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.PIPE,
+                    shell=True)
             if rm_res.returncode != 0:
                 logger.error("rm err for {}: {}".format(analyzed_apk.package_name, rm_res.stderr))
                 continue
@@ -175,19 +204,21 @@ def manifest_permissions_parser(apk_obj):
         logger.error("Parse error: {} - AndroidManifest.xml not found".format(package_name))
         return
 
+    """
     xml_printer = None
     with open(xml_file, "rb") as f:
         xml_printer = bytecodes_apk.AXMLPrinter(f.read())
+    """
 
     perms = []
     declared_perms = {}
     parser = etree.XMLParser(recover=True)
-    tree = etree.fromstring(xml_printer.get_buff().encode(), parser=parser)
+    tree = etree.parse(xml_file, parser=parser)
     xml_obj = bytecodes_apk.parse_lxml_dom(tree)
     if xml_obj is None:
         logger.error("Parse error: {} - null xml_obj after parsing".format(package_name))
         return
-    
+
     for item in xml_obj.getElementsByTagName('uses-permission'):
         perms.append(getxml_value(item, "name", string=True))
 
@@ -197,8 +228,8 @@ def manifest_permissions_parser(apk_obj):
     for d_perm_item in xml_obj.getElementsByTagName('permission'):
         print(d_perm_item)
         d_perm_name = str(d_perm_item.getAttributeNS(NS_ANDROID_URI, "name"))
-        if not string_val:
-            string_val = str(d_perm_item.getAttribute("android:name"))
+        if not d_perm_name:
+            d_perm_name = str(d_perm_item.getAttribute("android:name"))
 
         d_perm_details = {}
         for attr in attr_list:
@@ -208,7 +239,7 @@ def manifest_permissions_parser(apk_obj):
             d_perm_details[attr] = string_val
 
         declared_perms[d_perm_name] = d_perm_details
-    
+
     return (perms, declared_perms)
 
 # **************************************************************************** #
@@ -216,7 +247,7 @@ def manifest_permissions_parser(apk_obj):
 # **************************************************************************** #
 def get_iap_usage(apk_obj):
     """
-    Looks for the `com.android.vending.BILLING` permission to see if the app 
+    Looks for the `com.android.vending.BILLING` permission to see if the app
     uses in-app purchases
     """
     perms, declared_perms = apk_obj.next_arg

@@ -12,7 +12,7 @@ import sys
 import pprint
 import subprocess
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)) +
-        "/modules/staticAnalysisPipeline/python_static_analyzer/")
+        "/core/analyzer/python_static_analyzer/")
 
 pp = pprint.PrettyPrinter(indent=4)
 
