@@ -1,15 +1,20 @@
 from pymongo import MongoClient
-import dependencies.constants as constants
-from modules.database_helper.helper import DbHelper
-from modules.scraper.scraper import Scraper
 from collections import defaultdict
 from bson.objectid import ObjectId
-from modules.scraper.uuid_generator import generate_uuids
 from datetime import datetime
 from collections import defaultdict
 import os
 import sys
 import pprint
+import subprocess
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)) +
+        "/modules/staticAnalysisPipeline/python_static_analyzer/")
+
+import dependencies.constants as constants
+from modules.database_helper.helper import DbHelper
+from modules.scraper.scraper import Scraper
+from modules.scraper.uuid_generator import generate_uuids
+from androguard.core.bytecodes import apk
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -473,7 +478,7 @@ def check_app_detail_dups():
 
 def check_app_info_dups():
     all_apk_info = android_app_db.apkInfo.find({},
-        {"packageName": 1, "_id": 1, "versionCode": 1, "uploadDate": 1})
+            {"packageName": 1, "_id": 1, "versionCode": 1, "uploadDate": 1, "dateDownloaded": 1})
     apk_info_names = []
     apk_info_ids = defaultdict(list)
     for a in all_apk_info:
@@ -482,45 +487,37 @@ def check_app_info_dups():
         name_version_date_tup = (a["packageName"],
                 a.get("versionCode", None),
                 a.get("uploadDate", None))
-        apk_info_ids[name_version_date_tup].append(a["_id"])
+        apk_info_ids[name_version_date_tup].append((a["_id"], a["dateDownloaded"]))
 
     info_names_set = set(apk_info_names)
     print("got info")
 
     print("versions check")
     to_break = False
-    for (tup, ids) in apk_info_ids.items():
-        """
-        for d_id in ids:
-            details_obj = android_app_db.apkDetails.find_one({"_id": d_id})
-            id_keys = set(list(details_obj.keys()))
-            if "image" in id_keys and "images" in id_keys:
-                no_dim_image = set()
-                for img_obj in details_obj["image"]:
-                    if "dimension" in img_obj:
-                        img_obj.pop("dimension")
-                    no_dim_image.add(tuple(img_obj.items()))
-                images = set([tuple(i.items()) for i in details_obj["images"]])
-                if no_dim_image != images:
-                    print(no_dim_image)
-                    print (images)
-                    to_break = True
+    to_get_details = []
+    del_info_id_prefs = {}
+    for (tup, id_dw) in apk_info_ids.items():
+        if len(id_dw) > 1:
+            print(tup)
+            to_get_details.append(tup[0])
+            ids = set([t[0] for t in id_dw])
+            for t in id_dw:
+                if t[1] is not None:
+                    ids.remove(t[0])
                     break
-        if to_break:
-            break
-        """
+            ids = list(ids)
+            if len(ids) == len(id_dw):
+                ids = ids[1:]
+            for i in ids:
+                del_info_id_prefs[str(i)[0:18]] = i
 
-        if len(ids) == 2:
-            info_1 = android_app_db.apkInfo.find_one({"_id": ids[0]})
-            info_2 = android_app_db.apkInfo.find_one({"_id": ids[1]})
-            id_1_keys = set(list(info_1))
-            id_2_keys = set(list(info_2))
-            print(ids, id_1_keys.difference(id_2_keys), id_2_keys.difference(id_1_keys))
-            id_to_use = ids[0] if len(id_1_keys) > len(id_2_keys) else ids[1]
-            id_not_use = ids[1] if len(id_1_keys) > len(id_2_keys) else ids[0]
-            obj_not_use = info_2 if len(id_1_keys) > len(id_2_keys) else info_1
-            print("delete ", id_not_use)
-            android_app_db.apkInfo.remove({"_id": id_not_use})
+    details = android_app_db.apkDetails.find(
+            {"details.appDetails.packageName": {"$in": to_get_details}})
+    for d in details:
+        id_pref = str(d["_id"])[0:18]
+        if id_pref in del_info_id_prefs:
+            print(del_info_id_prefs[id_pref], d["_id"])
+            break
 
 def check_download_dups():
     cursor = android_app_db.apkInfo.find(
@@ -550,6 +547,88 @@ def check_top_removed():
         print(i)
         break
 
+def analysis_vc():
+    bad_entry_names = []
+
+    link_url_cursor = static_db.linkUrl.find({}, {"packageName": 1, "versionCode": 1})
+    for l in link_url_cursor:
+        try:
+            a = int(l["versionCode"])
+        except ValueError:
+            bad_entry_names.append(l["packageName"])
+
+    third_cursor = static_db.thirdPartyPackages.find({}, {"packageName": 1, "versionCode": 1})
+    for t in third_cursor:
+        try:
+            a = int(t["versionCode"])
+        except ValueError:
+            bad_entry_names.append(t["packageName"])
+
+    bad_entry_names = list(set(bad_entry_names))
+    print(bad_entry_names, len(bad_entry_names))
+
+def old_apk_db_check():
+    with open("aws_apks.txt", "r") as f:
+        downloaded_apks = set([name[:-4] for name in f.read().strip("\n").split("\n")])
+        print(len(downloaded_apks))
+        in_db = android_app_db.apkInfo.find(
+                {"packageName": {"$in": list(downloaded_apks)}},
+                {"packageName": 1, "versionCode": 1, "uuid": 1})
+
+        grouped = defaultdict(list)
+        for i in in_db:
+            grouped[i["packageName"]].append(i)
+
+        mult_vc = dict([i for i in grouped.items() if len(i[1]) > 1])
+        no_mult_vc = dict([i for i in grouped.items() if len(i[1]) == 1])
+        print(len(mult_vc))
+
+        found = []
+        not_found = []
+        for (p, vers) in mult_vc.items():
+            apk_loc = "aws_apks/{}.apk".format(p)
+            a = apk.APK(apk_loc)
+            vc = int(a.androidversion["Code"])
+            is_in_db = False
+            uuid = None
+            for v in vers:
+                if v["versionCode"] == vc:
+                    is_in_db = True
+                    uuid = v["uuid"]
+                    break
+            if is_in_db:
+                found.append((p, uuid))
+            else:
+                not_found.append((p, uuid))
+            print(p, is_in_db)
+        print(len(found), len(not_found))
+
+        for (p, u) in not_found:
+            subprocess.call(["cp",
+                "aws_apks/{}.apk".format(p),
+                "not_found_apks/{}.apk".format(p)])
+        """
+        uuids = []
+        for p in no_mult_vc:
+            u = str(grouped[p][0]["uuid"])
+            print(p, u)
+            subprocess.call(["cp",
+                "aws_apks_2/{}.apk".format(p),
+                "{}/{}/{}/{}.apk".format(constants.DOWNLOAD_FOLDER, u[0], u[1], u)])
+            uuids.append(u)
+        for (p, u) in found:
+            u = str(u)
+            print(p, u)
+            subprocess.call(["cp",
+                "aws_apks_2/{}.apk".format(p),
+                "{}/{}/{}/{}.apk".format(constants.DOWNLOAD_FOLDER, u[0], u[1], u)])
+            uuids.append(u)
+
+        android_app_db.apkInfo.update_many(
+                {"uuid": {"$in": uuids}},
+                {"$set": {"dateDownloaded": datetime.now().strftime("%Y%m%dT%H%M")}})
+        """
+
 if __name__ == "__main__":
     dh = MongoClient(host=constants.DB_HOST,
         port=constants.DB_PORT,
@@ -557,7 +636,9 @@ if __name__ == "__main__":
         password=constants.DB_ROOT_PASS)
     s = Scraper()
     android_app_db = dh[constants.APP_METADATA_DB]
+    static_db = dh[constants.STATIC_ANALYSIS_DB]
     dbhelper = DbHelper()
 
-    top_apps_check()
+    old_apk_db_check()
+    # check_app_info_dups()
 

@@ -1,31 +1,25 @@
 \.DS_Store
-
-all_apps\.csv
-
-\.idea/
-
-__pycache__/
-
-apps/
-
-logs/
-
-package_names\.csv
-
-info_logs\.log
-scraper/scraper-server/node_modules
-
 *.pyc
 *.swp
 *.pytest*
 *.log
+__pycache__/
+\.idea/
+.vscode
 
-apps_decompiled
+all_apps\.csv
+package_names\.csv
+info_logs\.log
 decompiler/apktool
 decompiler/apktool\.jar
 apks.txt
 
+scraper/scraper-server/node_modules
+apps_decompiled
+apps/
+logs/
+tmp/
+
 **/dbConfig.py
 secrets\.py
-.vscode
 

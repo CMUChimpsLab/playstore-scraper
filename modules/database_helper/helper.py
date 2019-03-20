@@ -381,7 +381,7 @@ class DbHelper:
         self.__static_analysis_db.thirdPartyPackages.insert(
             {
                 "packageName": packageName,
-                "versionCode": versioncode,
+                "versionCode": int(versioncode),
                 "filename": filename,
                 "externalPackageName": externalPackageName,
                 "category": category
@@ -393,7 +393,7 @@ class DbHelper:
         self.__static_analysis_db.permissionList.insert(
             {
                 "packageName": packageName,
-                "versionCode": versioncode,
+                "versionCode": int(versioncode),
                 "filename": filename,
                 "permission": permission,
                 "isExternal": is_external,
@@ -410,7 +410,7 @@ class DbHelper:
         self.__static_analysis_db.linkUrl.insert(
             {
                 "packageName": packageName,
-                "versionCode": versioncode,
+                "versionCode": int(versioncode),
                 "filename": filename,
                 "linkUrl": link_url,
                 "isExternal": is_external,
@@ -464,19 +464,33 @@ class DbHelper:
         """
         self.__static_analysis_db.linkUrl.remove(
             {
-                "packageName": package_name,
-                "versionCode": version_code,
+                "$and": [
+                    {"packageName": package_name},
+                    {"versionCode": version_code},
+                ],
             })
         self.__static_analysis_db.permissionList.remove(
             {
-                "packageName": package_name,
-                "versionCode": version_code,
+                "$and": [
+                    {"packageName": package_name},
+                    {"versionCode": version_code},
+                ],
             })
         self.__static_analysis_db.thirdPartyPackages.remove(
             {
-                "packageName": package_name,
-                "versionCode": version_code,
+                "$and": [
+                    {"packageName": package_name},
+                    {"versionCode": version_code},
+                ],
             })
+        self.__apk_info.update_many(
+            {
+                "$and": [
+                    {"packageName": package_name},
+                    {"versionCode": version_code},
+                ],
+            },
+            {"$set": {"analysesCompleted": False}})
 
     def delete_metadata_entry(self, package_name):
         """
