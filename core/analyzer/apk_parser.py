@@ -22,10 +22,9 @@ logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
                     level=logging.INFO)
 
 class APKObject:
-    def __init__(self, retrieve_dir, apk_repr_dict):
+    def __init__(self, apk_repr_dict):
         self.package_name = apk_repr_dict["packageName"]
         self.uuid = str(apk_repr_dict["uuid"])
-        self.unzip_path = os.path.join(retrieve_dir, self.uuid)
         self.next_arg = None
 
 class APKParser:
@@ -54,12 +53,12 @@ class APKParser:
         self.apk_obj_list = []
         for a in apk_list:
             try:
-                self.apk_obj_list.append(APKObject(self.retrieve_dir, a))
+                self.apk_obj_list.append(APKObject(a))
             except Exception as e:
                 logger.error("Error converting to APKObject - {}".format(e))
                 return
 
-    def start(self, process_no=constants.PROCESS_NO):
+    def start(self, process_no=constants.PROCESS_NO, to_local=False):
         # start processes
         retrieved_apks = Queue()
         parsed_results = Queue()
@@ -68,7 +67,7 @@ class APKParser:
         parse_analyze_proc_no = int((process_no - 2)/2)
 
         get_apks_proc = Process(target=self.get_apks, 
-            args=(self.apk_obj_list, retrieved_apks))
+            args=(self.apk_obj_list, retrieved_apks, to_local))
         get_apks_proc.start()
 
         parse_apks_procs = []
@@ -96,22 +95,27 @@ class APKParser:
             p.join()
         del_apks_proc.join()
 
-    def get_apks(self, apk_list, retrieved_apks):
+    def get_apks(self, apk_list, retrieved_apks, to_local):
         for a in apk_list:
             decompile_loc = os.path.join(constants.DECOMPILE_FOLDER, 
                 a.uuid[0], "{}.zip".format(a.uuid))
-            zip_loc = os.path.join(self.retrieve_dir, "{}.zip".format(a.uuid))
+            if to_local:
+                cp_res = subprocess.run(" ".join(["cp", decompile_loc, self.retrieve_dir]))
+                if cp_res.returncode != 0:
+                    logger.error("cp err for {}: {}".format(a.package_name, cp_res.stderr))
+                    continue
 
-            cp_res = subprocess.run(" ".join(["cp", decompile_loc, self.retrieve_dir]))
-            if cp_res.returncode != 0:
-                logger.error("cp err for {}: {}".format(a.package_name, cp_res.stderr))
-                continue
+                zip_loc = os.path.join(self.retrieve_dir, "{}.zip".format(a.uuid))
+            else:
+                zip_loc = decompile_loc
 
-            unzip_res = subprocess.run(" ".join(["unzip", zip_loc]))
+            out_loc = os.path.join(self.retrieve_dir, a.uuid)
+            unzip_res = subprocess.run(" ".join(["unzip", zip_loc, "-d", out_loc]))
             if unzip_res.returncode != 0:
                 logger.error("unzip err for {}: {}".format(a.package_name, unzip_res.stderr))
                 continue
             
+            a.unzip_path = out_loc
             retrieved_apks.put(a)
 
     def parse_apks(self, get_done_flag, retrieved_apks, parsed_results):
