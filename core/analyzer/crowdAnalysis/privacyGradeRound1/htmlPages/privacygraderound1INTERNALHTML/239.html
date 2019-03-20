@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
+    <script type='text/javascript' src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/js/start.js?v=1' type='text/javascript'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/js/jquery-1.7.2.min.js'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/bootstrap/js/bootstrap.js'></script>
+    <link href='https://s3.amazonaws.com/privacygrade/static/bootstrap/css/bootstrap.css' rel='stylesheet'>
+    <style type='text/css'>
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+    </style>
+    <link href='https://s3.amazonaws.com/privacygrade/static/bootstrap/css/bootstrap-responsive.css' rel='stylesheet'>
+    <title>Mobile app privacy comfort</title>
+
+    <!-- Le styles -->
+    <link href='https://s3.amazonaws.com/privacygrade/static/css/start.css?v=1' rel='stylesheet'> 
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src='http://html5shim.googlecode.com/svn/trunk/html5.js'></script>
+    <![endif]-->
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+  </head>
+  <body id = 'body'>
+
+    <div id='appInfo' class='span9 offset3'>
+<h3>Instruction</h3>
+<p class='instuction'> Please read the mobile app description carefully and look at the application screenshots <br>then answer the questions below. HIT will be rejected if you just click through. </p>
+<h4 style='margin-left:20px'>4shared</h4>
+<img class="icon" src=https://lh5.ggpht.com/UiZv13DRpRt7KKiGWfZEiJkdmZ86_Wfmd7Wv1PkjGbftRGfOHY4Q92OEg031jH4CvshY alt="icon image">
+<h4>App Screenshots</h4>
+<div id='screenShots'>
+<table border='0' width='65%'>
+  <tbody>
+    <tr>
+      <td>
+        <img class='imageCell' src=https://lh6.ggpht.com/WGX5eFd-Wv-rYFzl9TJ2n18MFi_gPPoegBL-5lfa9UXbNddNzan8wTfxaSgh5d8LlMb4 alt='screen shot' >
+      </td>
+      <td>
+        <img class='imageCell' src=https://lh6.ggpht.com/ggDozCt6dJvUrb4tTnq-ozGxg6T7mdUk48puZHk3_37zM1WULlkFBeOpc5N46CKtmg alt='screen shot' >
+      </td>
+      <td>
+        <img class='imageCell' src=https://lh4.ggpht.com/RjczsosFJjWCUeTnCH-gNZNn6Q0JlFe0uZWbGS_3nsLPajy3uzkf2gPWql2LbONb5v8 alt='screen shot' >
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+  
+<h4>App Description</h4>
+<div id='descrption' class='span8'>
+  <p>Access, manage and share your files at 4shared with others.<p>Free mobile application 4shared for Android is a convenient and fast way to access your account at 4shared.com, including all documents, photos, music, etc. directly from your Android device whenever you wish to.<p>The convenient public search option allows you to search for and find the file you need within the massive 4shared file database. It’s also simple to define various search filters (upload time, size, type of file, etc.) to get the best results and add the necessary file to your own account at 4shared.com.<p>With 4shared for Android you can easily copy, move, rename, delete, upload and download any files from your account at 4shared.com on your smartphone or tablet and share them with your colleagues, relatives and friends.<p>4shared for Android enables:<p>• Fast and convenient access to 30,000,000+ files. <br>• User-friendly search within massive 4shared database with an option to instantly add the found files to your account. <br>• A possibility to manage your account at 4shared.com, listen to music and even watch videos directly on your Android device.<br>• Instant sharing of files from your 4shared account via the app.</p>
+</div>
+<hr class="span8">
+</div>
+<div class="span8 offset3">
+<h4>Questions</h4>
+<form name='mturk_form' method='post' id='mturk_form' action='https://www.mturk.com/mturk/externalSubmit'  onsubmit='return checkformbeforesubmit();' style="margin-left:20px">
+  <input type='hidden' value='' name='assignmentId' id='assignmentId'>
+  <input type='hidden' name='packageName' value='com.forshared' id="packageName"> 
+  <input type='hidden' name='permissionType' value='READ_PHONE_STATE' id="permissionType"> 
+  <input type='hidden' name='purposeType' value='INTERNAL' id="purposeType"> 
+  <input type='hidden' name='permissionText' value="reads phone current state information like signal, carrier, device ID and phone number" id="permissionText"> 
+  <input type='hidden' name='purposeText' value="to log system information when app is running for analytics or development purpose" id="purposeText"> 
+  <div id='Q1'>
+    <h5>Question 1</h5>
+      <p>What category do you think this mobile app belongs to?<span style='color:red'>(required)</span></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='GAME'> Game Application<br></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='APPLICATION'> Non-game Application<br></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='Content: Book, Music or Video'> Content: Book, Music or Video<br></p>
+      <input type='hidden' name='Q1realCategry' value=APPLICATION> 
+  </div>
+  <div id='Q2' style='margin-top:20px'>
+    <h5>Question 2</h5>
+    <p>Based on our analysis, 4shared <strong><span style='color:blue'>reads phone current state information like signal, carrier, device ID and phone number</span></strong> <strong>to log system information when app is running for analytics or development purpose</strong>. </p>
+    <p>Suppose you have installed 4shared on your smart phone, do you feel comfortable when it <strong><span style='color:blue'>reads phone current state information like signal, carrier, device ID and phone number</span></strong> <strong>to log system information when app is running for analytics or development purpose</strong>. <span style='color:red'>(required)</span> </p>
+    <p><input type='radio' name='Q2comfortQuestion' value='2'> Very comfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='1'> Somewhat comfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='-1'> Somewhat uncomfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='-2'> Very uncomfortable<br></p>
+  </div>
+  <div id="Q3" style='margin-top:20px'>
+    <h5>Question 3</h5>
+    <p>Please provide any comments you may have below, we appreciate your input!</p>
+    <textarea rows="3" cols="80" name="Q2comment"></textarea>
+  </div>
+  <p id='error_msg' class='alert' style='display:none'>**Please answer all the required questions.**</p>
+  <p><input type='submit' id='submitButton' value='Submit' /></p>
+</form>
+<script language='Javascript'>turkSetAssignmentID();</script>
+</div>
+
+</body>
+</html>

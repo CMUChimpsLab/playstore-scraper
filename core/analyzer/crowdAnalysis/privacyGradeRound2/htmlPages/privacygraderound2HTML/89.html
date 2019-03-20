@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
+    <script type='text/javascript' src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/js/start.js?v=1' type='text/javascript'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/js/jquery-1.7.2.min.js'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/bootstrap/js/bootstrap.js'></script>
+    <link href='https://s3.amazonaws.com/privacygrade/static/bootstrap/css/bootstrap.css' rel='stylesheet'>
+    <style type='text/css'>
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+    </style>
+    <link href='https://s3.amazonaws.com/privacygrade/static/bootstrap/css/bootstrap-responsive.css' rel='stylesheet'>
+    <title>Mobile app privacy comfort</title>
+
+    <!-- Le styles -->
+    <link href='https://s3.amazonaws.com/privacygrade/static/css/start.css?v=1' rel='stylesheet'> 
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src='http://html5shim.googlecode.com/svn/trunk/html5.js'></script>
+    <![endif]-->
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+  </head>
+  <body id = 'body'>
+
+    <div id='appInfo' class='span9 offset3'>
+<h3>Instruction</h3>
+<p class='instuction'> Please read the mobile app description carefully and look at the application screenshots <br>then answer the questions below. HIT will be rejected if you just click through. </p>
+<h4 style='margin-left:20px'>Alice of Hearts - Strategy RPG</h4>
+<img class="icon" src=https://lh3.ggpht.com/TyIIY5bYdRpoiY-60jC9W73I8nX1xQiCGvrKcVCGQAndFKyxCKEKw7nilfAhuNuvMnA alt="icon image">
+<h4>App Screenshots</h4>
+<div id='screenShots'>
+<table border='0' width='65%'>
+  <tbody>
+    <tr>
+      <td>
+        <img class='imageCell' src=https://lh3.ggpht.com/-Wh8I46aghECJ21N2zda7kLVTGep-K4272Z9BzvkHscU0QfyJNm9NL5XF49kaTfnegU alt='screen shot' >
+      </td>
+      <td>
+        <img class='imageCell' src=https://lh5.ggpht.com/2eNAUPUK7Zr7pg4QdHspfh0ogaMPlFSzB-itgI7vTDMB8rIcxNnLTcQwOM1ncRKL-jw alt='screen shot' >
+      </td>
+      <td>
+        <img class='imageCell' src=https://lh4.ggpht.com/HvQlexfkjdXr14gcKNSxx-m2cL5DHnI9kGvZcql9AKyGUL6hZOx4PR180MU2gWYFqg alt='screen shot' >
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+  
+<h4>App Description</h4>
+<div id='descrption' class='span8'>
+  <p>Poker meets Alice in Wonderland in this Strategy Role Playing Game (RPG) with lots of powerful and stunning cards to battle your enemies. Be prepared for a whole new adventure and a completely different take on the popular tale in Alice of Hearts.<p>As the late evening roles in, Alice closes the café for the night and bids her colleague goodnight. She begins her usual walk home, when a sound coming from a nearby alley distracts her. Curiosity gets the better of Alice, and she ends up being faced with a challenge she could never have imagined.<p>Follow Alice through Wonderland as she struggles to find her way home. Familiar faces trick and tease her for their own gains, but they have made one mistake; they have underestimated Alice.<p>With her trusted Ego warriors fighting alongside her, Alice is ready for the toughest of tests.<p>Innovative Card-Base Battles:<br>- Battle foes using poker hands, skills and other abilities<br>- Place better hands for greater effect; Royal Flush!<br>- Use the skills that your battle companion; the Ego possesses<br>- Collect rare Special Cards that can help change the tide of the battle<p>Ego Creation System<br>- Use the warriors of Wonderland; Egos to aid you in your battle<br>- Create Egos with different strengths and abilities to combat every challenge<br>- Arm your Egos with weapons, items and armour, and Level them up through combat<br>- Hundreds of combinations to choose from, find the ones which work best for you<p>Multiplayer Challenge<br>- Turn-Based play that lets you return to the battle at your convenience<br>- Take your Ego into battle against other players<br>- Challenge your friends through Facebook<br>- Fight your way to the top of the Leaderboard<p>Can you help Alice escape? Can your Egos conquer all? Download Alice of Hearts now, FREE on Google Play.<p><br> ** Please note that while the app is free, please be aware that it contains paid content for real money that can be purchased upon users&#39; wish to enhance their gaming experience. You can disable in-app purchases by adjusting your device’s settings. **</p>
+</div>
+<hr class="span8">
+</div>
+<div class="span8 offset3">
+<h4>Questions</h4>
+<form name='mturk_form' method='post' id='mturk_form' action='https://www.mturk.com/mturk/externalSubmit'  onsubmit='return checkformbeforesubmit();' style="margin-left:20px">
+  <input type='hidden' value='' name='assignmentId' id='assignmentId'>
+  <input type='hidden' name='packageName' value='com.aurum.google.aliceOfHeart' id="packageName"> 
+  <input type='hidden' name='permissionType' value='BLUETOOTH' id="permissionType"> 
+  <input type='hidden' name='purposeType' value='GAME_ENGINE' id="purposeType"> 
+  <input type='hidden' name='permissionText' value="can connect to user's Bluetooth devices" id="permissionText"> 
+  <input type='hidden' name='purposeText' value="to enable features like connecting with other players or share game content through Bluetooth" id="purposeText"> 
+  <div id='Q1'>
+    <h5>Question 1</h5>
+      <p>What category do you think this mobile app belongs to?<span style='color:red'>(required)</span></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='GAME'> Game Application<br></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='APPLICATION'> Non-game Application<br></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='Content: Book, Music or Video'> Content: Book, Music or Video<br></p>
+      <input type='hidden' name='Q1realCategory' value=GAME> 
+  </div>
+  <div id='Q2' style='margin-top:20px'>
+    <h5>Question 2</h5>
+    <p>Based on our analysis, Alice of Hearts - Strategy RPG <strong><span style='color:blue'>can connect to user's Bluetooth devices</span></strong> <strong>to enable features like connecting with other players or share game content through Bluetooth</strong>. </p>
+    <p>Suppose you have installed Alice of Hearts - Strategy RPG on your smart phone, do you feel comfortable when it <strong><span style='color:blue'>can connect to user's Bluetooth devices</span></strong> <strong>to enable features like connecting with other players or share game content through Bluetooth</strong>. <span style='color:red'>(required)</span> </p>
+    <p><input type='radio' name='Q2comfortQuestion' value='2'> Very comfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='1'> Somewhat comfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='-1'> Somewhat uncomfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='-2'> Very uncomfortable<br></p>
+  </div>
+  <div id="Q3" style='margin-top:20px'>
+    <h5>Question 3</h5>
+    <p>Please provide any comments you may have below, we appreciate your input!</p>
+    <textarea rows="3" cols="80" name="Q2comment"></textarea>
+  </div>
+  <p id='error_msg' class='alert' style='display:none'>**Please answer all the required questions.**</p>
+  <p><input type='submit' id='submitButton' value='Submit' /></p>
+</form>
+<script language='Javascript'>turkSetAssignmentID();</script>
+</div>
+
+</body>
+</html>

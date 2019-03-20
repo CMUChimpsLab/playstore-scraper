@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
+    <script type='text/javascript' src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/js/start.js?v=1' type='text/javascript'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/js/jquery-1.7.2.min.js'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/bootstrap/js/bootstrap.js'></script>
+    <link href='https://s3.amazonaws.com/privacygrade/static/bootstrap/css/bootstrap.css' rel='stylesheet'>
+    <style type='text/css'>
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+    </style>
+    <link href='https://s3.amazonaws.com/privacygrade/static/bootstrap/css/bootstrap-responsive.css' rel='stylesheet'>
+    <title>Mobile app privacy comfort</title>
+
+    <!-- Le styles -->
+    <link href='https://s3.amazonaws.com/privacygrade/static/css/start.css?v=1' rel='stylesheet'> 
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src='http://html5shim.googlecode.com/svn/trunk/html5.js'></script>
+    <![endif]-->
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+  </head>
+  <body id = 'body'>
+
+    <div id='appInfo' class='span9 offset3'>
+<h3>Instruction</h3>
+<p class='instuction'> Please read the mobile app description carefully and look at the application screenshots <br>then answer the questions below. HIT will be rejected if you just click through. </p>
+<h4 style='margin-left:20px'>Facebook Messenger</h4>
+<img class="icon" src=https://lh5.ggpht.com/0VYAvZLR9YhosF-thqm8xl8EWsCfrEY_uk2og2f59K8IOx5TfPsXjFVwxaHVnUbuEjc alt="icon image">
+<h4>App Screenshots</h4>
+<div id='screenShots'>
+<table border='0' width='65%'>
+  <tbody>
+    <tr>
+      <td>
+        <img class='imageCell' src=https://lh5.ggpht.com/OW7bWO-N9Qd-dhzi9uAevM0RcmBgM7GkzrTlMNg72uQNp4JisgnphLyGGQf_6iiVC2aI alt='screen shot' >
+      </td>
+      <td>
+        <img class='imageCell' src=https://lh4.ggpht.com/T636AcfRTxr2CUlBp8Yx6UMmjZxmJ9g7RjvX_-n3B_rVmeAGyqRG8faVMBkTXI-udvI alt='screen shot' >
+      </td>
+      <td>
+        <img class='imageCell' src=https://lh4.ggpht.com/PX1Mm08Orh3sI52x2k3SAu43DZxU5YZRQR2NTA0IEzfRjJDwQuXfDhstW2-kYowVQSuU alt='screen shot' >
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+  
+<h4>App Description</h4>
+<div id='descrption' class='span8'>
+  <p>Instantly reach the people you care about.<p>Messenger is a fast, free and reliable way to stay in touch. It&#39;s just like texting, but you don&#39;t have to pay for every message (it works with your data plan). <p>Features:<br>Get to your messages without opening Facebook.<br>Chat with groups and make plans on the go.<br>Bring messages to life with stickers.<br>Send photos privately.<br>Keep the conversation going: with chat heads, you can chat while using other apps. <br>Text your phone contacts, even if you&#39;re not Facebook friends.<br>Share your location so people know when you&#39;re nearby.<br>Record voice messages.<br>Make free calls, even to friends in other countries.<br>Know when people have seen your messages.<br>See who&#39;s available on Messenger and who&#39;s active on Facebook. <br>Stay logged in so you never miss a message.<br>Turn off notifications when you&#39;re working, sleeping or just need a break.</p>
+</div>
+<hr class="span8">
+</div>
+<div class="span8 offset3">
+<h4>Questions</h4>
+<form name='mturk_form' method='post' id='mturk_form' action='https://www.mturk.com/mturk/externalSubmit'  onsubmit='return checkformbeforesubmit();' style="margin-left:20px">
+  <input type='hidden' value='' name='assignmentId' id='assignmentId'>
+  <input type='hidden' name='packageName' value='com.facebook.orca' id="packageName"> 
+  <input type='hidden' name='permissionType' value='READ_CONTACTS' id="permissionType"> 
+  <input type='hidden' name='purposeType' value='INTERNAL' id="purposeType"> 
+  <input type='hidden' name='permissionText' value="reads user's contact list (phone book) and phone call history" id="permissionText"> 
+  <input type='hidden' name='purposeText' value="to allow users to text to friends in contacts, even if you are not Facebook friends" id="purposeText"> 
+  <div id='Q1'>
+    <h5>Question 1</h5>
+      <p>What category do you think this mobile app belongs to?<span style='color:red'>(required)</span></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='GAME'> Game Application<br></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='APPLICATION'> Non-game Application<br></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='Content: Book, Music or Video'> Content: Book, Music or Video<br></p>
+      <input type='hidden' name='Q1realCategry' value=APPLICATION> 
+  </div>
+  <div id='Q2' style='margin-top:20px'>
+    <h5>Question 2</h5>
+    <p>Based on our analysis, Facebook Messenger <strong><span style='color:blue'>reads user's contact list (phone book) and phone call history</span></strong> <strong>to allow users to text to friends in contacts, even if you are not Facebook friends</strong>. </p>
+    <p>Suppose you have installed Facebook Messenger on your smart phone, do you feel comfortable when it <strong><span style='color:blue'>reads user's contact list (phone book) and phone call history</span></strong> <strong>to allow users to text to friends in contacts, even if you are not Facebook friends</strong>. <span style='color:red'>(required)</span> </p>
+    <p><input type='radio' name='Q2comfortQuestion' value='2'> Very comfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='1'> Somewhat comfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='-1'> Somewhat uncomfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='-2'> Very uncomfortable<br></p>
+  </div>
+  <div id="Q3" style='margin-top:20px'>
+    <h5>Question 3</h5>
+    <p>Please provide any comments you may have below, we appreciate your input!</p>
+    <textarea rows="3" cols="80" name="Q2comment"></textarea>
+  </div>
+  <p id='error_msg' class='alert' style='display:none'>**Please answer all the required questions.**</p>
+  <p><input type='submit' id='submitButton' value='Submit' /></p>
+</form>
+<script language='Javascript'>turkSetAssignmentID();</script>
+</div>
+
+</body>
+</html>

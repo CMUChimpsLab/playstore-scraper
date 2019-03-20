@@ -1,0 +1,4 @@
+appname	icon_url	price	devname	avg_rating	rating_cnt	description	screenshot_url1	screenshot_url2	screenshot_url3	category_op1	category_op2	category_op3	category_op4	correct_category	permission	purpose
+appname1	a.a.lens_icon.png	free	testdevname	5	25	this is a test description1	a.a.lens_screenshot_836.png	a.a.lens_screenshot_837.png	a.a.lens_screenshot_838.png	Action Game	Utility	Weather	Media	Utility	TestPermission	functionality purpose
+appname2	a.a.water_icon.png	0.99	testdev2	4	592	This is a test description2	a.a.water_screenshot_846.png	ha.a.water_screenshot_847.png	a.a.water_screenshot_848.png	Action Game	Racing	Health	Media	Health	TestPermission2	targeted advertisement
+appname3	a.co.action_icon.png	free	testdev3	3	103294	This is a test description3	a.co.action_screenshot_1024.png	a.co.action_screenshot_1025.png	empty.jpg	Action Game	Racing	Health	Reference	Reference	TestPermission3	sharing in SNSs

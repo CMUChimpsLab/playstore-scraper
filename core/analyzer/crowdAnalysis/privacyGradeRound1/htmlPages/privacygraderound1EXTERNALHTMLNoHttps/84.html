@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
+    <script type='text/javascript' src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/js/start.js?v=1' type='text/javascript'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/js/jquery-1.7.2.min.js'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/bootstrap/js/bootstrap.js'></script>
+    <link href='https://s3.amazonaws.com/privacygrade/static/bootstrap/css/bootstrap.css' rel='stylesheet'>
+    <style type='text/css'>
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+    </style>
+    <link href='https://s3.amazonaws.com/privacygrade/static/bootstrap/css/bootstrap-responsive.css' rel='stylesheet'>
+    <title>Mobile app privacy comfort</title>
+
+    <!-- Le styles -->
+    <link href='https://s3.amazonaws.com/privacygrade/static/css/start.css?v=1' rel='stylesheet'> 
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src='http://html5shim.googlecode.com/svn/trunk/html5.js'></script>
+    <![endif]-->
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+  </head>
+  <body id = 'body'>
+
+    <div id='appInfo' class='span9 offset3'>
+<h3>Instruction</h3>
+<p class='instuction'> Please read the mobile app description carefully and look at the application screenshots <br>then answer the questions below. HIT will be rejected if you just click through. </p>
+<h4 style='margin-left:20px'>Netflix</h4>
+<img class="icon" src=https://lh5.ggpht.com/wY_BxCTAyRzw1h0q4c-wu5JAjDeWJr9xDf4Sc1iSubBjpJFZMdaaQclw5hzjDRVyMw alt="icon image">
+<h4>App Screenshots</h4>
+<div id='screenShots'>
+<table border='0' width='65%'>
+  <tbody>
+    <tr>
+      <td>
+        <img class='imageCell' src=https://lh6.ggpht.com/Y4Kd_vD2e48JwMATlsTrtgMShGJWBs0hI8DtHw67NDRehAci4_79QqYvJw34hhECT1FK alt='screen shot' >
+      </td>
+      <td>
+        <img class='imageCell' src=https://lh6.ggpht.com/8d7jnHyid5Ww7hfcWpW1b1qjqLp9kDS2UCkViUGk9CZER72p3TGAm-Lz2sx7Nf-QVGU alt='screen shot' >
+      </td>
+      <td>
+        <img class='imageCell' src=https://lh5.ggpht.com/YzWjRRhux6D4NLeLKB-sn7iZgYI9M9qPQJk-HEeyVRUmZYJVQWE0cV2EDQhJ7Str0U8 alt='screen shot' >
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+  
+<h4>App Description</h4>
+<div id='descrption' class='span8'>
+  <p>Netflix is the world’s leading subscription service for watching  TV episodes and movies on your phone. This Netflix mobile application delivers the best experience anywhere, anytime.<br> <br>Get the free app as a part of your Netflix membership and you can instantly watch thousands of TV episodes &amp; movies on your phone.  <br> <br>If you are not a Netflix member sign up for Netflix and start enjoying immediately on your phone with our one-month free trial.<br> <br>How does Netflix work?<br>• Netflix membership gives you access to unlimited TV shows and movies for one low monthly price.  <br>• With the Netflix app you can instantly watch as many TV episodes &amp; movies as you want, as often as you want, anytime you want.<br>• You can Browse a growing selection of thousands of titles, and new episodes that are added regularly. <br>• Search for titles and watch immediately on your phone or on an ever expanding list of supported devices.<br>• Rate your favorite shows and movies and tell us what you like so Netflix can help suggest the best titles for you.<br>• Start watching on one device, and resume watching on another. Check out netflix.com for all the TVs, game consoles, tablets, phones, Blu-ray players and set top boxes on which you can watch Netflix.<p>─────────────────────────────────<br> <br>Netflix 3.1.2<br> <br>License Agreement<br> <br>By downloading this application you agree to the Netflix Terms of Use and Privacy Policy, located at www.netflix.com<br> <br>1-month free Netflix membership offer is available to first time and certain former members and cannot be combined with any other offer. Internet access and valid payment method are required to redeem offer.  Netflix will begin to bill your payment method for the Netflix membership fee at the end of the free month unless you cancel prior to the end of the first month. Your Netflix membership is a month-to-month subscription that you can cancel at any time. Go to &quot;Your Account&quot; on the Netflix website for cancellation instructions. No refund or credit for partial monthly subscription periods. The Netflix service is only available in the country where you originally signed up. A device that streams from Netflix (manufactured and sold separately) and broadband Internet connection are required to watch instantly.<p>For complete terms and conditions, please visit <a href="https://www.google.com/url?q=http://www.netflix.com/TermsOfUse&amp;sa=D&amp;usg=AFQjCNGAKnJYdfrG9A2c-Oq86XnhC9X5kw" target="_blank">http://www.netflix.com/TermsOfUse</a>. <br>For privacy policy, please visit <a href="https://www.google.com/url?q=https://signup.netflix.com/PrivacyPolicy&amp;sa=D&amp;usg=AFQjCNHUQDSAwCUOgHdMbErllAio05ZlGw" target="_blank">https://signup.netflix.com/PrivacyPolicy</a>.</p>
+</div>
+<hr class="span8">
+</div>
+<div class="span8 offset3">
+<h4>Questions</h4>
+<form name='mturk_form' method='post' id='mturk_form' action='https://www.mturk.com/mturk/externalSubmit'  onsubmit='return checkformbeforesubmit();' style="margin-left:20px">
+  <input type='hidden' value='' name='assignmentId' id='assignmentId'>
+  <input type='hidden' name='packageName' value='com.netflix.mediaclient' id="packageName"> 
+  <input type='hidden' name='permissionType' value='READ_PHONE_STATE' id="permissionType"> 
+  <input type='hidden' name='purposeType' value='MOBILE_ANALYTICS' id="purposeType"> 
+  <input type='hidden' name='permissionText' value="reads phone current state information like signal, carrier, device ID and phone number" id="permissionText"> 
+  <input type='hidden' name='purposeText' value="to identify users for market/customer analysis" id="purposeText"> 
+  <div id='Q1'>
+    <h5>Question 1</h5>
+      <p>What category do you think this mobile app belongs to?<span style='color:red'>(required)</span></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='GAME'> Game Application<br></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='APPLICATION'> Non-game Application<br></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='Content: Book, Music or Video'> Content: Book, Music or Video<br></p>
+      <input type='hidden' name='Q1realCategry' value=APPLICATION> 
+  </div>
+  <div id='Q2' style='margin-top:20px'>
+    <h5>Question 2</h5>
+    <p>Based on our analysis, Netflix <strong><span style='color:blue'>reads phone current state information like signal, carrier, device ID and phone number</span></strong> <strong>to identify users for market/customer analysis</strong>. </p>
+    <p>Suppose you have installed Netflix on your smart phone, do you feel comfortable when it <strong><span style='color:blue'>reads phone current state information like signal, carrier, device ID and phone number</span></strong> <strong>to identify users for market/customer analysis</strong>. <span style='color:red'>(required)</span> </p>
+    <p><input type='radio' name='Q2comfortQuestion' value='2'> Very comfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='1'> Somewhat comfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='-1'> Somewhat uncomfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='-2'> Very uncomfortable<br></p>
+  </div>
+  <div id="Q3" style='margin-top:20px'>
+    <h5>Question 3</h5>
+    <p>Please provide any comments you may have below, we appreciate your input!</p>
+    <textarea rows="3" cols="80" name="Q2comment"></textarea>
+  </div>
+  <p id='error_msg' class='alert' style='display:none'>**Please answer all the required questions.**</p>
+  <p><input type='submit' id='submitButton' value='Submit' /></p>
+</form>
+<script language='Javascript'>turkSetAssignmentID();</script>
+</div>
+
+</body>
+</html>

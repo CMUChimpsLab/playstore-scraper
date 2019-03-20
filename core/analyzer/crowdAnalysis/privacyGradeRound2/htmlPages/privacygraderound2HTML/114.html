@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
+    <script type='text/javascript' src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/js/start.js?v=1' type='text/javascript'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/js/jquery-1.7.2.min.js'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/bootstrap/js/bootstrap.js'></script>
+    <link href='https://s3.amazonaws.com/privacygrade/static/bootstrap/css/bootstrap.css' rel='stylesheet'>
+    <style type='text/css'>
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+    </style>
+    <link href='https://s3.amazonaws.com/privacygrade/static/bootstrap/css/bootstrap-responsive.css' rel='stylesheet'>
+    <title>Mobile app privacy comfort</title>
+
+    <!-- Le styles -->
+    <link href='https://s3.amazonaws.com/privacygrade/static/css/start.css?v=1' rel='stylesheet'> 
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src='http://html5shim.googlecode.com/svn/trunk/html5.js'></script>
+    <![endif]-->
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+  </head>
+  <body id = 'body'>
+
+    <div id='appInfo' class='span9 offset3'>
+<h3>Instruction</h3>
+<p class='instuction'> Please read the mobile app description carefully and look at the application screenshots <br>then answer the questions below. HIT will be rejected if you just click through. </p>
+<h4 style='margin-left:20px'>TweetCaster for Twitter</h4>
+<img class="icon" src=https://lh5.ggpht.com/M-JpsVYoUomXVg8eZBUJw2Z-l3pHosacEavX9vLV3dPqUEicfEdYsY8MhfHqoDF_0K8 alt="icon image">
+<h4>App Screenshots</h4>
+<div id='screenShots'>
+<table border='0' width='65%'>
+  <tbody>
+    <tr>
+      <td>
+        <img class='imageCell' src=https://lh3.ggpht.com/W9exr4Os7iBZIAH7DQRqsky_ZW6pX1mk1JC-VqI8y4RcbgjuQETbVsJq2oMWcKUhAPc alt='screen shot' >
+      </td>
+      <td>
+        <img class='imageCell' src=https://lh5.ggpht.com/XCDCWu7uBxrkwogPUU6sjxh__ZxyROyN3aLbDtNg_i-ae99ESNcHtYHHL43IQHncDOA alt='screen shot' >
+      </td>
+      <td>
+        <img class='imageCell' src=https://lh5.ggpht.com/Gr-HecYFXyLW_Qbvx6pSuiBfefP03aN7BK3DFsMdgQ-sy1KRWyhrODcwiob4qTW1DQ alt='screen shot' >
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+  
+<h4>App Description</h4>
+<div id='descrption' class='span8'>
+  <p>TweetCaster has a gorgeous look with an intuitive interface that makes it super easy to use while packing in tons of features. Optimized for both phones and tablets, TweetCaster has been highly praised by users and reviewers.<p>Features:<br>* Multiple Twitter Accounts – Manage and easily post to multiple Twitter accounts<br>* Facebook – Simultaneously post to Twitter and Facebook<br>* Notifications – Get notified of new tweets, mentions, messages, or by specific user. Notifications are expandable and actionable on Android 4.1+<br>* Photo Effects – Add cool filters, effects and captions to photos, as you upload them<br>* Zip It – Zip annoying tweeters or keywords from your timeline without unfollowing<br>* Widgets – multiple widgets, including one that is scrollable and sizeable (Android 3.0+)!<br>* Themes – Twelve vibrant, colorful themes<br>* Sync between devices – Keep your place in the timeline across multiple devices and web using TweetCaster.com<br>* Smart Filter – Filter your timeline to look only at tweets with photos, links, videos, or hide retweets or replies<br>* Search Party – How Twitter search was meant to be! Lets you search just your own timeline, someone else’s, or all of Twitter.<br>* Smart Lists – The best way to use Twitter Lists, including robust list management and viewing tools<br>* My Stats – Up-to-the-minute tally of stats includes Most Retweeted, Most Mentioned, Most Favorited, &amp; many more<br>* Photo previews – View previews and open photos from most image services, including  Instagram<br>* Speak Tweets – Tap microphone on New Tweet screen to speak instead of typing<br>* Schedule Tweets – Compose a tweet and send later or send to Buffer<br>* Read Later – Save links to read/view later using Pocket, Instapaper, or Readability<br>* Streaming – Tweets are streaming in real-time when connect via WiFi<br>* Readability – View links in Readability mode for a mobile-optimized view<br>* Color Code Tweets –Color code your Tweets and mentions<br>* Long Tweets – Use Twitlonger to tweet over 140 characters<br>* Who to Follow – Suggests people to follow<p>What People are Saying:<br>“Nicely designed… Colorful but clean.” – CNET<br>“Contender for best Twitter app. 5/5 bars.” – Appolicious<br>“Excellent Twitter client.” – TUAW<br>“This is the best Twitter app I&#39;ve found. Very easy to use and very beautiful.” – Che, TweetCaster User (v6.8)</p>
+</div>
+<hr class="span8">
+</div>
+<div class="span8 offset3">
+<h4>Questions</h4>
+<form name='mturk_form' method='post' id='mturk_form' action='https://www.mturk.com/mturk/externalSubmit'  onsubmit='return checkformbeforesubmit();' style="margin-left:20px">
+  <input type='hidden' value='' name='assignmentId' id='assignmentId'>
+  <input type='hidden' name='packageName' value='com.handmark.tweetcaster' id="packageName"> 
+  <input type='hidden' name='permissionType' value='ACCESS_COARSE_LOCATION' id="permissionType"> 
+  <input type='hidden' name='purposeType' value='UTILITY' id="purposeType"> 
+  <input type='hidden' name='permissionText' value="can use user's approximate location" id="permissionText"> 
+  <input type='hidden' name='purposeText' value="to enable location-based features (like tweet nearby) in this app" id="purposeText"> 
+  <div id='Q1'>
+    <h5>Question 1</h5>
+      <p>What category do you think this mobile app belongs to?<span style='color:red'>(required)</span></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='GAME'> Game Application<br></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='APPLICATION'> Non-game Application<br></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='Content: Book, Music or Video'> Content: Book, Music or Video<br></p>
+      <input type='hidden' name='Q1realCategory' value=APPLICATION> 
+  </div>
+  <div id='Q2' style='margin-top:20px'>
+    <h5>Question 2</h5>
+    <p>Based on our analysis, TweetCaster for Twitter <strong><span style='color:blue'>can use user's approximate location</span></strong> <strong>to enable location-based features (like tweet nearby) in this app</strong>. </p>
+    <p>Suppose you have installed TweetCaster for Twitter on your smart phone, do you feel comfortable when it <strong><span style='color:blue'>can use user's approximate location</span></strong> <strong>to enable location-based features (like tweet nearby) in this app</strong>. <span style='color:red'>(required)</span> </p>
+    <p><input type='radio' name='Q2comfortQuestion' value='2'> Very comfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='1'> Somewhat comfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='-1'> Somewhat uncomfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='-2'> Very uncomfortable<br></p>
+  </div>
+  <div id="Q3" style='margin-top:20px'>
+    <h5>Question 3</h5>
+    <p>Please provide any comments you may have below, we appreciate your input!</p>
+    <textarea rows="3" cols="80" name="Q2comment"></textarea>
+  </div>
+  <p id='error_msg' class='alert' style='display:none'>**Please answer all the required questions.**</p>
+  <p><input type='submit' id='submitButton' value='Submit' /></p>
+</form>
+<script language='Javascript'>turkSetAssignmentID();</script>
+</div>
+
+</body>
+</html>

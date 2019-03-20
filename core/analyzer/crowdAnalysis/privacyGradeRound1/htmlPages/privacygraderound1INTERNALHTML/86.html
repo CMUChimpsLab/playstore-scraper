@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
+    <script type='text/javascript' src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/js/start.js?v=1' type='text/javascript'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/js/jquery-1.7.2.min.js'></script>
+    <script src='https://s3.amazonaws.com/privacygrade/static/bootstrap/js/bootstrap.js'></script>
+    <link href='https://s3.amazonaws.com/privacygrade/static/bootstrap/css/bootstrap.css' rel='stylesheet'>
+    <style type='text/css'>
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+    </style>
+    <link href='https://s3.amazonaws.com/privacygrade/static/bootstrap/css/bootstrap-responsive.css' rel='stylesheet'>
+    <title>Mobile app privacy comfort</title>
+
+    <!-- Le styles -->
+    <link href='https://s3.amazonaws.com/privacygrade/static/css/start.css?v=1' rel='stylesheet'> 
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src='http://html5shim.googlecode.com/svn/trunk/html5.js'></script>
+    <![endif]-->
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+  </head>
+  <body id = 'body'>
+
+    <div id='appInfo' class='span9 offset3'>
+<h3>Instruction</h3>
+<p class='instuction'> Please read the mobile app description carefully and look at the application screenshots <br>then answer the questions below. HIT will be rejected if you just click through. </p>
+<h4 style='margin-left:20px'>WeChat</h4>
+<img class="icon" src=https://lh5.ggpht.com/6Vgc-DkcEZbMbDVLx35dZRb5AmtBnKYSaBEUb-3r-KP6xu4MGMsuvsaECrM-jiXy-7E alt="icon image">
+<h4>App Screenshots</h4>
+<div id='screenShots'>
+<table border='0' width='65%'>
+  <tbody>
+    <tr>
+      <td>
+        <img class='imageCell' src=https://lh4.ggpht.com/boNbDJR-oD7ieUokClV-xXX60eTvKNNNqIPeUZjWS-2hm6soYsPrUH5W0-OG3wgc0w alt='screen shot' >
+      </td>
+      <td>
+        <img class='imageCell' src=https://lh6.ggpht.com/FCnCwtmZM2G_kFHMm0oL8tYpzrY2hIbpDlt8KN8SUf4E98g38xnXS6l4mWyfKUEnZ_Y alt='screen shot' >
+      </td>
+      <td>
+        <img class='imageCell' src=https://lh6.ggpht.com/2FNJBlZDfcaNOJmxYsqzqXDrA3n-5P5SPNdKDHnjYh6hzAVXx539rMb15ALKwZlVwCE alt='screen shot' >
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+  
+<h4>App Description</h4>
+<div id='descrption' class='span8'>
+  <p>Free texting, voice messages, and video calls in your pocket. 300 million people love WeChat because it&#39;s fast, reliable, private, and always on.<br>• Talk faster on the go with voice messages<br>• Crystal clear voice and video calls<br>• Instant messaging with group chats and animated smileys<br>• Chat with your friends or with people nearby<br>• Sending photos and videos has never been simpler<br>• Real walkie talkie mode with up to 40 friends<br>• Always on, no logouts, never miss a message<br>• Get message alerts instantly with push notifications<br>• Share, like, and comment on photos with your friends<br>• Import contacts and add friends instantly<br>• Available on Android and all other smartphones, all for free<p>WeChat works over your phone&#39;s existing data plan or any WiFi connection.</p>
+</div>
+<hr class="span8">
+</div>
+<div class="span8 offset3">
+<h4>Questions</h4>
+<form name='mturk_form' method='post' id='mturk_form' action='https://www.mturk.com/mturk/externalSubmit'  onsubmit='return checkformbeforesubmit();' style="margin-left:20px">
+  <input type='hidden' value='' name='assignmentId' id='assignmentId'>
+  <input type='hidden' name='packageName' value='com.tencent.mm' id="packageName"> 
+  <input type='hidden' name='permissionType' value='CAMERA' id="permissionType"> 
+  <input type='hidden' name='purposeType' value='INTERNAL' id="purposeType"> 
+  <input type='hidden' name='permissionText' value="uses camera or flashlight on the phone" id="permissionText"> 
+  <input type='hidden' name='purposeText' value="to enable video chat and make video messages" id="purposeText"> 
+  <div id='Q1'>
+    <h5>Question 1</h5>
+      <p>What category do you think this mobile app belongs to?<span style='color:red'>(required)</span></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='GAME'> Game Application<br></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='APPLICATION'> Non-game Application<br></p>
+      <p><input type='radio' name='Q1categoryQuestion' value='Content: Book, Music or Video'> Content: Book, Music or Video<br></p>
+      <input type='hidden' name='Q1realCategry' value=APPLICATION> 
+  </div>
+  <div id='Q2' style='margin-top:20px'>
+    <h5>Question 2</h5>
+    <p>Based on our analysis, WeChat <strong><span style='color:blue'>uses camera or flashlight on the phone</span></strong> <strong>to enable video chat and make video messages</strong>. </p>
+    <p>Suppose you have installed WeChat on your smart phone, do you feel comfortable when it <strong><span style='color:blue'>uses camera or flashlight on the phone</span></strong> <strong>to enable video chat and make video messages</strong>. <span style='color:red'>(required)</span> </p>
+    <p><input type='radio' name='Q2comfortQuestion' value='2'> Very comfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='1'> Somewhat comfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='-1'> Somewhat uncomfortable<br></p>
+    <p><input type='radio' name='Q2comfortQuestion' value='-2'> Very uncomfortable<br></p>
+  </div>
+  <div id="Q3" style='margin-top:20px'>
+    <h5>Question 3</h5>
+    <p>Please provide any comments you may have below, we appreciate your input!</p>
+    <textarea rows="3" cols="80" name="Q2comment"></textarea>
+  </div>
+  <p id='error_msg' class='alert' style='display:none'>**Please answer all the required questions.**</p>
+  <p><input type='submit' id='submitButton' value='Submit' /></p>
+</form>
+<script language='Javascript'>turkSetAssignmentID();</script>
+</div>
+
+</body>
+</html>

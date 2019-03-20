@@ -1,0 +1,13 @@
+{
+  "ACCESS_COARSE_LOCATION": "can use user's approximate location",
+  "ACCESS_FINE_LOCATION": "can use user's precise location",
+  "AUTHENTICATE_ACCOUNTS": "can use user's account authentication information (like password) or create new accounts",
+  "BLUETOOTH": "can connect to user's Bluetooth devices",
+  "CAMERA": "can use camera or flashlight on the phone",
+  "GET_ACCOUNTS": "can use user's accounts information stored on the phone",
+  "MANAGE_ACCOUNTS": "can manage user's accounts on the phone",
+  "READ_CONTACTS": "can read user's contact list (phone book) and phone call history",
+  "READ_PHONE_STATE": "can read phone current state information like signal, carrier, device ID and phone number", 
+  "RECORD_AUDIO": "can record audio through microphone on the phone",
+  "SEND_SMS": "can send out SMS messages"
+}

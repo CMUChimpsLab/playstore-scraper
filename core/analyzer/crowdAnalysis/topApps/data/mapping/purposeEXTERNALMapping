@@ -1,0 +1,76 @@
+{
+  "ACCESS_COARSE_LOCATION":{
+    "TARGETED_ADS": "for delivering location targeted advertisement",
+    "SNS": "for tagging location information when users share the app content to social network sites like Facebook and Twitter",
+    "SEARCH_ENGINE": "to enable location tagging feature",
+    "SOCIAL_GAMING": "for customer analysis",
+    "PAYMENT": "to get to know where users make online payment"
+  },
+
+  "ACCESS_FINE_LOCATION": {
+    "TARGETED_ADS": "for delivering location targeted advertisement",
+    "MOBILE_ANALYTICS": "for market/customer analysis",
+    "SNS": "for tagging location informaiton when users share the app content to social network sites like Facebook and Twitter",
+    "SEARCH_ENGINE": "to enable location tagging feature",
+    "SECONDARY_MARKET": "for an independent/secondary app store to conduct market/customer analysis",
+    "SOCIAL_GAMING": "for the internal GAME engine",
+  },
+
+  "GET_ACCOUNTS": {
+    "SNS": "to log in social network sites like Facebook",
+    "SECONDARY_MARKET": "to connect with independent/secondary mobile app stores",
+  },
+  
+  "AUTHENTICATE_ACCOUNTS": {
+    "SNS": "to manage accounts on social network sites like Facebook"
+  },
+
+  "MANAGE_ACCOUNTS": {
+    "SNS": "to login social network sites like Facebook"
+  },
+
+  "READ_PHONE_STATE": {
+    "TARGETED_ADS": "to identify users for delivering targeted advertisement",
+    "MOBILE_ANALYTICS": "to identify users for market/customer analysis",
+    "SNS": "to log in social network sites like Facebook",
+    "PAYMENT": "to identify users in payment transaction",
+    "GAME_ENGINE": "to identify users for delivering targeted advertisement in game",
+    "SECONDARY_MARKET": "to identify users in order to connect with independent/secondary mobile app stores",
+    "SEARCH_ENGINE": "for unkown reasons",
+    "SOCIAL_GAMING": "to identify users on a game platform",
+  },
+
+  "RECORD_AUDIO": {
+    "TARGETED_ADS": "for devlivering targeted advertisement",
+    "GAME_ENGINE": "to enable audio recording in game (though may not be used in Game)",
+    "SOCIAL_GAMING": "to support sending audio messages to friends in social game platform",
+  },
+
+  "SEND_SMS": {
+    "PAYMENT": "for in-app purchase",
+    "SNS": "for in-app purchase through premium SMS on social game platform",
+    "SOCIAL_GAMING": "for in-app purchase through premium SMS on social game platform",
+    "SECONDARY_MARKET": "for in-app purchase through premium SMS on independent/secondary market",
+    "GAME_ENGINE": "for unknown use in a social game platform",
+    "TARGETED_ADS": "for devlivering targeted advertisement"
+  },
+  
+  "READ_CONTACTS": {
+    "SECONDARY_MARKET": "for unclear purpose",
+    "SOCIAL_GAMING": "to find out if users' friends are on the same game platform",
+    "SNS": "to connect to users' friends through integrated social platforms",
+  },
+  
+  "CAMERA": {
+    "SOCIAL_GAMING": "for unclear purpose in an integrated social game platform",
+    "GAME_ENGINE": "in order to use camera/flashlight in the game",
+  },
+  
+  "BLUETOOTH": {
+    "MOBILE_ANALYTICS": "for app usage analytics",
+    "TARGETED_ADS": "for advertisement purpose",
+    "GAME_ENGINE": "to enable features like connecting with other players or share game content through Bluetooth",
+    "SOCIAL_GAMING": "to enable features like connecting with other players or share game content through Bluetooth"
+  }
+  
+}
