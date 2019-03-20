@@ -1,9 +1,0 @@
-for size in range(1,11):
-    print "\n cluster size", size
-    dfDecided = df[df[str(size)+"Setting"] != "prompt"] 
-    trueLabel = (dfDecided["setting"] == "accept").tolist()
-    predictLabel = (dfDecided[str(size)+"Setting"] == "accept").tolist()
-    print "acc", accuracy_score(trueLabel, predictLabel)
-    print "pre", precision_score(trueLabel, predictLabel)
-    print "rec", recall_score(trueLabel, predictLabel)
-    print "f1", f1_score(trueLabel, predictLabel)

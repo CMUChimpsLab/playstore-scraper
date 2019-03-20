@@ -1,6 +1,0 @@
-ridge_scaled_center
-result of pair regression DF
-testSize: 260.0, avgMSE: 0.187106954486 regMSE: 0.131651517081
-Final result with purpose only regression
-testSetSize: 338.400000	regMSE:0.172920	avgMSE:0.200970	hybridMSE:0.179651
-testSetSize: 180.000000	regMSE:0.189389	avgMSE:0.231329	hybridMSE:0.210939
