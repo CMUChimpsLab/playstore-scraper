@@ -17,7 +17,7 @@ from core.downloader.downloader import Downloader
 from core.scraper.scraper import Scraper
 from core.scraper.updater import Updater
 
-from core.pipelines import analysis_pipeline, full_pipeline
+import core.pipelines as pipelines
 from common.helpers import download_decompile_all
 from common.constants import DOWNLOAD_FOLDER, THREAD_NO, LOG_FOLDER
 
@@ -26,23 +26,6 @@ pp = pprint.PrettyPrinter(indent=4)
 # **************************************************************************** #
 # CLI COMMAND FUNCTIONS
 # **************************************************************************** #
-def download_all(args):
-    d = Downloader()
-    d.download_all_from_db()
-
-def decompile_apks(args):
-    dec = Decompiler(use_database=True, compress=True)
-
-    with open(args.fname) as f:
-        apk_names = f.read().split()
-
-    dec.decompile(apk_names)
-
-def download_and_decompile(args):
-    # Downloads then decompiles each app
-    # ONLY DECOMPILES THE TOP APPS
-    download_decompile_all()
-
 def crawl(args):
     crawler = Crawler(20)
     if args.all:
@@ -52,6 +35,23 @@ def crawl(args):
     else:
         print("must specify either -a (all) or -p (policies)")
         sys.exit(1)
+
+def decompile_apks(args):
+    dec = Decompiler(use_database=True, compress=True)
+
+    with open(args.fname) as f:
+        apk_names = f.read().split()
+
+    dec.decompile(apk_names)
+
+def download_all(args):
+    d = Downloader()
+    d.download_all_from_db()
+
+def download_and_decompile(args):
+    # Downloads then decompiles each app
+    # ONLY DECOMPILES THE TOP APPS
+    download_decompile_all()
 
 def scrape(args):
     if args.fname is not None:
@@ -119,12 +119,6 @@ crawl_type.add_argument("-p", "--policies",
     help="crawl privacy policy pages for apps in database")
 c_parser.set_defaults(func=crawl)
 
-# download all apps not downloaded in the database and decompile any top apps
-dd_parser = subparsers.add_parser("download-decompile", aliases=["dd"],
-    help="download apps and decompile",
-    description="Download all apps not downloaded and decompile any top apps")
-dd_parser.set_defaults(func=download_and_decompile)
-
 # decompiles apps listed in the file if is a top app
 d_parser = subparsers.add_parser("decompile", aliases=["de"],
     help="decompile apps listed in file",
@@ -136,6 +130,12 @@ decompile_args.add_argument("-d", "--downloaded",
     action="store_true",
     help="decompile apps that have been downloaded")
 d_parser.set_defaults(func=decompile_apks)
+
+# download all apps not downloaded in the database and decompile any top apps
+dd_parser = subparsers.add_parser("download-decompile", aliases=["dd"],
+    help="download apps and decompile",
+    description="Download all apps not downloaded and decompile any top apps")
+dd_parser.set_defaults(func=download_and_decompile)
 
 # download all apps not downloaded in the database
 d_parser = subparsers.add_parser("download", aliases=["dw"],
@@ -178,11 +178,22 @@ update_type.add_argument("-t", "--top",
 u_parser.set_defaults(func=update)
 
 # ***************************** PIPELINE COMMAND ***************************** #
+# short analyses done with plugins for testing/experimenting
+aae_parser = subparsers.add_parser("apk-analysis-experiment", aliases=["aae"],
+    help="experimenting with apk analyses",
+    description="Experimenting/testing APK analyses")
+aae_parser.set_defaults(func=pipelines.apk_analysis_experiment)
+input_opts = aae_parser.add_mutually_exclusive_group(required=True)
+input_opts.add_argument("-f", "--file",
+    help="file containing APKs to test ((packageName,uuid) tuple per line)")
+input_opts.add_argument("-i", "--inputs",
+    help="input of APKs to test (space delimited strings of \"packageName uuid\")")
+
 # static analysis of apps not yet analyzed
-a_parser = subparsers.add_parser("analysis-pipeline", aliases=["ap"],
+ap_parser = subparsers.add_parser("analysis-pipeline", aliases=["ap"],
     help="static analysis of apps",
     description="Static analysis of apps not yet analyzed")
-a_parser.set_defaults(func=analysis_pipeline)
+ap_parser.set_defaults(func=pipelines.analysis_pipeline)
 
 # entire app data and analysis pipeline
 fp_parser = subparsers.add_parser("full-pipeline", aliases=["fp"],
@@ -193,7 +204,7 @@ fp_parser.add_argument("-k", "--kickoff",
     help="true if is first run, false otherwise")
 fp_parser.add_argument("-f", "--fname",
     help="file name to scrape from, otherwise use crawler to get package names")
-fp_parser.set_defaults(func=full_pipeline)
+fp_parser.set_defaults(func=pipelines.full_pipeline)
 
 if __name__ == '__main__':
     args = parser.parse_args()

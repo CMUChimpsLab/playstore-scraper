@@ -26,9 +26,13 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     level=logging.INFO)
 
-def get_plugins(rel_plugin_folder):
+def get_plugins(rel_plugin_folder, target=None, prefix_target=None, suffix_target=None):
     """
     Gets and loads all plugin modules from the specified folder
+    
+     - target: full module name for matching when importing
+     - prefix_target: desired prefix for module names to import
+     - suffix_target: desired suffix for module names to import
     """
     plugin_folder = os.path.abspath(rel_plugin_folder)
     import_path = rel_plugin_folder.replace("/", ".").rstrip(".")
@@ -41,24 +45,16 @@ def get_plugins(rel_plugin_folder):
             continue
 
         try:
-            # info = imp.find_module(name, [search_path])
-            plugin = importlib.import_module(".{}".format(plugin_name), import_path)
-            plugins.append(plugin)
-            # plugins.append({"name": name, "info": info})
+            name_match = ((prefix_target is not None and plugin_name.startswith(prefix_target)) or
+                (suffix_target is not None and plugin_name.endswith(suffix_target)) or
+                plugin_name == target)
+            if name_match:
+                plugin = importlib.import_module(".{}".format(plugin_name), import_path)
+                plugins.append(plugin)
         except ImportError as e:
             logger.error("get_plugins error: {} - {}".format(plugin_name, e))
 
     return plugins
-
-def load_plugin(plugin):
-    """
-    Loads a plugin, which must be a dict with keys <name> and <info>
-    """
-    if "name" not in plugin or "info" not in plugin:
-        logger.error("plugin is not correctly defined, must have <name> and <info>")
-        return
-
-    return imp.load_module(plugin["name"], *plugin["info"])
 
 def download_decompile_apk(name):
     dec = Decompiler(use_database=True, compress=True)

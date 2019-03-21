@@ -16,6 +16,7 @@ import python_static_analyzer.SearchIntents as SearchIntents
 from python_static_analyzer.androguard.core.bytecodes import apk
 from python_static_analyzer.androguard.core.bytecodes import dvm
 from python_static_analyzer.androguard.core.analysis.analysis import *
+from python_static_analyzer.androguard.misc import AnalyzeAPK
 import privacyRating.src.extractApp as extractApp
 import privacyRating.src.rateApp as rateApp
 import playstoreAnalysis.src.analyze as analyze
@@ -23,6 +24,11 @@ import crowdAnalysis.topApps.getSensitivePairs as getSensitivePairs
 import crowdAnalysis.topApps.getSummedScore as getSummedScore
 from core.db.db_helper import DbHelper
 from common.constants import PROCESS_NO, LOG_FOLDER, DOWNLOAD_FOLDER
+
+def androguardAnalyzeApk(name_uuid_tup):
+    package_name, uuid = name_uuid_tup
+    apk_path = "{}/{}/{}/{}.apk".format(DOWNLOAD_FOLDER, uuid[0], uuid[1], uuid)
+    return AnalyzeAPK(apk_path)
 
 def staticAnalysis(entry_path_tup):
     apkEntry, outputPath = entry_path_tup

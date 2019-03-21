@@ -23,7 +23,7 @@ from core.decompiler.decompiler import Decompiler
 from core.crawler.crawler import Crawler
 from core.scraper.scraper import Scraper
 from core.scraper.updater import Updater
-from core.analyzer.analyzer import analyzer
+from core.analyzer.analyzer import analyzer, androguardAnalyzeApk
 from common.constants import DOWNLOAD_FOLDER, THREAD_NO, LOG_FOLDER
 import common.helpers as helpers
 
@@ -33,6 +33,32 @@ logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
 
 pp = pprint.PrettyPrinter(indent=4)
 
+# **************************************************************************** #
+# smaller additional pipelines
+# **************************************************************************** #
+def apk_analysis_experiment(args):
+    """
+    Pipeline meant for testing new kinds of APK analyses
+    """
+    apks = []
+    if args.file is not None:
+        with open(args.file, "r") as f:
+            apks = [l.strip().split(",") for l in f.read().strip().split("\n")]
+    elif args.inputs is not None:
+        print(args.inputs)
+        apks = []
+
+    # create androguard objects and pass to plugins
+    androguard_tups = [androguardAnalyzeApk(a) for a in apks]
+    plugins = helpers.get_plugins(os.path.abspath("../plugins/apk_experiments"))
+    for p in plugins:
+        p.run(androguard_tups)
+        
+    return
+
+# **************************************************************************** #
+# core pipelines
+# **************************************************************************** #
 def analysis_pipeline(args):
     """
     Pipeline that only contains the static analysis portion
@@ -58,11 +84,10 @@ def analysis_pipeline(args):
     analysis_plugins = helpers.get_plugins(os.path.abspath("../plugins/core/analyzer"))
     for p in analysis_plugins:
         try:
-            plugin = helpers.load_plugin(p)
-            plugin.run(app_list)
+            p.run(app_list)
         except:
             logger.error("plugin {} has no properly defined/scoped function run()"\
-                .format(p["name"]))
+                .format(p.__name__))
 
 def full_pipeline(args):
     """
@@ -71,7 +96,7 @@ def full_pipeline(args):
     Each step in the pipeline has corresponding directory of plugins. Plugins
     are dynamically loaded based on files in the corresponding dir.
 
-    Steps include:
+    Steps are:
      - crawl
      - scrape
      - download
@@ -83,15 +108,14 @@ def full_pipeline(args):
     if not kickoff and args.fname is not None:
         logger.error("Can't use updater with -f option")
         return
-
-    # start by updating top apps
     d = DbHelper()
     s = Scraper()
-    """
-    new_top_list = crawler.get_top_apps_list()
+    c = Crawler(20)
+
+    # start by updating top apps
+    new_top_list = c.get_top_apps_list()
     s.scrape_missing(new_top_list, compare_top=True)
     d.update_top_apps(new_top_list)
-    """
 
     if kickoff == True:
         s = None
@@ -115,7 +139,7 @@ def full_pipeline(args):
         logger.info("...update done")
 
     # crawl privacy policies
-    #crawler.crawl_app_privacy_policies()
+    c.crawl_app_privacy_policies()
 
     # download/decompile
     logger.info("Starting download and decompile...")

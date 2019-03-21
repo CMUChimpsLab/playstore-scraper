@@ -88,7 +88,8 @@ class StaticAnalyzer:
         '''
         #manifestPermissions = dbMgr.getManiFestPermissions(self.main_package_name)
         manifestPermissions = a.get_permissions()
-        manifestPermissions = [permission.lstrip('android.permission.') for permission in manifestPermissions if permission.startswith('android.permission.')]
+        perm_str = 'android.permission.'
+        manifestPermissions = [p.lstrip(perm_str) for p in manifestPermissions if p.startswith(perm_str)]
         p = dx.get_permissions( manifestPermissions )
         
         #self.outHandle.write ('\n')

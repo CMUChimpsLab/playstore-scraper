@@ -31,9 +31,9 @@ the plugins picked up would be `a` and `b`.
 Any plugin that is under development and not ready to be picked up dynamically
 should be placed here
 
-### random
-Any plugin that is not designed to be picked up and run for each run of 
-`full_pipeline` should be placed here
+### apk_experiments
+Plugins meant to be used for the `apk_analysis_experiment` pipeline for quick
+testing and experiments.
 
 ## Testing
 TODO

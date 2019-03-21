@@ -33,7 +33,7 @@ def pytest_generate_tests(metafunc):
             main_args, main_results, main_fn = p.test_setup()
             plugin_tests.append((main_args, main_results, main_fn))
         except Exception as e:
-            print("plugin setup loading error {} - {}".format(p["name"], e))
+            print("plugin setup loading error {} - {}".format(p.__name__, e))
     metafunc.parametrize("plugin_test_info", plugin_tests)
 
 def test_loading(plugin_test_info):
@@ -51,4 +51,4 @@ def teardown():
         try:
             p.teardown()
         except Exception as e:
-            print("plugin teardown error {} - {}".format(p["name"], e))
+            print("plugin teardown error {} - {}".format(p.__name__, e))
