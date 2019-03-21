@@ -42,7 +42,7 @@ def load_session(filename):
     return loads(read(filename, binary=False))
 
 
-def AnalyzeAPK(filename, raw=False, decompiler="dad"):
+def AnalyzeAPK(filename, raw=False, decompiler="dad", suppress_parse_warning=False):
     """
         Analyze an android application and setup all stuff for a more quickly analysis !
 
@@ -57,11 +57,14 @@ def AnalyzeAPK(filename, raw=False, decompiler="dad"):
     """
     androconf.debug("APK ...")
     a = APK(filename, raw)
-    d_list, dx_list = AnalyzeDex(a.get_all_dex(), raw=True, decompiler=decompiler)
+    d_list, dx_list = AnalyzeDex(a.get_all_dex(),
+            raw=True,
+            decompiler=decompiler,
+            suppress_parse_warning=suppress_parse_warning)
     return a, d_list, dx_list
 
 
-def AnalyzeDex(dex_files, raw=False, decompiler="dad"):
+def AnalyzeDex(dex_files, raw=False, decompiler="dad", suppress_parse_warning=False):
     """
         Analyze an android dex file and setup all stuff for a more quickly analysis !
 
@@ -72,16 +75,15 @@ def AnalyzeDex(dex_files, raw=False, decompiler="dad"):
 
         :rtype: return the :class:`DalvikVMFormat`, and :class:`VMAnalysis` objects
     """
-    androconf.debug("DalvikVMFormat ...")
-
     ds = []
     dxs = []
     for filename in dex_files:
+        androconf.debug("DalvikVMFormat ...")
         d = None
         if raw == False:
-            d = DalvikVMFormat(read(filename))
+            d = DalvikVMFormat(read(filename), suppress_parse_warning=suppress_parse_warning)
         else:
-            d = DalvikVMFormat(filename)
+            d = DalvikVMFormat(filename, suppress_parse_warning=suppress_parse_warning)
 
         androconf.debug("Export VM to python namespace")
         d.create_python_export()
@@ -101,7 +103,7 @@ def AnalyzeDex(dex_files, raw=False, decompiler="dad"):
         d.create_xref()
         androconf.debug("DREF ...")
         d.create_dref()
-        
+
         ds.append(d)
         dxs.append(dx)
 

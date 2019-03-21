@@ -3243,14 +3243,17 @@ class GVMAnalysis(object):
                             self.vm.get_class_manager())
                         n1 = self._get_exist_node(
                             src_class_name, src_method_name, src_descriptor)
-                        n2 = self._get_new_node(dst_class_name, dst_method_name, dst_descriptor + " " + "DEXCLASSLOADER",
-                                                "DEXCLASSLOADER")
+                        n2 = self._get_new_node(dst_class_name,
+                                dst_method_name,
+                                dst_descriptor + " " + "DEXCLASSLOADER",
+                                "DEXCLASSLOADER")
 
-                        n1.set_attributes({"dynamic_code": "true"})
-                        n2.set_attributes({"color": DEXCLASSLOADER_COLOR})
-                        self.G.add_edge(n2.id, n1.id)
+                        if n1 is not None and n2 is not None:
+                            n1.set_attributes({"dynamic_code": "true"})
+                            n2.set_attributes({"color": DEXCLASSLOADER_COLOR})
+                            self.G.add_edge(n2.id, n1.id)
 
-                        n1.add_risk("DEXCLASSLOADER")
+                            n1.add_risk("DEXCLASSLOADER")
 
     def _get_exist_node(self, class_name, method_name, descriptor):
         key = "%s %s %s" % (class_name, method_name, descriptor)

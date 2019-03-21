@@ -45,15 +45,17 @@ def apk_analysis_experiment(args):
         with open(args.file, "r") as f:
             apks = [l.strip().split(",") for l in f.read().strip().split("\n")]
     elif args.inputs is not None:
-        print(args.inputs)
-        apks = []
+        apks = [i.split(" ") for i in args.inputs]
 
     # create androguard objects and pass to plugins
+    plugins = helpers.get_plugins("plugins/apk_experiments")
+    logger.info("analyzing {} apks e.g. {},{}".format(len(apks), apks[0][0], apks[0][1]))
     androguard_tups = [androguardAnalyzeApk(a) for a in apks]
-    plugins = helpers.get_plugins(os.path.abspath("../plugins/apk_experiments"))
+    logger.info("androguard parsing done")
     for p in plugins:
+        logger.info("running plugin {}".format(p.__name__))
         p.run(androguard_tups)
-        
+
     return
 
 # **************************************************************************** #
@@ -81,7 +83,7 @@ def analysis_pipeline(args):
     analyzer(app_list, process_no=12)
 
     # load plugins and run
-    analysis_plugins = helpers.get_plugins(os.path.abspath("../plugins/core/analyzer"))
+    analysis_plugins = helpers.get_plugins("plugins/core/analyzer")
     for p in analysis_plugins:
         try:
             p.run(app_list)

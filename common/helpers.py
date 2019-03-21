@@ -29,28 +29,42 @@ logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
 def get_plugins(rel_plugin_folder, target=None, prefix_target=None, suffix_target=None):
     """
     Gets and loads all plugin modules from the specified folder
-    
+
      - target: full module name for matching when importing
      - prefix_target: desired prefix for module names to import
      - suffix_target: desired suffix for module names to import
     """
     plugin_folder = os.path.abspath(rel_plugin_folder)
     import_path = rel_plugin_folder.replace("/", ".").rstrip(".")
+    if [target, prefix_target, suffix_target].count(None) < 2:
+        logger.error("get_plugins error: only specify one of target, prefix_target, suffix_target")
+        return
 
     plugins = []
     plugin_locations = os.listdir(plugin_folder)
     for plugin_name in plugin_locations:
         location = os.path.join(plugin_folder, plugin_name)
-        if not os.path.isdir(location) and ".py" not in location:
+        if (not os.path.isdir(location) and
+                (not plugin_name.endswith(".py") or plugin_name == "__init__.py")):
             continue
 
+        module_name = plugin_name.strip(".py")
         try:
-            name_match = ((prefix_target is not None and plugin_name.startswith(prefix_target)) or
-                (suffix_target is not None and plugin_name.endswith(suffix_target)) or
-                plugin_name == target)
-            if name_match:
+            if [target, prefix_target, suffix_target].count(None) == 3:
                 plugin = importlib.import_module(".{}".format(plugin_name), import_path)
                 plugins.append(plugin)
+            else:
+                match_str_i = 0
+                for i in range(0, 3):
+                    if [target, prefix_target, suffix_target][i] is not None:
+                        match_str_i = i
+                        break
+                name_match = ((match_str_i == 0 and module_name == target) or
+                    (match_str_i == 1 and module_name.startswith(prefix_target)) or
+                    (match_str_i == 2 and module_name.endswith(suf_target)))
+                if name_match:
+                    plugin = importlib.import_module(".{}".format(plugin_name), import_path)
+                    plugins.append(plugin)
         except ImportError as e:
             logger.error("get_plugins error: {} - {}".format(plugin_name, e))
 

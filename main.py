@@ -85,7 +85,6 @@ def update(args):
 
         crawler = Crawler(20)
         new_top_list = crawler.get_top_apps_list()
-        return
         s.scrape_missing(new_top_list, compare_top=True)
         d.update_top_apps(new_top_list)
     else:
@@ -187,6 +186,7 @@ input_opts = aae_parser.add_mutually_exclusive_group(required=True)
 input_opts.add_argument("-f", "--file",
     help="file containing APKs to test ((packageName,uuid) tuple per line)")
 input_opts.add_argument("-i", "--inputs",
+    nargs='+',
     help="input of APKs to test (space delimited strings of \"packageName uuid\")")
 
 # static analysis of apps not yet analyzed
