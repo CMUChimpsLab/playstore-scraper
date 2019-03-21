@@ -1,10 +1,10 @@
 """
 pipelines:
 
-Pipelines should be defined here. A pipeline should include logic for loading 
+Pipelines should be defined here. A pipeline should include logic for loading
 modules from the plugins directory as desired
 
-NOTE: make sure to add a corresponding subcommand/subrpaser for a new pipeline 
+NOTE: make sure to add a corresponding subcommand/subrpaser for a new pipeline
 in main.py
 """
 
@@ -67,10 +67,10 @@ def analysis_pipeline(args):
 def full_pipeline(args):
     """
     Full pipeline for entire process of getting and analyzing new data
-    
-    Each step in the pipeline has corresponding directory of plugins. Plugins 
-    are dynamically loaded based on files in the corresponding dir. 
-    
+
+    Each step in the pipeline has corresponding directory of plugins. Plugins
+    are dynamically loaded based on files in the corresponding dir.
+
     Steps include:
      - crawl
      - scrape
@@ -91,6 +91,7 @@ def full_pipeline(args):
     new_top_list = crawler.get_top_apps_list()
     s.scrape_missing(new_top_list, compare_top=True)
     d.update_top_apps(new_top_list)
+    """
 
     if kickoff == True:
         s = None
@@ -114,14 +115,7 @@ def full_pipeline(args):
         logger.info("...update done")
 
     # crawl privacy policies
-    crawler.crawl_app_privacy_policies()
-    """
-    # static analysis TODO remove this chunk later
-    logger.info("Starting analysis...")
-    os.environ["PIPENV_IGNORE_VIRTUALENVS"] = "1" # allow analysis pipeline to have own env
-    analysis_pipeline(None)
-    logger.info("...analysis done")
-    return
+    #crawler.crawl_app_privacy_policies()
 
     # download/decompile
     logger.info("Starting download and decompile...")

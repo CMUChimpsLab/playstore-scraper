@@ -13,12 +13,14 @@ info_logs\.log
 decompiler/apktool
 decompiler/apktool\.jar
 apks.txt
+crawled_app_ids.txt
 
 scraper/scraper-server/node_modules
 apps_decompiled
 apps/
 logs/
 tmp/
+staticAnalysisRuns/
 
 **/dbConfig.py
 secrets\.py

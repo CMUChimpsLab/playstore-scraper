@@ -44,8 +44,7 @@ def download_and_decompile(args):
     download_decompile_all()
 
 def crawl(args):
-    eventlet.monkey_patch()
-    crawler = Crawler()
+    crawler = Crawler(20)
     if args.all:
         crawler.crawl_all_apps()
     elif args.policies:
@@ -77,7 +76,6 @@ def scrape(args):
         pp.pprint(res[0][1])
 
 def update(args):
-    eventlet.monkey_patch()
     if args.all:
         u = Updater()
         u.update_apps_all()
@@ -85,9 +83,8 @@ def update(args):
         d = DbHelper()
         s = Scraper()
 
-        crawler = Crawler()
+        crawler = Crawler(20)
         new_top_list = crawler.get_top_apps_list()
-        print(new_top_list[0:100])
         return
         s.scrape_missing(new_top_list, compare_top=True)
         d.update_top_apps(new_top_list)
@@ -110,8 +107,7 @@ subparsers = parser.add_subparsers(
 
 # ****************************** SMALL COMMANDS ****************************** #
 # crawl specified resource
-c_parser = subparsers.add_parser("c",
-    aliases=["crawl"],
+c_parser = subparsers.add_parser("crawl", aliases=["c"],
     help="crawl apps or specified resource",
     description="Crawl apps in the playstore or resource specified for apps")
 crawl_type = c_parser.add_mutually_exclusive_group(required=True)
@@ -124,15 +120,13 @@ crawl_type.add_argument("-p", "--policies",
 c_parser.set_defaults(func=crawl)
 
 # download all apps not downloaded in the database and decompile any top apps
-dd_parser = subparsers.add_parser("dd",
-    aliases=["download-decompile"],
+dd_parser = subparsers.add_parser("download-decompile", aliases=["dd"],
     help="download apps and decompile",
     description="Download all apps not downloaded and decompile any top apps")
 dd_parser.set_defaults(func=download_and_decompile)
 
 # decompiles apps listed in the file if is a top app
-d_parser = subparsers.add_parser("de",
-    aliases=["decompile"],
+d_parser = subparsers.add_parser("decompile", aliases=["de"],
     help="decompile apps listed in file",
     description="Decompiles apps listed in the file if is a top app")
 decompile_args = d_parser.add_mutually_exclusive_group(required=True)
@@ -144,15 +138,13 @@ decompile_args.add_argument("-d", "--downloaded",
 d_parser.set_defaults(func=decompile_apks)
 
 # download all apps not downloaded in the database
-d_parser = subparsers.add_parser("dw",
-    aliases=["download"],
+d_parser = subparsers.add_parser("download", aliases=["dw"],
     help="download apps",
     description="Download all apps not downloaded in the database")
 d_parser.set_defaults(func=download_all)
 
 # scrape app specified or in supplied file in specified way
-s_parser = subparsers.add_parser("s",
-    aliases=["scrape"],
+s_parser = subparsers.add_parser("scrape", aliases=["s"],
     help="scrape apps",
     description="Scrape apps listed in file")
 apps_spec = s_parser.add_mutually_exclusive_group(required=True)
@@ -173,8 +165,7 @@ scrape_method.add_argument("-s", "--scrape",
 s_parser.set_defaults(func=scrape)
 
 #update from database (using bulk update for speed)
-u_parser = subparsers.add_parser("u",
-    aliases=["update"],
+u_parser = subparsers.add_parser("update", aliases=["u"],
     help="update apps",
     description="Update apps currently in the database")
 update_type = u_parser.add_mutually_exclusive_group(required=True)
@@ -188,15 +179,13 @@ u_parser.set_defaults(func=update)
 
 # ***************************** PIPELINE COMMAND ***************************** #
 # static analysis of apps not yet analyzed
-a_parser = subparsers.add_parser("ap",
-    aliases=["analysis-pipeline"],
+a_parser = subparsers.add_parser("analysis-pipeline", aliases=["ap"],
     help="static analysis of apps",
     description="Static analysis of apps not yet analyzed")
 a_parser.set_defaults(func=analysis_pipeline)
 
 # entire app data and analysis pipeline
-fp_parser = subparsers.add_parser("fp",
-    aliases=["full-pipeline"],
+fp_parser = subparsers.add_parser("full-pipeline", aliases=["fp"],
     help="entire app data and analysis pipeline",
     description="Entire pipeline from scraping data about apps to analysis of them")
 fp_parser.add_argument("-k", "--kickoff",
@@ -208,13 +197,15 @@ fp_parser.set_defaults(func=full_pipeline)
 
 if __name__ == '__main__':
     args = parser.parse_args()
-    subparser = args.subparser_name
+    subparser = args.subparser_name.replace("-", "_")
 
     # configure logger so that all subsequent loggers point to same file
     now = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
-    logPath = "{}/{}/{}-{}.log".format(LOG_FOLDER, subparser, subparser, now)
-    if not os.path.exists(os.path.dirname(logPath)):
-        os.makedirs(os.path.dirname(logPath))
+    subparser_args = [a[0] for a in vars(args).items() if (a[1] is not None) and a[1]]
+    sub_opts = "_".join([subparser] + subparser_args[1:(len(subparser_args) - 1)])
+    log_path = "{}/{}/{}/{}_{}.log".format(LOG_FOLDER, subparser, sub_opts, sub_opts, now)
+    if not os.path.exists(os.path.dirname(log_path)):
+        os.makedirs(os.path.dirname(log_path))
     logging.config.dictConfig({
         "version": 1,
         "handlers": {
@@ -225,7 +216,7 @@ if __name__ == '__main__':
             },
             "file": {
                 "class": "logging.FileHandler",
-                "filename": logPath,
+                "filename": log_path,
                 "mode": "w",
                 "level": "INFO",
                 "formatter": "simpleFormatter",

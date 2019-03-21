@@ -11,6 +11,7 @@ import logging
 import subprocess
 from lxml import etree
 import queue
+import sys
 
 from common import constants
 from core.analyzer.python_static_analyzer.androguard.util import getxml_value
@@ -61,9 +62,10 @@ class APKParser:
 
     def start(self, process_no=constants.PROCESS_NO, to_local=False):
         # start processes
-        retrieved_apks = Queue()
+        retrieved_apks = Queue(maxsize=(process_no * 5))
         parsed_results = Queue()
         finished_apks = Queue()
+        analysis_results = Queue()
         get_done_flag = Value("i", 0)
         parse_analyze_proc_no = int((process_no - 2)/2)
 
@@ -79,7 +81,7 @@ class APKParser:
             parse_proc.start()
             parse_apks_procs.append(parse_proc)
             analyze_proc = Process(target=self.analyze_apks,
-                args=(get_done_flag, parsed_results, finished_apks))
+                args=(get_done_flag, parsed_results, finished_apks, analysis_results))
             analyze_proc.start()
             analyze_apks_procs.append(analyze_proc)
 
@@ -95,6 +97,11 @@ class APKParser:
         for p in analyze_apks_procs:
             p.join()
         del_apks_proc.join()
+
+        results = []
+        while not analysis_results.empty():
+            results.append(analysis_results.get())
+        return results
 
     def get_apks(self, apk_list, retrieved_apks, to_local):
         for a in apk_list:
@@ -116,7 +123,8 @@ class APKParser:
             unzip_res = subprocess.run(" ".join(["unzip", zip_loc, "-d", self.retrieve_dir]),
                         stdout=subprocess.DEVNULL,
                         stderr=subprocess.PIPE,
-                        shell=True)
+                        shell=True,
+                        timeout=30)
             if unzip_res.returncode != 0:
                 logger.error("unzip err for {}: {}".format(a.package_name, unzip_res.stderr))
                 continue
@@ -136,12 +144,11 @@ class APKParser:
                 parse_res = self.parser_fn(apk)
             except Exception as e:
                 logger.error("parser_fn failed: {} - {}".format(apk.package_name, e))
-                int("a")
                 continue
             apk.next_arg = parse_res
             parsed_results.put(apk)
 
-    def analyze_apks(self, get_done_flag, parsed_results, finished_apks):
+    def analyze_apks(self, get_done_flag, parsed_results, finished_apks, analysis_results):
         while ((get_done_flag.value == 0) or
                 (get_done_flag.value == 1 and not parsed_results.empty())):
             # loop until get_done_flag is 1 and parsed_results is empty
@@ -155,7 +162,7 @@ class APKParser:
                     # assume already caught exception in analysis_fn
                     continue
 
-                print(analysis_res)
+                analysis_results.put(analysis_res)
                 parsed_apk.next_arg = analysis_res
                 finished_apks.put(parsed_apk)
             except Exception as e:
@@ -226,7 +233,6 @@ def manifest_permissions_parser(apk_obj):
     attr_list = ["label", "description", "permissionGroup", "protectionLevel"]
     NS_ANDROID_URI = 'http://schemas.android.com/apk/res/android'
     for d_perm_item in xml_obj.getElementsByTagName('permission'):
-        print(d_perm_item)
         d_perm_name = str(d_perm_item.getAttributeNS(NS_ANDROID_URI, "name"))
         if not d_perm_name:
             d_perm_name = str(d_perm_item.getAttribute("android:name"))

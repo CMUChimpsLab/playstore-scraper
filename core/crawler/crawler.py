@@ -4,6 +4,7 @@ import os
 import sys
 from functools import partial
 import re
+import threading
 
 # fix import errors from using python2 for analysis pipeline
 try:
@@ -74,8 +75,6 @@ class Crawler():
         self.init_eventlet_objs()
         pile = eventlet.GreenPile(self.pool)
 
-        prog = 0
-        last_check = time.time()
         if root_urls is None:
             # default root is at main apps page
             self.task_queue.put("https://play.google.com/store/apps")
@@ -85,6 +84,13 @@ class Crawler():
             for url in root_urls:
                 self.task_queue.put(url)
 
+        prog = 0
+        last_check = time.time()
+        apps_in_file = 0
+        app_ids_file = "crawled_app_ids.txt"
+        lock = threading.Lock()
+        if os.path.exists(app_ids_file):
+            os.remove(app_ids_file)
         while (not self.task_queue.empty()) or (self.pool.running() != 0):
             try:
                 next_url = self.task_queue.get(timeout=5)
@@ -93,29 +99,38 @@ class Crawler():
 
             # if we have a new URL, then we spawn another green thread for fetching the content
             if next_url:
-                pile.spawn(self.fetch_all_links_thread_worker, next_url)
+                pile.spawn(self.fetch_all_links_thread_worker, next_url, lock)
 
             last_print_delta = time.time() - last_check
-            if len(self.app_ids_seen) >= prog:
-                logger.info("crawled {} apps".format(len(self.app_ids_seen)))
+            if (apps_in_file + len(self.app_ids_seen)) >= prog:
+                logger.info("crawled {} apps".format(apps_in_file + len(self.app_ids_seen)))
                 prog += BULK_CHUNK
                 last_check = time.time()
+
+                # write to file to save memory
+                if len(self.app_ids_seen) >= BULK_CHUNK * 50:
+                    with open(app_ids_file, "a") as f:
+                        for a in self.app_ids_seen:
+                            f.write("{}\n".format(a))
+                    apps_in_file += len(self.app_ids_seen)
+                    self.app_ids_seen = set()
             elif last_print_delta > 30:
-                logger.info("crawled {} apps".format(len(self.app_ids_seen)))
+                logger.info("crawled {} apps".format(apps_in_file + len(self.app_ids_seen)))
                 last_check = time.time()
 
-        # goal is to get app_ids so return that
-        print(len(self.app_ids_seen))
-        sys.exit(0)
-        return list(self.app_ids_seen)
+        with open(app_ids_file, "a") as f:
+            for a in self.app_ids_seen:
+                f.write("{}\n".format(a))
+        return
 
-    def fetch_all_links_thread_worker(self, url):
+    def fetch_all_links_thread_worker(self, url, lock):
         """
         Fetches the content of an URL, gets app or dev links from it and
         pushes them down the queue.
 
         run within thread so don't spawn any
         """
+        og_url = url
         try:
             page_contents = crawl_url(url)
         except HttpError as e:
@@ -125,21 +140,31 @@ class Crawler():
         # fetches links by regular expressions, want app and publisher links.
         soup = BeautifulSoup(page_contents, "lxml",
                 parse_only=SoupStrainer("a", href=True))
+        new_urls = []
+        new_app_ids = []
         for link in soup.find_all("a"):
             href = link["href"]
             if "category" in href:
                 href = href.split("https://play.google.com")[-1]
 
-            url = "https://play.google.com" + href
-            relevant_re = r'^\/.*\/((details|developer)/?|category)'
-            relevant_match = (re.search(relevant_re, href) and not re.search('reviewId', href))
-            if relevant_match and url not in self.urls_seen:
-                self.urls_seen.add(url)
-                if "details?id" in url:
-                    app_id = str(url).split("details?id=")[-1]
-                    self.app_ids_seen.add(app_id)
+            if "/store/apps/" in href:
+                url = "https://play.google.com" + href
+                relevant_re = r'^\/.*\/((details|developer)/?|category)'
+                relevant_match = (re.search(relevant_re, href) and
+                        not re.search('reviewId', href))
+                if relevant_match and url not in self.urls_seen:
+                    lock.acquire()
+                    self.urls_seen.add(url)
+                    new_urls.append(url)
+                    lock.release()
+                    if "details?id" in url:
+                        app_id = str(url).split("details?id=")[-1]
+                        lock.acquire()
+                        self.app_ids_seen.add(app_id)
+                        new_app_ids.append(app_id)
+                        lock.release()
 
-                self.task_queue.put(url)
+                    self.task_queue.put(url)
 
     # ************************************************************************ #
     # crawling top apps
