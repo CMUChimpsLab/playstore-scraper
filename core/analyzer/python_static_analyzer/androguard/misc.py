@@ -57,11 +57,11 @@ def AnalyzeAPK(filename, raw=False, decompiler="dad"):
     """
     androconf.debug("APK ...")
     a = APK(filename, raw)
-    d, dx = AnalyzeDex(a.get_dex(), raw=True, decompiler=decompiler)
-    return a, d, dx
+    d_list, dx_list = AnalyzeDex(a.get_all_dex(), raw=True, decompiler=decompiler)
+    return a, d_list, dx_list
 
 
-def AnalyzeDex(filename, raw=False, decompiler="dad"):
+def AnalyzeDex(dex_files, raw=False, decompiler="dad"):
     """
         Analyze an android dex file and setup all stuff for a more quickly analysis !
 
@@ -74,32 +74,38 @@ def AnalyzeDex(filename, raw=False, decompiler="dad"):
     """
     androconf.debug("DalvikVMFormat ...")
 
-    d = None
-    if raw == False:
-        d = DalvikVMFormat(read(filename))
-    else:
-        d = DalvikVMFormat(filename)
+    ds = []
+    dxs = []
+    for filename in dex_files:
+        d = None
+        if raw == False:
+            d = DalvikVMFormat(read(filename))
+        else:
+            d = DalvikVMFormat(filename)
 
-    androconf.debug("Export VM to python namespace")
-    d.create_python_export()
+        androconf.debug("Export VM to python namespace")
+        d.create_python_export()
 
-    androconf.debug("VMAnalysis ...")
-    dx = uVMAnalysis(d)
+        androconf.debug("VMAnalysis ...")
+        dx = uVMAnalysis(d)
 
-    androconf.debug("GVMAnalysis ...")
-    gx = GVMAnalysis(dx, None)
+        androconf.debug("GVMAnalysis ...")
+        gx = GVMAnalysis(dx, None)
 
-    d.set_vmanalysis(dx)
-    d.set_gvmanalysis(gx)
+        d.set_vmanalysis(dx)
+        d.set_gvmanalysis(gx)
 
-    RunDecompiler(d, dx, decompiler)
+        RunDecompiler(d, dx, decompiler)
 
-    androconf.debug("XREF ...")
-    d.create_xref()
-    androconf.debug("DREF ...")
-    d.create_dref()
+        androconf.debug("XREF ...")
+        d.create_xref()
+        androconf.debug("DREF ...")
+        d.create_dref()
+        
+        ds.append(d)
+        dxs.append(dx)
 
-    return d, dx
+    return ds, dxs
 
 
 def AnalyzeODex(filename, raw=False, decompiler="dad"):

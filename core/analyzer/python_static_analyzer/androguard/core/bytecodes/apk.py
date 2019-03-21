@@ -447,6 +447,24 @@ class APK(object):
         """
         return self.get_file("classes.dex")
 
+    def get_dex_names(self):
+        """
+        Return the names of all DEX files found in the APK.
+        This method only accounts for "offical" dex files, i.e. all files
+        in the root directory of the APK named classes.dex or classes[0-9]+.dex
+        :rtype: a list of str
+        """
+        dexre = re.compile(r"classes(\d*).dex")
+        return filter(lambda x: dexre.match(x), self.get_files())
+
+    def get_all_dex(self):
+        """
+        Return the raw data of all classes dex files
+        :rtype: a generator of bytes
+        """
+        for dex_name in self.get_dex_names():
+            yield self.get_file(dex_name)
+
     def get_elements(self, tag_name, attribute):
         """
             Return elements in xml files which match with the tag name and the specific attribute

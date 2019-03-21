@@ -56,24 +56,25 @@ def staticAnalysis(entry_path_tup):
           a = apk.APK(filename, zipmodule=2)
         """
         a = apk.APK(filename)
-        d = dvm.DalvikVMFormat(a.get_dex(), suppress_parse_warning=True)
-        dx = uVMAnalysis(d)
+        for dex in a.get_all_dex():
+            d = dvm.DalvikVMFormat(dex, suppress_parse_warning=True)
+            dx = uVMAnalysis(d)
 
-        #remove old db entry in static analysis db
-        dbHelper.deleteEntry(packageName, appVersion)
+            #remove old db entry in static analysis db
+            dbHelper.deleteEntry(packageName, appVersion)
 
-        packages = instance.execute(filename, appVersion, outFileName, dbHelper,
-            fileName, category, a, d, dx)
+            packages = instance.execute(filename, appVersion, outFileName, dbHelper,
+                fileName, category, a, d, dx)
 
-        outfile_perm = '/permissions.txt'
-        outfile_perm = outputPath + outfile_perm
-        permission.StaticAnalyzer(filename, appVersion, outfile_perm, packages,
-            dbHelper, fileName, a, d, dx)
+            outfile_perm = '/permissions.txt'
+            outfile_perm = outputPath + outfile_perm
+            permission.StaticAnalyzer(filename, appVersion, outfile_perm, packages,
+                dbHelper, fileName, a, d, dx)
 
-        outfile_links = '/links.txt'
-        outfile_links = outputPath + outfile_links
-        SearchIntents.Intents(filename, outfile_links, appVersion, packages,
-            dbHelper, fileName, a, d, dx)
+            outfile_links = '/links.txt'
+            outfile_links = outputPath + outfile_links
+            SearchIntents.Intents(filename, outfile_links, appVersion, packages,
+                dbHelper, fileName, a, d, dx)
 
         logger.info("FileName Analyzed :"  + fileName)
         return (packageName, appVersion)
