@@ -9,7 +9,7 @@ import shutil
 # sys path hacking to import from other repos
 import sys
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__))), "androguard")
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), "androguard"))
 
 import python_static_analyzer.namespaceanalyzer as namespaceanalyzer
 import python_static_analyzer.permission as permission
@@ -118,6 +118,7 @@ def analyzer(apkList, process_no=PROCESS_NO):
         if name_vc_tup != None:
             analyzedApkFile.write("{},{}\n".format(name_vc_tup[0], name_vc_tup[1]))
             analyzedApkFile.flush()
+    return
 
     # run rating part
     analyzedApkFile.close()

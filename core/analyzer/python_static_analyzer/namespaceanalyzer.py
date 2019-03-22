@@ -7,7 +7,7 @@ import os
 import sys
 import re
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__))), "androguard")
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), "androguard"))
 
 from python_static_analyzer.androguard.androguard.core.bytecodes import apk
 from python_static_analyzer.androguard.androguard.core.bytecodes import dvm
