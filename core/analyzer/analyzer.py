@@ -59,7 +59,7 @@ def staticAnalysis(entry_path_tup):
         a = apk.APK(filename)
         for dex in a.get_all_dex():
             d = dvm.DalvikVMFormat(dex, suppress_parse_warning=True)
-            dx = uVMAnalysis(d)
+            dx = Analysis(d)
 
             #remove old db entry in static analysis db
             dbHelper.deleteEntry(packageName, appVersion)
