@@ -21,9 +21,9 @@ def all_external_methods_to_file(androguard_objs):
             for c in dx.get_external_classes():
                 for method in c.get_methods():
                     method_obj = method.get_method()
-                    f.write("{},{},{}\n".format(method_obj.name, 
-                        method_obj.class_name, 
-                        method_obj.code))
+                    f.write("{},{},{}\n".format(method_obj.name,
+                        method_obj.class_name,
+                        method_obj.descriptor))
 
 def run(androguard_objs):
     """
