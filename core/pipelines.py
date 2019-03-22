@@ -46,15 +46,14 @@ def apk_analysis_experiment(args):
             apks = [l.strip().split(",") for l in f.read().strip().split("\n")]
     elif args.inputs is not None:
         apks = [i.split(" ") for i in args.inputs]
+    keys = ["packageName", "uuid"]
+    apks = [dict(zip(keys, a)) for a in apks]
 
-    # create androguard objects and pass to plugins
-    plugins = helpers.get_plugins("plugins/apk_experiments")
-    logger.info("analyzing {} apks e.g. {},{}".format(len(apks), apks[0][0], apks[0][1]))
-    androguard_tups = [androguardAnalyzeApk(a) for a in apks]
-    logger.info("androguard parsing done")
+    # pass to plugin and run
+    plugins = helpers.get_plugins("plugins/apk_experiments", target="get_apps_scan")
     for p in plugins:
         logger.info("running plugin {}".format(p.__name__))
-        p.run(androguard_tups)
+        p.run(apks)
 
     return
 
