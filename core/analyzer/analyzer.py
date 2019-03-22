@@ -9,14 +9,15 @@ import shutil
 # sys path hacking to import from other repos
 import sys
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__))), "androguard")
 
 import python_static_analyzer.namespaceanalyzer as namespaceanalyzer
 import python_static_analyzer.permission as permission
 import python_static_analyzer.SearchIntents as SearchIntents
-from python_static_analyzer.androguard.core.bytecodes import apk
-from python_static_analyzer.androguard.core.bytecodes import dvm
-from python_static_analyzer.androguard.core.analysis.analysis import *
-from python_static_analyzer.androguard.misc import AnalyzeAPK
+from python_static_analyzer.androguard.androguard.core.bytecodes import apk
+from python_static_analyzer.androguard.androguard.core.bytecodes import dvm
+from python_static_analyzer.androguard.androguard.core.analysis.analysis import *
+from python_static_analyzer.androguard.androguard.misc import AnalyzeAPK
 import privacyRating.src.extractApp as extractApp
 import privacyRating.src.rateApp as rateApp
 import playstoreAnalysis.src.analyze as analyze

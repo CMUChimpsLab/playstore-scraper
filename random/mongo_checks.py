@@ -13,6 +13,8 @@ import pprint
 import subprocess
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)) +
         "/core/analyzer/python_static_analyzer/")
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)) +
+        "/core/analyzer/python_static_analyzer/androguard/")
 
 pp = pprint.PrettyPrinter(indent=4)
 

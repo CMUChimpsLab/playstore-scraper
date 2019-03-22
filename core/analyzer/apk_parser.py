@@ -14,8 +14,8 @@ import queue
 import sys
 
 from common import constants
-from core.analyzer.python_static_analyzer.androguard.util import getxml_value
-import core.analyzer.python_static_analyzer.androguard.core.bytecodes.apk as bytecodes_apk
+from core.analyzer.python_static_analyzer.androguard.androguard.util import getxml_value
+import core.analyzer.python_static_analyzer.androguard.androguard.core.bytecodes.apk as b_apk
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
@@ -214,14 +214,14 @@ def manifest_permissions_parser(apk_obj):
     """
     xml_printer = None
     with open(xml_file, "rb") as f:
-        xml_printer = bytecodes_apk.AXMLPrinter(f.read())
+        xml_printer = b_apk.AXMLPrinter(f.read())
     """
 
     perms = []
     declared_perms = {}
     parser = etree.XMLParser(recover=True)
     tree = etree.parse(xml_file, parser=parser)
-    xml_obj = bytecodes_apk.parse_lxml_dom(tree)
+    xml_obj = b_apk.parse_lxml_dom(tree)
     if xml_obj is None:
         logger.error("Parse error: {} - null xml_obj after parsing".format(package_name))
         return
