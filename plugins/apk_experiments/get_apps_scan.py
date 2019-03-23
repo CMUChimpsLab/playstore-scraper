@@ -7,46 +7,53 @@ for all apps/packages installed on a device
 
 import logging
 
-from core.analyzer.apk_parser import APKParser, APKType, raw_apk_androguard_parser
+from core.analyzer.apk_parser import APKParser, APKType
+from core.analyzer.analyzer import androguardAnalyzeApk
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     level=logging.INFO)
 
+
 def find_app_scan(apk_obj):
-    a, d_list, dx = apk_obj.next_arg
+    a, d_list, dx = androguardAnalyzeApk((apk_obj.package_name, apk_obj.uuid))
+    logger.info("find_app_scan: {},{} - androguard analysis done"\
+            .format(apk_obj.package_name, apk_obj.uuid))
 
     # look for getInstalledApplications and getInstalledPackages external methods
     descriptor = ["(I)", "Ljava/util/List;"]
     ext_method_found = False
     for c in dx.get_external_classes():
         try:
-            installed_apps_method = c.get_method("getInstalledApplications", descriptor)
+            installed_apps_method = c.get_fake_method("getInstalledApplications", descriptor)
         except KeyError:
             installed_apps_method = None
         except Exception as e:
             logger.error("find_app_scan getInstalledApplications: {} - {}"\
                 .format(apk_obj.package_name, e))
         try:
-            installed_pkgs_method = c.get_method("getInstalledPackages", descriptor)
+            installed_pkgs_method = c.get_fake_method("getInstalledPackages", descriptor)
         except KeyError:
             installed_pkgs_method = None
         except Exception as e:
             logger.error("find_app_scan getInstalledPackages: {} - {}"\
                 .format(apk_obj.package_name, e))
-        
+
         if installed_apps_method is not None or installed_pkgs_method is not None:
             ext_method_found = True
             break
 
     # look for ACTION_PACKAGE_ADDED intent
     intent_found = False
-    intents = a.get_intent_filters("receiver", "android.intent.action.PACKAGE_ADDED")
-    print(ext_method_found)
-    print(intents)
+    receivers = a.get_receivers()
+    for r in receivers:
+        intents = a.get_intent_filters("receiver", r)
+        if "action" in intents and "android.intent.action.PACKAGE_ADDED" in intents["action"]:
+            intent_found = True
+            break
 
-    return "hihihi"
+    return (ext_method_found or intent_found)
 
 def run(apps):
-    app_scan_parser = APKParser(apps, APKType.RAW_APK, raw_apk_androguard_parser, find_app_scan)
+    app_scan_parser = APKParser(APKType.RAW_APK, apps, None, find_app_scan)
     return app_scan_parser.start()

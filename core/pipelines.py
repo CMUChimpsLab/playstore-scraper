@@ -53,7 +53,7 @@ def apk_analysis_experiment(args):
     plugins = helpers.get_plugins("plugins/apk_experiments", target="get_apps_scan")
     for p in plugins:
         logger.info("running plugin {}".format(p.__name__))
-        p.run(apks)
+        plugin_res = p.run(apks)
 
     return
 

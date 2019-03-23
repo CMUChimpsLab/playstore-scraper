@@ -49,7 +49,6 @@ def get_plugins(rel_plugin_folder, target=None, prefix_target=None, suffix_targe
             continue
 
         module_name = plugin_name.strip(".py")
-        print(plugin_name, module_name, import_path)
         try:
             if [target, prefix_target, suffix_target].count(None) == 3:
                 plugin = importlib.import_module(".{}".format(module_name), import_path)
@@ -64,7 +63,7 @@ def get_plugins(rel_plugin_folder, target=None, prefix_target=None, suffix_targe
                     (match_str_i == 1 and module_name.startswith(prefix_target)) or
                     (match_str_i == 2 and module_name.endswith(suffix_target)))
                 if name_match:
-                    plugin = importlib.import_module(".{}".format(plugin_name), import_path)
+                    plugin = importlib.import_module(".{}".format(module_name), import_path)
                     plugins.append(plugin)
         except ImportError as e:
             logger.error("get_plugins error: {} - {}".format(plugin_name, e))
