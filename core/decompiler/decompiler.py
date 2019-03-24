@@ -10,6 +10,8 @@ from functools import partial
 import multiprocessing_logging
 import copyreg
 import types
+import zipfile
+import shutil
 
 import core.db.db_helper as dbhelper
 from common.constants import DECOMPILE_FOLDER, DOWNLOAD_FOLDER, PROCESS_NO, RESULT_CHUNK
@@ -43,6 +45,9 @@ def decompile_process_worker(force_decompile, fname):
     defined at global scope to make pickle-friendly
     """
     app_extension = '.apk'
+    if not fname.endswith(app_extension):
+        fname += app_extension
+        
     try:
         app_dir = "/" + fname[0] + "/" + fname[1]
         decompiled_apps = os.listdir(DECOMP_FOLDER + "/" + fname[0])
@@ -118,19 +123,15 @@ def compress_storage(file_names, suffix_to_keep=['.xml', '.smali']):
 
             # zip and remove zipped directory
             os.chdir("..")
-            zip_cmd = ["zip ", "-r ", "{}.zip ".format(i), "{}".format(i)]
-            res = subprocess.run("".join(zip_cmd),
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.PIPE,
-                shell=True)
-            if res.returncode != 0:
-                logger.error("{}".format(res.stderr))
-                return
-
-            rm_zipped_dir_cmd = ["rm ", "-rf ", "{}".format(i)]
-            res = subprocess.run("".join(rm_zipped_dir_cmd), stderr=subprocess.PIPE, shell=True)
-            if res.returncode != 0:
-                logger.error("{}".format(res.stderr))
+            new_zip = zipfile.ZipFile("{}.zip".format(i), "w", zipfile.ZIP_BZIP2)
+            for root, dirs, files in os.walk(i):
+                for f in files:
+                    new_zip.write(os.path.join(root, f))
+            new_zip.close()
+            try:
+                shutil.rmtree(i)
+            except Exception as e:
+                logger.error("{}".format(e))
                 return
             logger.info("...{} - compress, done zipping".format(i))
 

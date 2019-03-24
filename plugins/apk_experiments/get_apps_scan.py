@@ -6,6 +6,9 @@ for all apps/packages installed on a device
 """
 
 import logging
+import zipfile
+import os
+import shutil
 
 from core.analyzer.apk_parser import APKParser, APKType
 from core.analyzer.analyzer import androguardAnalyzeApk
@@ -14,8 +17,36 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     level=logging.INFO)
 
-
 def find_app_scan(apk_obj):
+    zip_obj = zipfile.ZipFile(apk_obj.path, "r")
+    # tmp_dir = apk_obj.path[:-4]
+    # if not os.path.exists(tmp_dir):
+    #     os.makedirs(tmp_dir)
+
+    # look for ACTION_PACKAGE_ADDED intent in AndroidManifest.xml
+    intent_found = False
+    for l in zip_obj.read("AndroidManifest.xml").split("\n"):
+        if "ACTION_PACKAGE_ADDED" in l:
+            intent_found = True
+            break
+    
+    # look for getInstalledApplications and getInstalledPackages external methods
+    ext_method_found = False
+    smali_files = []
+    for f in zip_obj.namelist():
+        if f.endswith(".smali"):
+            for l in zip_obj.read(f).split("\n"):
+                if "getInstalledApplications" in l or "getInstalledPackages" in l:
+                    ext_method_found = True
+                    break
+            if ext_method_found:
+                break
+
+    return (ext_method_found or intent_found)
+
+    # shutil.rmtree(tmp_dir)
+
+def androguard_find_app_scan(apk_obj):
     a, d_list, dx = androguardAnalyzeApk((apk_obj.package_name, apk_obj.uuid))
     logger.info("find_app_scan: {},{} - androguard analysis done"\
             .format(apk_obj.package_name, apk_obj.uuid))

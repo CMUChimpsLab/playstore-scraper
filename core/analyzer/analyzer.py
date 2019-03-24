@@ -26,9 +26,11 @@ import crowdAnalysis.topApps.getSummedScore as getSummedScore
 from core.db.db_helper import DbHelper
 from common.constants import PROCESS_NO, LOG_FOLDER, DOWNLOAD_FOLDER
 
-def androguardAnalyzeApk(name_uuid_tup):
+def androguardAnalyzeApk(name_uuid_tup, apk_path=None):
     package_name, uuid = name_uuid_tup
-    apk_path = "{}/{}/{}/{}.apk".format(DOWNLOAD_FOLDER, uuid[0], uuid[1], uuid)
+    if apk_path is None:
+        apk_path = "{}/{}/{}/{}.apk".format(DOWNLOAD_FOLDER, uuid[0], uuid[1], uuid)
+        
     return AnalyzeAPK(apk_path, suppress_parse_warning=True)
 
 def staticAnalysis(entry_path_tup):
