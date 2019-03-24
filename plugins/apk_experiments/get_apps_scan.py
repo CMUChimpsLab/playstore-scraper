@@ -25,17 +25,17 @@ def find_app_scan(apk_obj):
 
     # look for ACTION_PACKAGE_ADDED intent in AndroidManifest.xml
     intent_found = False
-    for l in zip_obj.read("AndroidManifest.xml").split("\n"):
+    for l in str(zip_obj.read("AndroidManifest.xml")).split("\n"):
         if "ACTION_PACKAGE_ADDED" in l:
             intent_found = True
             break
-    
+
     # look for getInstalledApplications and getInstalledPackages external methods
     ext_method_found = False
     smali_files = []
     for f in zip_obj.namelist():
         if f.endswith(".smali"):
-            for l in zip_obj.read(f).split("\n"):
+            for l in str(zip_obj.read(f)).split("\n"):
                 if "getInstalledApplications" in l or "getInstalledPackages" in l:
                     ext_method_found = True
                     break
@@ -86,5 +86,5 @@ def androguard_find_app_scan(apk_obj):
     return (ext_method_found or intent_found)
 
 def run(apps):
-    app_scan_parser = APKParser(APKType.RAW_APK, apps, None, find_app_scan)
-    return app_scan_parser.start()
+    app_scan_parser = APKParser(APKType.RAW_APK, apps, ["decompiled"], None, find_app_scan)
+    return app_scan_parser.start(decompile=True)

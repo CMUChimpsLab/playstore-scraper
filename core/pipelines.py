@@ -45,8 +45,8 @@ def apk_analysis_experiment(args):
         with open(args.file, "r") as f:
             apks = [l.strip().split(",") for l in f.read().strip().split("\n")]
     elif args.inputs is not None:
-        apks = [i.split(" ") for i in args.inputs]
-    keys = ["packageName", "uuid"]
+        apks = [i.split(" ") + [False] for i in args.inputs]
+    keys = ["packageName", "uuid", "decompiled"]
     apks = [dict(zip(keys, a)) for a in apks]
 
     # pass to plugin and run

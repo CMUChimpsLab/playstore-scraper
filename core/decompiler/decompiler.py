@@ -47,7 +47,7 @@ def decompile_process_worker(force_decompile, fname):
     app_extension = '.apk'
     if not fname.endswith(app_extension):
         fname += app_extension
-        
+
     try:
         app_dir = "/" + fname[0] + "/" + fname[1]
         decompiled_apps = os.listdir(DECOMP_FOLDER + "/" + fname[0])
@@ -126,7 +126,8 @@ def compress_storage(file_names, suffix_to_keep=['.xml', '.smali']):
             new_zip = zipfile.ZipFile("{}.zip".format(i), "w", zipfile.ZIP_BZIP2)
             for root, dirs, files in os.walk(i):
                 for f in files:
-                    new_zip.write(os.path.join(root, f))
+                    new_zip.write(os.path.join(root, f),
+                        os.path.join(root,f).split("{}/".format(i))[1])
             new_zip.close()
             try:
                 shutil.rmtree(i)
