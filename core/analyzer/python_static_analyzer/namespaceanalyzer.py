@@ -75,7 +75,7 @@ class NameSpaceMgr:
 
 
     def execute(self, fileName, vc, outFileName, dbMgr, noprefixfilename,
-                category, a, d, dx):
+                category, a, dx):
         ###a = apk.APK(fileName)
         ###d = dvm.DalvikVMFormat (a.get_dex())
         ###dx = uVMAnalysis (d)

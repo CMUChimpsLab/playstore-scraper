@@ -29,7 +29,7 @@ class Intents:
                 return package
         return "NA"
 
-    def __init__(self, infile, outfile, vc, packages, dbMgr, noprefixfilename, a, d, dx):
+    def __init__(self, infile, outfile, vc, packages, dbMgr, noprefixfilename, a, dx):
         '''
         Constructor
         '''

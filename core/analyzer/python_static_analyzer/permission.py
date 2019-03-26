@@ -9,7 +9,7 @@ from androguard.core.bytecodes import dvm
 from androguard.core.analysis.analysis import *
 
 class StaticAnalyzer:
- 
+
     '''
     Song
     Special Handling for Google SDK
@@ -25,7 +25,7 @@ class StaticAnalyzer:
         return None
 
     def findandprint (self, packages, class_name):
-        googleLib = self.specialHandlingForGoogleSDK(class_name) 
+        googleLib = self.specialHandlingForGoogleSDK(class_name)
         if googleLib is not None:
             return googleLib
         for package in packages:
@@ -39,22 +39,22 @@ class StaticAnalyzer:
                 return pck
         else:
             return "NA"
-        
-        
-    def __init__ (self, fileName, vc, outFileName, packages, dbMgr, 
-                  noprefixfilename, a, d, dx):
+
+
+    def __init__ (self, fileName, vc, outFileName, packages, dbMgr,
+                  noprefixfilename, a, dx):
         ###a = apk.APK(fileName)
         ###d = dvm.DalvikVMFormat (a.get_dex())
         ###dx = uVMAnalysis (d)
         analysis = dx.get_vm()
         cm = analysis.get_class_manager()
-        
+
         #self.outHandle = open (outFileName, 'a+')
         '''
         Handle to Database
         '''
         self.dbMgr = dbMgr
-        
+
         '''
         Keeping main package name within range of mysql datatype
         '''
@@ -65,7 +65,7 @@ class StaticAnalyzer:
             self.main_package_name = mpn
 
         self.version_code = vc
-            
+
         '''
         Keeping main package name within range of mysql datatype
         '''
@@ -73,15 +73,15 @@ class StaticAnalyzer:
             self.fileName  = (noprefixfilename[:200] + '..')
         else:
             self.fileName = noprefixfilename
-            
+
         #self.outHandle.write ("\n")
         #self.outHandle.write ("---Package Name---\n")
         #print self.main_package_name
-       
-        
+
+
         #self.outHandle.write (fileName)
         ex3 = re.compile (self.main_package_name)
-        
+
         '''
         Getting the permissions using dalvik analysis
         It reads the permissions from the android-manifest file
@@ -91,23 +91,23 @@ class StaticAnalyzer:
         perm_str = 'android.permission.'
         manifestPermissions = [p.lstrip(perm_str) for p in manifestPermissions if p.startswith(perm_str)]
         p = dx.get_permissions( manifestPermissions )
-        
+
         #self.outHandle.write ('\n')
         '''
         1. Loop through the permissions
         2. Get the source class & destination class of the permission
-            Print the class in which the permission is used and 
+            Print the class in which the permission is used and
             class which calls the above mentioned class
         3. Use the packages array (containing all the package names) and iterate over it to find in which
            package the class exists -- Do this for both destination & source classes
-        4. In some cases only destination class will be present -- class where the permission is used and there wont 
-           be corresponding source class the destination class will be under main application's directory 
+        4. In some cases only destination class will be present -- class where the permission is used and there wont
+           be corresponding source class the destination class will be under main application's directory
         '''
         for i in p :
             #print i, ":"
             #self.outHandle.write (i)
             for path in p [i] :
-                
+
                 #self.outHandle.write ('\n')
                 dst, dst_method_name, dst_descriptor = path.get_dst( cm )
                 dst = dst.replace('/', '.')
@@ -115,12 +115,12 @@ class StaticAnalyzer:
                     dst_class_name = (dst[:200] + '..')
                 else:
                     dst_class_name = dst
-                
+
                 '''
                 Differentiating whether external class or internal based on the tokens generated from main_package_name
-                example 
+                example
                 class name Lcom/whatsapp/xyzd is internal
-                because 
+                because
                 its under whatsapp directory which a token present the name of apk file
                 '''
                 """
@@ -129,8 +129,8 @@ class StaticAnalyzer:
                 if isinstance(path, PathVar) :
                     is_external = (ex3.search(dst_class_name) == None)
                     package = self.findandprint (packages, dst_class_name)
-                    dbMgr.insertPermissionInfo(self.main_package_name, 
-                        self.version_code, self.fileName, i, is_external, 
+                    dbMgr.insertPermissionInfo(self.main_package_name,
+                        self.version_code, self.fileName, i, is_external,
                         dst_class_name, package, "NA")
                 else:
                     src, src_method_name, src_descriptor = path.get_src( cm )
@@ -140,7 +140,7 @@ class StaticAnalyzer:
                     else:
                         src_class_name = src
                     is_external = (ex3.search(src_class_name) == None)
-                    dbMgr.insertPermissionInfo(self.main_package_name, 
-                        self.version_code, self.fileName, i, is_external, 
+                    dbMgr.insertPermissionInfo(self.main_package_name,
+                        self.version_code, self.fileName, i, is_external,
                         dst_class_name, package, src_class_name)
-       
+

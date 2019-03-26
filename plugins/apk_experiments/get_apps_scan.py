@@ -19,9 +19,6 @@ logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
 
 def find_app_scan(apk_obj):
     zip_obj = zipfile.ZipFile(apk_obj.path, "r")
-    # tmp_dir = apk_obj.path[:-4]
-    # if not os.path.exists(tmp_dir):
-    #     os.makedirs(tmp_dir)
 
     # look for ACTION_PACKAGE_ADDED intent in AndroidManifest.xml
     intent_found = False
@@ -43,8 +40,6 @@ def find_app_scan(apk_obj):
                 break
 
     return (ext_method_found or intent_found)
-
-    # shutil.rmtree(tmp_dir)
 
 def androguard_find_app_scan(apk_obj):
     a, d_list, dx = androguardAnalyzeApk((apk_obj.package_name, apk_obj.uuid))
