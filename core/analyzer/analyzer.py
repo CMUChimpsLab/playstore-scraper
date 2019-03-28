@@ -37,8 +37,8 @@ def androguardAnalyzeApk(name_uuid_tup, apk_path=None):
 
 def staticAnalysis(total_size, entries):
     logger = logging.getLogger(__name__)
-    
-    # load plugins to run 
+
+    # load plugins to run
     plugins = helpers.get_plugins("plugins/core/analyzer")
 
     dbHelper = DbHelper()
@@ -89,7 +89,7 @@ def staticAnalysis(total_size, entries):
         except Exception as e:
             logger.error("staticAnalysis: {} - {}".format(packageName, e))
             continue
-        
+
     return result_tups
 
 def analyzer(apkList, process_no=constants.PROCESS_NO):
@@ -125,6 +125,8 @@ def analyzer(apkList, process_no=constants.PROCESS_NO):
             if name_vc_tup != None:
                 analyzedApkFile.write("{},{}\n".format(name_vc_tup[0], name_vc_tup[1]))
                 analyzedApkFile.flush()
+
+    return
 
     # run rating part
     analyzedApkFile.close()
