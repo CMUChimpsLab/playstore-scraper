@@ -75,7 +75,7 @@ class Intents:
         self.dbMgr = dbMgr
         #print 'URL - '
         x = dx.get_tainted_variables().get_strings()
-        analysis = dx.get_vm()
+        analyses = dx.vms
         #cm = analysis.get_class_manager()
         ###self.outHandle.write ('\n')
 
@@ -87,8 +87,12 @@ class Intents:
 
                 for path in paths:
                     m_idx = path[1]
-                    method = analysis.get_cm_method( m_idx )
-                    ###self.outHandle.write ("   %s->%s %s" % (method[0], method[1], method[2][0] + method[2][1]))
+                    for analysis in analyses:
+                        try:
+                            method = analysis.get_cm_method(m_idx)
+                            break
+                        except:
+                            continue
 
                     '''
                     Keeping external package within range of mysql datatype
