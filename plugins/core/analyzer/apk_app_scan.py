@@ -1,8 +1,8 @@
 """
-get_apps_scan:
+apk_app_scan:
 
-This plugin contains all additional functionality for finding apps that scan
-for all apps/packages installed on a device
+This plugin contains additional functionality for checking if an APK being 
+analyzed can scan for all apps/packages installed on a device
 """
 
 import logging
@@ -17,35 +17,11 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     level=logging.INFO)
 
-def find_app_scan(apk_obj):
-    zip_obj = zipfile.ZipFile(apk_obj.path, "r")
-
-    # look for ACTION_PACKAGE_ADDED intent in AndroidManifest.xml
-    intent_found = False
-    for l in str(zip_obj.read("AndroidManifest.xml")).split("\n"):
-        if "ACTION_PACKAGE_ADDED" in l:
-            intent_found = True
-            break
-
-    # look for getInstalledApplications and getInstalledPackages external methods
-    ext_method_found = False
-    smali_files = []
-    for f in zip_obj.namelist():
-        if f.endswith(".smali"):
-            for l in str(zip_obj.read(f)).split("\n"):
-                if "getInstalledApplications" in l or "getInstalledPackages" in l:
-                    ext_method_found = True
-                    break
-            if ext_method_found:
-                break
-
-    return (ext_method_found or intent_found)
-
-def androguard_find_app_scan(apk_obj):
-    a, d_list, dx = androguardAnalyzeApk((apk_obj.package_name, apk_obj.uuid))
-    logger.info("find_app_scan: {},{} - androguard analysis done"\
-            .format(apk_obj.package_name, apk_obj.uuid))
-
+def analyze(uuid, a, d_s, dx, db_helper):
+    """
+    Checks if an app can scan for apps by looking for the associated method and
+    permission
+    """
     # look for getInstalledApplications and getInstalledPackages external methods
     descriptor = ["(I)", "Ljava/util/List;"]
     ext_method_found = False
@@ -56,14 +32,14 @@ def androguard_find_app_scan(apk_obj):
             installed_apps_method = None
         except Exception as e:
             logger.error("find_app_scan getInstalledApplications: {} - {}"\
-                .format(apk_obj.package_name, e))
+                .format(a.get_package(), e))
         try:
             installed_pkgs_method = c.get_fake_method("getInstalledPackages", descriptor)
         except KeyError:
             installed_pkgs_method = None
         except Exception as e:
             logger.error("find_app_scan getInstalledPackages: {} - {}"\
-                .format(apk_obj.package_name, e))
+                .format(a.get_package(), e))
 
         if installed_apps_method is not None or installed_pkgs_method is not None:
             ext_method_found = True
@@ -78,8 +54,4 @@ def androguard_find_app_scan(apk_obj):
             intent_found = True
             break
 
-    return (ext_method_found or intent_found)
-
-def run(apps):
-    app_scan_parser = APKParser(apps, None, find_app_scan, additional_attrs=["decompiled"])
-    return app_scan_parser.start(decompile=True)
+    db_helper.update_apk_analyses_field(uuid, {"scans_apps": True})

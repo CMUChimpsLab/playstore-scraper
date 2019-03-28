@@ -36,6 +36,12 @@ class DbHelper:
         self.__static_analysis_db = self.__client[constants.STATIC_ANALYSIS_DB]
         self.__link_url = self.__static_analysis_db.linkUrl
         self.__third_party_packages = self.__static_analysis_db.thirdPartyPackages
+        self.__apk_analyses = self.__static_analysis_db.apkAnalyses
+
+        # queues of inserts for insert functions used in analysis 
+        self.third_party_queue = []
+        self.perm_info_queue = []
+        self.link_info_queue = []
 
     def close(self):
         """
@@ -376,49 +382,6 @@ class DbHelper:
                 os.remove(constants.DECOMPILE_FOLDER + zip_path)
             logger.info("Replaced {} in db".format(app_info["packageName"]))
 
-    def insertThirdPartyPackageInfo(self, packageName, versioncode, filename,
-                                  category, externalPackageName):
-        self.__static_analysis_db.thirdPartyPackages.insert(
-            {
-                "packageName": packageName,
-                "versionCode": int(versioncode),
-                "filename": filename,
-                "externalPackageName": externalPackageName,
-                "category": category
-            })
-        #print "Rows affected after inserting 3rdpartypackage - " + str (rows_affected)
-
-    def insertPermissionInfo (self, packageName, versioncode, filename, permission,
-                              is_external, dest, externalPackageName, src):
-        self.__static_analysis_db.permissionList.insert(
-            {
-                "packageName": packageName,
-                "versionCode": int(versioncode),
-                "filename": filename,
-                "permission": permission,
-                "isExternal": is_external,
-                "dest": dest,
-                "externalPackageName": externalPackageName,
-                "src": src
-            })
-        #print "Rows affected after inserting permission - " + str (rows_affected)
-
-    def insertLinkInfo (self, packageName, versioncode, filename, link_url,
-                        is_external, triggered_by_code, externalPackageName):
-        if type(link_url) != str:
-            link_url = str(link_url)
-        self.__static_analysis_db.linkUrl.insert(
-            {
-                "packageName": packageName,
-                "versionCode": int(versioncode),
-                "filename": filename,
-                "linkUrl": link_url,
-                "isExternal": is_external,
-                "triggeredByCode": triggered_by_code,
-                "externalPackageName": externalPackageName
-            })
-        #print "Rows affected after inserting permission - " + str (rows_affected)
-
     def update_top_apps(self, new_top_list):
         """
         Update the list of top apps to include possible new ones, and change
@@ -501,20 +464,9 @@ class DbHelper:
         self.__package_names.remove({"_id": package_name})
         self.__top_apps.remove({"_id": package_name})
 
-
     # ************************************************************************ #
     # FIELD UPDATES
     # ************************************************************************ #
-    def update_policy_crawled(self, uuids):
-        """
-        Update the privacyPolicyStatus.crawled field in the database for an
-        application
-        :param uuids: List of uuids to update date for
-        """
-        res = self.__apk_info.update_many(
-            {"uuid": {"$in": uuids}},
-            {'$set': {"privacyPolicyStatus.crawled": True}})
-
     def update_apk_info_field_uuid(self, uuid, field_name, field_value):
         """
         Updates the field and value as specified for document matching uuid
@@ -544,6 +496,29 @@ class DbHelper:
             {"$set": {field_name: field_value}})
         logger.info("Updated {} to {} for {} in apkInfo".format(
             field_name, field_value, res.modified_count))
+
+    def update_apk_analyses_field(self, uuid, update_doc):
+        """
+        Updates the field and value as specified for document matching uuid
+        in apkInfo collection
+
+        Params:
+         - uuid: uuid to update document field for
+         - update_doc: field name and value for updating
+        """
+        self.__apk_analyses.update_one(
+            {"uuid": uuid},
+            {"$set": update_doc})
+    
+    def update_policy_crawled(self, uuids):
+        """
+        Update the privacyPolicyStatus.crawled field in the database for an
+        application
+        :param uuids: List of uuids to update date for
+        """
+        res = self.__apk_info.update_many(
+            {"uuid": {"$in": uuids}},
+            {'$set': {"privacyPolicyStatus.crawled": True}})
 
     def update_policy_crawl_failure(self, uuid, reason):
         """
@@ -602,6 +577,79 @@ class DbHelper:
             logger.info("Updated download time for {}".format(uuid))
         else:
             logger.warning("Failed to update download time for {}".format(uuid))
+
+
+    # ************************************************************************ #
+    # FUNCTIONS THAT USE QUEUES (ALWAYS UPDATE FLUSH)
+    # ************************************************************************ #
+    def insert_third_party_package_info(self, packageName, versioncode, filename,
+                                  category, externalPackageName):
+                                  
+        self.third_party_queue.append(
+            {
+                "packageName": packageName,
+                "versionCode": int(versioncode),
+                "filename": filename,
+                "externalPackageName": externalPackageName,
+                "category": category
+            })
+        if len(self.third_party_queue) == constants.BULK_CHUNK:
+            # bulk write once enough build up
+            self.__static_analysis_db.thirdPartyPackages.insert_many(self.third_party_queue)
+            self.third_party_queue = []
+
+    def insert_permission_info (self, packageName, versioncode, filename, permission,
+                              is_external, dest, externalPackageName, src):
+        self.perm_info_queue.append(
+            {
+                "packageName": packageName,
+                "versionCode": int(versioncode),
+                "filename": filename,
+                "permission": permission,
+                "isExternal": is_external,
+                "dest": dest,
+                "externalPackageName": externalPackageName,
+                "src": src
+            })
+        if len(self.perm_info_queue) == constants.BULK_CHUNK:
+            # bulk write once enough build up
+            self.__static_analysis_db.permissionList.insert_many(self.perm_info_queue)
+            self.perm_info_queue = []
+
+    def insert_link_info (self, packageName, versioncode, filename, link_url,
+                        is_external, triggered_by_code, externalPackageName):
+        if type(link_url) != str:
+            link_url = str(link_url)
+        self.link_info_queue.append(
+            {
+                "packageName": packageName,
+                "versionCode": int(versioncode),
+                "filename": filename,
+                "linkUrl": link_url,
+                "isExternal": is_external,
+                "triggeredByCode": triggered_by_code,
+                "externalPackageName": externalPackageName
+            })
+        if len(self.link_info_queue) == constants.BULK_CHUNK:
+            # bulk write once enough build up
+            self.__static_analysis_db.linkUrl.insert_many(self.link_info_queue)
+            self.link_info_queue = []
+
+    def flush(self):
+        """
+        Flushes queues to respective collection
+        """
+        # insert_third_party_package_info
+        self.__static_analysis_db.thirdPartyPackages.insert_many(self.third_party_queue)
+        self.third_party_queue = []
+        
+        # insert_permission_info
+        self.__static_analysis_db.permissionList.insert_many(self.perm_info_queue)
+        self.perm_info_queue = []
+
+        # insert_link_info
+        self.__static_analysis_db.linkUrl.insert_many(self.link_info_queue)
+        self.link_info_queue = []
 
 
     # ************************************************************************ #

@@ -65,7 +65,7 @@ class NameSpaceMgr:
             #should do something or not for tracking
             pass
         if "admob" not in self.alreadyPrinted and package_name.startswith('Lcom/google/ads'):
-            self.dbMgr.insertThirdPartyPackageInfo(self.main_package_name,
+            self.dbMgr.insert_third_party_package_info(self.main_package_name,
                     self.version_code,
                     self.fileName,
                     "admob",
@@ -280,7 +280,7 @@ class NameSpaceMgr:
                 name = (rootEntry.DirName[:200] + '..')
             else:
                 name = rootEntry.DirName
-            self.dbMgr.insertThirdPartyPackageInfo(self.main_package_name,
+            self.dbMgr.insert_third_party_package_info(self.main_package_name,
                 self.version_code,
                 self.fileName,
                 name,
@@ -306,7 +306,7 @@ class NameSpaceMgr:
             return;
         elif ancestorLevel == 3:
             ###self.outHandle.write (str ("titanium"))
-            self.dbMgr.insertThirdPartyPackageInfo(self.main_package_name,
+            self.dbMgr.insert_third_party_package_info(self.main_package_name,
                 self.version_code,
                 self.fileName,
                 "titanium",
@@ -322,7 +322,7 @@ class NameSpaceMgr:
                 name = (rootEntry.DirName[:200] + '..')
             else:
                 name = rootEntry.DirName
-            self.dbMgr.insertThirdPartyPackageInfo(self.main_package_name,
+            self.dbMgr.insert_third_party_package_info(self.main_package_name,
                 self.version_code,
                 self.fileName,
                 name,

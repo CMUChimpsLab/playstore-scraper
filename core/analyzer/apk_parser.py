@@ -4,6 +4,9 @@ apk_parser:
 Contains class designed to efficiently pull APKs from the NAS in the background
 to be parsed and analyzed as specified
 Works for both zipped decompiled APKs and actual APK files
+
+NOTE: more useful for testing and experimentation since no performance 
+improvement found
 """
 
 import os
@@ -48,7 +51,7 @@ class APKObject:
         return self
 
 class APKParser:
-    def __init__(self, apk_type, apk_list, additional_attrs, parser_fn, analysis_fn):
+    def __init__(self, apk_list, parser_fn, analysis_fn, additional_attrs=[]):
         """
         apk_list: list of dicts with at least <packageName> and <uuid> key each
 
@@ -66,11 +69,6 @@ class APKParser:
              - instance of APKObject with next_arg attribute set to an arbitrary
                result (dev's responsibility to make sure it works)
         """
-        if not isinstance(apk_type, APKType):
-            logger.error("APKParser init error: apk_type must be of APKType enum")
-            return
-
-        self.apk_type = apk_type
         self.parser_fn = parser_fn
         self.analysis_fn = analysis_fn
         self.retrieve_dir = os.path.abspath("tmp")
@@ -88,79 +86,8 @@ class APKParser:
     # ************************************************************************ #
     # internal functions
     # ************************************************************************ #
-    def __get_decompile_zips(self, apk_obj, to_local=False):
-        """
-        Get zipped pre-decompiled APKs and unzip it in a local directory
-        """
-        if hasattr(apk_obj, "decompiled") and apk_obj.decompiled:
-            decompile_zip_loc = os.path.join(constants.DECOMPILE_FOLDER,
-                apk_obj.uuid[0], "{}.zip".format(apk_obj.uuid))
-            if to_local:
-                try:
-                    shutil.copyfile(decompile_zip_loc, self.retrieve_dir)
-                except Exception as e:
-                    logger.error("get_decompile_zips: cp err for {}: {}"\
-                        .format(apk_obj.package_name, e))
-                    return
-
-                apk_obj.path = os.path.join(self.retrieve_dir, "{}.zip".format(apk_obj.uuid))
-            else:
-                apk_obj.path = decompile_zip_loc
-        else:
-            apk_loc = os.path.join(constants.DOWNLOAD_FOLDER,
-                apk_obj.uuid[0], apk_obj.uuid[1], "{}.apk".format(apk_obj.uuid))
-            decompile_loc = os.path.join(self.retrieve_dir, apk_obj.uuid)
-            decompile_zip_loc = os.path.join(self.retrieve_dir, "{}.zip".format(apk_obj.uuid))
-
-            # decompile and zip for analysis purpose
-            decompile_cmd = "./core/decompiler/apktool d {} -o {}".format(apk_loc, decompile_loc)
-            res = subprocess.run(decompile_cmd,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.PIPE,
-                shell=True)
-            if res.returncode != 0:
-                logger.error("{}".format(res.stderr))
-                return
-            logger.info("get_decompile_zips: decompiled {},{}"\
-                .format(apk_obj.package_name, apk_obj.uuid))
-            new_zip = zipfile.ZipFile(decompile_zip_loc, "w", zipfile.ZIP_BZIP2)
-            for root, dirs, files in os.walk(decompile_loc):
-                for f in files:
-                    new_zip.write(os.path.join(root, f))
-            new_zip.close()
-            try:
-                shutil.rmtree(decompile_loc)
-            except Exception as e:
-                logger.error("{}".format(e))
-                return
-            logger.info("get_decompile_zips: zipped {},{}"\
-                .format(apk_obj.package_name, apk_obj.uuid))
-            apk_obj.path = decompile_zip_loc
-
-        logger.info("get_decompile_zips: got {},{}"\
-            .format(apk_obj.package_name, apk_obj.uuid))
-        return apk_obj
-
-    def __get_raw_apks(self, apk_obj, to_local=False):
-        """
-        Get raw APKs
-        """
-        apk_loc = os.path.join(constants.DOWNLOAD_FOLDER,
-            apk_obj.uuid[0], apk_obj.uuid[1], "{}.apk".format(apk_obj.uuid))
-        if to_local:
-            try:
-                shutil.copyfile(apk_loc, self.retrieve_dir)
-            except Exception as e:
-                logger.error("get_raw_apks: cp err for {}: {}".format(apk_obj.package_name, e))
-                return
-
-            apk_obj.path = os.path.join(self.retrieve_dir, "{}.apk".format(apk_obj.uuid))
-        else:
-            apk_obj.path = apk_loc
-
-        logger.info("get_raw_apks: got {},{}".format(apk_obj.package_name, apk_obj.uuid))
-        return apk_obj
-
+    
+    
     # ************************************************************************ #
     # public functions
     # ************************************************************************ #
@@ -183,9 +110,6 @@ class APKParser:
         get_apks_proc = None
         get_apks_proc = Process(target=self.get_resource,
             args=(self.apk_obj_list, retrieved_apks, decompile, to_local))
-        if get_apks_proc is None:
-            logger.error("APKParser start: APKType {} has no valid get_apks_proc target"\
-                .format(self.apk_type))
         get_apks_proc.start()
 
         parse_apks_procs = []

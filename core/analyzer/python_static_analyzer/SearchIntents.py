@@ -126,7 +126,7 @@ class Intents:
                             else:
                                 strlink = link
 
-                            self.dbMgr.insertLinkInfo(self.main_package_name,
+                            self.dbMgr.insert_link_info(self.main_package_name,
                                 self.version_code, self.fileName, strlink,
                                 False, dst, xpck)
                     else:
@@ -143,7 +143,7 @@ class Intents:
                             else:
                                 strlink = link
 
-                            self.dbMgr.insertLinkInfo(self.main_package_name,
+                            self.dbMgr.insert_link_info(self.main_package_name,
                                 self.version_code, self.fileName, strlink, True,
                                 dst, xpck)
 

@@ -129,7 +129,7 @@ class StaticAnalyzer:
                 if isinstance(path, PathVar) :
                     is_external = (ex3.search(dst_class_name) == None)
                     package = self.findandprint (packages, dst_class_name)
-                    dbMgr.insertPermissionInfo(self.main_package_name,
+                    dbMgr.insert_permission_info(self.main_package_name,
                         self.version_code, self.fileName, i, is_external,
                         dst_class_name, package, "NA")
                 else:
@@ -140,7 +140,7 @@ class StaticAnalyzer:
                     else:
                         src_class_name = src
                     is_external = (ex3.search(src_class_name) == None)
-                    dbMgr.insertPermissionInfo(self.main_package_name,
+                    dbMgr.insert_permission_info(self.main_package_name,
                         self.version_code, self.fileName, i, is_external,
                         dst_class_name, package, src_class_name)
 

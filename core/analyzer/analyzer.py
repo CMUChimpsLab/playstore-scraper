@@ -2,10 +2,10 @@ import logging
 import datetime
 import os
 from multiprocessing import Pool
-import traceback
 import multiprocessing_logging
 import shutil
 import time
+from functools import partial
 
 # sys path hacking to import from other repos
 import sys
@@ -26,71 +26,73 @@ import playstoreAnalysis.src.analyze as analyze
 import crowdAnalysis.topApps.getSensitivePairs as getSensitivePairs
 import crowdAnalysis.topApps.getSummedScore as getSummedScore
 from core.db.db_helper import DbHelper
-from common.constants import PROCESS_NO, LOG_FOLDER, DOWNLOAD_FOLDER, RESULT_CHUNK
+import common.constants as constants
 
 def androguardAnalyzeApk(name_uuid_tup, apk_path=None):
     package_name, uuid = name_uuid_tup
     if apk_path is None:
-        apk_path = "{}/{}/{}/{}.apk".format(DOWNLOAD_FOLDER, uuid[0], uuid[1], uuid)
+        apk_path = "{}/{}/{}/{}.apk".format(constants.DOWNLOAD_FOLDER, uuid[0], uuid[1], uuid)
 
     return AnalyzeAPK(apk_path, suppress_parse_warning=True)
 
-def staticAnalysis(entry_path_tup):
-    apkEntry, outputPath = entry_path_tup
+def staticAnalysis(total_size, entries):
     logger = logging.getLogger(__name__)
+    
+    # load plugins to run 
+    plugins = helpers.get_plugins("plugins/core/analyzer")
+
     dbHelper = DbHelper()
-
-    try:
-        packageName = apkEntry["packageName"]
-        outputPath = outputPath + '/'
-        fileName = apkEntry["uuid"] + '.apk'
-        appVersion = apkEntry["versionCode"]
-        path = apkEntry['fileDir']
-
-        tokens = namespaceanalyzer.NameSpaceMgr.GetTokensStatic (path, '/')
-        category =  tokens[len (tokens) - 1]
-        filename = path + '/' + fileName
-        outFileName = '/package.txt'
-        outFileName = outputPath + outFileName
-        instance = namespaceanalyzer.NameSpaceMgr()
-
-        """
+    count = 0
+    result_tups = []
+    for apkEntry, outputPath in entries:
         try:
-          a = apk.APK(filename, zipmodule=1)
-        except:
-          a = apk.APK(filename, zipmodule=2)
-        """
-        a = apk.APK(filename)
-        dx = Analysis(d)
-        for dex in a.get_all_dex():
-            d = dvm.DalvikVMFormat(dex, suppress_parse_warning=True)
-            dx.add(d)
+            packageName = apkEntry["packageName"]
+            outputPath = outputPath + '/'
+            fileName = apkEntry["uuid"] + '.apk'
+            appVersion = int(apkEntry["versionCode"]) if apkEntry["versionCode"] is not None else 0
+            path = apkEntry['fileDir']
 
-        #remove old db entry in static analysis db
-        dbHelper.deleteEntry(packageName, appVersion)
+            a = apk.APK(filename)
+            dx = Analysis()
+            for dex in a.get_all_dex():
+                d = dvm.DalvikVMFormat(dex, suppress_parse_warning=True)
+                dx.add(d)
 
-        packages = instance.execute(filename, appVersion, outFileName, dbHelper,
-            fileName, category, a, dx)
+            # remove old db entry in static analysis db
+            dbHelper.deleteEntry(packageName, appVersion)
 
-        outfile_perm = '/permissions.txt'
-        outfile_perm = outputPath + outfile_perm
-        permission.StaticAnalyzer(filename, appVersion, outfile_perm, packages,
-            dbHelper, fileName, a, dx)
+            # do static analyses
+            tokens = namespaceanalyzer.NameSpaceMgr.GetTokensStatic (path, '/')
+            category =  tokens[len (tokens) - 1]
+            filename = path + '/' + fileName
+            outFileName = '/package.txt'
+            outFileName = outputPath + outFileName
+            instance = namespaceanalyzer.NameSpaceMgr()
+            packages = instance.execute(filename, appVersion, outFileName, dbHelper,
+                fileName, category, a, dx)
+            outfile_perm = outputPath + '/permissions.txt'
+            permission.StaticAnalyzer(filename, appVersion, outfile_perm, packages,
+                dbHelper, fileName, a, dx)
+            outfile_links = outputPath + '/links.txt'
+            SearchIntents.Intents(filename, outfile_links, appVersion, packages,
+                dbHelper, fileName, a, dx)
 
-        outfile_links = '/links.txt'
-        outfile_links = outputPath + outfile_links
-        SearchIntents.Intents(filename, outfile_links, appVersion, packages,
-            dbHelper, fileName, a, dx)
+            # run plugins
+            for p in plugins:
+                if hasattr(p, "analyze"):
+                    plugin_res = p.analyze(apkEntry["uuid"], a, None, dx, dbHelper)
 
-        return (packageName, appVersion)
-    except:
-        e = traceback.format_exc()
-        logger.error("Main : Exception occured for " + packageName)
-        logger.error(e)
-        logger.error("\n")
-        return None
+            result_tups.append((packageName, appVersion))
+            count += 1
+            if count % constants.RESULT_CHUNK == 0 and count > 0:
+                logger.info("{}/{} analyzed".format(count, len(total_size)))
+        except Exception as e:
+            logger.error("staticAnalysis: {} - {}".format(packageName, e))
+            continue
+        
+    return result_tups
 
-def analyzer(apkList, process_no=PROCESS_NO):
+def analyzer(apkList, process_no=constants.PROCESS_NO):
     """
     Runs the pipeline static analyses on uuid_list and uses dbhelper to insert
     results in the database
@@ -101,7 +103,7 @@ def analyzer(apkList, process_no=PROCESS_NO):
     # set up path constants
     # now = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
     now = "DEBUG_NEW" # TEMP, TODO REMOVE
-    logPath = LOG_FOLDER + "/staticAnalysisRuns/staticAnalysisRun-" + now + ".log"
+    logPath = constants.LOG_FOLDER + "/staticAnalysisRuns/staticAnalysisRun-" + now + ".log"
     if not os.path.exists(os.path.dirname(logPath)):
         os.makedirs(os.path.dirname(logPath))
 
@@ -118,14 +120,11 @@ def analyzer(apkList, process_no=PROCESS_NO):
     apkList = [(entry, outputPath) for entry in apkList]
     multiprocessing_logging.install_mp_handler(logger)
     pool = Pool(process_no)
-    count = 0
-    for name_vc_tup in pool.imap(staticAnalysis, apkList):
-        if name_vc_tup != None:
-            analyzedApkFile.write("{},{}\n".format(name_vc_tup[0], name_vc_tup[1]))
-            analyzedApkFile.flush()
-            count += 1
-        if count % RESULT_CHUNK == 0 and count > 0:
-            logger.info("{}/{} analyzed".format(count, len(apkList)))
+    for results in pool.imap(partial(staticAnalysis, len(apkList)), apkList, constants.CHUNKSIZE):
+        for name_vc_tup in results:
+            if name_vc_tup != None:
+                analyzedApkFile.write("{},{}\n".format(name_vc_tup[0], name_vc_tup[1]))
+                analyzedApkFile.flush()
 
     # run rating part
     analyzedApkFile.close()
@@ -208,7 +207,7 @@ def getUuidsFromDb():
                 "packageName": name,
                 "uuid": uuid,
                 "versionCode": vc,
-                "fileDir": "{}/{}/{}".format(DOWNLOAD_FOLDER, uuid[0], uuid[1]),
+                "fileDir": "{}/{}/{}".format(constants.DOWNLOAD_FOLDER, uuid[0], uuid[1]),
             })
 
     return apk_list
@@ -234,7 +233,7 @@ def benchmark_staticAnalysis(apkEntry):
 
     return packageName
 
-def benchmark_analyzer(apkList, process_no=PROCESS_NO):
+def benchmark_analyzer(apkList, process_no=constants.PROCESS_NO):
     pool = Pool(process_no)
     #pool = Pool(2)
     start = time.time()
