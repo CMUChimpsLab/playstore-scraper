@@ -80,6 +80,7 @@ def analysis_pipeline(args):
             })
 
     analyzer(app_list, process_no=12)
+    return
 
     # load plugins and run
     analysis_plugins = helpers.get_plugins("plugins/core/analyzer")

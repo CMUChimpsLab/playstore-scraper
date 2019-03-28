@@ -189,15 +189,23 @@ class DbHelper:
                 "packageName": 1,
                 "versionCode": 1,
             })
+
+        def none_vc(obj):
+            if (obj.get("versionCode", None) is not None and
+                    obj.get("versionCode", None) != "None"):
+                return int(obj["versionCode"])
+            else:
+                return 0
+
         tup_to_uuid = {}
         for a in app_infos:
-            tup_to_uuid[(a["packageName"], a["versionCode"])] = a["uuid"]
+            tup_to_uuid[(a["packageName"], none_vc(a))] = a["uuid"]
         info_entries = set(list(tup_to_uuid.keys()))
 
         link_urls = self.__link_url.find({}, {"packageName": 1, "versionCode": 1})
-        link_url_entries = set([(l["packageName"], int(l["versionCode"])) for l in link_urls])
+        link_url_entries = set([(l["packageName"], none_vc(l)) for l in link_urls])
         third_parties = self.__third_party_packages.find({}, {"packageName": 1, "versionCode": 1})
-        third_party_entries = set([(t["packageName"], int(t["versionCode"])) for t in third_parties])
+        third_party_entries = set([(t["packageName"], none_vc(t)) for t in third_parties])
 
         unanalyzed_entries = info_entries - (link_url_entries | third_party_entries)
         return [(u[0], tup_to_uuid[u], u[1]) for u in unanalyzed_entries]
