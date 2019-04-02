@@ -68,7 +68,7 @@ def staticAnalysis(total_size, q_lock, third_party_q, perm_info_q, link_info_q, 
 
         # load and run plugins
         for plugin_info in plugins:
-            p = importlib.import_module(".{}".format(plugin_info[0]), plugin_info[1])
+            p = importlib.import_module(plugin_info[0], plugin_info[1])
             if hasattr(p, "analyze"):
                 plugin_res = p.analyze(apk_entry["uuid"], a, None, dx, dbHelper)
 

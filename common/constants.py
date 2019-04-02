@@ -1,4 +1,4 @@
-multiprocessing
+import multiprocessing
 
 from secrets import DB_USER, DB_PASS
 
