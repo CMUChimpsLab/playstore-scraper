@@ -1,3 +1,5 @@
+multiprocessing
+
 from secrets import DB_USER, DB_PASS
 
 # app categories
@@ -79,7 +81,8 @@ DB_ROOT_PASS = DB_PASS
 
 # parallelism related constants
 THREAD_NO = 10
-PROCESS_NO = 4
+PROCESS_NO = multiprocessing.cpu_count() - 1
 RESULT_CHUNK = 10
-CHUNKSIZE = 100
 BULK_CHUNK = 1000
+QUEUE_LIM = 100000
+

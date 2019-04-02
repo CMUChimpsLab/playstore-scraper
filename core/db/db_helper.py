@@ -35,10 +35,11 @@ class DbHelper:
 
         self.__static_analysis_db = self.__client[constants.STATIC_ANALYSIS_DB]
         self.__link_url = self.__static_analysis_db.linkUrl
+        self.__permission_list = self.__static_analysis_db.permissionList
         self.__third_party_packages = self.__static_analysis_db.thirdPartyPackages
         self.__apk_analyses = self.__static_analysis_db.apkAnalyses
 
-        # queues of inserts for insert functions used in analysis 
+        # queues of inserts for insert functions used in analysis
         self.third_party_queue = []
         self.perm_info_queue = []
         self.link_info_queue = []
@@ -212,26 +213,19 @@ class DbHelper:
 
     def get_all_apps_to_grade(self):
         """
-        Finds uuids for apps that need to be graded
+        Finds uuids for apps that need to be graded based on apps that have
+        entries in the staticAnalysisDB collections
         """
-        app_infos = self.__apk_info.find(
-            {
-                "$and": [
-                    {"$or": [
-                        {"analysesCompleted": None},
-                        {"analysesCompleted": False}
-                    ]},
-                    {"dateDownloaded": {"$ne": None}},
-                ],
-            },
-            {
-                "_id": 0,
-                "uuid": 1,
-                "packageName": 1,
-                "versionCode": 1,
-            })
+        link_urls = self.__link_url.find({}, {"packageName": 1, "versionCode": 1})
+        link_url_entries = set([(l["packageName"], none_vc(l)) for l in link_urls])
 
-        return [(a["packageName"], a["versionCode"]) for a in app_infos]
+        perms = self.__permission_list.find({}, {"packageName": 1, "versionCode": 1})
+        perm_entries = set([(l["packageName"], none_vc(l)) for l in perms])
+
+        third_parties = self.__third_party_packages.find({}, {"packageName": 1, "versionCode": 1})
+        third_party_entries = set([(t["packageName"], none_vc(t)) for t in third_parties])
+
+        return list(link_url_entries | perm_entries | third_party_entries)
 
     def get_package_names_to_update(self, count=0):
         """
@@ -516,8 +510,9 @@ class DbHelper:
         """
         self.__apk_analyses.update_one(
             {"uuid": uuid},
-            {"$set": update_doc})
-    
+            {"$set": update_doc},
+            upsert=True)
+
     def update_policy_crawled(self, uuids):
         """
         Update the privacyPolicyStatus.crawled field in the database for an
@@ -588,11 +583,24 @@ class DbHelper:
 
 
     # ************************************************************************ #
-    # FUNCTIONS THAT USE QUEUES (ALWAYS UPDATE FLUSH)
+    # STATIC ANALYSIS FUNCTIONS THAT USE QUEUES (ALWAYS UPDATE FLUSH)
     # ************************************************************************ #
+    def bulk_insert_third_party_package_info(self, docs):
+        self.__static_analysis_db.thirdPartyPackages.insert_many(docs)
+        logger.info("wrote {} third party pkgs".format(len(docs)))
+
+    def bulk_insert_permission_info(self, docs):
+        self.__static_analysis_db.permissionList.insert_many(docs)
+        logger.info("wrote {} perm info".format(len(docs)))
+
+    def bulk_insert_link_info(self, docs):
+        self.__static_analysis_db.linkUrl.insert_many(docs)
+        logger.info("wrote {} link urls".format(len(docs)))
+
+    """
     def insert_third_party_package_info(self, packageName, versioncode, filename,
                                   category, externalPackageName):
-                                  
+
         self.third_party_queue.append(
             {
                 "packageName": packageName,
@@ -601,9 +609,11 @@ class DbHelper:
                 "externalPackageName": externalPackageName,
                 "category": category
             })
-        if len(self.third_party_queue) == constants.BULK_CHUNK:
+        #logger.info("{} third_party".format(len(self.third_party_queue)))
+        if len(self.third_party_queue) >= constants.FLUSH_LIM:
             # bulk write once enough build up
-            self.__static_analysis_db.thirdPartyPackages.insert_many(self.third_party_queue)
+            self.__static_analysis_db.thirdPartyPackages.insert_many(to_write)
+            logger.info("flushed {} third_party".format(len(self.third_party_queue)))
             self.third_party_queue = []
 
     def insert_permission_info (self, packageName, versioncode, filename, permission,
@@ -619,9 +629,11 @@ class DbHelper:
                 "externalPackageName": externalPackageName,
                 "src": src
             })
-        if len(self.perm_info_queue) == constants.BULK_CHUNK:
+        #logger.info("{} perm_info".format(len(self.perm_info_queue)))
+        if len(self.perm_info_queue) >= constants.FLUSH_LIM:
             # bulk write once enough build up
             self.__static_analysis_db.permissionList.insert_many(self.perm_info_queue)
+            logger.info("flushed {} perm_info".format(len(self.perm_info_queue)))
             self.perm_info_queue = []
 
     def insert_link_info (self, packageName, versioncode, filename, link_url,
@@ -638,10 +650,14 @@ class DbHelper:
                 "triggeredByCode": triggered_by_code,
                 "externalPackageName": externalPackageName
             })
-        if len(self.link_info_queue) == constants.BULK_CHUNK:
+        logger.info("{} link_info - {}".format(len(self.link_info_queue), os.getpid()))
+        if len(self.link_info_queue) >= constants.FLUSH_LIM:
             # bulk write once enough build up
-            self.__static_analysis_db.linkUrl.insert_many(self.link_info_queue)
+            logger.info(self.link_info_queue)
+            a = self.__static_analysis_db.linkUrl.insert_many(self.link_info_queue)
+            logger.info("flushed {} link_info".format(len(self.link_info_queue)))
             self.link_info_queue = []
+    """
 
     def flush(self):
         """
@@ -650,7 +666,7 @@ class DbHelper:
         # insert_third_party_package_info
         self.__static_analysis_db.thirdPartyPackages.insert_many(self.third_party_queue)
         self.third_party_queue = []
-        
+
         # insert_permission_info
         self.__static_analysis_db.permissionList.insert_many(self.perm_info_queue)
         self.perm_info_queue = []
@@ -658,6 +674,8 @@ class DbHelper:
         # insert_link_info
         self.__static_analysis_db.linkUrl.insert_many(self.link_info_queue)
         self.link_info_queue = []
+
+        logger.info("final flushed third_party, perm_info, link_info")
 
 
     # ************************************************************************ #

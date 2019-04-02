@@ -23,7 +23,7 @@ class NameSpaceMgr:
     4. Returns all the packages encountered as it will be used in printing links and permissions
     '''
 
-    def __init__(self):
+    def __init__(self, queue=None):
         '''
         1. Packages contains all the packages encountered while traversing the tree
         '''
@@ -36,6 +36,8 @@ class NameSpaceMgr:
         3. Tokenized items of the main package name
         '''
         self.main_package_tokens = []
+
+        self.q = queue
 
     @staticmethod
     def GetTokensStatic (string, delimiter):
@@ -54,6 +56,15 @@ class NameSpaceMgr:
 
         return tokens
 
+    def make_db_doc(self, packageName, versioncode, filename, category, externalPackageName):
+        return {
+            "packageName": packageName,
+            "versionCode": int(versioncode),
+            "filename": filename,
+            "externalPackageName": externalPackageName,
+            "category": category
+        }
+
     '''
     Song
     Special Handling for Google SDK
@@ -65,22 +76,23 @@ class NameSpaceMgr:
             #should do something or not for tracking
             pass
         if "admob" not in self.alreadyPrinted and package_name.startswith('Lcom/google/ads'):
-            self.dbMgr.insert_third_party_package_info(self.main_package_name,
-                    self.version_code,
-                    self.fileName,
-                    "admob",
-                    self.category)
+            if self.q is None:
+                self.dbMgr.insert_third_party_package_info(self.main_package_name,
+                        self.version_code,
+                        self.fileName,
+                        "admob",
+                        self.category)
+            else:
+                self.q.put(self.make_db_doc(self.main_package_name,
+                        self.version_code,
+                        self.fileName,
+                        "admob",
+                        self.category))
             self.alreadyPrinted.append ("admob")
             self.packages.append ("admob")
 
 
-    def execute(self, fileName, vc, outFileName, dbMgr, noprefixfilename,
-                category, a, dx):
-        ###a = apk.APK(fileName)
-        ###d = dvm.DalvikVMFormat (a.get_dex())
-        ###dx = uVMAnalysis (d)
-        #self.outHandle = open (outFileName, 'a+')
-
+    def execute(self, fileName, vc, dbMgr, noprefixfilename, category, a, dx):
         '''
         Handle to DataBase
         '''
@@ -94,7 +106,6 @@ class NameSpaceMgr:
         self.dirEntries = []
         self.version_code = vc
 
-        ######self.outHandle.write ("---Package Name---\n")
         '''
         Keeping main package name within range of mysql datatype
         '''
@@ -115,8 +126,6 @@ class NameSpaceMgr:
 
         #print self.main_package_name
 
-        ###self.outHandle.write(fileName)
-        ###self.outHandle.write ('\n')
         self.main_package_tokens = self.GetTokens(self.main_package_name)
 
 
@@ -139,11 +148,9 @@ class NameSpaceMgr:
                 package_names.append (self.GetDirectoryName (package_name))
                 #print package_name
 
-        ###self.outHandle.write ("--External Packages---\n")
         self.PopulateDirEntries(package_names)
         self.GetPackages ()
 
-        #self.outHandle.close()
         return self.alreadyPrinted
 
 
@@ -275,17 +282,22 @@ class NameSpaceMgr:
             '''
             Printing into file as well as writing into Database
             '''
-            ###self.outHandle.write (str (rootEntry.DirName))
             if len(rootEntry.DirName) > 250 :
                 name = (rootEntry.DirName[:200] + '..')
             else:
                 name = rootEntry.DirName
-            self.dbMgr.insert_third_party_package_info(self.main_package_name,
-                self.version_code,
-                self.fileName,
-                name,
-                self.category)
-            ###self.outHandle.write ("\n")
+            if self.q is None:
+                self.dbMgr.insert_third_party_package_info(self.main_package_name,
+                    self.version_code,
+                    self.fileName,
+                    name,
+                    self.category)
+            else:
+                self.q.put(self.make_db_doc(self.main_package_name,
+                    self.version_code,
+                    self.fileName,
+                    name,
+                    self.category))
             self.alreadyPrinted.append (rootEntry.DirName)
             return
 
@@ -305,38 +317,43 @@ class NameSpaceMgr:
         elif ancestorLevel == -2: #Ignore noise
             return;
         elif ancestorLevel == 3:
-            ###self.outHandle.write (str ("titanium"))
-            self.dbMgr.insert_third_party_package_info(self.main_package_name,
-                self.version_code,
-                self.fileName,
-                "titanium",
-                self.category)
+            if self.q is None:
+                self.dbMgr.insert_third_party_package_info(self.main_package_name,
+                    self.version_code,
+                    self.fileName,
+                    "titanium",
+                    self.category)
+            else:
+                self.q.put(self.make_db_doc(self.main_package_name,
+                    self.version_code,
+                    self.fileName,
+                    "titanium",
+                    self.category))
             self.alreadyPrinted.append ("titanium")
         elif ancestorLevel == 1:
             self.packages.append (rootEntry.DirName)
             '''Rule added to PackageRules'''
-#            if (len(rootEntry.DirName) <= 2) or ('w3c' in rootEntry.DirName) or ('apache' in rootEntry.DirName) or ('xml' in rootEntry.DirName) or ('L' in rootEntry.DirName) or ('junit' in rootEntry.DirName) or ('sun' in rootEntry.DirName) or ('android' in rootEntry.DirName) or ('dalvik' in rootEntry.DirName) or ('json' in rootEntry.DirName) :
-#                    return
-            ###self.outHandle.write (str (rootEntry.DirName))
             if len(rootEntry.DirName) > 250 :
                 name = (rootEntry.DirName[:200] + '..')
             else:
                 name = rootEntry.DirName
-            self.dbMgr.insert_third_party_package_info(self.main_package_name,
-                self.version_code,
-                self.fileName,
-                name,
-                self.category)
-            ###self.outHandle.write ("\n")
+            if self.q is None:
+                self.dbMgr.insert_third_party_package_info(self.main_package_name,
+                    self.version_code,
+                    self.fileName,
+                    name,
+                    self.category)
+            else:
+                self.q.put(self.make_db_doc(self.main_package_name,
+                    self.version_code,
+                    self.fileName,
+                    name,
+                    self.category))
             self.alreadyPrinted.append (rootEntry.DirName)
         else:
             #google package
             self.packages.append (self.main_package_name)
             '''Rule added to PackageRules'''
-#            if (len(rootEntry.DirName) <= 2) or ('w3c' in rootEntry.DirName) or ('apache' in rootEntry.DirName) or ('xml' in rootEntry.DirName) or ('L' in rootEntry.DirName) or ('junit' in rootEntry.DirName) or ('sun' in rootEntry.DirName) or ('android' in rootEntry.DirName) or ('dalvik' in rootEntry.DirName) or ('json' in rootEntry.DirName) :
-#                    return
-            ###self.outHandle.write (str (self.main_package_name))
-            ###self.outHandle.write ("\n")
             self.PrintPackageNameAtLevel (rootEntry, 2)
 
     def SetRules (self, rootEntry):

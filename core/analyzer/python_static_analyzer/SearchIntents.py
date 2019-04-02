@@ -24,12 +24,22 @@ class Intents:
     def findandprint (self, packages, dst_class_name):
         for package in packages:
             if package in dst_class_name:
-                ###self.outHandle.write ("\n    PackageName - ")
-                ###self.outHandle.write (package)
                 return package
         return "NA"
 
-    def __init__(self, infile, outfile, vc, packages, dbMgr, noprefixfilename, a, dx):
+    def make_db_doc(self, packageName, versioncode, filename, link_url,
+                        is_external, triggered_by_code, externalPackageName):
+        return {
+            "packageName": packageName,
+            "versionCode": int(versioncode),
+            "filename": filename,
+            "linkUrl": link_url,
+            "isExternal": is_external,
+            "triggeredByCode": triggered_by_code,
+            "externalPackageName": externalPackageName
+        }
+
+    def __init__(self, infile, vc, packages, dbMgr, noprefixfilename, a, dx, q=None):
         '''
         Constructor
         '''
@@ -37,7 +47,6 @@ class Intents:
         ###d = dvm.DalvikVMFormat (a.get_dex())
         ###dx = uVMAnalysis (d)
 
-        #self.outHandle = open (outfile, 'a+')
 
         ex1 = re.compile ("http://")
         mpn = a.get_package()
@@ -56,8 +65,6 @@ class Intents:
             sys.exit(1)
         self.version_code = vc
 
-        ###self.outHandle.write ("\n")
-        ###self.outHandle.write ("---Package Name---\n")
         #print self.main_package_name
 
 
@@ -69,15 +76,13 @@ class Intents:
         else:
             self.fileName = noprefixfilename
 
-        ###self.outHandle.write(infile)
         ex3 = re.compile (self.main_package_name)
 
         self.dbMgr = dbMgr
         #print 'URL - '
         x = dx.get_tainted_variables().get_strings()
-        analysis = dx.get_vm()
+        analyses = dx.vms
         #cm = analysis.get_class_manager()
-        ###self.outHandle.write ('\n')
 
         for full in x:
             s,_ = full
@@ -87,8 +92,12 @@ class Intents:
 
                 for path in paths:
                     m_idx = path[1]
-                    method = analysis.get_cm_method( m_idx )
-                    ###self.outHandle.write ("   %s->%s %s" % (method[0], method[1], method[2][0] + method[2][1]))
+                    for analysis in analyses:
+                        try:
+                            method = analysis.get_cm_method(m_idx)
+                            break
+                        except:
+                            continue
 
                     '''
                     Keeping external package within range of mysql datatype
@@ -118,36 +127,38 @@ class Intents:
                         for link in re.findall("http://[\S]+", linkStr):
                             if ('.png' in link)  or ('127.0.0.1' in link) or ('www.w3.org' in link):
                                 continue
-                            ###self.outHandle.write ("   APP - ")
-                            ###self.outHandle.write (link)
-                            ###self.outHandle.write ('\n')
                             if len(link) > 250 :
                                 strlink = (link[:200] + '..')
                             else:
                                 strlink = link
 
-                            self.dbMgr.insert_link_info(self.main_package_name,
-                                self.version_code, self.fileName, strlink,
-                                False, dst, xpck)
+                            if q is None:
+                                self.dbMgr.insert_link_info(self.main_package_name,
+                                    self.version_code, self.fileName, strlink,
+                                    False, dst, xpck)
+                            else:
+                                q.put(self.make_db_doc(self.main_package_name,
+                                    self.version_code, self.fileName, strlink,
+                                    False, dst, xpck))
                     else:
                         _,linkStr = full
                         #print "EXTERNAL - ", link
                         for link in re.findall("http://[\S]+", linkStr):
                             if ('.png' in link)  or ('127.0.0.1' in link) or ('www.w3.org' in link):
                                 continue
-                            ###self.outHandle.write ("   EXTERNAL - ")
-                            ###self.outHandle.write (link)
-                            ###self.outHandle.write ('\n')
                             if len(link) > 250 :
                                 strlink = (link[:200] + '..')
                             else:
                                 strlink = link
 
-                            self.dbMgr.insert_link_info(self.main_package_name,
-                                self.version_code, self.fileName, strlink, True,
-                                dst, xpck)
+                            if q is None:
+                                self.dbMgr.insert_link_info(self.main_package_name,
+                                    self.version_code, self.fileName, strlink, True,
+                                    dst, xpck)
+                            else:
+                                q.put(self.make_db_doc(self.main_package_name,
+                                    self.version_code, self.fileName, strlink, True,
+                                    dst, xpck))
 
                     #access, idx = path[0]
-                    ###self.outHandle.write ('\n\n')
-        #self.outHandle.close()
 

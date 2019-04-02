@@ -1,7 +1,7 @@
 """
 apk_app_scan:
 
-This plugin contains additional functionality for checking if an APK being 
+This plugin contains additional functionality for checking if an APK being
 analyzed can scan for all apps/packages installed on a device
 """
 
@@ -22,28 +22,16 @@ def analyze(uuid, a, d_s, dx, db_helper):
     Checks if an app can scan for apps by looking for the associated method and
     permission
     """
-    # look for getInstalledApplications and getInstalledPackages external methods
+    # look for getInstalledApplications and getInstalledPackages methods xref
     descriptor = ["(I)", "Ljava/util/List;"]
     ext_method_found = False
-    for c in dx.get_external_classes():
-        try:
-            installed_apps_method = c.get_fake_method("getInstalledApplications", descriptor)
-        except KeyError:
-            installed_apps_method = None
-        except Exception as e:
-            logger.error("find_app_scan getInstalledApplications: {} - {}"\
-                .format(a.get_package(), e))
-        try:
-            installed_pkgs_method = c.get_fake_method("getInstalledPackages", descriptor)
-        except KeyError:
-            installed_pkgs_method = None
-        except Exception as e:
-            logger.error("find_app_scan getInstalledPackages: {} - {}"\
-                .format(a.get_package(), e))
-
-        if installed_apps_method is not None or installed_pkgs_method is not None:
-            ext_method_found = True
-            break
+    for c in dx.get_classes():
+        for c_called, refs in c.get_xref_to().items():
+            for r in refs:
+                if (r[1].name == "getInstalledApplications" or
+                        r[1].name == "getInstalledPackages"):
+                    ext_method_found = True
+                    break
 
     # look for ACTION_PACKAGE_ADDED intent
     intent_found = False
@@ -54,4 +42,5 @@ def analyze(uuid, a, d_s, dx, db_helper):
             intent_found = True
             break
 
-    db_helper.update_apk_analyses_field(uuid, {"scans_apps": True})
+    db_helper.update_apk_analyses_field(uuid, {"scans_apps": ext_method_found or intent_found})
+
