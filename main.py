@@ -188,6 +188,8 @@ input_opts.add_argument("-f", "--file",
 input_opts.add_argument("-i", "--inputs",
     nargs='+',
     help="input of APKs to test (space delimited strings of \"packageName uuid\")")
+aae_parser.add_argument("-t", "--target",
+    help="target plugin")
 
 # static analysis of apps not yet analyzed
 ap_parser = subparsers.add_parser("analysis-pipeline", aliases=["ap"],

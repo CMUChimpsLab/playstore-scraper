@@ -50,10 +50,16 @@ def apk_analysis_experiment(args):
     apks = [dict(zip(keys, a)) for a in apks]
 
     # pass to plugin and run
-    plugins = helpers.get_plugins("plugins/apk_experiments", target="get_apps_scan")
-    for p in plugins:
-        logger.info("running plugin {}".format(p.__name__))
-        plugin_res = p.run(apks)
+    if args.target is not None:
+        plugins = helpers.get_plugins("plugins/apk_experiments", target=args.target)
+        for p in plugins:
+            logger.info("running plugin {}".format(p.__name__))
+            plugin_res = p.run(apks)
+    else:
+        plugins = helpers.get_plugins("plugins/apk_experiments")
+        for p in plugins:
+            logger.info("running plugin {}".format(p.__name__))
+            plugin_res = p.run(apks)
 
     return
 

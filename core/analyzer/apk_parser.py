@@ -5,7 +5,7 @@ Contains class designed to efficiently pull APKs from the NAS in the background
 to be parsed and analyzed as specified
 Works for both zipped decompiled APKs and actual APK files
 
-NOTE: more useful for testing and experimentation since no performance 
+NOTE: more useful for testing and experimentation since no performance
 improvement found
 """
 
@@ -86,8 +86,8 @@ class APKParser:
     # ************************************************************************ #
     # internal functions
     # ************************************************************************ #
-    
-    
+
+
     # ************************************************************************ #
     # public functions
     # ************************************************************************ #
@@ -202,10 +202,16 @@ class APKParser:
                 logger.info("get_decompile_zips: removed {},{}"\
                     .format(apk_obj.package_name, apk_obj.uuid))
                 apk_obj.path = decompile_zip_loc
+            else:
+                logger.info("get_decompile_zips: {},{} no action specified, passing"\
+                    .format(apk_obj.package_name, apk_obj.uuid))
+                apk_obj.path = os.path.join(constants.DOWNLOAD_FOLDER,
+                    apk_obj.uuid[0], apk_obj.uuid[1], "{}.apk".format(apk_obj.uuid))
 
             logger.info("get_decompile_zips: got {},{}"\
                 .format(apk_obj.package_name, apk_obj.uuid))
             retrieved_apks.put(apk_obj)
+
 
     def parse_apks(self, retrieve_done_flag, retrieved_apks, parsed_results):
         """

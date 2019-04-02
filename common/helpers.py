@@ -48,7 +48,7 @@ def get_plugins(rel_plugin_folder, target=None, prefix_target=None, suffix_targe
                 (not plugin_name.endswith(".py") or plugin_name == "__init__.py")):
             continue
 
-        module_name = plugin_name.strip(".py")
+        module_name = plugin_name.rstrip(".py")
         try:
             if [target, prefix_target, suffix_target].count(None) == 3:
                 plugin = importlib.import_module(".{}".format(module_name), import_path)
