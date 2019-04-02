@@ -3,6 +3,8 @@ Created on Sep 9, 2012
 
 @author: psachdev
 '''
+from itertools import chain
+
 from androguard.core.bytecodes import apk
 from androguard.core.bytecodes import apk
 from androguard.core.bytecodes import dvm
@@ -30,8 +32,6 @@ class StaticAnalyzer:
             return googleLib
         for package in packages:
             if package in class_name:
-                #self.outHandle.write ("\n    PackageName - ")
-                #self.outHandle.write (dst_class_name)
                 if len(package) > 250 :
                     pck = (package[:200] + '..')
                 else:
@@ -41,15 +41,13 @@ class StaticAnalyzer:
             return "NA"
 
 
-    def __init__ (self, fileName, vc, outFileName, packages, dbMgr,
-                  noprefixfilename, a, dx):
+    def __init__ (self, fileName, vc, packages, dbMgr, noprefixfilename, a, dx):
         ###a = apk.APK(fileName)
         ###d = dvm.DalvikVMFormat (a.get_dex())
         ###dx = uVMAnalysis (d)
         analyses = dx.vms
         cms = [analysis.get_class_manager() for analysis in analyses]
 
-        #self.outHandle = open (outFileName, 'a+')
         '''
         Handle to Database
         '''
@@ -74,12 +72,9 @@ class StaticAnalyzer:
         else:
             self.fileName = noprefixfilename
 
-        #self.outHandle.write ("\n")
-        #self.outHandle.write ("---Package Name---\n")
         #print self.main_package_name
 
 
-        #self.outHandle.write (fileName)
         ex3 = re.compile (self.main_package_name)
 
         '''
@@ -89,11 +84,18 @@ class StaticAnalyzer:
         #manifestPermissions = dbMgr.getManiFestPermissions(self.main_package_name)
         manifestPermissions = a.get_permissions()
         perm_str = 'android.permission.'
-        manifestPermissions = [p.lstrip(perm_str) for p in manifestPermissions if p.startswith(perm_str)]
+        manifestPermissions = [p for p in manifestPermissions if p.startswith(perm_str)]
         p = dx.get_permissions( manifestPermissions )
 
-        #self.outHandle.write ('\n')
         '''
+        lambda_fn = lambda x: ["{}-{}-{}{}"\
+                .format(x.orig_class.name, z.get_name(), z.descriptor[0], z.descriptor[1])\
+                for z in x.orig_class.methods.values()]
+        intermediate = set(chain(*map(lambda_fn, dx.get_external_classes())))
+        perm_classes = set(a.permission_mapping.keys())
+        temp = intermediate & perm_classes
+        print(temp)
+
         1. Loop through the permissions
         2. Get the source class & destination class of the permission
             Print the class in which the permission is used and
@@ -105,10 +107,8 @@ class StaticAnalyzer:
         '''
         for i in p :
             #print i, ":"
-            #self.outHandle.write (i)
             for path in p [i] :
 
-                #self.outHandle.write ('\n')
                 for cm in cms:
                     try:
                         dst, dst_method_name, dst_descriptor = path.get_dst(cm)
@@ -134,6 +134,7 @@ class StaticAnalyzer:
                 if isinstance(path, PathVar) :
                     is_external = (ex3.search(dst_class_name) == None)
                     package = self.findandprint (packages, dst_class_name)
+                    continue
                     dbMgr.insert_permission_info(self.main_package_name,
                         self.version_code, self.fileName, i, is_external,
                         dst_class_name, package, "NA")
@@ -145,6 +146,7 @@ class StaticAnalyzer:
                     else:
                         src_class_name = src
                     is_external = (ex3.search(src_class_name) == None)
+                    continue
                     dbMgr.insert_permission_info(self.main_package_name,
                         self.version_code, self.fileName, i, is_external,
                         dst_class_name, package, src_class_name)

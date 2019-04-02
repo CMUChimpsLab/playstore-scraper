@@ -27,6 +27,7 @@ import crowdAnalysis.topApps.getSensitivePairs as getSensitivePairs
 import crowdAnalysis.topApps.getSummedScore as getSummedScore
 from core.db.db_helper import DbHelper
 import common.constants as constants
+import common.helpers as helpers
 
 def androguardAnalyzeApk(name_uuid_tup, apk_path=None):
     package_name, uuid = name_uuid_tup
@@ -35,7 +36,7 @@ def androguardAnalyzeApk(name_uuid_tup, apk_path=None):
 
     return AnalyzeAPK(apk_path, suppress_parse_warning=True)
 
-def staticAnalysis(total_size, entries):
+def staticAnalysis(total_size, apk_entry):
     logger = logging.getLogger(__name__)
 
     # load plugins to run
@@ -44,53 +45,32 @@ def staticAnalysis(total_size, entries):
     dbHelper = DbHelper()
     count = 0
     result_tups = []
-    for apkEntry, outputPath in entries:
-        try:
-            packageName = apkEntry["packageName"]
-            outputPath = outputPath + '/'
-            fileName = apkEntry["uuid"] + '.apk'
-            appVersion = int(apkEntry["versionCode"]) if apkEntry["versionCode"] is not None else 0
-            path = apkEntry['fileDir']
+    try:
+        packageName = apk_entry["packageName"]
+        appVersion = int(apk_entry["versionCode"]) if apk_entry["versionCode"] is not None else 0
+        path = apk_entry['fileDir']
+        fileName = apk_entry["uuid"] + '.apk'
+        filename = path + '/' + fileName
 
-            a = apk.APK(filename)
-            dx = Analysis()
-            for dex in a.get_all_dex():
-                d = dvm.DalvikVMFormat(dex, suppress_parse_warning=True)
-                dx.add(d)
+        a, d_s, dx = androguardAnalyzeApk((packageName, apk_entry["uuid"]))
 
-            # remove old db entry in static analysis db
-            dbHelper.deleteEntry(packageName, appVersion)
+        # do static analyses
+        tokens = namespaceanalyzer.NameSpaceMgr.GetTokensStatic (path, '/')
+        category =  tokens[len (tokens) - 1]
+        instance = namespaceanalyzer.NameSpaceMgr()
+        packages = instance.execute(filename, appVersion, dbHelper, fileName, category, a, dx)
+        permission.StaticAnalyzer(filename, appVersion, packages, dbHelper, fileName, a, dx)
+        SearchIntents.Intents(filename, appVersion, packages, dbHelper, fileName, a, dx)
 
-            # do static analyses
-            tokens = namespaceanalyzer.NameSpaceMgr.GetTokensStatic (path, '/')
-            category =  tokens[len (tokens) - 1]
-            filename = path + '/' + fileName
-            outFileName = '/package.txt'
-            outFileName = outputPath + outFileName
-            instance = namespaceanalyzer.NameSpaceMgr()
-            packages = instance.execute(filename, appVersion, outFileName, dbHelper,
-                fileName, category, a, dx)
-            outfile_perm = outputPath + '/permissions.txt'
-            permission.StaticAnalyzer(filename, appVersion, outfile_perm, packages,
-                dbHelper, fileName, a, dx)
-            outfile_links = outputPath + '/links.txt'
-            SearchIntents.Intents(filename, outfile_links, appVersion, packages,
-                dbHelper, fileName, a, dx)
+        # run plugins
+        for p in plugins:
+            if hasattr(p, "analyze"):
+                plugin_res = p.analyze(apk_entry["uuid"], a, None, dx, dbHelper)
+    except Exception as e:
+        logger.error("staticAnalysis: {} - {}".format(packageName, e))
+        return
 
-            # run plugins
-            for p in plugins:
-                if hasattr(p, "analyze"):
-                    plugin_res = p.analyze(apkEntry["uuid"], a, None, dx, dbHelper)
-
-            result_tups.append((packageName, appVersion))
-            count += 1
-            if count % constants.RESULT_CHUNK == 0 and count > 0:
-                logger.info("{}/{} analyzed".format(count, len(total_size)))
-        except Exception as e:
-            logger.error("staticAnalysis: {} - {}".format(packageName, e))
-            continue
-
-    return result_tups
+    return (packageName, appVersion)
 
 def analyzer(apkList, process_no=constants.PROCESS_NO):
     """
@@ -103,30 +83,40 @@ def analyzer(apkList, process_no=constants.PROCESS_NO):
     # set up path constants
     # now = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
     now = "DEBUG_NEW" # TEMP, TODO REMOVE
-    logPath = constants.LOG_FOLDER + "/staticAnalysisRuns/staticAnalysisRun-" + now + ".log"
-    if not os.path.exists(os.path.dirname(logPath)):
-        os.makedirs(os.path.dirname(logPath))
-
     outputPath = "staticAnalysisRuns/" + now
     if os.path.exists(outputPath):
         shutil.rmtree(outputPath)
     os.makedirs(outputPath)
 
+    """
     # in case the crawler breaks, append to the list.
     analyzedApkFilePath = outputPath + '/' + 'filelist.txt'
     analyzedApkFile = open(analyzedApkFilePath, "w+")
+    """
 
     # run static analysis part
-    apkList = [(entry, outputPath) for entry in apkList]
+    count = 0
+    chunksize = int(len(apkList) / process_no)
+    logger.info("analyzing {} apps in {} size chunks".format(len(apkList), chunksize))
     multiprocessing_logging.install_mp_handler(logger)
     pool = Pool(process_no)
-    for results in pool.imap(partial(staticAnalysis, len(apkList)), apkList, constants.CHUNKSIZE):
-        for name_vc_tup in results:
-            if name_vc_tup != None:
-                analyzedApkFile.write("{},{}\n".format(name_vc_tup[0], name_vc_tup[1]))
-                analyzedApkFile.flush()
+    name_vc_tups = []
+    for name_vc_tup in pool.imap(partial(staticAnalysis, len(apkList)), apkList, chunksize):
+        if name_vc_tup != None:
+            name_vc_tups.append(name_vc_tup)
+            count += 1
+            """
+            analyzedApkFile.write("{},{}\n".format(name_vc_tup[0], name_vc_tup[1]))
+            analyzedApkFile.flush()
+            """
+            if count % constants.RESULT_CHUNK == 0:
+                logger.info("{}/{} analyzed".format(count, len(apkList)))
+        else:
+            sys.exit(1)
 
-    return
+    # remove old db entries in static analysis db
+    for tup in name_vc_tups:
+        dbHelper.deleteEntry(tup[0], tup[1])
 
     # run rating part
     analyzedApkFile.close()
@@ -217,20 +207,38 @@ def getUuidsFromDb():
 # **************************************************************************** #
 # BENCHMARK FUNCTIONS - NOT FOR ACTUAL USE
 # **************************************************************************** #
-def benchmark_staticAnalysis(apkEntry):
-    packageName = apkEntry["packageName"]
-    fileName = apkEntry["uuid"] + '.apk'
-    appVersion = apkEntry["versionCode"]
-    path = apkEntry['fileDir']
+def benchmark_staticAnalysis(apk_entry):
+    packageName = apk_entry["packageName"]
+    fileName = apk_entry["uuid"] + '.apk'
+    appVersion = apk_entry["versionCode"]
+    path = apk_entry['fileDir']
     filename = path + '/' + fileName
 
     print("{} - analyzing {}".format(os.getpid(), filename))
     start = time.time()
-    a = apk.APK(filename)
-    dx = Analysis()
-    for dex in a.get_all_dex():
-        d = dvm.DalvikVMFormat(dex, suppress_parse_warning=True)
-        dx.add(d)
+    a, d_s, dx = androguardAnalyzeApk((packageName, apk_entry["uuid"]))
+
+    # do static analyses
+    dbHelper = DbHelper()
+    tokens = namespaceanalyzer.NameSpaceMgr.GetTokensStatic (path, '/')
+    print("got tokens")
+    category =  tokens[len (tokens) - 1]
+    instance = namespaceanalyzer.NameSpaceMgr()
+    packages = instance.execute(filename, appVersion, dbHelper, fileName, category, a, dx)
+    print("got packages")
+    """
+
+    permission.StaticAnalyzer(filename, appVersion, packages, dbHelper, fileName, a, dx)
+
+    SearchIntents.Intents(filename, appVersion, packages, dbHelper, fileName, a, dx)
+
+    """
+    # run plugins
+    plugins = helpers.get_plugins("plugins/core/analyzer")
+    for p in plugins:
+        if hasattr(p, "analyze"):
+            plugin_res = p.analyze(apk_entry["uuid"], a, None, dx, dbHelper)
+
     print("{} - {} took {}".format(os.getpid(), packageName, time.time() - start))
 
     return packageName
@@ -265,7 +273,7 @@ if __name__ == "__main__":
         uuidList = getUuidsFromDb()
 
     if benchmark:
-        benchmark_analyzer(uuidList)
+        benchmark_analyzer(uuidList, process_no=1)
     else:
         analyzer(uuidList)
 

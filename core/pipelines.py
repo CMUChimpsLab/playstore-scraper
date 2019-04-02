@@ -67,6 +67,8 @@ def analysis_pipeline(args):
     # static analysis
     helper = DbHelper()
     app_list = helper.get_all_apps_for_full_analysis()
+    #app_list = [("com.android.chrome", "5e5f7394701145fc92676714539f7041", 353808052)]
+    #app_list = [("com.google.android.tts", "9f49501d34a14bcdaf57c657bc937c91", 210315244)]
     app_list_with_locs = []
     for (name, uuid, vc) in app_list:
         if uuid.endswith('apk'):
@@ -79,7 +81,7 @@ def analysis_pipeline(args):
                 "fileDir": "{}/{}/{}".format(DOWNLOAD_FOLDER, uuid[0], uuid[1]),
             })
 
-    analyzer(app_list, process_no=12)
+    analyzer(app_list_with_locs, process_no=12)
     return
 
     # load plugins and run

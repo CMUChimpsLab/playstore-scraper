@@ -24,12 +24,10 @@ class Intents:
     def findandprint (self, packages, dst_class_name):
         for package in packages:
             if package in dst_class_name:
-                ###self.outHandle.write ("\n    PackageName - ")
-                ###self.outHandle.write (package)
                 return package
         return "NA"
 
-    def __init__(self, infile, outfile, vc, packages, dbMgr, noprefixfilename, a, dx):
+    def __init__(self, infile, vc, packages, dbMgr, noprefixfilename, a, dx):
         '''
         Constructor
         '''
@@ -37,7 +35,6 @@ class Intents:
         ###d = dvm.DalvikVMFormat (a.get_dex())
         ###dx = uVMAnalysis (d)
 
-        #self.outHandle = open (outfile, 'a+')
 
         ex1 = re.compile ("http://")
         mpn = a.get_package()
@@ -56,8 +53,6 @@ class Intents:
             sys.exit(1)
         self.version_code = vc
 
-        ###self.outHandle.write ("\n")
-        ###self.outHandle.write ("---Package Name---\n")
         #print self.main_package_name
 
 
@@ -69,7 +64,6 @@ class Intents:
         else:
             self.fileName = noprefixfilename
 
-        ###self.outHandle.write(infile)
         ex3 = re.compile (self.main_package_name)
 
         self.dbMgr = dbMgr
@@ -77,7 +71,6 @@ class Intents:
         x = dx.get_tainted_variables().get_strings()
         analyses = dx.vms
         #cm = analysis.get_class_manager()
-        ###self.outHandle.write ('\n')
 
         for full in x:
             s,_ = full
@@ -122,9 +115,6 @@ class Intents:
                         for link in re.findall("http://[\S]+", linkStr):
                             if ('.png' in link)  or ('127.0.0.1' in link) or ('www.w3.org' in link):
                                 continue
-                            ###self.outHandle.write ("   APP - ")
-                            ###self.outHandle.write (link)
-                            ###self.outHandle.write ('\n')
                             if len(link) > 250 :
                                 strlink = (link[:200] + '..')
                             else:
@@ -139,9 +129,6 @@ class Intents:
                         for link in re.findall("http://[\S]+", linkStr):
                             if ('.png' in link)  or ('127.0.0.1' in link) or ('www.w3.org' in link):
                                 continue
-                            ###self.outHandle.write ("   EXTERNAL - ")
-                            ###self.outHandle.write (link)
-                            ###self.outHandle.write ('\n')
                             if len(link) > 250 :
                                 strlink = (link[:200] + '..')
                             else:
@@ -152,6 +139,4 @@ class Intents:
                                 dst, xpck)
 
                     #access, idx = path[0]
-                    ###self.outHandle.write ('\n\n')
-        #self.outHandle.close()
 
