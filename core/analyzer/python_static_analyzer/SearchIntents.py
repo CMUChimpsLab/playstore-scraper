@@ -27,7 +27,19 @@ class Intents:
                 return package
         return "NA"
 
-    def __init__(self, infile, vc, packages, dbMgr, noprefixfilename, a, dx):
+    def make_db_doc(self, packageName, versioncode, filename, link_url,
+                        is_external, triggered_by_code, externalPackageName):
+        return {
+            "packageName": packageName,
+            "versionCode": int(versioncode),
+            "filename": filename,
+            "linkUrl": link_url,
+            "isExternal": is_external,
+            "triggeredByCode": triggered_by_code,
+            "externalPackageName": externalPackageName
+        }
+
+    def __init__(self, infile, vc, packages, dbMgr, noprefixfilename, a, dx, q=None):
         '''
         Constructor
         '''
@@ -120,9 +132,14 @@ class Intents:
                             else:
                                 strlink = link
 
-                            self.dbMgr.insert_link_info(self.main_package_name,
-                                self.version_code, self.fileName, strlink,
-                                False, dst, xpck)
+                            if q is None:
+                                self.dbMgr.insert_link_info(self.main_package_name,
+                                    self.version_code, self.fileName, strlink,
+                                    False, dst, xpck)
+                            else:
+                                q.put(self.make_db_doc(self.main_package_name,
+                                    self.version_code, self.fileName, strlink,
+                                    False, dst, xpck))
                     else:
                         _,linkStr = full
                         #print "EXTERNAL - ", link
@@ -134,9 +151,14 @@ class Intents:
                             else:
                                 strlink = link
 
-                            self.dbMgr.insert_link_info(self.main_package_name,
-                                self.version_code, self.fileName, strlink, True,
-                                dst, xpck)
+                            if q is None:
+                                self.dbMgr.insert_link_info(self.main_package_name,
+                                    self.version_code, self.fileName, strlink, True,
+                                    dst, xpck)
+                            else:
+                                q.put(self.make_db_doc(self.main_package_name,
+                                    self.version_code, self.fileName, strlink, True,
+                                    dst, xpck))
 
                     #access, idx = path[0]
 

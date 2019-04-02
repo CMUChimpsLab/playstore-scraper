@@ -585,6 +585,19 @@ class DbHelper:
     # ************************************************************************ #
     # STATIC ANALYSIS FUNCTIONS THAT USE QUEUES (ALWAYS UPDATE FLUSH)
     # ************************************************************************ #
+    def bulk_insert_third_party_package_info(self, docs):
+        self.__static_analysis_db.thirdPartyPackages.insert_many(docs)
+        logger.info("wrote {} third party pkgs".format(len(docs)))
+
+    def bulk_insert_permission_info(self, docs):
+        self.__static_analysis_db.permissionList.insert_many(docs)
+        logger.info("wrote {} perm info".format(len(docs)))
+
+    def bulk_insert_link_info(self, docs):
+        self.__static_analysis_db.linkUrl.insert_many(docs)
+        logger.info("wrote {} link urls".format(len(docs)))
+
+    """
     def insert_third_party_package_info(self, packageName, versioncode, filename,
                                   category, externalPackageName):
 
@@ -596,10 +609,11 @@ class DbHelper:
                 "externalPackageName": externalPackageName,
                 "category": category
             })
-        if len(self.third_party_queue) == constants.BULK_CHUNK:
+        #logger.info("{} third_party".format(len(self.third_party_queue)))
+        if len(self.third_party_queue) >= constants.FLUSH_LIM:
             # bulk write once enough build up
-            to_write = set([tuple(d.items()) for d in self.third_party_queue])
             self.__static_analysis_db.thirdPartyPackages.insert_many(to_write)
+            logger.info("flushed {} third_party".format(len(self.third_party_queue)))
             self.third_party_queue = []
 
     def insert_permission_info (self, packageName, versioncode, filename, permission,
@@ -615,10 +629,11 @@ class DbHelper:
                 "externalPackageName": externalPackageName,
                 "src": src
             })
-        if len(self.perm_info_queue) == constants.BULK_CHUNK:
+        #logger.info("{} perm_info".format(len(self.perm_info_queue)))
+        if len(self.perm_info_queue) >= constants.FLUSH_LIM:
             # bulk write once enough build up
-            to_write = set([tuple(d.items()) for d in self.perm_info_queue])
             self.__static_analysis_db.permissionList.insert_many(self.perm_info_queue)
+            logger.info("flushed {} perm_info".format(len(self.perm_info_queue)))
             self.perm_info_queue = []
 
     def insert_link_info (self, packageName, versioncode, filename, link_url,
@@ -635,11 +650,14 @@ class DbHelper:
                 "triggeredByCode": triggered_by_code,
                 "externalPackageName": externalPackageName
             })
-        if len(self.link_info_queue) == constants.BULK_CHUNK:
+        logger.info("{} link_info - {}".format(len(self.link_info_queue), os.getpid()))
+        if len(self.link_info_queue) >= constants.FLUSH_LIM:
             # bulk write once enough build up
-            to_write = set([tuple(d.items()) for d in self.link_info_queue])
-            self.__static_analysis_db.linkUrl.insert_many(self.link_info_queue)
+            logger.info(self.link_info_queue)
+            a = self.__static_analysis_db.linkUrl.insert_many(self.link_info_queue)
+            logger.info("flushed {} link_info".format(len(self.link_info_queue)))
             self.link_info_queue = []
+    """
 
     def flush(self):
         """
@@ -656,6 +674,8 @@ class DbHelper:
         # insert_link_info
         self.__static_analysis_db.linkUrl.insert_many(self.link_info_queue)
         self.link_info_queue = []
+
+        logger.info("final flushed third_party, perm_info, link_info")
 
 
     # ************************************************************************ #

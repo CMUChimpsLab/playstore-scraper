@@ -40,8 +40,21 @@ class StaticAnalyzer:
         else:
             return "NA"
 
+    def make_db_doc(self, packageName, versioncode, filename, permission,
+                              is_external, dest, externalPackageName, src):
 
-    def __init__ (self, fileName, vc, packages, dbMgr, noprefixfilename, a, dx):
+        return {
+            "packageName": packageName,
+            "versionCode": int(versioncode),
+            "filename": filename,
+            "permission": permission,
+            "isExternal": is_external,
+            "dest": dest,
+            "externalPackageName": externalPackageName,
+            "src": src
+        }
+
+    def __init__ (self, fileName, vc, packages, dbMgr, noprefixfilename, a, dx, q=None):
         ###a = apk.APK(fileName)
         ###d = dvm.DalvikVMFormat (a.get_dex())
         ###dx = uVMAnalysis (d)
@@ -134,10 +147,14 @@ class StaticAnalyzer:
                 if isinstance(path, PathVar) :
                     is_external = (ex3.search(dst_class_name) == None)
                     package = self.findandprint (packages, dst_class_name)
-                    continue
-                    dbMgr.insert_permission_info(self.main_package_name,
-                        self.version_code, self.fileName, i, is_external,
-                        dst_class_name, package, "NA")
+                    if q is None:
+                        dbMgr.insert_permission_info(self.main_package_name,
+                            self.version_code, self.fileName, i, is_external,
+                            dst_class_name, package, "NA")
+                    else:
+                        q.put(self.make_db_doc(self.main_package_name,
+                            self.version_code, self.fileName, i, is_external,
+                            dst_class_name, package, "NA"))
                 else:
                     src, src_method_name, src_descriptor = path.get_src(cm)
                     package = self.findandprint(packages, src)
@@ -146,8 +163,12 @@ class StaticAnalyzer:
                     else:
                         src_class_name = src
                     is_external = (ex3.search(src_class_name) == None)
-                    continue
-                    dbMgr.insert_permission_info(self.main_package_name,
-                        self.version_code, self.fileName, i, is_external,
-                        dst_class_name, package, src_class_name)
+                    if q is None:
+                        dbMgr.insert_permission_info(self.main_package_name,
+                            self.version_code, self.fileName, i, is_external,
+                            dst_class_name, package, src_class_name)
+                    else:
+                        q.put(self.make_db_doc(self.main_package_name,
+                            self.version_code, self.fileName, i, is_external,
+                            dst_class_name, package, src_class_name))
 

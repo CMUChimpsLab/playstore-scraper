@@ -23,7 +23,7 @@ class NameSpaceMgr:
     4. Returns all the packages encountered as it will be used in printing links and permissions
     '''
 
-    def __init__(self):
+    def __init__(self, queue=None):
         '''
         1. Packages contains all the packages encountered while traversing the tree
         '''
@@ -36,6 +36,8 @@ class NameSpaceMgr:
         3. Tokenized items of the main package name
         '''
         self.main_package_tokens = []
+
+        self.q = queue
 
     @staticmethod
     def GetTokensStatic (string, delimiter):
@@ -54,6 +56,15 @@ class NameSpaceMgr:
 
         return tokens
 
+    def make_db_doc(self, packageName, versioncode, filename, category, externalPackageName):
+        return {
+            "packageName": packageName,
+            "versionCode": int(versioncode),
+            "filename": filename,
+            "externalPackageName": externalPackageName,
+            "category": category
+        }
+
     '''
     Song
     Special Handling for Google SDK
@@ -65,11 +76,18 @@ class NameSpaceMgr:
             #should do something or not for tracking
             pass
         if "admob" not in self.alreadyPrinted and package_name.startswith('Lcom/google/ads'):
-            self.dbMgr.insert_third_party_package_info(self.main_package_name,
-                    self.version_code,
-                    self.fileName,
-                    "admob",
-                    self.category)
+            if self.q is None:
+                self.dbMgr.insert_third_party_package_info(self.main_package_name,
+                        self.version_code,
+                        self.fileName,
+                        "admob",
+                        self.category)
+            else:
+                self.q.put(self.make_db_doc(self.main_package_name,
+                        self.version_code,
+                        self.fileName,
+                        "admob",
+                        self.category))
             self.alreadyPrinted.append ("admob")
             self.packages.append ("admob")
 
@@ -268,11 +286,18 @@ class NameSpaceMgr:
                 name = (rootEntry.DirName[:200] + '..')
             else:
                 name = rootEntry.DirName
-            self.dbMgr.insert_third_party_package_info(self.main_package_name,
-                self.version_code,
-                self.fileName,
-                name,
-                self.category)
+            if self.q is None:
+                self.dbMgr.insert_third_party_package_info(self.main_package_name,
+                    self.version_code,
+                    self.fileName,
+                    name,
+                    self.category)
+            else:
+                self.q.put(self.make_db_doc(self.main_package_name,
+                    self.version_code,
+                    self.fileName,
+                    name,
+                    self.category))
             self.alreadyPrinted.append (rootEntry.DirName)
             return
 
@@ -292,11 +317,18 @@ class NameSpaceMgr:
         elif ancestorLevel == -2: #Ignore noise
             return;
         elif ancestorLevel == 3:
-            self.dbMgr.insert_third_party_package_info(self.main_package_name,
-                self.version_code,
-                self.fileName,
-                "titanium",
-                self.category)
+            if self.q is None:
+                self.dbMgr.insert_third_party_package_info(self.main_package_name,
+                    self.version_code,
+                    self.fileName,
+                    "titanium",
+                    self.category)
+            else:
+                self.q.put(self.make_db_doc(self.main_package_name,
+                    self.version_code,
+                    self.fileName,
+                    "titanium",
+                    self.category))
             self.alreadyPrinted.append ("titanium")
         elif ancestorLevel == 1:
             self.packages.append (rootEntry.DirName)
@@ -305,11 +337,18 @@ class NameSpaceMgr:
                 name = (rootEntry.DirName[:200] + '..')
             else:
                 name = rootEntry.DirName
-            self.dbMgr.insert_third_party_package_info(self.main_package_name,
-                self.version_code,
-                self.fileName,
-                name,
-                self.category)
+            if self.q is None:
+                self.dbMgr.insert_third_party_package_info(self.main_package_name,
+                    self.version_code,
+                    self.fileName,
+                    name,
+                    self.category)
+            else:
+                self.q.put(self.make_db_doc(self.main_package_name,
+                    self.version_code,
+                    self.fileName,
+                    name,
+                    self.category))
             self.alreadyPrinted.append (rootEntry.DirName)
         else:
             #google package
