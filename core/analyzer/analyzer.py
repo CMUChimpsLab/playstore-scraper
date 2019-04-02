@@ -5,6 +5,7 @@ from multiprocessing import Pool, Value, Manager, Lock
 import multiprocessing_logging
 import shutil
 import time
+import importlib
 from functools import partial
 
 # sys path hacking to import from other repos
@@ -38,13 +39,10 @@ def androguardAnalyzeApk(name_uuid_tup, apk_path=None):
 
     return AnalyzeAPK(apk_path, suppress_parse_warning=True)
 
-def staticAnalysis(total_size, q_lock, third_party_q, perm_info_q, link_info_q, apk_entry):
+def staticAnalysis(total_size, q_lock, third_party_q, perm_info_q, link_info_q, plugins, apk_entry):
     global counter
 
     logger = logging.getLogger(__name__)
-
-    # load plugins to run
-    plugins = helpers.get_plugins("plugins/core/analyzer")
 
     dbHelper = DbHelper()
     result_tups = []
@@ -68,8 +66,9 @@ def staticAnalysis(total_size, q_lock, third_party_q, perm_info_q, link_info_q, 
         SearchIntents.Intents(filename, appVersion, packages, dbHelper, fileName,
                 a, dx, q=link_info_q)
 
-        # run plugins
-        for p in plugins:
+        # load and run plugins
+        for plugin_info in plugins:
+            p = importlib.import_module(".{}".format(plugin_info[0]), plugin_info[1])
             if hasattr(p, "analyze"):
                 plugin_res = p.analyze(apk_entry["uuid"], a, None, dx, dbHelper)
 
@@ -129,8 +128,9 @@ def analyzer(apkList, process_no=constants.PROCESS_NO):
     third_party_q = mgr.Queue()
     perm_info_q = mgr.Queue()
     link_info_q = mgr.Queue()
+    plugins = helpers.get_plugins("plugins/core/analyzer", load=False)
     partial_staticAnalysis = partial(staticAnalysis, len(apkList), q_lock,
-            third_party_q, perm_info_q, link_info_q)
+            third_party_q, perm_info_q, link_info_q, plugins)
     for tup in pool.imap_unordered(partial_staticAnalysis, apkList, chunksize):
         # remove old db entries in static analysis db
         logger.info("deleting old entries for {}".format(tup))
@@ -151,13 +151,7 @@ def analyzer(apkList, process_no=constants.PROCESS_NO):
     dbHelper.bulk_insert_link_info(docs)
 
     # run rating part
-    analyzedApkFile.close()
-    updatedApkList = []
-    with open(analyzedApkFilePath) as f:
-        for line in f:
-            updatedApkList.append(tuple(line.strip("\n").split(",")))
-    db_ungraded = dbHelper.get_all_apps_to_grade()
-    updatedApkList.extend(db_ungraded)
+    updatedApkList = dbHelper.get_all_apps_to_grade()
     updatedApkList = list(set(updatedApkList))
     updatedApkList = [list(u) for u in updatedApkList]
     logger.info(len(updatedApkList))
@@ -178,7 +172,7 @@ def analyzer(apkList, process_no=constants.PROCESS_NO):
     outputHistogramFile.close()
 
     # run playstore analysis part
-    analyze.main(analyzedApkFilePath)
+    analyze.main(app_tups=updatedApkList)
     logger.info("playstoreAnalysis analyze done")
 
     # TODO run crowd analysis part for top apps

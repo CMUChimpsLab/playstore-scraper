@@ -246,14 +246,17 @@ def getTopPermissions(client, appList, outputDir):
                 topKList.append({'permission':pair[0].encode("utf-8"), 'number of apps': pair[1]})
         updateStatTable(client, 'Most Popular Permissions', topKList, 'permission')
 
-def main(appListFile):
+def main(appListFile=None, app_tups=None):
     client = MongoClient(DB_HOST, 27017)
     client["admin"].authenticate(DB_ROOT_USER, DB_ROOT_PASS)
     outputDir = os.path.dirname(os.path.realpath(appListFile))
     os.makedirs(outputDir + "/permission/")
-    with open(appListFile) as f:
-        appVersionTuples = f.read().strip('\n ').split('\n')
-        appList = [tuple(tup.split(",")) for tup in appVersionTuples]
+    if app_tups is not None:
+        appList = app_tups
+    elif appListFile is not None:
+        with open(appListFile) as f:
+            appVersionTuples = f.read().strip('\n ').split('\n')
+            appList = [tuple(tup.split(",")) for tup in appVersionTuples]
 
     #generate statList in privacyGradingDB
     topKEntry = getTopkKFromAList(client,

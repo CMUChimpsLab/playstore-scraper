@@ -26,13 +26,14 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     level=logging.INFO)
 
-def get_plugins(rel_plugin_folder, target=None, prefix_target=None, suffix_target=None):
+def get_plugins(rel_plugin_folder, target=None, prefix_target=None, suffix_target=None, load=True):
     """
     Gets and loads all plugin modules from the specified folder
 
      - target: full module name for matching when importing
      - prefix_target: desired prefix for module names to import
      - suffix_target: desired suffix for module names to import
+     - load: True if should import and return module, False to return path
     """
     plugin_folder = os.path.abspath(rel_plugin_folder)
     import_path = rel_plugin_folder.replace("/", ".").rstrip(".")
@@ -51,7 +52,10 @@ def get_plugins(rel_plugin_folder, target=None, prefix_target=None, suffix_targe
         module_name = plugin_name.rstrip(".py")
         try:
             if [target, prefix_target, suffix_target].count(None) == 3:
-                plugin = importlib.import_module(".{}".format(module_name), import_path)
+                if load:
+                    plugin = importlib.import_module(".{}".format(module_name), import_path)
+                else:
+                    plugin = (".{}".format(module_name), import_path)
                 plugins.append(plugin)
             else:
                 match_str_i = 0
@@ -63,7 +67,10 @@ def get_plugins(rel_plugin_folder, target=None, prefix_target=None, suffix_targe
                     (match_str_i == 1 and module_name.startswith(prefix_target)) or
                     (match_str_i == 2 and module_name.endswith(suffix_target)))
                 if name_match:
-                    plugin = importlib.import_module(".{}".format(module_name), import_path)
+                    if load:
+                        plugin = importlib.import_module(".{}".format(module_name), import_path)
+                    else:
+                        plugin = (".{}".format(module_name), import_path)
                     plugins.append(plugin)
         except ImportError as e:
             logger.error("get_plugins error: {} - {}".format(plugin_name, e))
