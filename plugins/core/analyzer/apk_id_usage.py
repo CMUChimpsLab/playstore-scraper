@@ -56,10 +56,8 @@ def analyze(uuid, a, d_s, dx, db_helper):
         }
     }
 
-    strs = dx.get_strings_analysis()
     read_phone_perm = "android.permission.READ_PHONE_STATE" in a.get_permissions()
     bt_perm = "android.permission.BLUETOOTH" in a.get_permissions()
-
     ad_client_class = "Lcom/google/android/gms/ads/identifier/AdvertisingIdClient$Info;"
     desired_classes = set([
         "Landroid/os/Build;",
@@ -69,6 +67,12 @@ def analyze(uuid, a, d_s, dx, db_helper):
         "Landroid/provider/Settings$Secure;",
         ad_client_class,
     ])
+
+    # device serial number
+    strs = dx.get_strings_analysis()
+    if "android.os.Build.SERIAL" in strs:
+        use_results["hardwareID"]["serialNum"]["deprecated"] = True
+
     for c in dx.get_classes():
         for m in c.get_methods():
             for c_called, r, _ in m.get_xref_to():
