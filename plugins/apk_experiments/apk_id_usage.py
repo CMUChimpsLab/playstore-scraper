@@ -60,58 +60,70 @@ def analyze(uuid, a, d_s, dx, db_helper):
     read_phone_perm = "android.permission.READ_PHONE_STATE" in a.get_permissions()
     bt_perm = "android.permission.BLUETOOTH" in a.get_permissions()
 
-    # android ID/SSAID
-    if ("SETTINGS_SECURE_ANDROID_ID" in strs and
-            len(strs["SETTINGS_SECURE_ANDROID_ID"].get_xref_from()) > 0):
-        use_results["androidID"]["standard"] = True
-
-    # device serial number
-    if (read_phone_perm and "BUILD_SERIAL" in strs and
-            len(strs["BUILD_SERIAL"].get_xref_from()) > 0):
-        use_results["hardwareID"]["serialNum"] = True
-
+    ad_client_class = "Lcom/google/android/gms/ads/identifier/AdvertisingIdClient$Info;"
     desired_classes = set([
         "Landroid/os/Build;",
         "Landroid/telephony/TelephonyManager;",
         "Landroid/net/wifi/WifiInfo;",
         "Landroid/bluetooth/BluetoothAdapter;",
-        "Lcom/google/android/gms/ads/identifier/AdvertisingIdClient$Info;"
+        "Landroid/provider/Settings$Secure;",
+        ad_client_class,
     ])
     for c in dx.get_classes():
-        for c_called, refs in c.get_xref_to().items():
-            if c_called.orig_class.name not in desired_classes:
-                continue
+        for m in c.get_methods():
+            for c_called, r, _ in m.get_xref_to():
+                if c_called.orig_class.name not in desired_classes:
+                    continue
 
-            c_name = c_called.orig_class.name
-            for r in refs:
-                r_name = r[1].name
-                if c_name == "Landroid/os/Build;" and r_name == "getSerial" and read_phone_perm:
-                    # device serial number
+                c_name = c_called.orig_class.name
+                r_name = r.name
+                if c_name == "Landroid/os/Build;":
                     print(c_name, r_name, c.orig_class.name)
-                    use_results["hardwareID"]["serialNum"] = True
-                elif ((r_name == "getImei" or r_name == "getMeid" or r_name == "getDeviceId") and
-                        c_name == "Landroid/telephony/TelephonyManager;" and read_phone_perm):
+                    if r_name == "getSerial" and read_phone_perm:
+                        # device serial number
+                        use_results["hardwareID"]["serialNum"]["standard"] = True
+                elif c_name == "Landroid/telephony/TelephonyManager;" and read_phone_perm:
                     # telephony num
-                    print(c_name, r_name, c.orig_class.name)
-                    use_results["hardwareID"]["IMEI_MEID"] = True
+                    if r_name == "getImei" or r_name == "getMeid":
+                        print(c_name, r_name, c.orig_class.name)
+                        use_results["hardwareID"]["IMEI_MEID"]["standard"] = True
+                    elif r_name == "getDeviceId":
+                        print(c_name, r_name, c.orig_class.name)
+                        use_results["hardwareID"]["IMEI_MEID"]["deprecated"] = True
                 elif c_name == "Landroid/net/wifi/WifiInfo;" and r_name == "getMacAddress":
                     # wifi MAC address
                     print(c_name, r_name, c.orig_class.name)
-                    use_results["hardwareID"]["MAC"] = True
+                    use_results["hardwareID"]["MAC"]["standard"] = True
+                    use_results["hardwareID"]["MAC"]["deprecated"] = True
                 elif (c_name == "Landroid/bluetooth/BluetoothAdapter;" and
                         r_name == "getAddress" and bt_perm):
                     # BT MAC address
                     print(c_name, r_name, c.orig_class.name)
-                    use_results["hardwareID"]["BT_MAC"] = True
-                elif (c_name == "Lcom/google/android/gms/ads/identifier/AdvertisingIdClient$Info;" and
-                        r_name == "getId"):
+                    use_results["hardwareID"]["BT_MAC"]["standard"] = True
+                    use_results["hardwareID"]["BT_MAC"]["deprecated"] = True
+                elif (c_name == ad_client_class and r_name == "getId"):
                     # advertising ID
                     print(c_name, r_name, c.orig_class.name)
-                    use_results["advertisingID"] = True
+                    use_results["advertisingID"]["standard"] = True
                 elif c_name == "Ljava/util/UUID;" and r_name == "randomUUID":
                     # generated UUID
                     print(c_name, r_name, c.orig_class.name)
-                    use_results["UUID"] = True
+                    use_results["UUID"]["standard"] = True
+                elif c_name == "Landroid/provider/Settings$Secure;" and r_name == "getString":
+                    # check for android ID/SSAID
+                    try:
+                        src = m.method.get_source()
+                        if src is None:
+                            continue
+                    except TypeError:
+                        logger.error("{} bad source, skip".format(m.method.name))
+                        continue
+
+                    for l in src.split("\n"):
+                        if ("Secure.getString(" in l and
+                                ("ANDROID_ID" in l or "android_id" in l)):
+                            use_results["androidID"]["standard"] = True
+                            break
 
     pp.pprint((a.get_package(), use_results))
 

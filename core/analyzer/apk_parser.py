@@ -251,24 +251,6 @@ class APKParser:
                 time.sleep(5)
                 continue
 
-            if parsed_apk.end_signal:
-                # marks end of work, sent by parse_apks
-                break
-
-            logger.info("analyze_apks: applying {} analysis_fn to {},{}"\
-                    .format(self.analysis_fn.__name__,
-                        parsed_apk.package_name,
-                        parsed_apk.uuid))
-            analysis_res = self.analysis_fn(parsed_apk)
-            print(analysis_res)
-            if analysis_res is None:
-                # assume already caught exception in analysis_fn
-                continue
-
-            analysis_results.put(analysis_res)
-            parsed_apk.next_arg = analysis_res
-            finished_apks.put(parsed_apk)
-            """
             try:
                 if parsed_apk.end_signal:
                     # marks end of work, sent by parse_apks
@@ -290,7 +272,6 @@ class APKParser:
             except Exception as e:
                 logger.error("Analysis error: {} - {}".format(parsed_apk.package_name, e))
                 continue
-            """
 
         finished_apks.put(APKObject({"packageName":None, "uuid":None}).mark_end_signal())
 
