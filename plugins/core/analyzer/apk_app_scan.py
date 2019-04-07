@@ -42,5 +42,4 @@ def analyze(uuid, a, d_s, dx, db_helper):
             intent_found = True
             break
 
-    db_helper.update_apk_analyses_field(uuid, {"scans_apps": ext_method_found or intent_found})
-
+    db_helper.update_apk_analyses_field(uuid, {"scansApps": ext_method_found or intent_found})

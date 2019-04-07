@@ -76,7 +76,7 @@ def analysis_pipeline(args):
     #app_list = [("com.android.chrome", "5e5f7394701145fc92676714539f7041", 353808052)]
     #app_list = [("com.google.android.tts", "9f49501d34a14bcdaf57c657bc937c91", 210315244)]
     app_list_with_locs = []
-    for (name, uuid, vc) in app_list:
+    for (name, uuid, top, vc) in app_list:
         if uuid.endswith('apk'):
             uuid = uuid[:-4]
         app_list_with_locs.append(
@@ -84,6 +84,7 @@ def analysis_pipeline(args):
                 "packageName": name,
                 "uuid": uuid,
                 "versionCode": vc,
+                "hasBeenTop": top,
                 "fileDir": "{}/{}/{}".format(DOWNLOAD_FOLDER, uuid[0], uuid[1]),
             })
 

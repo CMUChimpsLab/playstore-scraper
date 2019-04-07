@@ -49,7 +49,7 @@ def get_plugins(rel_plugin_folder, target=None, prefix_target=None, suffix_targe
                 (not plugin_name.endswith(".py") or plugin_name == "__init__.py")):
             continue
 
-        module_name = plugin_name.rstrip(".py")
+        module_name = plugin_name[:-3] if plugin_name.endswith(".py") else plugin_name
         try:
             if [target, prefix_target, suffix_target].count(None) == 3:
                 if load:

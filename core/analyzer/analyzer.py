@@ -7,6 +7,9 @@ import shutil
 import time
 import importlib
 from functools import partial
+from bson.binary import Binary
+import bz2
+import pickle
 
 # sys path hacking to import from other repos
 import sys
@@ -50,13 +53,31 @@ def staticAnalysis(total_size, q_lock, third_party_q, perm_info_q, link_info_q, 
         packageName = apk_entry["packageName"]
         appVersion = int(apk_entry["versionCode"]) if apk_entry["versionCode"] is not None else 0
         path = apk_entry['fileDir']
-        fileName = apk_entry["uuid"] + '.apk'
+        uuid = apk_entry["uuid"]
+        fileName = uuid + '.apk'
         filename = path + '/' + fileName
 
-        a, d_s, dx = androguardAnalyzeApk((packageName, apk_entry["uuid"]))
+        a, d_s, dx = androguardAnalyzeApk((packageName, uuid))
+
+        # if top, serialize a and d_s and store in NAS
+        if apk_entry.get("hasBeenTop", False):
+            andro_path = os.path.join(constants.ANDROGUARD_OBJS_FOLDER, uuid[0], uuid)
+            if not os.path.exists(andro_path):
+                os.makedirs(andro_path)
+        
+            with open(os.path.join(andro_path, "apk_obj"), "w") as f:
+                a_bin = Binary(pickle.dumps(a))
+                f.write(bz2.compress(bytearray(a_bin), compresslevel=9))
+
+            cnt = 0
+            for d in d_s:
+                with open(os.path.join(andro_path, "dex_obj_{}".format(cnt)), "w") as f:
+                    d_bin = Binary(pickle.dumps(d))
+                    f.write(bz2.compress(bytearray(d_bin), compresslevel=9))
+                cnt += 1
 
         # do static analyses
-        tokens = namespaceanalyzer.NameSpaceMgr.GetTokensStatic (path, '/')
+        tokens = namespaceanalyzer.NameSpaceMgr.GetTokensStatic(path, '/')
         category =  tokens[len (tokens) - 1]
         instance = namespaceanalyzer.NameSpaceMgr(queue=third_party_q)
         packages = instance.execute(filename, appVersion, dbHelper, fileName,
@@ -70,7 +91,7 @@ def staticAnalysis(total_size, q_lock, third_party_q, perm_info_q, link_info_q, 
         for plugin_info in plugins:
             p = importlib.import_module(plugin_info[0], plugin_info[1])
             if hasattr(p, "analyze"):
-                plugin_res = p.analyze(apk_entry["uuid"], a, None, dx, dbHelper)
+                plugin_res = p.analyze(uuid, a, None, dx, dbHelper)
 
         with counter.get_lock():
             counter.value += 1
@@ -217,7 +238,7 @@ def getUuidsFromDb():
     app_list = dbHelper.get_all_apps_for_full_analysis()
 
     apk_list = []
-    for (name, uuid, vc) in app_list:
+    for (name, uuid, top, vc) in app_list:
         if uuid.endswith('apk'):
             uuid = uuid[:-4]
         apk_list.append(
@@ -225,6 +246,7 @@ def getUuidsFromDb():
                 "packageName": name,
                 "uuid": uuid,
                 "versionCode": vc,
+                "hasBeenTop": top,
                 "fileDir": "{}/{}/{}".format(constants.DOWNLOAD_FOLDER, uuid[0], uuid[1]),
             })
 

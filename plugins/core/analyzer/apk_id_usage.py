@@ -129,7 +129,7 @@ def analyze(uuid, a, d_s, dx, db_helper):
                             use_results["androidID"]["standard"] = True
                             break
 
-    pp.pprint((a.get_package(), use_results))
+    db_helper.update_apk_analyses_field(uuid, {"idUsage": use_results})
 
 def test_wrap(apk_obj):
     a, d_list, dx = androguardAnalyzeApk((apk_obj.package_name, apk_obj.uuid))

@@ -4,6 +4,7 @@ Created on Oct 24, 2012
 @author: psachdev
 '''
 import sys
+import re
 
 from androguard.core.bytecodes import apk
 from androguard.core.bytecodes import dvm
@@ -27,6 +28,12 @@ class Intents:
                 return package
         return "NA"
 
+    def is_possible_endpoint(self, test_str):
+        if "." in test_str and " " not in test_str:
+            return True
+        else:
+            return False
+
     def make_db_doc(self, packageName, versioncode, filename, link_url,
                         is_external, triggered_by_code, externalPackageName):
         return {
@@ -47,12 +54,8 @@ class Intents:
         ###d = dvm.DalvikVMFormat (a.get_dex())
         ###dx = uVMAnalysis (d)
 
-
-        ex1 = re.compile ("http://")
+        # Keeping main package name within range of mysql datatype
         mpn = a.get_package()
-        '''
-        Keeping main package name within range of mysql datatype
-        '''
         if len(mpn) > 250 :
             self.main_package_name  = (mpn[:200] + '..')
         else:
@@ -65,31 +68,23 @@ class Intents:
             sys.exit(1)
         self.version_code = vc
 
-        #print self.main_package_name
-
-
-        '''
-        Keeping main package name within range of mysql datatype
-        '''
+        # Keeping filename within range of mysql datatype
         if len(noprefixfilename) > 250 :
             self.fileName  = (noprefixfilename[:200] + '..')
         else:
             self.fileName = noprefixfilename
 
-        ex3 = re.compile (self.main_package_name)
+        https_re = re.compile ("http[s]?://")
+        pkg_name_re = re.compile (self.main_package_name)
 
         self.dbMgr = dbMgr
-        #print 'URL - '
         x = dx.get_tainted_variables().get_strings()
         analyses = dx.vms
-        #cm = analysis.get_class_manager()
-
         for full in x:
             s,_ = full
             string = repr(s.get_info())
-            if ex1.search (string) != None:
+            if https_re.search(string) != None or is_possible_endpoint(string):
                 paths = s.get_paths()
-
                 for path in paths:
                     m_idx = path[1]
                     for analysis in analyses:
@@ -99,29 +94,22 @@ class Intents:
                         except:
                             continue
 
-                    '''
-                    Keeping external package within range of mysql datatype
-                    '''
-                    xpackage = self.findandprint (packages, method[0])
+                    # Keeping external package within range of mysql datatype
+                    xpackage = self.findandprint(packages, method[0])
                     if len(xpackage) > 250 :
-                            xpck = (xpackage[:200] + '..')
+                        xpck = (xpackage[:200] + '..')
                     else:
-                            xpck = xpackage
+                        xpck = xpackage
 
-
-                    '''
-                    Keeping destination class within range of mysql datatype
-   		              '''
+                    # Keeping destination class within range of mysql datatype
                     if len(method[0]) > 250 :
-                            dst = (method[0][:200] + '..')
+                        dst = (method[0][:200] + '..')
                     elif method[0].find('$')!=-1 :
-                            dst = "NA"
+                        dst = "NA"
                     else:
-                            dst = method[0]
+                        dst = method[0]
 
-
-                    #print method
-                    if ex3.search(method[0]) != None:
+                    if pkg_name_re.search(method[0]) != None:
                         _,linkStr = full
                         #print " APP - ", link
                         for link in re.findall("http://[\S]+", linkStr):
@@ -159,6 +147,4 @@ class Intents:
                                 q.put(self.make_db_doc(self.main_package_name,
                                     self.version_code, self.fileName, strlink, True,
                                     dst, xpck))
-
-                    #access, idx = path[0]
 

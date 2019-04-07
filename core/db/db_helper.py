@@ -189,6 +189,7 @@ class DbHelper:
                 "uuid": 1,
                 "packageName": 1,
                 "versionCode": 1,
+                "hasBeenTop": 1,
             })
 
         def none_vc(obj):
@@ -198,10 +199,10 @@ class DbHelper:
             else:
                 return 0
 
-        tup_to_uuid = {}
+        tup_to_uuid_top = {}
         for a in app_infos:
-            tup_to_uuid[(a["packageName"], none_vc(a))] = a["uuid"]
-        info_entries = set(list(tup_to_uuid.keys()))
+            tup_to_uuid_top[(a["packageName"], none_vc(a))] = (a["uuid"], a["hasBeenTop"])
+        info_entries = set(list(tup_to_uuid_top.keys()))
 
         link_urls = self.__link_url.find({}, {"packageName": 1, "versionCode": 1})
         link_url_entries = set([(l["packageName"], none_vc(l)) for l in link_urls])
@@ -209,7 +210,7 @@ class DbHelper:
         third_party_entries = set([(t["packageName"], none_vc(t)) for t in third_parties])
 
         unanalyzed_entries = info_entries - (link_url_entries | third_party_entries)
-        return [(u[0], tup_to_uuid[u], u[1]) for u in unanalyzed_entries]
+        return [(u[0], *tup_to_uuid_top[u], u[1]) for u in unanalyzed_entries]
 
     def get_all_apps_to_grade(self):
         """

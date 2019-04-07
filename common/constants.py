@@ -67,6 +67,7 @@ CATEGORIES= [
 # various import paths
 DOWNLOAD_FOLDER = "/home/privacy/nas/apps"
 DECOMPILE_FOLDER = "/home/privacy/nas/apps_decompiled"
+ANDROGUARD_OBJS_FOLDER = "/home/privacy/nas/apps_androguard_objs"
 PRIVACY_POLICY_FOLDER = "/home/privacy/nas/policy_htmls"
 LOG_FOLDER = "/home/privacy/logs"
 
