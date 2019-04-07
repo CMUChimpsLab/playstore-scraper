@@ -82,36 +82,29 @@ def analyze(uuid, a, d_s, dx, db_helper):
                 c_name = c_called.orig_class.name
                 r_name = r.name
                 if c_name == "Landroid/os/Build;":
-                    print(c_name, r_name, c.orig_class.name)
                     if r_name == "getSerial" and read_phone_perm:
                         # device serial number
                         use_results["hardwareID"]["serialNum"]["standard"] = True
                 elif c_name == "Landroid/telephony/TelephonyManager;" and read_phone_perm:
                     # telephony num
                     if r_name == "getImei" or r_name == "getMeid":
-                        print(c_name, r_name, c.orig_class.name)
                         use_results["hardwareID"]["IMEI_MEID"]["standard"] = True
                     elif r_name == "getDeviceId":
-                        print(c_name, r_name, c.orig_class.name)
                         use_results["hardwareID"]["IMEI_MEID"]["deprecated"] = True
                 elif c_name == "Landroid/net/wifi/WifiInfo;" and r_name == "getMacAddress":
                     # wifi MAC address
-                    print(c_name, r_name, c.orig_class.name)
                     use_results["hardwareID"]["MAC"]["standard"] = True
                     use_results["hardwareID"]["MAC"]["deprecated"] = True
                 elif (c_name == "Landroid/bluetooth/BluetoothAdapter;" and
                         r_name == "getAddress" and bt_perm):
                     # BT MAC address
-                    print(c_name, r_name, c.orig_class.name)
                     use_results["hardwareID"]["BT_MAC"]["standard"] = True
                     use_results["hardwareID"]["BT_MAC"]["deprecated"] = True
                 elif (c_name == ad_client_class and r_name == "getId"):
                     # advertising ID
-                    print(c_name, r_name, c.orig_class.name)
                     use_results["advertisingID"]["standard"] = True
                 elif c_name == "Ljava/util/UUID;" and r_name == "randomUUID":
                     # generated UUID
-                    print(c_name, r_name, c.orig_class.name)
                     use_results["UUID"]["standard"] = True
                 elif c_name == "Landroid/provider/Settings$Secure;" and r_name == "getString":
                     # check for android ID/SSAID

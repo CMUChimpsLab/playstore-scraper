@@ -10,9 +10,11 @@ from functools import partial
 from bson.binary import Binary
 import bz2
 import pickle
+import traceback
 
 # sys path hacking to import from other repos
 import sys
+#sys.setrecursionlimit(10000)
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), "androguard"))
 sys.path.insert(0, "/home/privacy/playstore-scraper") # TODO remove
@@ -63,23 +65,6 @@ def staticAnalysis(total_size, q_lock, third_party_q, perm_info_q, link_info_q, 
 
         a, d_s, dx = androguardAnalyzeApk((packageName, uuid))
 
-        # if top, serialize a and d_s and store in NAS
-        if apk_entry.get("hasBeenTop", False):
-            andro_path = os.path.join(constants.ANDROGUARD_OBJS_FOLDER, uuid[0], uuid)
-            if not os.path.exists(andro_path):
-                os.makedirs(andro_path)
-        
-            with open(os.path.join(andro_path, "apk_obj"), "w") as f:
-                a_bin = Binary(pickle.dumps(a))
-                f.write(bz2.compress(bytearray(a_bin), compresslevel=9))
-
-            cnt = 0
-            for d in d_s:
-                with open(os.path.join(andro_path, "dex_obj_{}".format(cnt)), "w") as f:
-                    d_bin = Binary(pickle.dumps(d))
-                    f.write(bz2.compress(bytearray(d_bin), compresslevel=9))
-                cnt += 1
-
         # do static analyses
         tokens = namespaceanalyzer.NameSpaceMgr.GetTokensStatic(path, '/')
         category =  tokens[len (tokens) - 1]
@@ -102,7 +87,30 @@ def staticAnalysis(total_size, q_lock, third_party_q, perm_info_q, link_info_q, 
                 logger.info("{} out of {} analyzed, third_party q - {}, perm q - {}, link q - {}"\
                         .format(counter.value, total_size,
                             third_party_q.qsize(), perm_info_q.qsize(), link_info_q.qsize()))
-        logger.info("{},{} analyzed".format(packageName, appVersion))
+        logger.info("{},{} analyzed".format(packageName, uuid))
+
+        # if top, serialize a and d_s and store in NAS
+        if apk_entry.get("hasBeenTop", False):
+            andro_path = os.path.join(constants.ANDROGUARD_OBJS_FOLDER, uuid[0], uuid)
+            if not os.path.exists(andro_path):
+                os.makedirs(andro_path)
+
+            try:
+                with open(os.path.join(andro_path, "apk_obj"), "wb") as f:
+                    a_bin = Binary(pickle.dumps(a))
+                    f.write(bz2.compress(bytearray(a_bin), compresslevel=9))
+
+                cnt = 0
+                for d in d_s:
+                    with open(os.path.join(andro_path, "dex_obj_{}".format(cnt)), "wb") as f:
+                        d_bin = Binary(pickle.dumps(d))
+                        f.write(bz2.compress(bytearray(d_bin), compresslevel=9))
+                    cnt += 1
+                logger.info("{},{} objs stored in file".format(packageName, uuid))
+            except RuntimeError:
+                # clean up after failed attempt
+                logger.info("{},{} storage attempt cleaned".format(packageName, uuid))
+                shutil.rmtree(andro_path)
 
         # bulk write queues if getting too long, checking linkUrl since is longest
         q_lock.acquire()
@@ -121,7 +129,7 @@ def staticAnalysis(total_size, q_lock, third_party_q, perm_info_q, link_info_q, 
             dbHelper.bulk_insert_link_info(docs)
         q_lock.release()
     except Exception as e:
-        logger.error("staticAnalysis: {} - {}".format(packageName, e))
+        logger.error("staticAnalysis: {} - {}".format(packageName, traceback.format_exc()))
         return
 
     return (packageName, appVersion)
@@ -131,8 +139,6 @@ def analyzer(apkList, process_no=constants.PROCESS_NO):
     Runs the pipeline static analyses on uuid_list and uses dbhelper to insert
     results in the database
     """
-    dbHelper = DbHelper()
-
     # set up path constants
     # now = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
     now = "DEBUG_NEW" # TEMP, TODO REMOVE
@@ -140,17 +146,6 @@ def analyzer(apkList, process_no=constants.PROCESS_NO):
     if os.path.exists(outputPath):
         shutil.rmtree(outputPath)
     os.makedirs(outputPath)
-
-    """
-    # remove old db entries in static analysis db first, if any
-    cnt = 0
-    for entry in apkList:
-        dbHelper.deleteEntry(entry["packageName"], entry["versionCode"])
-        cnt += 1
-        if cnt % constants.BULK_CHUNK == 0:
-            logger.info("deleted {} out of {} old staticAnalysis entries"\
-                .format(cnt, len(apkList)))
-    """
 
     # run static analysis part
     global plugins
@@ -170,6 +165,7 @@ def analyzer(apkList, process_no=constants.PROCESS_NO):
         continue
 
     # bulk write queues
+    dbHelper = DbHelper()
     docs = []
     while not third_party_q.empty():
         docs.append(third_party_q.get())

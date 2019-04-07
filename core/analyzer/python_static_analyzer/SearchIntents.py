@@ -83,7 +83,7 @@ class Intents:
         for full in x:
             s,_ = full
             string = repr(s.get_info())
-            if https_re.search(string) != None or is_possible_endpoint(string):
+            if https_re.search(string) != None or self.is_possible_endpoint(string):
                 paths = s.get_paths()
                 for path in paths:
                     m_idx = path[1]

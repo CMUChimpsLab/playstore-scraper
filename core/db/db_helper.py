@@ -201,7 +201,7 @@ class DbHelper:
 
         tup_to_uuid_top = {}
         for a in app_infos:
-            tup_to_uuid_top[(a["packageName"], none_vc(a))] = (a["uuid"], a["hasBeenTop"])
+            tup_to_uuid_top[(a["packageName"], none_vc(a))] = (a["uuid"], a.get("hasBeenTop", False))
         info_entries = set(list(tup_to_uuid_top.keys()))
 
         link_urls = self.__link_url.find({}, {"packageName": 1, "versionCode": 1})
@@ -587,15 +587,18 @@ class DbHelper:
     # STATIC ANALYSIS FUNCTIONS THAT USE QUEUES (ALWAYS UPDATE FLUSH)
     # ************************************************************************ #
     def bulk_insert_third_party_package_info(self, docs):
-        self.__static_analysis_db.thirdPartyPackages.insert_many(docs)
+        if len(docs) > 0:
+            self.__static_analysis_db.thirdPartyPackages.insert_many(docs)
         logger.info("wrote {} third party pkgs".format(len(docs)))
 
     def bulk_insert_permission_info(self, docs):
-        self.__static_analysis_db.permissionList.insert_many(docs)
+        if len(docs) > 0:
+            self.__static_analysis_db.permissionList.insert_many(docs)
         logger.info("wrote {} perm info".format(len(docs)))
 
     def bulk_insert_link_info(self, docs):
-        self.__static_analysis_db.linkUrl.insert_many(docs)
+        if len(docs) > 0:
+            self.__static_analysis_db.linkUrl.insert_many(docs)
         logger.info("wrote {} link urls".format(len(docs)))
 
     """
