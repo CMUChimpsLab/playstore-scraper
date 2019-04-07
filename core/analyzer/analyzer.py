@@ -33,7 +33,12 @@ from core.db.db_helper import DbHelper
 import common.constants as constants
 import common.helpers as helpers
 
+logger = logging.getLogger(__name__)
+logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                    level=logging.INFO)
+
 counter = Value("i", 0)
+plugins = []
 
 def androguardAnalyzeApk(name_uuid_tup, apk_path=None):
     package_name, uuid = name_uuid_tup
@@ -42,10 +47,9 @@ def androguardAnalyzeApk(name_uuid_tup, apk_path=None):
 
     return AnalyzeAPK(apk_path, suppress_parse_warning=True)
 
-def staticAnalysis(total_size, q_lock, third_party_q, perm_info_q, link_info_q, plugins, apk_entry):
+def staticAnalysis(total_size, q_lock, third_party_q, perm_info_q, link_info_q, apk_entry):
     global counter
-
-    logger = logging.getLogger(__name__)
+    global plugins
 
     dbHelper = DbHelper()
     result_tups = []
@@ -88,8 +92,7 @@ def staticAnalysis(total_size, q_lock, third_party_q, perm_info_q, link_info_q, 
                 a, dx, q=link_info_q)
 
         # load and run plugins
-        for plugin_info in plugins:
-            p = importlib.import_module(plugin_info[0], plugin_info[1])
+        for p in plugins:
             if hasattr(p, "analyze"):
                 plugin_res = p.analyze(uuid, a, None, dx, dbHelper)
 
@@ -128,7 +131,6 @@ def analyzer(apkList, process_no=constants.PROCESS_NO):
     Runs the pipeline static analyses on uuid_list and uses dbhelper to insert
     results in the database
     """
-    logger = logging.getLogger(__name__)
     dbHelper = DbHelper()
 
     # set up path constants
@@ -139,7 +141,20 @@ def analyzer(apkList, process_no=constants.PROCESS_NO):
         shutil.rmtree(outputPath)
     os.makedirs(outputPath)
 
+    """
+    # remove old db entries in static analysis db first, if any
+    cnt = 0
+    for entry in apkList:
+        dbHelper.deleteEntry(entry["packageName"], entry["versionCode"])
+        cnt += 1
+        if cnt % constants.BULK_CHUNK == 0:
+            logger.info("deleted {} out of {} old staticAnalysis entries"\
+                .format(cnt, len(apkList)))
+    """
+
     # run static analysis part
+    global plugins
+    plugins = helpers.get_plugins("plugins/core/analyzer", load=True)
     chunksize = max(int(len(apkList) / process_no), 1)
     logger.info("analyzing {} apps in {} size chunks".format(len(apkList), chunksize))
     multiprocessing_logging.install_mp_handler(logger)
@@ -149,13 +164,10 @@ def analyzer(apkList, process_no=constants.PROCESS_NO):
     third_party_q = mgr.Queue()
     perm_info_q = mgr.Queue()
     link_info_q = mgr.Queue()
-    plugins = helpers.get_plugins("plugins/core/analyzer", load=False)
     partial_staticAnalysis = partial(staticAnalysis, len(apkList), q_lock,
-            third_party_q, perm_info_q, link_info_q, plugins)
-    for tup in pool.imap_unordered(partial_staticAnalysis, apkList, chunksize):
-        # remove old db entries in static analysis db
-        logger.info("deleting old entries for {}".format(tup))
-        dbHelper.deleteEntry(tup[0], tup[1])
+            third_party_q, perm_info_q, link_info_q)
+    for res in pool.imap_unordered(partial_staticAnalysis, apkList, chunksize):
+        continue
 
     # bulk write queues
     docs = []

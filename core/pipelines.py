@@ -88,7 +88,7 @@ def analysis_pipeline(args):
                 "fileDir": "{}/{}/{}".format(DOWNLOAD_FOLDER, uuid[0], uuid[1]),
             })
 
-    analyzer(app_list_with_locs, process_no=12)
+    analyzer(app_list_with_locs)
     return
 
     # load plugins and run
