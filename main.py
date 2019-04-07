@@ -1,5 +1,5 @@
 import eventlet
-eventlet.monkey_patch(thread=False)
+#eventlet.monkey_patch(thread=False, time=False)
 
 import os, sys
 import logging.config
