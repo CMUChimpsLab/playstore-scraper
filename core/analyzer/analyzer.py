@@ -7,7 +7,6 @@ import shutil
 import time
 import importlib
 from functools import partial
-from bson.binary import Binary
 import bz2
 import pickle
 import traceback
@@ -42,12 +41,83 @@ logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
 counter = Value("i", 0)
 plugins = []
 
-def androguardAnalyzeApk(name_uuid_tup, apk_path=None):
-    package_name, uuid = name_uuid_tup
+def androguard_analyze_apk(apk_entry, apk_path=None):
+    package_name = apk_entry["packageName"]
+    uuid = apk_entry["uuid"]
     if apk_path is None:
         apk_path = "{}/{}/{}/{}.apk".format(constants.DOWNLOAD_FOLDER, uuid[0], uuid[1], uuid)
 
     return AnalyzeAPK(apk_path, suppress_parse_warning=True)
+
+def check_androguard_files(apk_entry):
+    """
+    Checks if a given APK has androguard objects stored in files on the NAS
+    """
+    uuid = apk_entry["uuid"]
+    andro_path = os.path.join(constants.ANDROGUARD_OBJS_FOLDER, uuid[0], uuid)
+    if not os.path.exists(andro_path):
+        return False
+    if not os.path.exists(os.path.join(andro_path, "apk_obj")):
+        return False
+    if not os.path.exists(os.path.join(andro_path, "dex_obj_0")):
+        return False
+
+    return True
+
+def dump_androguard_objs(apk_entry, a, d_s, dx):
+    """
+    Serializes, comrpesses and dumps the androguard objects to files
+    """
+    package_name = apk_entry["packageName"]
+    uuid = apk_entry["uuid"]
+    andro_path = os.path.join(constants.ANDROGUARD_OBJS_FOLDER, uuid[0], uuid)
+    if not os.path.exists(andro_path):
+        os.makedirs(andro_path)
+
+    try:
+        with open(os.path.join(andro_path, "apk_obj"), "wb") as f:
+            f.write(bz2.compress(pickle.dumps(a), compresslevel=9))
+
+        cnt = 0
+        for d in d_s:
+            with open(os.path.join(andro_path, "dex_obj_{}".format(cnt)), "wb") as f:
+                f.write(bz2.compress(pickle.dumps(d), compresslevel=9))
+            cnt += 1
+        logger.info("{},{} objs stored in file".format(package_name, uuid))
+    except RuntimeError:
+        # clean up after failed attempt
+        logger.info("{},{} storage attempt cleaned".format(package_name, uuid))
+        shutil.rmtree(andro_path)
+
+def load_androguard_objs(apk_entry):
+    """
+    Gets androguard APK, list of androguard DalivkVMFormat and androguard 
+    Analysis objects from file
+    """
+    uuid = apk_entry["uuid"]
+    andro_path = os.path.join(constants.ANDROGUARD_OBJS_FOLDER, uuid[0], uuid)
+    a = None
+    d_s = []
+
+    # get a and d_s from files
+    for f_name in os.listdir(andro_path):
+        if f_name == "apk_obj":
+            with open(os.path.join(andro_path, f_name), "rb") as f:
+                a = pickle.loads(f.read())
+        elif f_name.startswith("dex_obj_"):
+            with open(os.path.join(andro_path, f_name), "rb") as f:
+                d_s.append(pickle.loads(f.read()))
+    
+    # build dx
+    dx = Analysis()
+    for df in d_s:
+        dx.add(df)
+    dx.create_xref()
+
+    # test 
+    print(type(a.get_android_manifest_xml()))
+
+    return (a, d_s, dx)
 
 def staticAnalysis(total_size, q_lock, third_party_q, perm_info_q, link_info_q, apk_entry):
     global counter
@@ -56,14 +126,17 @@ def staticAnalysis(total_size, q_lock, third_party_q, perm_info_q, link_info_q, 
     dbHelper = DbHelper()
     result_tups = []
     try:
-        packageName = apk_entry["packageName"]
+        package_name = apk_entry["packageName"]
         appVersion = int(apk_entry["versionCode"]) if apk_entry["versionCode"] is not None else 0
         path = apk_entry['fileDir']
         uuid = apk_entry["uuid"]
         fileName = uuid + '.apk'
         filename = path + '/' + fileName
-
-        a, d_s, dx = androguardAnalyzeApk((packageName, uuid))
+        androguard_files_exist = check_androguard_files(apk_entry)
+        if apk_entry.get("hasBeenTop", False) and androguard_files_exist:
+            a, d_s, dx = load_androguard_objs(apk_entry)
+        else:
+            a, d_s, dx = androguard_analyze_apk(apk_entry)
 
         # do static analyses
         tokens = namespaceanalyzer.NameSpaceMgr.GetTokensStatic(path, '/')
@@ -87,30 +160,11 @@ def staticAnalysis(total_size, q_lock, third_party_q, perm_info_q, link_info_q, 
                 logger.info("{} out of {} analyzed, third_party q - {}, perm q - {}, link q - {}"\
                         .format(counter.value, total_size,
                             third_party_q.qsize(), perm_info_q.qsize(), link_info_q.qsize()))
-        logger.info("{},{} analyzed".format(packageName, uuid))
+        logger.info("{},{} analyzed".format(package_name, uuid))
 
         # if top, serialize a and d_s and store in NAS
-        if apk_entry.get("hasBeenTop", False):
-            andro_path = os.path.join(constants.ANDROGUARD_OBJS_FOLDER, uuid[0], uuid)
-            if not os.path.exists(andro_path):
-                os.makedirs(andro_path)
-
-            try:
-                with open(os.path.join(andro_path, "apk_obj"), "wb") as f:
-                    a_bin = Binary(pickle.dumps(a))
-                    f.write(bz2.compress(bytearray(a_bin), compresslevel=9))
-
-                cnt = 0
-                for d in d_s:
-                    with open(os.path.join(andro_path, "dex_obj_{}".format(cnt)), "wb") as f:
-                        d_bin = Binary(pickle.dumps(d))
-                        f.write(bz2.compress(bytearray(d_bin), compresslevel=9))
-                    cnt += 1
-                logger.info("{},{} objs stored in file".format(packageName, uuid))
-            except RuntimeError:
-                # clean up after failed attempt
-                logger.info("{},{} storage attempt cleaned".format(packageName, uuid))
-                shutil.rmtree(andro_path)
+        if apk_entry.get("hasBeenTop", False) and not androguard_files_exist:
+            dump_androguard_objs(apk_entry, a, d_s, dx)
 
         # bulk write queues if getting too long, checking linkUrl since is longest
         q_lock.acquire()
@@ -129,10 +183,10 @@ def staticAnalysis(total_size, q_lock, third_party_q, perm_info_q, link_info_q, 
             dbHelper.bulk_insert_link_info(docs)
         q_lock.release()
     except Exception as e:
-        logger.error("staticAnalysis: {} - {}".format(packageName, traceback.format_exc()))
+        logger.error("staticAnalysis: {} - {}".format(package_name, traceback.format_exc()))
         return
 
-    return (packageName, appVersion)
+    return (package_name, appVersion)
 
 def analyzer(apkList, process_no=constants.PROCESS_NO):
     """
@@ -263,8 +317,8 @@ def getUuidsFromDb():
 # **************************************************************************** #
 # BENCHMARK FUNCTIONS - NOT FOR ACTUAL USE
 # **************************************************************************** #
-def benchmark_staticAnalysis(apk_entry):
-    packageName = apk_entry["packageName"]
+def benchmark_staticAnalysis(total_size, q_lock, third_party_q, perm_info_q, link_info_q, apk_entry):
+    package_name = apk_entry["packageName"]
     fileName = apk_entry["uuid"] + '.apk'
     appVersion = apk_entry["versionCode"]
     path = apk_entry['fileDir']
@@ -272,39 +326,48 @@ def benchmark_staticAnalysis(apk_entry):
 
     print("{} - analyzing {}".format(os.getpid(), filename))
     start = time.time()
-    a, d_s, dx = androguardAnalyzeApk((packageName, apk_entry["uuid"]))
+    a, d_s, dx = androguard_analyze_apk((package_name, apk_entry["uuid"]))
+    print("androguard analysis took {}".format(time.time() - start))
+
+    start = time.time()
+    dump_androguard_objs(apk_entry, a, d_s, dx)
+    print("androguard object dumping took {}".format(time.time() - start))
+
+    start = time.time()
+    a, d_s, dx = load_androguard_objs(apk_entry)
+    print("androguard object loading took {}".format(time.time() - start))
 
     # do static analyses
-    """
     dbHelper = DbHelper()
     tokens = namespaceanalyzer.NameSpaceMgr.GetTokensStatic (path, '/')
-    print("got tokens")
     category =  tokens[len (tokens) - 1]
     instance = namespaceanalyzer.NameSpaceMgr()
     packages = instance.execute(filename, appVersion, dbHelper, fileName, category, a, dx)
-    print("got packages")
-
     permission.StaticAnalyzer(filename, appVersion, packages, dbHelper, fileName, a, dx)
-
     SearchIntents.Intents(filename, appVersion, packages, dbHelper, fileName, a, dx)
 
-    # run plugins
-    plugins = helpers.get_plugins("plugins/core/analyzer")
-    for p in plugins:
-        if hasattr(p, "analyze"):
-            plugin_res = p.analyze(apk_entry["uuid"], a, None, dx, dbHelper)
-    """
+    print("third_party q - {}, perm q - {}, link q - {}"\
+        .format(third_party_q.qsize(), perm_info_q.qsize(), link_info_q.qsize()))
 
-    print("{} - {} took {}".format(os.getpid(), packageName, time.time() - start))
-
-    return packageName
+    return package_name
 
 def benchmark_analyzer(apkList, process_no=constants.PROCESS_NO):
     pool = Pool(process_no)
-    #pool = Pool(2)
     start = time.time()
-    for name in pool.imap_unordered(benchmark_staticAnalysis, apkList):
-        print(name)
+    chunksize = max(int(len(apkList) / process_no), 1)
+    logger.info("analyzing {} apps in {} size chunks".format(len(apkList), chunksize))
+    multiprocessing_logging.install_mp_handler(logger)
+    pool = Pool(process_no)
+    mgr = Manager()
+    q_lock = mgr.Lock()
+    third_party_q = mgr.Queue()
+    perm_info_q = mgr.Queue()
+    link_info_q = mgr.Queue()
+    partial_staticAnalysis = partial(staticAnalysis, len(apkList), q_lock,
+            third_party_q, perm_info_q, link_info_q)
+    for res in pool.imap_unordered(partial_staticAnalysis, apkList, chunksize):
+        print(res)
+        continue
     print("took {} ".format(time.time() - start))
 
 # **************************************************************************** #
