@@ -9,6 +9,8 @@ import logging
 import zipfile
 import os
 import shutil
+from bson.binary import Binary
+import pickle
 
 from core.analyzer.apk_parser import APKParser
 from core.analyzer.analyzer import androguardAnalyzeApk
@@ -43,6 +45,7 @@ def find_app_scan(apk_obj):
 
 def androguard_find_app_scan(apk_obj):
     a, d_list, dx = androguardAnalyzeApk((apk_obj.package_name, apk_obj.uuid))
+    a_bin = Binary(pickle.dumps(a))
     logger.info("find_app_scan: {},{} - androguard analysis done"\
             .format(apk_obj.package_name, apk_obj.uuid))
 
@@ -81,5 +84,5 @@ def androguard_find_app_scan(apk_obj):
     return (ext_method_found or intent_found)
 
 def run(apps):
-    app_scan_parser = APKParser(apps, None, find_app_scan, additional_attrs=["decompiled"])
-    return app_scan_parser.start(decompile=True)
+    app_scan_parser = APKParser(apps, None, androguard_find_app_scan)
+    return app_scan_parser.start()

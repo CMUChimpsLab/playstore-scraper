@@ -10,6 +10,7 @@ from functools import partial
 import bz2
 import pickle
 import traceback
+from lxml import etree
 
 # sys path hacking to import from other repos
 import sys
@@ -75,9 +76,6 @@ def dump_androguard_objs(apk_entry, a, d_s, dx):
         os.makedirs(andro_path)
 
     try:
-        with open(os.path.join(andro_path, "apk_obj"), "wb") as f:
-            f.write(bz2.compress(pickle.dumps(a), compresslevel=9))
-
         cnt = 0
         for d in d_s:
             with open(os.path.join(andro_path, "dex_obj_{}".format(cnt)), "wb") as f:
@@ -91,31 +89,28 @@ def dump_androguard_objs(apk_entry, a, d_s, dx):
 
 def load_androguard_objs(apk_entry):
     """
-    Gets androguard APK, list of androguard DalivkVMFormat and androguard 
+    Gets androguard APK, list of androguard DalivkVMFormat and androguard
     Analysis objects from file
     """
     uuid = apk_entry["uuid"]
     andro_path = os.path.join(constants.ANDROGUARD_OBJS_FOLDER, uuid[0], uuid)
-    a = None
     d_s = []
 
-    # get a and d_s from files
+    # get d_s from files
     for f_name in os.listdir(andro_path):
-        if f_name == "apk_obj":
+        if f_name.startswith("dex_obj_"):
             with open(os.path.join(andro_path, f_name), "rb") as f:
-                a = pickle.loads(f.read())
-        elif f_name.startswith("dex_obj_"):
-            with open(os.path.join(andro_path, f_name), "rb") as f:
-                d_s.append(pickle.loads(f.read()))
-    
+                d_s.append(pickle.loads(bz2.decompress(f.read())))
+
     # build dx
     dx = Analysis()
     for df in d_s:
         dx.add(df)
     dx.create_xref()
 
-    # test 
-    print(type(a.get_android_manifest_xml()))
+    # recreate APK object
+    apk_path = "{}/{}/{}/{}.apk".format(constants.DOWNLOAD_FOLDER, uuid[0], uuid[1], uuid)
+    a = apk.APK(apk_path)
 
     return (a, d_s, dx)
 
@@ -326,8 +321,23 @@ def benchmark_staticAnalysis(total_size, q_lock, third_party_q, perm_info_q, lin
 
     print("{} - analyzing {}".format(os.getpid(), filename))
     start = time.time()
-    a, d_s, dx = androguard_analyze_apk((package_name, apk_entry["uuid"]))
+    a, d_s, dx = androguard_analyze_apk(apk_entry)
     print("androguard analysis took {}".format(time.time() - start))
+
+    # do static analyses
+    dbHelper = DbHelper()
+    tokens = namespaceanalyzer.NameSpaceMgr.GetTokensStatic (path, '/')
+    category =  tokens[len (tokens) - 1]
+    instance = namespaceanalyzer.NameSpaceMgr(queue=third_party_q)
+    packages = instance.execute(filename, appVersion, dbHelper, fileName,
+            category, a, dx)
+    permission.StaticAnalyzer(filename, appVersion, packages, dbHelper,
+            fileName, a, dx, q=perm_info_q)
+    SearchIntents.Intents(filename, appVersion, packages, dbHelper, fileName,
+            a, dx, q=link_info_q)
+
+    print("third_party q - {}, perm q - {}, link q - {}"\
+        .format(third_party_q.qsize(), perm_info_q.qsize(), link_info_q.qsize()))
 
     start = time.time()
     dump_androguard_objs(apk_entry, a, d_s, dx)
@@ -341,10 +351,13 @@ def benchmark_staticAnalysis(total_size, q_lock, third_party_q, perm_info_q, lin
     dbHelper = DbHelper()
     tokens = namespaceanalyzer.NameSpaceMgr.GetTokensStatic (path, '/')
     category =  tokens[len (tokens) - 1]
-    instance = namespaceanalyzer.NameSpaceMgr()
-    packages = instance.execute(filename, appVersion, dbHelper, fileName, category, a, dx)
-    permission.StaticAnalyzer(filename, appVersion, packages, dbHelper, fileName, a, dx)
-    SearchIntents.Intents(filename, appVersion, packages, dbHelper, fileName, a, dx)
+    instance = namespaceanalyzer.NameSpaceMgr(queue=third_party_q)
+    packages = instance.execute(filename, appVersion, dbHelper, fileName,
+            category, a, dx)
+    permission.StaticAnalyzer(filename, appVersion, packages, dbHelper,
+            fileName, a, dx, q=perm_info_q)
+    SearchIntents.Intents(filename, appVersion, packages, dbHelper, fileName,
+            a, dx, q=link_info_q)
 
     print("third_party q - {}, perm q - {}, link q - {}"\
         .format(third_party_q.qsize(), perm_info_q.qsize(), link_info_q.qsize()))
@@ -363,7 +376,7 @@ def benchmark_analyzer(apkList, process_no=constants.PROCESS_NO):
     third_party_q = mgr.Queue()
     perm_info_q = mgr.Queue()
     link_info_q = mgr.Queue()
-    partial_staticAnalysis = partial(staticAnalysis, len(apkList), q_lock,
+    partial_staticAnalysis = partial(benchmark_staticAnalysis, len(apkList), q_lock,
             third_party_q, perm_info_q, link_info_q)
     for res in pool.imap_unordered(partial_staticAnalysis, apkList, chunksize):
         print(res)
