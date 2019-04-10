@@ -5,7 +5,7 @@ import shutil
 import pprint
 
 from core.analyzer.apk_parser import APKParser
-from core.analyzer.analyzer import androguardAnalyzeApk
+from core.analyzer.analyzer import androguard_analyze_apk
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
@@ -14,7 +14,7 @@ logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
 pp = pprint.PrettyPrinter(indent=4)
 
 def test(apk_obj):
-    a, d_list, dx = androguardAnalyzeApk((apk_obj.package_name, apk_obj.uuid))
+    a, d_list, dx = androguard_analyze_apk((apk_obj.package_name, apk_obj.uuid))
     print("androguard done")
     """
     strs = dx.get_strings_analysis()

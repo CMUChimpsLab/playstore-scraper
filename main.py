@@ -191,6 +191,12 @@ input_opts.add_argument("-i", "--inputs",
 aae_parser.add_argument("-t", "--target",
     help="target plugin")
 
+# static analysis of sample of apps for paper
+pap_parser = subparsers.add_parser("paper-analysis-pipeline", aliases=["pap"],
+    help="static analysis of apps",
+    description="Static analysis of apps for paper")
+pap_parser.set_defaults(func=pipelines.paper_analysis_pipeline)
+
 # static analysis of apps not yet analyzed
 ap_parser = subparsers.add_parser("analysis-pipeline", aliases=["ap"],
     help="static analysis of apps",

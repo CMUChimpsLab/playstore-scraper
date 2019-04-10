@@ -13,7 +13,7 @@ from bson.binary import Binary
 import pickle
 
 from core.analyzer.apk_parser import APKParser
-from core.analyzer.analyzer import androguardAnalyzeApk
+from core.analyzer.analyzer import androguard_analyze_apk
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
@@ -44,7 +44,7 @@ def find_app_scan(apk_obj):
     return (ext_method_found or intent_found)
 
 def androguard_find_app_scan(apk_obj):
-    a, d_list, dx = androguardAnalyzeApk((apk_obj.package_name, apk_obj.uuid))
+    a, d_list, dx = androguard_analyze_apk((apk_obj.package_name, apk_obj.uuid))
     a_bin = Binary(pickle.dumps(a))
     logger.info("find_app_scan: {},{} - androguard analysis done"\
             .format(apk_obj.package_name, apk_obj.uuid))

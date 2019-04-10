@@ -82,7 +82,7 @@ DB_ROOT_PASS = DB_PASS
 
 # parallelism related constants
 THREAD_NO = 10
-PROCESS_NO = multiprocessing.cpu_count() - 1
+PROCESS_NO = multiprocessing.cpu_count() - 2
 RESULT_CHUNK = 10
 BULK_CHUNK = 1000
 QUEUE_LIM = 100000

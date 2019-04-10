@@ -22,7 +22,7 @@ import shutil
 import zipfile
 
 from common import constants
-from core.analyzer.analyzer import androguardAnalyzeApk
+from core.analyzer.analyzer import androguard_analyze_apk
 import core.analyzer.python_static_analyzer.androguard.androguard.core.bytecodes.apk as b_apk
 
 logger = logging.getLogger(__name__)

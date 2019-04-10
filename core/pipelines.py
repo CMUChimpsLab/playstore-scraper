@@ -13,9 +13,10 @@ import logging.config
 import pandas as pd
 import subprocess
 import argparse
-import datetime
+from datetime import datetime
 import multiprocessing_logging
 import pprint
+from collections import defaultdict
 
 from core.downloader.downloader import Downloader
 from core.db.db_helper import DbHelper
@@ -23,7 +24,7 @@ from core.decompiler.decompiler import Decompiler
 from core.crawler.crawler import Crawler
 from core.scraper.scraper import Scraper
 from core.scraper.updater import Updater
-from core.analyzer.analyzer import analyzer, androguardAnalyzeApk
+from core.analyzer.analyzer import analyzer, androguard_analyze_apk
 from common.constants import DOWNLOAD_FOLDER, THREAD_NO, LOG_FOLDER
 import common.helpers as helpers
 
@@ -162,3 +163,68 @@ def full_pipeline(args):
     os.environ["PIPENV_IGNORE_VIRTUALENVS"] = "1" # allow analysis pipeline to have own env
     analysis_pipeline(None)
     logger.info("...analysis done")
+
+
+# **************************************************************************** #
+# PAPER SPECIFIC PIPELINES
+# **************************************************************************** #
+def paper_analysis_pipeline(args):
+    """
+    Pipeline that only contains the static analysis portion
+    """
+    # static analysis
+    helper = DbHelper()
+    app_list = helper.get_app_info_fields(
+        query={"dateDownloaded": {"$ne": None}},
+        fields={
+            "packageName": 1,
+            "uuid": 1,
+            "uploadDate": 1,
+            "category": 1,
+            "hasBeenTop": 1,
+            "versionCode": 1,
+        })
+
+    app_versions = defaultdict(list)
+    for app in app_list:
+        app_versions[app["packageName"]].append(app)
+    logger.info("versioned apps")
+
+    app_oldest_newest = {}
+    for name, apps in app_versions.items():
+        if len(apps) <= 1:
+            continue
+
+        oldest = None
+        oldest_a = None
+        newest = None
+        newest_a = None
+        for a in apps:
+            if a.get("uploadDate", None) is not None:
+                d = datetime.strptime(a["uploadDate"], "%d %b %Y")
+                if oldest is None or d < oldest:
+                    oldest = d
+                    oldest_a = a
+                if newest is None or d > newest:
+                    newest = d
+                    newest_a = a
+        app_oldest_newest[name] = (oldest_a, newest_a)
+    logger.info("got oldest and newest")
+
+    app_list_with_locs = []
+    for _, app_versions in app_oldest_newest.items():
+        for a in app_versions:
+            uuid = a["uuid"]
+            if uuid.endswith('apk'):
+                uuid = uuid[:-4]
+            app_list_with_locs.append(
+                {
+                    "packageName": a["packageName"],
+                    "uuid": uuid,
+                    "versionCode": a["versionCode"],
+                    "hasBeenTop": a.get("hasBeenTop", False),
+                    "fileDir": "{}/{}/{}".format(DOWNLOAD_FOLDER, uuid[0], uuid[1]),
+                })
+
+    analyzer(app_list_with_locs, cache_all=True)
+

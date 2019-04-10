@@ -12,7 +12,7 @@ import shutil
 import pprint
 
 from core.analyzer.apk_parser import APKParser
-from core.analyzer.analyzer import androguardAnalyzeApk
+from core.analyzer.analyzer import androguard_analyze_apk
 
 pp = pprint.PrettyPrinter(indent=4)
 logger = logging.getLogger(__name__)
@@ -125,7 +125,7 @@ def analyze(uuid, a, d_s, dx, db_helper):
     db_helper.update_apk_analyses_field(uuid, {"idUsage": use_results})
 
 def test_wrap(apk_obj):
-    a, d_list, dx = androguardAnalyzeApk((apk_obj.package_name, apk_obj.uuid))
+    a, d_list, dx = androguard_analyze_apk((apk_obj.package_name, apk_obj.uuid))
     analyze(apk_obj.uuid, a, d_list, dx, None)
 
 def run(apps):

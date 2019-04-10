@@ -50,6 +50,13 @@ class DbHelper:
         """
         self.__client.close()
 
+    def none_vc(self, obj):
+        if (obj.get("versionCode", None) is not None and
+                obj.get("versionCode", None) != "None"):
+            return int(obj["versionCode"])
+        else:
+            return 0
+
     # ************************************************************************ #
     # COMMON MAPPINGS
     # ************************************************************************ #
@@ -105,6 +112,15 @@ class DbHelper:
     # ************************************************************************ #
     #  GETS
     # ************************************************************************ #
+    def get_app_info_fields(self, query={}, fields={}):
+        """
+        Gets all entries in apkInfo with the specified query and fields
+        """
+        if type(fields) != dict and set(fields.values) != {1}:
+            logger.error("get_app_info_fields: <fields> should be dict of field names to 1")
+
+        return self.__apk_info.find(query, fields)
+
     def get_all_app_names_uuids(self):
         """
         Finds the uuids for all of the apps we have yet to analyze at all
@@ -192,22 +208,15 @@ class DbHelper:
                 "hasBeenTop": 1,
             })
 
-        def none_vc(obj):
-            if (obj.get("versionCode", None) is not None and
-                    obj.get("versionCode", None) != "None"):
-                return int(obj["versionCode"])
-            else:
-                return 0
-
         tup_to_uuid_top = {}
         for a in app_infos:
-            tup_to_uuid_top[(a["packageName"], none_vc(a))] = (a["uuid"], a.get("hasBeenTop", False))
+            tup_to_uuid_top[(a["packageName"], self.none_vc(a))] = (a["uuid"], a.get("hasBeenTop", False))
         info_entries = set(list(tup_to_uuid_top.keys()))
 
         link_urls = self.__link_url.find({}, {"packageName": 1, "versionCode": 1})
-        link_url_entries = set([(l["packageName"], none_vc(l)) for l in link_urls])
+        link_url_entries = set([(l["packageName"], self.none_vc(l)) for l in link_urls])
         third_parties = self.__third_party_packages.find({}, {"packageName": 1, "versionCode": 1})
-        third_party_entries = set([(t["packageName"], none_vc(t)) for t in third_parties])
+        third_party_entries = set([(t["packageName"], self.none_vc(t)) for t in third_parties])
 
         unanalyzed_entries = info_entries - (link_url_entries | third_party_entries)
         return [(u[0], *tup_to_uuid_top[u], u[1]) for u in unanalyzed_entries]
@@ -218,13 +227,13 @@ class DbHelper:
         entries in the staticAnalysisDB collections
         """
         link_urls = self.__link_url.find({}, {"packageName": 1, "versionCode": 1})
-        link_url_entries = set([(l["packageName"], none_vc(l)) for l in link_urls])
+        link_url_entries = set([(l["packageName"], self.none_vc(l)) for l in link_urls])
 
         perms = self.__permission_list.find({}, {"packageName": 1, "versionCode": 1})
-        perm_entries = set([(l["packageName"], none_vc(l)) for l in perms])
+        perm_entries = set([(l["packageName"], self.none_vc(l)) for l in perms])
 
         third_parties = self.__third_party_packages.find({}, {"packageName": 1, "versionCode": 1})
-        third_party_entries = set([(t["packageName"], none_vc(t)) for t in third_parties])
+        third_party_entries = set([(t["packageName"], self.none_vc(t)) for t in third_parties])
 
         return list(link_url_entries | perm_entries | third_party_entries)
 

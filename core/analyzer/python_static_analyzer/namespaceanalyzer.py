@@ -80,14 +80,14 @@ class NameSpaceMgr:
                 self.dbMgr.insert_third_party_package_info(self.main_package_name,
                         self.version_code,
                         self.fileName,
-                        "admob",
-                        self.category)
+                        self.category,
+                        "admob")
             else:
                 self.q.put(self.make_db_doc(self.main_package_name,
                         self.version_code,
                         self.fileName,
-                        "admob",
-                        self.category))
+                        self.category,
+                        "admob"))
             self.alreadyPrinted.append ("admob")
             self.packages.append ("admob")
 
@@ -290,14 +290,14 @@ class NameSpaceMgr:
                 self.dbMgr.insert_third_party_package_info(self.main_package_name,
                     self.version_code,
                     self.fileName,
-                    name,
-                    self.category)
+                    self.category,
+                    name)
             else:
                 self.q.put(self.make_db_doc(self.main_package_name,
                     self.version_code,
                     self.fileName,
-                    name,
-                    self.category))
+                    self.category,
+                    name))
             self.alreadyPrinted.append (rootEntry.DirName)
             return
 
@@ -321,14 +321,14 @@ class NameSpaceMgr:
                 self.dbMgr.insert_third_party_package_info(self.main_package_name,
                     self.version_code,
                     self.fileName,
-                    "titanium",
-                    self.category)
+                    self.category,
+                    "titanium")
             else:
                 self.q.put(self.make_db_doc(self.main_package_name,
                     self.version_code,
                     self.fileName,
-                    "titanium",
-                    self.category))
+                    self.category,
+                    "titanium"))
             self.alreadyPrinted.append ("titanium")
         elif ancestorLevel == 1:
             self.packages.append (rootEntry.DirName)
@@ -341,14 +341,14 @@ class NameSpaceMgr:
                 self.dbMgr.insert_third_party_package_info(self.main_package_name,
                     self.version_code,
                     self.fileName,
-                    name,
-                    self.category)
+                    self.category,
+                    name)
             else:
                 self.q.put(self.make_db_doc(self.main_package_name,
                     self.version_code,
                     self.fileName,
-                    name,
-                    self.category))
+                    self.category,
+                    name))
             self.alreadyPrinted.append (rootEntry.DirName)
         else:
             #google package
