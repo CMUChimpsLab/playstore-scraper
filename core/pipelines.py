@@ -25,7 +25,7 @@ from core.crawler.crawler import Crawler
 from core.scraper.scraper import Scraper
 from core.scraper.updater import Updater
 from core.analyzer.analyzer import analyzer, androguard_analyze_apk
-from common.constants import DOWNLOAD_FOLDER, THREAD_NO, LOG_FOLDER
+from common.constants import DOWNLOAD_FOLDER, THREAD_NO, LOG_FOLDER, PROCESS_NO
 import common.helpers as helpers
 
 logger = logging.getLogger(__name__)
@@ -173,6 +173,7 @@ def paper_analysis_pipeline(args):
     Pipeline that only contains the static analysis portion
     """
     # static analysis
+    #TODO: implement skip
     helper = DbHelper()
     app_list = helper.get_app_info_fields(
         query={"dateDownloaded": {"$ne": None}},
@@ -226,5 +227,5 @@ def paper_analysis_pipeline(args):
                     "fileDir": "{}/{}/{}".format(DOWNLOAD_FOLDER, uuid[0], uuid[1]),
                 })
 
-    analyzer(app_list_with_locs, cache_all=True)
+    analyzer(app_list_with_locs, process_no=(PROCESS_NO + 2), cache_all=True)
 

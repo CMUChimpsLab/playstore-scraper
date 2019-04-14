@@ -195,6 +195,9 @@ aae_parser.add_argument("-t", "--target",
 pap_parser = subparsers.add_parser("paper-analysis-pipeline", aliases=["pap"],
     help="static analysis of apps",
     description="Static analysis of apps for paper")
+pap_parser.add_argument("-s", "--skip",
+    action="store_true",
+    help="true if want to skip any cached or existing results")
 pap_parser.set_defaults(func=pipelines.paper_analysis_pipeline)
 
 # static analysis of apps not yet analyzed

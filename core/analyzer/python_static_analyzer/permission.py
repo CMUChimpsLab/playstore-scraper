@@ -152,7 +152,7 @@ class StaticAnalyzer:
                             self.version_code, self.fileName, i, is_external,
                             dst_class_name, package, "NA")
                     else:
-                        q.put(self.make_db_doc(self.main_package_name,
+                        q.append(self.make_db_doc(self.main_package_name,
                             self.version_code, self.fileName, i, is_external,
                             dst_class_name, package, "NA"))
                 else:
@@ -168,7 +168,7 @@ class StaticAnalyzer:
                             self.version_code, self.fileName, i, is_external,
                             dst_class_name, package, src_class_name)
                     else:
-                        q.put(self.make_db_doc(self.main_package_name,
+                        q.append(self.make_db_doc(self.main_package_name,
                             self.version_code, self.fileName, i, is_external,
                             dst_class_name, package, src_class_name))
 

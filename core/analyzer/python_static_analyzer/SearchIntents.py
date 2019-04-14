@@ -125,7 +125,7 @@ class Intents:
                                     self.version_code, self.fileName, strlink,
                                     False, dst, xpck)
                             else:
-                                q.put(self.make_db_doc(self.main_package_name,
+                                q.append(self.make_db_doc(self.main_package_name,
                                     self.version_code, self.fileName, strlink,
                                     False, dst, xpck))
                     else:
@@ -144,7 +144,7 @@ class Intents:
                                     self.version_code, self.fileName, strlink, True,
                                     dst, xpck)
                             else:
-                                q.put(self.make_db_doc(self.main_package_name,
+                                q.append(self.make_db_doc(self.main_package_name,
                                     self.version_code, self.fileName, strlink, True,
                                     dst, xpck))
 

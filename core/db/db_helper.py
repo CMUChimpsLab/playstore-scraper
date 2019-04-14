@@ -595,20 +595,23 @@ class DbHelper:
     # ************************************************************************ #
     # STATIC ANALYSIS FUNCTIONS THAT USE QUEUES (ALWAYS UPDATE FLUSH)
     # ************************************************************************ #
-    def bulk_insert_third_party_package_info(self, docs):
+    def bulk_insert_third_party_package_info(self, docs, log=True):
         if len(docs) > 0:
             self.__static_analysis_db.thirdPartyPackages.insert_many(docs)
-        logger.info("wrote {} third party pkgs".format(len(docs)))
+        if log:
+            logger.info("wrote {} third party pkgs".format(len(docs)))
 
-    def bulk_insert_permission_info(self, docs):
+    def bulk_insert_permission_info(self, docs, log=True):
         if len(docs) > 0:
             self.__static_analysis_db.permissionList.insert_many(docs)
-        logger.info("wrote {} perm info".format(len(docs)))
+        if log:
+            logger.info("wrote {} perm info".format(len(docs)))
 
-    def bulk_insert_link_info(self, docs):
+    def bulk_insert_link_info(self, docs, log=True):
         if len(docs) > 0:
             self.__static_analysis_db.linkUrl.insert_many(docs)
-        logger.info("wrote {} link urls".format(len(docs)))
+        if log:
+            logger.info("wrote {} link urls".format(len(docs)))
 
     """
     def insert_third_party_package_info(self, packageName, versioncode, filename,

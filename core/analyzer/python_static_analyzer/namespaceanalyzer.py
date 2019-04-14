@@ -83,7 +83,7 @@ class NameSpaceMgr:
                         self.category,
                         "admob")
             else:
-                self.q.put(self.make_db_doc(self.main_package_name,
+                self.q.append(self.make_db_doc(self.main_package_name,
                         self.version_code,
                         self.fileName,
                         self.category,
@@ -293,7 +293,7 @@ class NameSpaceMgr:
                     self.category,
                     name)
             else:
-                self.q.put(self.make_db_doc(self.main_package_name,
+                self.q.append(self.make_db_doc(self.main_package_name,
                     self.version_code,
                     self.fileName,
                     self.category,
@@ -324,7 +324,7 @@ class NameSpaceMgr:
                     self.category,
                     "titanium")
             else:
-                self.q.put(self.make_db_doc(self.main_package_name,
+                self.q.append(self.make_db_doc(self.main_package_name,
                     self.version_code,
                     self.fileName,
                     self.category,
@@ -344,7 +344,7 @@ class NameSpaceMgr:
                     self.category,
                     name)
             else:
-                self.q.put(self.make_db_doc(self.main_package_name,
+                self.q.append(self.make_db_doc(self.main_package_name,
                     self.version_code,
                     self.fileName,
                     self.category,
