@@ -185,41 +185,50 @@ class DbHelper:
 
         return [[a[1], a[2]] for a in app_versions.values() if a[3]]
 
-    def get_all_apps_for_full_analysis(self):
+    def get_all_apps_for_full_analysis(self, app_infos=None):
         """
         Finds the uuids for all of the apps we have yet to analyze at all
         Perhaps add functionality for specific analyses later
         """
-        app_infos = self.__apk_info.find(
-            {
-                "$and": [
-                    {"$or": [
-                        {"analysesCompleted": None},
-                        {"analysesCompleted": False}
-                    ]},
-                    {"dateDownloaded": {"$ne": None}},
-                ],
-            },
-            {
-                "_id": 0,
-                "uuid": 1,
-                "packageName": 1,
-                "versionCode": 1,
-                "hasBeenTop": 1,
-            })
+        if app_infos is None:
+            app_infos = self.__apk_info.find(
+                {
+                    "$and": [
+                        {"$or": [
+                            {"analysesCompleted": None},
+                            {"analysesCompleted": False}
+                        ]},
+                        {"dateDownloaded": {"$ne": None}},
+                    ],
+                },
+                {
+                    "_id": 0,
+                    "uuid": 1,
+                    "packageName": 1,
+                    "versionCode": 1,
+                    "hasBeenTop": 1,
+                })
 
         tup_to_uuid_top = {}
         for a in app_infos:
-            tup_to_uuid_top[(a["packageName"], self.none_vc(a))] = (a["uuid"], a.get("hasBeenTop", False))
+            tup_to_uuid_top[(a["packageName"], self.none_vc(a))] = list(a.values())
         info_entries = set(list(tup_to_uuid_top.keys()))
 
         link_urls = self.__link_url.find({}, {"packageName": 1, "versionCode": 1})
         link_url_entries = set([(l["packageName"], self.none_vc(l)) for l in link_urls])
         third_parties = self.__third_party_packages.find({}, {"packageName": 1, "versionCode": 1})
         third_party_entries = set([(t["packageName"], self.none_vc(t)) for t in third_parties])
+        perm_list = self.__permission_list.find({}, {"packageName": 1, "versionCode": 1})
+        perm_list_entries = set([(p["packageName"], self.none_vc(p)) for p in perm_list])
+        apk_analyses = self.__apk_analyses.find({}, {"packageName": 1, "versionCode": 1})
+        apk_analyses_entries = set([(a["packageName"], self.none_vc(a)) for a in apk_analyses])
 
-        unanalyzed_entries = info_entries - (link_url_entries | third_party_entries)
-        return [(u[0], *tup_to_uuid_top[u], u[1]) for u in unanalyzed_entries]
+        unanalyzed_entries = (info_entries -
+            (link_url_entries | 
+                third_party_entries | 
+                perm_list_entries | 
+                apk_analyses_entries))
+        return [tup_to_uuid_top[u] for u in unanalyzed_entries]
 
     def get_all_apps_to_grade(self):
         """

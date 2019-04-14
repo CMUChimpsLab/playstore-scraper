@@ -108,6 +108,20 @@ def apps_updated_sample(downloaded=False):
     print("got apps long diff in time, {}".format(len(app_long_time_diff)))
     pp.pprint(app_long_time_diff)
 
+def remove_duplicates():
+    static_analysis_colls = ["thirdPartyPackages", "permissionList", "linkInfo", "apkAnalyses"]
+    for c in []
+        entries = static_db[c].find()
+        unique_entries = defaultdict(list)
+        for e in entries:
+            e_id = e.pop("_id")
+            unique_entries[tuple(e.values())].append(e_id)
+        duplicate_entries = {}
+        for e_k, e_v in unique_entries.items():
+            if len(e_v) > 1:
+                duplicate_entries[e_k] = e_v
+        print("{} has {} duplicates".format(c, len(duplicate_entries)))
+
 if __name__ == "__main__":
     dh = MongoClient(host=constants.DB_HOST,
         port=constants.DB_PORT,
@@ -118,6 +132,7 @@ if __name__ == "__main__":
     static_db = dh[constants.STATIC_ANALYSIS_DB]
     dbhelper = DbHelper()
 
-    apps_updated_sample()
+    #apps_updated_sample()
     #apps_updated_sample(downloaded=True)
     #third_party_categories()
+    remove_duplicates()

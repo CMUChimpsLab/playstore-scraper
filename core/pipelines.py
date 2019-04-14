@@ -185,6 +185,10 @@ def paper_analysis_pipeline(args):
             "hasBeenTop": 1,
             "versionCode": 1,
         })
+    print(len(app_list))
+    app_list = helper.get_all_apps_for_full_analysis(app_list)
+    print(len(app_list))
+    logger.info("filtered out done apps")
 
     app_versions = defaultdict(list)
     for app in app_list:
