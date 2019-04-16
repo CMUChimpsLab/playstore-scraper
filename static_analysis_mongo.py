@@ -22,21 +22,16 @@ pp = pprint.PrettyPrinter(indent=4)
 
 def third_party_checks():
     r = []
+    printed = False
     for p in static_db.thirdPartyPackages.find({}):
         if len(p["externalPackageName"]) > 1:
             r.append((p["packageName"],
                 p["filename"][:-4],
                 p["externalPackageName"],
                 p["category"]))
-        continue
-
-        try:
-            int(p["externalPackageName"])
-        except:
-            r.append((p["packageName"],
-                p["filename"][:-4],
-                p["externalPackageName"],
-                p["category"]))
+        elif not printed:
+            print(p)
+            printed = True
 
     print(len(r), r[0])
 
@@ -110,17 +105,30 @@ def apps_updated_sample(downloaded=False):
 
 def remove_duplicates():
     static_analysis_colls = ["thirdPartyPackages", "permissionList", "linkInfo", "apkAnalyses"]
-    for c in []
+    for c in static_analysis_colls:
         entries = static_db[c].find()
         unique_entries = defaultdict(list)
         for e in entries:
             e_id = e.pop("_id")
-            unique_entries[tuple(e.values())].append(e_id)
-        duplicate_entries = {}
+            if c == "apkAnalyses":
+                unique_entries[tuple(e["uuid"])].append(e_id)
+            else:
+                unique_entries[tuple(e.values())].append(e_id)
+
         for e_k, e_v in unique_entries.items():
             if len(e_v) > 1:
-                duplicate_entries[e_k] = e_v
-        print("{} has {} duplicates".format(c, len(duplicate_entries)))
+                static_db[c].delete_many({"_id": {"$in": e_v[1:]}})
+        print("{} done".format(c))
+
+def flip_third_party():
+    for p in static_db.thirdPartyPackages.find({}):
+        if len(p["externalPackageName"]) > 1:
+            static_db.thirdPartyPackages.update(
+                    {"_id": p["_id"]},
+                    {
+                        "externalPackageName": p["category"],
+                        "category": p["externalPackageName"],
+                    })
 
 if __name__ == "__main__":
     dh = MongoClient(host=constants.DB_HOST,
@@ -134,5 +142,5 @@ if __name__ == "__main__":
 
     #apps_updated_sample()
     #apps_updated_sample(downloaded=True)
-    #third_party_categories()
+    #flip_third_party()
     remove_duplicates()

@@ -2,16 +2,22 @@ import logging
 import datetime
 import os
 from multiprocessing import Pool, Value, Manager
+from concurrent.futures import ProcessPoolExecutor
 import threading
+import queue
 import shutil
 import time
 import importlib
 from functools import partial
 import lzma
 import bz2
-import pickle
 import traceback
 from lxml import etree
+import signal
+try:
+    import cPickle as pickle
+except:
+    import pickle
 
 # sys path hacking to import from other repos
 import sys
@@ -45,6 +51,7 @@ plugins = []
 def static_analysis(total_size, cache_all, log_q, apk_entry):
     global counter
     global plugins
+    sys.setrecursionlimit(60000) # number found to not cause segfault
     qh = logging.handlers.QueueHandler(log_q)
     logger = logging.getLogger()
     logger.handlers = []
@@ -53,8 +60,9 @@ def static_analysis(total_size, cache_all, log_q, apk_entry):
     dbHelper = DbHelper()
     result_tups = []
     try:
+        int("a")
         package_name = apk_entry["packageName"]
-        appVersion = int(apk_entry["versionCode"]) if apk_entry["versionCode"] is not None else 0
+        app_version = int(apk_entry["versionCode"]) if apk_entry["versionCode"] is not None else 0
         path = apk_entry['fileDir']
         uuid = apk_entry["uuid"]
         fileName = uuid + '.apk'
@@ -75,11 +83,11 @@ def static_analysis(total_size, cache_all, log_q, apk_entry):
         tokens = namespaceanalyzer.NameSpaceMgr.GetTokensStatic(path, '/')
         category =  tokens[len (tokens) - 1]
         instance = namespaceanalyzer.NameSpaceMgr(queue=third_parties)
-        packages = instance.execute(filename, appVersion, dbHelper, fileName,
+        packages = instance.execute(filename, app_version, dbHelper, fileName,
                 category, a, dx)
-        permission.StaticAnalyzer(filename, appVersion, packages, dbHelper,
+        permission.StaticAnalyzer(filename, app_version, packages, dbHelper,
                 fileName, a, dx, q=perm_infos)
-        SearchIntents.Intents(filename, appVersion, packages, dbHelper, fileName,
+        SearchIntents.Intents(filename, app_version, packages, dbHelper, fileName,
                 a, dx, q=link_urls)
 
         # load and run plugins
@@ -104,15 +112,14 @@ def static_analysis(total_size, cache_all, log_q, apk_entry):
                 logger.info("{} out of {} analyzed".format(counter.value, total_size))
 
         # if specified or failed load, serialize a and d_s and store in NAS
-        if ((apk_entry.get("hasBeenTop", False) or cache_all) and
-                (not androguard_files_exist or not load_success)):
+        if ((apk_entry.get("hasBeenTop", False) or cache_all) and not load_success):
             dump_androguard_objs(apk_entry, a, d_s, dx)
 
     except Exception as e:
         logger.error("static_analysis: {} - {}".format(package_name, traceback.format_exc()))
         return
 
-    return (package_name, appVersion)
+    return (package_name, app_version)
 
 def analyzer(apkList, process_no=constants.PROCESS_NO, cache_all=False):
     """
@@ -122,7 +129,7 @@ def analyzer(apkList, process_no=constants.PROCESS_NO, cache_all=False):
     # set up path constants
     # now = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
     now = "DEBUG_NEW" # TEMP, TODO REMOVE
-    outputPath = "static_analysisRuns/" + now
+    outputPath = "static_analysis_runs/" + now
     if os.path.exists(outputPath):
         shutil.rmtree(outputPath)
     os.makedirs(outputPath)
@@ -130,7 +137,8 @@ def analyzer(apkList, process_no=constants.PROCESS_NO, cache_all=False):
     # run static analysis part
     global plugins
     plugins = helpers.get_plugins("plugins/core/analyzer", load=True)
-    chunksize = max(int(len(apkList) / process_no / 4), 1)
+    #chunksize = max(int(len(apkList) / process_no / 4), 1)
+    chunksize = 1
     logger.info("analyzing {} apps in {} size chunks, cache_all set to {}"\
             .format(len(apkList), chunksize, cache_all))
     mgr = Manager()
@@ -138,10 +146,14 @@ def analyzer(apkList, process_no=constants.PROCESS_NO, cache_all=False):
     log_stop_e = mgr.Event()
     log_thread = threading.Thread(target=logger_thread, args=(log_q, log_stop_e))
     log_thread.start()
-    with Pool(process_no) as pool:
+    #static_analysis(len(apkList), cache_all, log_q, apkList[0])
+    #return
+    with ProcessPoolExecutor(process_no) as executor:
         partial_static_analysis = partial(static_analysis, len(apkList), cache_all, log_q)
-        for res in pool.imap_unordered(partial_static_analysis, apkList, chunksize):
+        for res in executor.map(partial_static_analysis, apkList, chunksize=chunksize):
+            logger.info(res)
             continue
+    logger.info("stopping log threader")
     log_stop_e.set()
     log_thread.join()
     logger.info("APK static analysis complete")
@@ -194,8 +206,11 @@ def logger_thread(q, stop_e):
     logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                         level=logging.INFO)
     while not stop_e.is_set():
-        record = q.get()
-        logger.handle(record)
+        try:
+            record = q.get(block=True, timeout=60)
+            logger.handle(record)
+        except queue.Empty:
+            continue
 
 def androguard_analyze_apk(apk_entry, apk_path=None):
     package_name = apk_entry["packageName"]
@@ -224,16 +239,27 @@ def dump_androguard_objs(apk_entry, a, d_s, dx):
     """
     package_name = apk_entry["packageName"]
     uuid = apk_entry["uuid"]
+    logger.info("in dump for {},{}".format(package_name, uuid))
     andro_path = os.path.join(constants.ANDROGUARD_OBJS_FOLDER, uuid[0], uuid)
     if not os.path.exists(andro_path):
         os.makedirs(andro_path)
 
     try:
+        logger.info("attempting dump for {},{}".format(package_name, uuid))
         with lzma.open(os.path.join(andro_path, "dx_obj"), "wb") as f:
-            sys.setrecursionlimit(100000)
             pickle.dump(dx, f)
+        """
+        with open(os.path.join(andro_path, "dx_obj"), "wb") as f:
+            logger.info("opened lzma for {},{}".format(package_name, uuid))
+            pickled = pickle.dumps(dx)
+            logger.info("pickled for {},{}".format(package_name, uuid))
+            compressed = lzma.compress(pickled)
+            logger.info("compressed for {},{}".format(package_name, uuid))
+            f.write(compressed)
+            logger.info("wrote to file for {},{}".format(package_name, uuid))
+        """
         logger.info("{},{} analysis obj stored in file".format(package_name, uuid))
-    except RuntimeError as e:
+    except Exception as e:
         # clean up after failed attempt
         logger.info("{},{} storage attempt cleaned - {}".format(package_name, uuid, e))
         shutil.rmtree(andro_path)
@@ -253,7 +279,6 @@ def load_androguard_objs(apk_entry):
         for f_name in os.listdir(andro_path):
             if f_name == "dx_obj":
                 with lzma.open(os.path.join(andro_path, f_name), "rb") as f:
-                    sys.setrecursionlimit(100000)
                     dx = pickle.load(f)
 
         # recreate APK object
@@ -364,7 +389,6 @@ def benchmark_analyzer(apkList, process_no=constants.PROCESS_NO):
             initargs=(q_lock, third_party_q, perm_info_q, link_info_q)) as pool:
         partial_static_analysis = partial(benchmark_static_analysis, len(apkList))
         for res in pool.imap_unordered(partial_static_analysis, apkList, chunksize):
-            print(res)
             continue
     print("took {} ".format(time.time() - start))
 

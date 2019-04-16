@@ -173,22 +173,16 @@ def paper_analysis_pipeline(args):
     Pipeline that only contains the static analysis portion
     """
     # static analysis
-    #TODO: implement skip
     helper = DbHelper()
+    fields = ["packageName", "uuid", "uploadDate", "category", "hasBeenTop", "versionCode"]
     app_list = helper.get_app_info_fields(
         query={"dateDownloaded": {"$ne": None}},
-        fields={
-            "packageName": 1,
-            "uuid": 1,
-            "uploadDate": 1,
-            "category": 1,
-            "hasBeenTop": 1,
-            "versionCode": 1,
-        })
-    print(len(app_list))
-    app_list = helper.get_all_apps_for_full_analysis(app_list)
-    print(len(app_list))
-    logger.info("filtered out done apps")
+        fields=dict([(f, 1) for f in fields]))
+    if args.skip:
+        defaults = ["", "", None, "", False, 0]
+        app_list = helper.get_all_apps_for_full_analysis(
+                app_infos=(fields, defaults, app_list), return_dict=True)
+        logger.info("filtered out done apps")
 
     app_versions = defaultdict(list)
     for app in app_list:
@@ -231,5 +225,15 @@ def paper_analysis_pipeline(args):
                     "fileDir": "{}/{}/{}".format(DOWNLOAD_FOLDER, uuid[0], uuid[1]),
                 })
 
+    """
+    uuid = "22da80259c6843b5ab8d79f2fb0a0412"
+    app_list_with_locs = [{
+            "packageName": "tv.tou.android",
+            "uuid": uuid,
+            "versionCode": 211042020,
+            "hasBeenTop": False,
+            "fileDir": "{}/{}/{}".format(DOWNLOAD_FOLDER, uuid[0], uuid[1]),
+        }]
+    """
     analyzer(app_list_with_locs, process_no=(PROCESS_NO + 2), cache_all=True)
 
