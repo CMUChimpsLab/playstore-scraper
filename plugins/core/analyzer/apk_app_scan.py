@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     level=logging.INFO)
 
-def analyze(uuid, a, d_s, dx, db_helper):
+def analyze(app_entry, a, d_s, dx, db_helper):
     """
     Checks if an app can scan for apps by looking for the associated method and
     permission
@@ -42,4 +42,11 @@ def analyze(uuid, a, d_s, dx, db_helper):
             intent_found = True
             break
 
-    db_helper.update_apk_analyses_field(uuid, {"scansApps": ext_method_found or intent_found})
+    db_helper.update_apk_analyses_field(app_entry["uuid"],
+            {
+                "packageName": app_entry["packageName"],
+                "uuid": app_entry["uuid"],
+                "filename": app_entry["uuid"] + ".apk",
+                "versionCode": app_entry["versionCode"],
+                "scansApps": ext_method_found or intent_found,
+            })

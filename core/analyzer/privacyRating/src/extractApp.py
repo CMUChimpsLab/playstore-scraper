@@ -19,17 +19,14 @@ def extractPackagePair(updatedApkList, reposPath):
             labeled3rdParty.find({}, {'externalPack':1, 'apiType':1})
     }
     cnt = 0
-    for (package_name, version_code) in updatedApkList:
+    for (package_name, version_code, uuid) in updatedApkList:
         cnt += 1
         # print(cnt, package_name, version_code, "extract")
 
         #make sure permission in apkInfo is the version analyzed. Do not update apkInfo before extractApp.py run
 
         apkInfoEntry = dbAndroidApp.apkInfo.find_one(
-                {
-                    "packageName": package_name,
-                    "versionCode": int(version_code)
-                },
+                {"uuid": uuid},
                 {
                     "permissions": 1,
                     "updatedTimestamp": 1,
@@ -55,11 +52,7 @@ def extractPackagePair(updatedApkList, reposPath):
         labeledPermissionPurposesDict = {}
         #A whole list of permission analyzed by androguard, stored in packagePair table, externalPackage may not in labeledPackageDict and can be "NA"
         permissionExternalPackageDict = {}
-        perm_list_entries = dbStaticAnalysis.permissionList.find(
-            {
-                'packageName': package_name,
-                'versionCode': version_code,
-            })
+        perm_list_entries = dbStaticAnalysis.permissionList.find({"uuid": uuid})
         for entry in perm_list_entries:
             #if permission analyzed is not in manifest, do not add to permissionlist in packagePair
             #Note: this can be removed if all permission in permissionList are from manifest
@@ -90,6 +83,7 @@ def extractPackagePair(updatedApkList, reposPath):
         packagePairEntry = {
             'packageName': package_name,
             'versionCode': version_code,
+            "uuid": uuid,
             'labeledPermissionPurposesPairs': {
                 key: list(value) for key, value in labeledPermissionPurposesDict.items()
             },
@@ -106,7 +100,8 @@ def extractPackagePair(updatedApkList, reposPath):
         dbPrivacyGrading.packagePair.update(
             {
                 'packageName': package_name,
-                'versionCode': version_code
+                'versionCode': version_code,
+                "uuid": uuid,
             },
             packagePairEntry,
             upsert=True)

@@ -43,8 +43,10 @@ class StaticAnalyzer:
     def make_db_doc(self, packageName, versioncode, filename, permission,
                               is_external, dest, externalPackageName, src):
 
+        uuid = filename[:-4] if filename.endswith(".apk") else filename
         return {
             "packageName": packageName,
+            "uuid": uuid,
             "versionCode": int(versioncode),
             "filename": filename,
             "permission": permission,

@@ -172,68 +172,65 @@ def paper_analysis_pipeline(args):
     """
     Pipeline that only contains the static analysis portion
     """
-    # static analysis
-    helper = DbHelper()
-    fields = ["packageName", "uuid", "uploadDate", "category", "hasBeenTop", "versionCode"]
-    app_list = helper.get_app_info_fields(
-        query={"dateDownloaded": {"$ne": None}},
-        fields=dict([(f, 1) for f in fields]))
-    if args.skip:
-        defaults = ["", "", None, "", False, 0]
-        app_list = helper.get_all_apps_for_full_analysis(
-                app_infos=(fields, defaults, app_list), return_dict=True)
-        logger.info("filtered out done apps")
+    if args.no_static:
+        analyzer([], process_no=(PROCESS_NO + 4),
+                cache_all=True, no_static=True, dry_run=args.dry_run)
+    else:
+        # static analysis
+        helper = DbHelper()
+        fields = ["packageName", "uuid", "uploadDate", "category", "hasBeenTop",
+                "versionCode", "cacheFail"]
+        app_list = helper.get_app_info_fields(
+            query={"dateDownloaded": {"$ne": None}},
+            fields=dict([(f, 1) for f in fields]))
+        if args.skip_complete:
+            defaults = ["", "", None, "", False, 0]
+            app_list = helper.get_all_apps_for_full_analysis(
+                    app_infos=(fields, defaults, app_list), return_dict=True)
+            logger.info("filtered out done apps")
 
-    app_versions = defaultdict(list)
-    for app in app_list:
-        app_versions[app["packageName"]].append(app)
-    logger.info("versioned apps")
+        app_versions = defaultdict(list)
+        for app in app_list:
+            app_versions[app["packageName"]].append(app)
+        logger.info("versioned apps")
 
-    app_oldest_newest = {}
-    for name, apps in app_versions.items():
-        if len(apps) <= 1:
-            continue
+        app_oldest_newest = {}
+        for name, apps in app_versions.items():
+            if len(apps) <= 1:
+                continue
 
-        oldest = None
-        oldest_a = None
-        newest = None
-        newest_a = None
-        for a in apps:
-            if a.get("uploadDate", None) is not None:
-                d = datetime.strptime(a["uploadDate"], "%d %b %Y")
-                if oldest is None or d < oldest:
-                    oldest = d
-                    oldest_a = a
-                if newest is None or d > newest:
-                    newest = d
-                    newest_a = a
-        app_oldest_newest[name] = (oldest_a, newest_a)
-    logger.info("got oldest and newest")
+            oldest = None
+            oldest_a = None
+            newest = None
+            newest_a = None
+            for a in apps:
+                if a.get("uploadDate", None) is not None:
+                    d = datetime.strptime(a["uploadDate"], "%d %b %Y")
+                    if oldest is None or d < oldest:
+                        oldest = d
+                        oldest_a = a
+                    if newest is None or d > newest:
+                        newest = d
+                        newest_a = a
+            app_oldest_newest[name] = (oldest_a, newest_a)
+        logger.info("got oldest and newest")
 
-    app_list_with_locs = []
-    for _, app_versions in app_oldest_newest.items():
-        for a in app_versions:
-            uuid = a["uuid"]
-            if uuid.endswith('apk'):
-                uuid = uuid[:-4]
-            app_list_with_locs.append(
-                {
-                    "packageName": a["packageName"],
-                    "uuid": uuid,
-                    "versionCode": a["versionCode"],
-                    "hasBeenTop": a.get("hasBeenTop", False),
-                    "fileDir": "{}/{}/{}".format(DOWNLOAD_FOLDER, uuid[0], uuid[1]),
-                })
+        app_list_with_locs = []
+        for _, app_versions in app_oldest_newest.items():
+            for a in app_versions:
+                uuid = a["uuid"]
+                if uuid.endswith('apk'):
+                    uuid = uuid[:-4]
+                app_list_with_locs.append(
+                    {
+                        "packageName": a["packageName"],
+                        "uuid": uuid,
+                        "versionCode": a["versionCode"],
+                        "hasBeenTop": a.get("hasBeenTop", False),
+                        "cacheFail": a.get("cacheFail", False),
+                        "fileDir": "{}/{}/{}".format(DOWNLOAD_FOLDER, uuid[0], uuid[1]),
+                    })
 
-    """
-    uuid = "22da80259c6843b5ab8d79f2fb0a0412"
-    app_list_with_locs = [{
-            "packageName": "tv.tou.android",
-            "uuid": uuid,
-            "versionCode": 211042020,
-            "hasBeenTop": False,
-            "fileDir": "{}/{}/{}".format(DOWNLOAD_FOLDER, uuid[0], uuid[1]),
-        }]
-    """
-    analyzer(app_list_with_locs, process_no=(PROCESS_NO + 2), cache_all=True)
+        analyzer(app_list_with_locs, process_no=(PROCESS_NO * 2 - 2),
+                cache_all=True, dry_run=args.dry_run, plugins_only=args.plugins_only)
 

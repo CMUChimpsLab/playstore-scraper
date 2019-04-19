@@ -218,21 +218,21 @@ class DbHelper:
             app_infos = app_infos[2]
 
         # use apk_analyses as marker for any apps with analysis that was interrupted
-        tup_to_app = dict()
+        uuid_map = dict()
         for a in app_infos:
             e = []
             for i in range(0, len(info_keys)):
                 e.append(a.get(info_keys[i], defaults[i]))
-            tup_to_app[(a["packageName"], self.none_vc(a))] = e
-        info_entries = set(list(tup_to_app.keys()))
-        link_urls = self.__link_url.find({}, {"packageName": 1, "versionCode": 1})
-        link_url_entries = set([(l.get("packageName", ""), self.none_vc(l)) for l in link_urls])
-        third_parties = self.__third_party_packages.find({}, {"packageName": 1, "versionCode": 1})
-        third_party_entries = set([(t.get("packageName", ""), self.none_vc(t)) for t in third_parties])
-        perm_list = self.__permission_list.find({}, {"packageName": 1, "versionCode": 1})
-        perm_list_entries = set([(p.get("packageName", ""), self.none_vc(p)) for p in perm_list])
-        apk_analyses = self.__apk_analyses.find({}, {"packageName": 1, "versionCode": 1})
-        apk_analyses_entries = set([(a.get("packageName", ""), self.none_vc(a)) for a in apk_analyses])
+            uuid_map[a["uuid"]] = e
+        info_entries = set(list(uuid_map.keys()))
+        link_urls = self.__link_url.find({}, {"uuid": 1})
+        link_url_entries = set([l["uuid"] for l in link_urls])
+        third_parties = self.__third_party_packages.find({}, {"uuid": 1})
+        third_party_entries = set([t["uuid"] for t in third_parties])
+        perm_list = self.__permission_list.find({}, {"uuid": 1})
+        perm_list_entries = set([p["uuid"] for p in perm_list])
+        apk_analyses = self.__apk_analyses.find({}, {"uuid": 1})
+        apk_analyses_entries = set([a["uuid"] for a in apk_analyses])
 
         unanalyzed_entries = (info_entries -
             (link_url_entries |
@@ -240,23 +240,29 @@ class DbHelper:
                 perm_list_entries |
                 apk_analyses_entries))
         if return_dict:
-            return [dict(zip(info_keys, tup_to_app[u])) for u in unanalyzed_entries]
+            return [dict(zip(info_keys, uuid_map[u])) for u in unanalyzed_entries]
         else:
-            return [tup_to_app[u] for u in unanalyzed_entries]
+            return [uuid_map[u] for u in unanalyzed_entries]
 
     def get_all_apps_to_grade(self):
         """
         Finds uuids for apps that need to be graded based on apps that have
         entries in the staticAnalysisDB collections
         """
-        link_urls = self.__link_url.find({}, {"packageName": 1, "versionCode": 1})
-        link_url_entries = set([(l["packageName"], self.none_vc(l)) for l in link_urls])
+        link_urls = self.__link_url.find({},
+                {"packageName": 1, "versionCode": 1, "uuid": 1})
+        link_url_entries = set([(l["packageName"], self.none_vc(l), l["uuid"])
+                for l in link_urls])
 
-        perms = self.__permission_list.find({}, {"packageName": 1, "versionCode": 1})
-        perm_entries = set([(l["packageName"], self.none_vc(l)) for l in perms])
+        perms = self.__permission_list.find({},
+                {"packageName": 1, "versionCode": 1, "uuid": 1})
+        perm_entries = set([(p["packageName"], self.none_vc(p), p["uuid"])
+                for p in perms])
 
-        third_parties = self.__third_party_packages.find({}, {"packageName": 1, "versionCode": 1})
-        third_party_entries = set([(t["packageName"], self.none_vc(t)) for t in third_parties])
+        third_parties = self.__third_party_packages.find({},
+                {"packageName": 1, "versionCode": 1, "uuid": 1})
+        third_party_entries = set([(t["packageName"], self.none_vc(t), t["uuid"])
+                for t in third_parties])
 
         return list(link_url_entries | perm_entries | third_party_entries)
 
@@ -411,10 +417,10 @@ class DbHelper:
             # Remove old files
             app_path = "/" + old_uuid[0] + "/" + old_uuid[1] + "/" + old_uuid + ".apk"
             if os.path.isfile(constants.DOWNLOAD_FOLDER + app_path):
-                os.remove(constants.DOWNLOAD_FOLDER + app_path)
+                os.delete_many(constants.DOWNLOAD_FOLDER + app_path)
             zip_path = "/" + old_uuid[0] + "/" + old_uuid + ".zip"
             if os.path.isfile(constants.DECOMPILE_FOLDER + zip_path):
-                os.remove(constants.DECOMPILE_FOLDER + zip_path)
+                os.delete_many(constants.DECOMPILE_FOLDER + zip_path)
             logger.info("Replaced {} in db".format(app_info["packageName"]))
 
     def update_top_apps(self, new_top_list):
@@ -456,48 +462,27 @@ class DbHelper:
         names = [{'_id': i} for i in names if len(i) > 0]
         self.__package_names.insert(names)
 
-    def deleteEntry (self, package_name, version_code):
+    def delete_entries(self, uuids):
         """
         Deletes a database entry for anything related to static analysis
         """
-        self.__static_analysis_db.linkUrl.remove(
-            {
-                "$and": [
-                    {"packageName": package_name},
-                    {"versionCode": version_code},
-                ],
-            })
-        self.__static_analysis_db.permissionList.remove(
-            {
-                "$and": [
-                    {"packageName": package_name},
-                    {"versionCode": version_code},
-                ],
-            })
-        self.__static_analysis_db.thirdPartyPackages.remove(
-            {
-                "$and": [
-                    {"packageName": package_name},
-                    {"versionCode": version_code},
-                ],
-            })
-        self.__apk_info.update_many(
-            {
-                "$and": [
-                    {"packageName": package_name},
-                    {"versionCode": version_code},
-                ],
-            },
+        res = self.__static_analysis_db.linkUrl.delete_many({"uuid": {"$in": uuids}})
+        logger.info("linkUrl - removed {}".format(res.deleted_count))
+        res = self.__static_analysis_db.permissionList.delete_many({"uuid": {"$in": uuids}})
+        logger.info("permissionList - removed {}".format(res.deleted_count))
+        res = self.__static_analysis_db.thirdPartyPackages.delete_many({"uuid": {"$in": uuids}})
+        logger.info("thirdPartyPackages - removed {}".format(res.deleted_count))
+        self.__apk_info.update_many({"uuid": {"$in": uuids}},
             {"$set": {"analysesCompleted": False}})
 
     def delete_metadata_entry(self, package_name):
         """
         Deletes database entries related to app metadata
         """
-        self.__apk_info.remove({"packageName": package_name})
-        self.__apk_details.remove({"details.appDetails.packageName": package_name})
-        self.__package_names.remove({"_id": package_name})
-        self.__top_apps.remove({"_id": package_name})
+        self.__apk_info.delete_many({"packageName": package_name})
+        self.__apk_details.delete_many({"details.appDetails.packageName": package_name})
+        self.__package_names.delete_many({"_id": package_name})
+        self.__top_apps.delete_many({"_id": package_name})
 
     # ************************************************************************ #
     # FIELD UPDATES

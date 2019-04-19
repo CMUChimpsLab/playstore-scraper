@@ -56,13 +56,14 @@ class NameSpaceMgr:
 
         return tokens
 
-    def make_db_doc(self, packageName, versioncode, filename, category, externalPackageName):
+    def make_db_doc(self, packageName, versioncode, filename, externalPackageName):
+        uuid = filename[:-4] if filename.endswith(".apk") else filename
         return {
             "packageName": packageName,
+            "uuid": uuid,
             "versionCode": int(versioncode),
             "filename": filename,
             "externalPackageName": externalPackageName,
-            "category": category
         }
 
     '''
@@ -80,28 +81,21 @@ class NameSpaceMgr:
                 self.dbMgr.insert_third_party_package_info(self.main_package_name,
                         self.version_code,
                         self.fileName,
-                        self.category,
                         "admob")
             else:
                 self.q.append(self.make_db_doc(self.main_package_name,
                         self.version_code,
                         self.fileName,
-                        self.category,
                         "admob"))
             self.alreadyPrinted.append ("admob")
             self.packages.append ("admob")
 
 
-    def execute(self, fileName, vc, dbMgr, noprefixfilename, category, a, dx):
+    def execute(self, fileName, vc, dbMgr, noprefixfilename, a, dx):
         '''
         Handle to DataBase
         '''
         self.dbMgr = dbMgr
-        if len(category) > 250 :
-            self.category  = (category[:200] + '..')
-        else:
-            self.category = category
-
 
         self.dirEntries = []
         self.version_code = vc
@@ -290,13 +284,11 @@ class NameSpaceMgr:
                 self.dbMgr.insert_third_party_package_info(self.main_package_name,
                     self.version_code,
                     self.fileName,
-                    self.category,
                     name)
             else:
                 self.q.append(self.make_db_doc(self.main_package_name,
                     self.version_code,
                     self.fileName,
-                    self.category,
                     name))
             self.alreadyPrinted.append (rootEntry.DirName)
             return
@@ -321,13 +313,11 @@ class NameSpaceMgr:
                 self.dbMgr.insert_third_party_package_info(self.main_package_name,
                     self.version_code,
                     self.fileName,
-                    self.category,
                     "titanium")
             else:
                 self.q.append(self.make_db_doc(self.main_package_name,
                     self.version_code,
                     self.fileName,
-                    self.category,
                     "titanium"))
             self.alreadyPrinted.append ("titanium")
         elif ancestorLevel == 1:
@@ -341,13 +331,11 @@ class NameSpaceMgr:
                 self.dbMgr.insert_third_party_package_info(self.main_package_name,
                     self.version_code,
                     self.fileName,
-                    self.category,
                     name)
             else:
                 self.q.append(self.make_db_doc(self.main_package_name,
                     self.version_code,
                     self.fileName,
-                    self.category,
                     name))
             self.alreadyPrinted.append (rootEntry.DirName)
         else:

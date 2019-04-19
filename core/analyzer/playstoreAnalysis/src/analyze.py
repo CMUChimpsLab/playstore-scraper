@@ -31,6 +31,7 @@ def getTopK(client, dbName, collectionName, selector, sorter, listName, k = 10):
     showFields['_id'] = 0
     showFields['packageName'] = 1
     showFields['versionCode'] = 1
+    showFields['uuid'] = 1
     topKList = [entry for entry in db[collectionName].\
         find(selector, showFields).sort(sorter).limit(k)]
     return topKList
@@ -58,7 +59,7 @@ def getTopkKFromAList(client, appList, dbName, collectionName, selector, sorter,
         if k0 == 0:
             break
 
-        if (entry["packageName"], entry["versionCode"]) in appList:
+        if (entry["packageName"], entry["versionCode"], entry["uuid"]) in appList:
             k0 -= 1
             topKListInAppList.append(entry)
 
@@ -118,7 +119,7 @@ def getTopKAppWithLib(client, appList, libTypeList, appCategoryList, listName, k
     appLibDict = {}
     for app in appList:
         libSet = set()
-        for entry in appLibTable.find({'packageName':app[0], 'versionCode':app[1]}):
+        for entry in appLibTable.find({'uuid':app[2]}):
             if entry['externalPackageName'] in libList:
                 libSet.add(entry['externalPackageName'])
 
@@ -141,11 +142,12 @@ def getTopKAppWithLib(client, appList, libTypeList, appCategoryList, listName, k
 def getInstallSizeList(client, appList, outputDir):
     table = client['androidAppDB']['apkInfo']
     with open(outputDir + "/installationSizeList", "w") as f:
-        for (app_name, app_version) in appList:
+        for (app_name, app_version, app_uuid) in appList:
             entry = table.find_one(
                 {
                     'packageName': app_name,
                     'versionCode': app_version,
+                    "uuid": app_uuid,
                 })
             if entry and entry.has_key('installationSize'):
                 f.write(str(entry['installationSize']) + "\n")
@@ -157,7 +159,7 @@ def getAggregateRatingList(client, appList, outputDir):
                    "threeStarRating,fourStarRating,fiveStarRating,ratingsCount,"
                    "commentCount\n")
         f.write(headers)
-        for (app_name, app_version) in appList:
+        for (app_name, app_version, app_uuid) in appList:
             entry = table.find_one(
                 {
                     'details.appDetails.packageName': app_name,
@@ -188,11 +190,10 @@ def getTopPermissions(client, appList, outputDir):
     ctgryNumberSum = {}
     totalNumber = 0
     ctgryDict = {}
-    for (app_name, app_version) in appList:
+    for (app_name, app_version, app_uuid) in appList:
         entry = table.find_one(
             {
-                'packageName': app_name,
-                'versionCode': app_version,
+                "uuid": app_uuid,
                 'permissions': {'$exists':True},
                 'category': {'$exists':True}
             },

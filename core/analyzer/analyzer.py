@@ -2,7 +2,7 @@ import logging
 import datetime
 import os
 from multiprocessing import Pool, Value, Manager
-from concurrent.futures import ProcessPoolExecutor
+#from concurrent.futures import ProcessPoolExecutor, process
 import threading
 import queue
 import shutil
@@ -48,26 +48,23 @@ logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
 counter = Value("i", 0)
 plugins = []
 
-def static_analysis(total_size, cache_all, log_q, apk_entry):
+def static_analysis(total_size, cache_all, dry_run, plugins_only, apk_entry):
     global counter
     global plugins
+    global logger
     sys.setrecursionlimit(60000) # number found to not cause segfault
-    qh = logging.handlers.QueueHandler(log_q)
-    logger = logging.getLogger()
-    logger.handlers = []
-    logger.addHandler(qh)
 
-    dbHelper = DbHelper()
+    db_helper = DbHelper()
     result_tups = []
     try:
-        int("a")
         package_name = apk_entry["packageName"]
         app_version = int(apk_entry["versionCode"]) if apk_entry["versionCode"] is not None else 0
         path = apk_entry['fileDir']
         uuid = apk_entry["uuid"]
         fileName = uuid + '.apk'
         filename = path + '/' + fileName
-        androguard_files_exist = check_androguard_files(apk_entry)
+        androguard_files_exist = (check_androguard_files(apk_entry) and
+                not apk_entry.get("cacheFail", False))
         load_success = False
         if androguard_files_exist:
             (androguard_objs, load_success) = load_androguard_objs(apk_entry)
@@ -80,24 +77,29 @@ def static_analysis(total_size, cache_all, log_q, apk_entry):
         third_parties = []
         perm_infos = []
         link_urls = []
-        tokens = namespaceanalyzer.NameSpaceMgr.GetTokensStatic(path, '/')
-        category =  tokens[len (tokens) - 1]
-        instance = namespaceanalyzer.NameSpaceMgr(queue=third_parties)
-        packages = instance.execute(filename, app_version, dbHelper, fileName,
-                category, a, dx)
-        permission.StaticAnalyzer(filename, app_version, packages, dbHelper,
-                fileName, a, dx, q=perm_infos)
-        SearchIntents.Intents(filename, app_version, packages, dbHelper, fileName,
-                a, dx, q=link_urls)
+        if not plugins_only:
+            tokens = namespaceanalyzer.NameSpaceMgr.GetTokensStatic(path, '/')
+            category =  tokens[len (tokens) - 1]
+            instance = namespaceanalyzer.NameSpaceMgr(queue=third_parties)
+            packages = instance.execute(filename, app_version, db_helper, fileName,
+                    category, a, dx)
+            permission.StaticAnalyzer(filename, app_version, packages, db_helper,
+                    fileName, a, dx, q=perm_infos)
+            SearchIntents.Intents(filename, app_version, packages, db_helper, fileName,
+                    a, dx, q=link_urls)
+            if dry_run:
+                return (package_name, uuid)
+
+            # remove any old db entries and insert new
+            db_helper.bulk_insert_third_party_package_info(third_parties, log=False)
+            db_helper.bulk_insert_permission_info(perm_infos, log=False)
+            db_helper.bulk_insert_link_info(link_urls, log=False)
 
         # load and run plugins
         for p in plugins:
             if hasattr(p, "analyze"):
-                plugin_res = p.analyze(uuid, a, None, dx, dbHelper)
+                plugin_res = p.analyze(apk_entry, a, None, dx, db_helper)
 
-        dbHelper.bulk_insert_third_party_package_info(third_parties, log=False)
-        dbHelper.bulk_insert_permission_info(perm_infos, log=False)
-        dbHelper.bulk_insert_link_info(link_urls, log=False)
         if load_success:
             logger.info("{} pid - {},{} analyzed from cached dx_obj - {} third party, {} perm, {} links"\
                     .format(os.getpid(), package_name, uuid,
@@ -112,16 +114,18 @@ def static_analysis(total_size, cache_all, log_q, apk_entry):
                 logger.info("{} out of {} analyzed".format(counter.value, total_size))
 
         # if specified or failed load, serialize a and d_s and store in NAS
-        if ((apk_entry.get("hasBeenTop", False) or cache_all) and not load_success):
-            dump_androguard_objs(apk_entry, a, d_s, dx)
+        if ((apk_entry.get("hasBeenTop", False) or cache_all) and
+                not load_success and not apk_entry.get("cacheFail", False)):
+            dump_androguard_objs(apk_entry, db_helper, a, d_s, dx)
 
     except Exception as e:
         logger.error("static_analysis: {} - {}".format(package_name, traceback.format_exc()))
-        return
+        return (package_name, uuid)
 
-    return (package_name, app_version)
+    return (package_name, uuid)
 
-def analyzer(apkList, process_no=constants.PROCESS_NO, cache_all=False):
+def analyzer(apkList, process_no=constants.PROCESS_NO,
+        cache_all=False, no_static=False, dry_run=False, plugins_only=False):
     """
     Runs the pipeline static analyses on uuid_list and uses dbhelper to insert
     results in the database
@@ -134,32 +138,90 @@ def analyzer(apkList, process_no=constants.PROCESS_NO, cache_all=False):
         shutil.rmtree(outputPath)
     os.makedirs(outputPath)
 
+    db_helper = DbHelper()
+
     # run static analysis part
-    global plugins
-    plugins = helpers.get_plugins("plugins/core/analyzer", load=True)
-    #chunksize = max(int(len(apkList) / process_no / 4), 1)
-    chunksize = 1
-    logger.info("analyzing {} apps in {} size chunks, cache_all set to {}"\
-            .format(len(apkList), chunksize, cache_all))
-    mgr = Manager()
-    log_q = mgr.Queue()
-    log_stop_e = mgr.Event()
-    log_thread = threading.Thread(target=logger_thread, args=(log_q, log_stop_e))
-    log_thread.start()
-    #static_analysis(len(apkList), cache_all, log_q, apkList[0])
-    #return
-    with ProcessPoolExecutor(process_no) as executor:
-        partial_static_analysis = partial(static_analysis, len(apkList), cache_all, log_q)
-        for res in executor.map(partial_static_analysis, apkList, chunksize=chunksize):
-            logger.info(res)
-            continue
-    logger.info("stopping log threader")
-    log_stop_e.set()
-    log_thread.join()
-    logger.info("APK static analysis complete")
+    if not no_static:
+        global plugins
+        plugins = helpers.get_plugins("plugins/core/analyzer", load=True)
+        #chunksize = max(int(len(apkList) / process_no / 4), 1)
+        chunksize = 1
+        opts_str = ("    - cache_all: {}\n"
+                "    - no_static: {}\n"
+                "    - dry_run: {}\n"
+                "    - plugins_only: {}").format(
+                        cache_all, no_static, dry_run, plugins_only)
+        logger.info("analyzing {} apps in {} size chunks, with options:\n{}"
+                .format(len(apkList), chunksize, opts_str))
+        logger.warning("BE WARY OF PROCESS_NO, READING CACHED FILES IS MEMORY INTENSIVE")
+        if not plugins_only:
+            db_helper.delete_entries([a["uuid"] for a in apkList])
+            logger.info("deleted old entries")
+
+        mgr = Manager()
+        log_q = mgr.Queue()
+        qh = logging.handlers.QueueHandler(log_q)
+        logger_original_handlers = logger.handlers
+        logger.handlers = []
+        logger.addHandler(qh)
+        log_stop_e = mgr.Event()
+        log_thread = threading.Thread(target=logger_thread, args=(log_q, log_stop_e))
+        log_thread.start()
+        while True:
+            restart = False
+            with Pool(process_no) as pool:
+                pids = [p.pid for p in pool._pool]
+                analyzed = set()
+                partial_static_analysis = partial(static_analysis, len(apkList),
+                        cache_all, dry_run, plugins_only)
+                for res in pool.imap_unordered(partial_static_analysis, apkList):
+                    continue
+                    analyzed.add(res[1]) # keep uuid
+                    for pid in pids:
+                        try:
+                            os.kill(pid, 0)
+                        except:
+                            logger.error("process {} in pool terminated".format(pid))
+                            time.sleep(60)
+                            apkList = [a for a in apkList if a["uuid"] not in analyzed]
+                            restart = True
+                            break
+                    if restart:
+                        break
+            if restart:
+                apkList = [a for a in apkList if a["uuid"] not in analyzed]
+                with counter.get_lock():
+                    counter.value = 0
+                logger.info("restarting with {} ({} less)...".format(len(apkList), len(analyzed)))
+                continue
+
+            logger.info("stopping log threader")
+            log_stop_e.set()
+            log_thread.join()
+            logger.handlers = logger_original_handlers
+            logger.info("APK static analysis complete")
+            break
+        """
+        try:
+            with ProcessPoolpool(process_no) as pool:
+                partial_static_analysis = partial(static_analysis, len(apkList),
+                        cache_all, dry_run, plugins_only, log_q)
+                for res in pool.map(partial_static_analysis, apkList, chunksize=chunksize):
+                    continue
+            logger.info("stopping log threader")
+            log_stop_e.set()
+            log_thread.join()
+            logger.info("APK static analysis complete")
+        except process.BrokenProcessPool:
+            logger.error("process in pool terminated - {}".format(traceback.format_exc()))
+            logger.info("stopping log threader")
+            log_stop_e.set()
+            log_thread.join()
+            logger.error("APK static analysis failed, running rating portion")
+        """
 
     # run rating part
-    updatedApkList = dbHelper.get_all_apps_to_grade()
+    updatedApkList = db_helper.get_all_apps_to_grade()
     updatedApkList = list(set(updatedApkList))
     updatedApkList = [list(u) for u in updatedApkList]
     logger.info(len(updatedApkList))
@@ -194,8 +256,8 @@ def analyzer(apkList, process_no=constants.PROCESS_NO, cache_all=False):
     """
 
     # mark apps as analyzed
-    uuids = [tup[0]["uuid"] for tup in apkList]
-    dbHelper.update_apk_info_field_many_uuids(
+    uuids = [a["uuid"] for a in apkList]
+    db_helper.update_apk_info_field_many_uuids(
             uuids, "analysesCompleted", True)
 
 # **************************************************************************** #
@@ -233,7 +295,7 @@ def check_androguard_files(apk_entry):
 
     return True
 
-def dump_androguard_objs(apk_entry, a, d_s, dx):
+def dump_androguard_objs(apk_entry, helper, a, d_s, dx):
     """
     Serializes, comrpesses and dumps the androguard objects to files using lzma
     """
@@ -248,20 +310,11 @@ def dump_androguard_objs(apk_entry, a, d_s, dx):
         logger.info("attempting dump for {},{}".format(package_name, uuid))
         with lzma.open(os.path.join(andro_path, "dx_obj"), "wb") as f:
             pickle.dump(dx, f)
-        """
-        with open(os.path.join(andro_path, "dx_obj"), "wb") as f:
-            logger.info("opened lzma for {},{}".format(package_name, uuid))
-            pickled = pickle.dumps(dx)
-            logger.info("pickled for {},{}".format(package_name, uuid))
-            compressed = lzma.compress(pickled)
-            logger.info("compressed for {},{}".format(package_name, uuid))
-            f.write(compressed)
-            logger.info("wrote to file for {},{}".format(package_name, uuid))
-        """
         logger.info("{},{} analysis obj stored in file".format(package_name, uuid))
     except Exception as e:
         # clean up after failed attempt
-        logger.info("{},{} storage attempt cleaned - {}".format(package_name, uuid, e))
+        logger.error("{},{} storage attempt cleaned - {}".format(package_name, uuid, e))
+        helper.update_apk_info_field_uuid(apk_entry["uuid"], "cacheFail", True)
         shutil.rmtree(andro_path)
 
 def load_androguard_objs(apk_entry):
@@ -316,8 +369,8 @@ def getUuidsFromDb():
     """
     Gets a list of APKs from database
     """
-    dbHelper = DbHelper()
-    app_list = dbHelper.get_all_apps_for_full_analysis()
+    db_helper = DbHelper()
+    app_list = db_helper.get_all_apps_for_full_analysis()
 
     apk_list = []
     for (name, uuid, top, vc) in app_list:
@@ -349,8 +402,9 @@ def benchmark_static_analysis(total_size, apk_entry):
     a, d_s, dx = androguard_analyze_apk(apk_entry)
     print("androguard analysis took {}".format(time.time() - start))
 
+    db_helper = DbHelper()
     start = time.time()
-    dump_androguard_objs(apk_entry, a, d_s, dx)
+    dump_androguard_objs(apk_entry, db_helper, a, d_s, dx)
     print("androguard object dumping took {}".format(time.time() - start))
 
     start = time.time()
@@ -358,15 +412,13 @@ def benchmark_static_analysis(total_size, apk_entry):
     print("androguard object loading took {}".format(time.time() - start))
 
     # do static analyses
-    dbHelper = DbHelper()
     tokens = namespaceanalyzer.NameSpaceMgr.GetTokensStatic (path, '/')
     category =  tokens[len (tokens) - 1]
     instance = namespaceanalyzer.NameSpaceMgr(queue=third_party_q)
-    packages = instance.execute(filename, appVersion, dbHelper, fileName,
-            category, a, dx)
-    permission.StaticAnalyzer(filename, appVersion, packages, dbHelper,
+    packages = instance.execute(filename, appVersion, db_helper, fileName, a, dx)
+    permission.StaticAnalyzer(filename, appVersion, packages, db_helper,
             fileName, a, dx, q=perm_info_q)
-    SearchIntents.Intents(filename, appVersion, packages, dbHelper, fileName,
+    SearchIntents.Intents(filename, appVersion, packages, db_helper, fileName,
             a, dx, q=link_info_q)
 
     print("third_party q - {}, perm q - {}, link q - {}"\
