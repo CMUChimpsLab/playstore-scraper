@@ -195,6 +195,18 @@ aae_parser.add_argument("-t", "--target",
 pap_parser = subparsers.add_parser("paper-analysis-pipeline", aliases=["pap"],
     help="static analysis of apps",
     description="Static analysis of apps for paper")
+pap_parser.add_argument("-s", "--skip-complete",
+    action="store_true",
+    help="true if want to skip any apps with cached or existing results")
+pap_parser.add_argument("-p", "--plugins-only",
+    action="store_true",
+    help="true if want to only run plugins portion")
+pap_parser.add_argument("--no-static",
+    action="store_true",
+    help="true if want to skip static analysis and just do rating portion")
+pap_parser.add_argument("-d", "--dry-run",
+    action="store_true",
+    help="true if want to just do dry run and not modify db")
 pap_parser.set_defaults(func=pipelines.paper_analysis_pipeline)
 
 # static analysis of apps not yet analyzed

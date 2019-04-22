@@ -22,21 +22,16 @@ pp = pprint.PrettyPrinter(indent=4)
 
 def third_party_checks():
     r = []
+    printed = False
     for p in static_db.thirdPartyPackages.find({}):
         if len(p["externalPackageName"]) > 1:
             r.append((p["packageName"],
                 p["filename"][:-4],
                 p["externalPackageName"],
                 p["category"]))
-        continue
-
-        try:
-            int(p["externalPackageName"])
-        except:
-            r.append((p["packageName"],
-                p["filename"][:-4],
-                p["externalPackageName"],
-                p["category"]))
+        elif not printed:
+            print(p)
+            printed = True
 
     print(len(r), r[0])
 
@@ -108,6 +103,114 @@ def apps_updated_sample(downloaded=False):
     print("got apps long diff in time, {}".format(len(app_long_time_diff)))
     pp.pprint(app_long_time_diff)
 
+def remove_duplicates(static_analysis_colls):
+    for c in static_analysis_colls:
+        entries = static_db[c].find()
+        unique_entries = defaultdict(list)
+        for e in entries:
+            e_id = e.pop("_id")
+            if c == "apkAnalyses":
+                unique_entries[tuple(e["uuid"])].append(e_id)
+            else:
+                unique_entries[tuple(e.values())].append(e_id)
+
+        cnt = 0
+        for e_k, e_v in unique_entries.items():
+            if len(e_v) > 1:
+                static_db[c].delete_many({"_id": {"$in": e_v[1:]}})
+                cnt += len(e_v[1:])
+        print("{} done, {} removed".format(c, cnt))
+
+def add_name_vc_uuid_filename(static_analysis_colls):
+    apk_infos = android_app_db.apkInfo.find({}, {"uuid": 1, "packageName": 1, "versionCode": 1})
+    uuid_map = dict([(a["uuid"], (a["packageName"], a["versionCode"])) for a in apk_infos])
+    print("built uuid map")
+    for c in static_analysis_colls:
+        entries = static_db[c].find(
+                {
+                    "$or": [
+                        {"packageName": {"$exists": False}},
+                        {"packageName": ""},
+                        {"versionCode": {"$exists": False}},
+                        {"versionCode": ""},
+                        {"versionCode": 0}],
+                },
+                {"uuid": 1, "filename": 1})
+        for e in entries:
+            if "uuid" not in e and "filename" not in e:
+                static_db[c].remove({"_id": e["_id"]})
+                continue
+            uuid = e["uuid"] if "uuid" in e else e["filename"][:-4]
+            static_db[c].update(
+                    {"_id": e["_id"]},
+                    {
+                        "$set": {
+                            "packageName": uuid_map[uuid][0],
+                            "uuid": uuid,
+                            "filename": uuid + ".apk",
+                            "versionCode": uuid_map[uuid][1],
+                        },
+                    })
+        print("{} done".format(c))
+
+def flip_third_party():
+    for p in static_db.thirdPartyPackages.find({}):
+        if len(p["externalPackageName"]) > 1:
+            static_db.thirdPartyPackages.update(
+                    {"_id": p["_id"]},
+                    {
+                        "$set": {
+                            "externalPackageName": p["category"],
+                            "category": p["externalPackageName"],
+                        },
+                    })
+
+def int_vc(static_analysis_colls):
+    for c in static_analysis_colls:
+        entries = static_db[c].find({"versionCode": {"$type": 2}}, {"versionCode": 1})
+        print("got {} for {}".format(entries.count(), c))
+        for e in entries:
+            if e["versionCode"] == "None":
+                static_db[c].update(
+                        {"_id": e["_id"]},
+                        {"$set": {"versionCode": None}})
+            elif type(e["versionCode"]) != int:
+                static_db[c].update(
+                        {"_id": e["_id"]},
+                        {"$set": {"versionCode": int(e["versionCode"])}})
+        print(c + " done")
+
+def add_uuids(static_analysis_colls):
+    for c in static_analysis_colls:
+        entries = static_db[c].find(
+                {"uuid": {"$exists": False}},
+                {"uuid": 1, "filename": 1})
+        for e in entries:
+            if "uuid" not in e and "filename" not in e:
+                static_db[c].remove({"_id": e["_id"]})
+                continue
+            uuid = e["uuid"] if "uuid" in e else e["filename"][:-4]
+            static_db[c].update(
+                    {"_id": e["_id"]},
+                    {
+                        "$set": {
+                            "uuid": uuid,
+                        },
+                    })
+        print("{} done".format(c))
+
+def scan_app_name():
+    entries = static_db.apkAnalyses.find(
+            {"scans_apps": {"$exists": True}},
+            {"scans_apps": 1})
+    for e in entries:
+        static_db.apkAnalyses.update(
+                {"_id": e["_id"]},
+                {
+                    "$set": {"scansApps": e["scans_apps"]},
+                    "$unset": {"scans_apps": ""},
+                })
+
 if __name__ == "__main__":
     dh = MongoClient(host=constants.DB_HOST,
         port=constants.DB_PORT,
@@ -118,6 +221,7 @@ if __name__ == "__main__":
     static_db = dh[constants.STATIC_ANALYSIS_DB]
     dbhelper = DbHelper()
 
-    apps_updated_sample()
-    #apps_updated_sample(downloaded=True)
-    #third_party_categories()
+    static_analysis_colls = ["thirdPartyPackages", "permissionList", "linkUrl", "apkAnalyses"]
+    static_analysis_colls = ["linkUrl"]
+    scan_app_name()
+

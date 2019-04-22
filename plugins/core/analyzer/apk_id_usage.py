@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     level=logging.INFO)
 
-def analyze(uuid, a, d_s, dx, db_helper):
+def analyze(app_entry, a, d_s, dx, db_helper):
     """
     Checks what IDs are used and how
     """
@@ -113,7 +113,6 @@ def analyze(uuid, a, d_s, dx, db_helper):
                         if src is None:
                             continue
                     except TypeError:
-                        logger.error("{} bad source, skip".format(m.method.name))
                         continue
 
                     for l in src.split("\n"):
@@ -122,7 +121,14 @@ def analyze(uuid, a, d_s, dx, db_helper):
                             use_results["androidID"]["standard"] = True
                             break
 
-    db_helper.update_apk_analyses_field(uuid, {"idUsage": use_results})
+    db_helper.update_apk_analyses_field(app_entry["uuid"],
+            {
+                "packageName": app_entry["packageName"],
+                "uuid": app_entry["uuid"],
+                "filename": app_entry["uuid"] + ".apk",
+                "versionCode": app_entry["versionCode"],
+                "idUsage": use_results,
+            })
 
 def test_wrap(apk_obj):
     a, d_list, dx = androguard_analyze_apk((apk_obj.package_name, apk_obj.uuid))
