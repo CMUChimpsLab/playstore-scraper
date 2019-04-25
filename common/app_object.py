@@ -42,15 +42,17 @@ class App:
         self.developerWebsite = developerWebsite
         self.numDownloads = numDownloads
         self.versionString = versionString
-        self.hasBeenTop = False
-        self.isDownloaded = False
         self.isFree = isFree
-        self.isSizeExceed = False
-        self.privacyPolicyCrawled = False
-        self.removed = False
         self.dateDownloaded = dateDownloaded
         self.dateLastScraped = dateLastScraped
         self.analysesCompleted = analysesCompleted
+        self.hasBeenTop = False
+        self.isDownloaded = False
+        self.isSizeExceed = False
+        self.privacyPolicyCrawled = False
+        self.removed = False
+        self.cacheFail = False
+        self.analysisFail = False
 
     def __setattr__(self, name, value):
         if name in self.__dict__['constants']:

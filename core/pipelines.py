@@ -181,13 +181,17 @@ def paper_analysis_pipeline(args):
         fields = ["packageName", "uuid", "uploadDate", "category", "hasBeenTop",
                 "versionCode", "cacheFail"]
         app_list = helper.get_app_info_fields(
-            query={"dateDownloaded": {"$ne": None}},
+            query={
+                "dateDownloaded": {"$ne": None},
+                "$or": [{"analysisFail": False}, {"analysisFail": {"$exists": False}}],
+            },
             fields=dict([(f, 1) for f in fields]))
         if args.skip_complete:
-            defaults = ["", "", None, "", False, 0]
-            app_list = helper.get_all_apps_for_full_analysis(
+            defaults = ["", "", None, "", False, 0, False]
+            app_list = helper.get_all_apps_for_plugin_analysis(
                     app_infos=(fields, defaults, app_list), return_dict=True)
             logger.info("filtered out done apps")
+            print(len(app_list))
 
         app_versions = defaultdict(list)
         for app in app_list:

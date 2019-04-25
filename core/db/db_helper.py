@@ -244,6 +244,61 @@ class DbHelper:
         else:
             return [uuid_map[u] for u in unanalyzed_entries]
 
+    def get_all_apps_for_plugin_analysis(self, app_infos=None, return_dict=False):
+        """
+        Finds the uuids for all of the apps we have yet to analyze based on
+        apkAnalyses/plugins.
+        Perhaps add functionality for specific analyses later
+        """
+        if app_infos is None:
+            app_infos = self.__apk_info.find(
+                {
+                    "$and": [
+                        {"$or": [
+                            {"analysesCompleted": None},
+                            {"analysesCompleted": False}
+                        ]},
+                        {"dateDownloaded": {"$ne": None}},
+                    ],
+                },
+                {
+                    "_id": 0,
+                    "uuid": 1,
+                    "packageName": 1,
+                    "versionCode": 1,
+                    "hasBeenTop": 1,
+                })
+            info_keys = ["uuid", "packageName", "versionCode", "hasBeenTop"]
+            defaults = ["", "", 0, False]
+        elif len(app_infos) < 3:
+            logger.error("app_infos must be tuple of keys, defaults and apps")
+            return
+        else:
+            info_keys = app_infos[0]
+            defaults = app_infos[1]
+            app_infos = app_infos[2]
+            if len(info_keys) != len(defaults):
+                logger.error("info_keys and defaults not 1 to 1 ({} info_keys and {} defaults)"\
+                    .format(len(info_keys), len(defaults)))
+                return
+
+        # use apk_analyses as marker for any apps with analysis that was interrupted
+        uuid_map = dict()
+        for a in app_infos:
+            e = []
+            for i in range(0, len(info_keys)):
+                e.append(a.get(info_keys[i], defaults[i]))
+            uuid_map[a["uuid"]] = e
+        info_entries = set(list(uuid_map.keys()))
+        apk_analyses = self.__apk_analyses.find({}, {"uuid": 1})
+        apk_analyses_entries = set([a["uuid"] for a in apk_analyses])
+
+        unanalyzed_entries = info_entries - apk_analyses_entries
+        if return_dict:
+            return [dict(zip(info_keys, uuid_map[u])) for u in unanalyzed_entries]
+        else:
+            return [uuid_map[u] for u in unanalyzed_entries]
+
     def get_all_apps_to_grade(self):
         """
         Finds uuids for apps that need to be graded based on apps that have

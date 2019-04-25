@@ -28,6 +28,7 @@ networkx = ">=1.11"
 pydot = ">=1.4.1"
 ipython = ">=5.0.0"
 eventlet = "*"
+psutil = "*"
 
 [dev-packages]
 

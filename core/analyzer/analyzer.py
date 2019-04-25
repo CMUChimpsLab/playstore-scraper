@@ -2,6 +2,7 @@ import logging
 import datetime
 import os
 from multiprocessing import Pool, Value, Manager
+import multiprocessing
 #from concurrent.futures import ProcessPoolExecutor, process
 import threading
 import queue
@@ -13,7 +14,7 @@ import lzma
 import bz2
 import traceback
 from lxml import etree
-import signal
+import psutil
 try:
     import cPickle as pickle
 except:
@@ -79,10 +80,8 @@ def static_analysis(total_size, cache_all, dry_run, plugins_only, apk_entry):
         link_urls = []
         if not plugins_only:
             tokens = namespaceanalyzer.NameSpaceMgr.GetTokensStatic(path, '/')
-            category =  tokens[len (tokens) - 1]
             instance = namespaceanalyzer.NameSpaceMgr(queue=third_parties)
-            packages = instance.execute(filename, app_version, db_helper, fileName,
-                    category, a, dx)
+            packages = instance.execute(filename, app_version, db_helper, fileName, a, dx)
             permission.StaticAnalyzer(filename, app_version, packages, db_helper,
                     fileName, a, dx, q=perm_infos)
             SearchIntents.Intents(filename, app_version, packages, db_helper, fileName,
@@ -101,11 +100,11 @@ def static_analysis(total_size, cache_all, dry_run, plugins_only, apk_entry):
                 plugin_res = p.analyze(apk_entry, a, None, dx, db_helper)
 
         if load_success:
-            logger.info("{} pid - {},{} analyzed from cached dx_obj - {} third party, {} perm, {} links"\
+            logger.info("{},{} analyzed from cached dx_obj - {} third party, {} perm, {} links"\
                     .format(os.getpid(), package_name, uuid,
                         len(third_parties), len(perm_infos), len(link_urls)))
         else:
-            logger.info("{} pid - {},{} analyzed from APK - {} third party, {} perm, {} links"\
+            logger.info("{},{} analyzed from APK - {} third party, {} perm, {} links"\
                     .format(os.getpid(), package_name, uuid,
                         len(third_parties), len(perm_infos), len(link_urls)))
         with counter.get_lock():
@@ -119,7 +118,9 @@ def static_analysis(total_size, cache_all, dry_run, plugins_only, apk_entry):
             dump_androguard_objs(apk_entry, db_helper, a, d_s, dx)
 
     except Exception as e:
-        logger.error("static_analysis: {} - {}".format(package_name, traceback.format_exc()))
+        logger.error("static_analysis: {},{} - {}".format(package_name, uuid,
+            traceback.format_exc()))
+        db_helper.update_apk_info_field_uuid(apk_entry["uuid"], "analysisFail", True)
         return (package_name, uuid)
 
     return (package_name, uuid)
@@ -151,13 +152,12 @@ def analyzer(apkList, process_no=constants.PROCESS_NO,
                 "    - dry_run: {}\n"
                 "    - plugins_only: {}").format(
                         cache_all, no_static, dry_run, plugins_only)
-        logger.info("analyzing {} apps in {} size chunks, with options:\n{}"
-                .format(len(apkList), chunksize, opts_str))
         logger.warning("BE WARY OF PROCESS_NO, READING CACHED FILES IS MEMORY INTENSIVE")
         if not plugins_only:
             db_helper.delete_entries([a["uuid"] for a in apkList])
             logger.info("deleted old entries")
 
+        """
         mgr = Manager()
         log_q = mgr.Queue()
         qh = logging.handlers.QueueHandler(log_q)
@@ -167,32 +167,49 @@ def analyzer(apkList, process_no=constants.PROCESS_NO,
         log_stop_e = mgr.Event()
         log_thread = threading.Thread(target=logger_thread, args=(log_q, log_stop_e))
         log_thread.start()
+        """
+        restart_timeout_only = False
         while True:
+            logger.info("analyzing {} apps in {} size chunks, with options:\n{}"
+                    .format(len(apkList), chunksize, opts_str))
             restart = False
             with Pool(process_no) as pool:
-                pids = [p.pid for p in pool._pool]
                 analyzed = set()
                 partial_static_analysis = partial(static_analysis, len(apkList),
                         cache_all, dry_run, plugins_only)
-                for res in pool.imap_unordered(partial_static_analysis, apkList):
-                    continue
-                    analyzed.add(res[1]) # keep uuid
-                    for pid in pids:
-                        try:
-                            os.kill(pid, 0)
-                        except:
-                            logger.error("process {} in pool terminated".format(pid))
-                            time.sleep(60)
+                res_iter = pool.imap_unordered(partial_static_analysis, apkList)
+                while True:
+                    try:
+                        res = res_iter.next(10 * 60)
+                        analyzed.add(res[1]) # keep uuid
+                        alive = 0
+                        for p in pool._pool:
+                            if psutil.Process(p.pid).status() == psutil.STATUS_RUNNING:
+                                alive += 1
+                        if not restart_timeout_only and alive <= int(process_no/4):
                             apkList = [a for a in apkList if a["uuid"] not in analyzed]
+                            if process_no >= len(apkList):
+                                process_no = min(process_no, len(apkList))
+                                restart_timeout_only = True
+                            with counter.get_lock():
+                                counter.value = 0
                             restart = True
+                            logger.info("{} only alive, restarting with {} ({} less)..."\
+                                .format(alive, len(apkList), len(analyzed)))
                             break
-                    if restart:
+                    except multiprocessing.TimeoutError:
+                        apkList = [a for a in apkList if a["uuid"] not in analyzed]
+                        if process_no >= len(apkList):
+                            process_no = min(process_no, len(apkList))
+                        with counter.get_lock():
+                            counter.value = 0
+                        restart = True
+                        logger.info("restarting with {} ({} less)..."\
+                            .format(len(apkList), len(analyzed)))
+                        break
+                    except StopIteration:
                         break
             if restart:
-                apkList = [a for a in apkList if a["uuid"] not in analyzed]
-                with counter.get_lock():
-                    counter.value = 0
-                logger.info("restarting with {} ({} less)...".format(len(apkList), len(analyzed)))
                 continue
 
             logger.info("stopping log threader")
@@ -201,24 +218,6 @@ def analyzer(apkList, process_no=constants.PROCESS_NO,
             logger.handlers = logger_original_handlers
             logger.info("APK static analysis complete")
             break
-        """
-        try:
-            with ProcessPoolpool(process_no) as pool:
-                partial_static_analysis = partial(static_analysis, len(apkList),
-                        cache_all, dry_run, plugins_only, log_q)
-                for res in pool.map(partial_static_analysis, apkList, chunksize=chunksize):
-                    continue
-            logger.info("stopping log threader")
-            log_stop_e.set()
-            log_thread.join()
-            logger.info("APK static analysis complete")
-        except process.BrokenProcessPool:
-            logger.error("process in pool terminated - {}".format(traceback.format_exc()))
-            logger.info("stopping log threader")
-            log_stop_e.set()
-            log_thread.join()
-            logger.error("APK static analysis failed, running rating portion")
-        """
 
     # run rating part
     updatedApkList = db_helper.get_all_apps_to_grade()
