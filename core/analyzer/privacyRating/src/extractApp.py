@@ -1,13 +1,21 @@
+import logging
 import sys
 import os
 import datetime
 
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 from rateApp import calculateRateforOneApp, transRateToLevel, generateHistData, getLevel
-from common.constants import DB_HOST, DB_ROOT_USER, DB_ROOT_PASS
+import common.constants as constants
 from pymongo import MongoClient
 
-client = MongoClient(DB_HOST, 27017)
+logger = logging.getLogger(__name__)
+logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                    level=logging.INFO)
+
+client = MongoClient(host=constants.DB_HOST,
+            port=constants.DB_PORT,
+            username=constants.DB_ROOT_USER,
+            password=constants.DB_ROOT_PASS)
 dbAndroidApp = client["androidAppDB"]
 dbPrivacyGrading = client["privacyGradingDB"]
 dbStaticAnalysis = client["staticAnalysisDB"]
@@ -20,11 +28,7 @@ def extractPackagePair(updatedApkList, reposPath):
     }
     cnt = 0
     for (package_name, version_code, uuid) in updatedApkList:
-        cnt += 1
-        # print(cnt, package_name, version_code, "extract")
-
-        #make sure permission in apkInfo is the version analyzed. Do not update apkInfo before extractApp.py run
-
+        # make sure permission in apkInfo is the version analyzed
         apkInfoEntry = dbAndroidApp.apkInfo.find_one(
                 {"uuid": uuid},
                 {
@@ -33,7 +37,7 @@ def extractPackagePair(updatedApkList, reposPath):
                     "dateLastScraped": 1
                 })
         if apkInfoEntry is None:
-            print("COULDN'T FIND", package_name, version_code)
+            logger.error("COULDN'T FIND {},{} in apkInfo".format(package_name, version_code))
             continue
 
         # compatability with date_last_scraped
@@ -105,6 +109,10 @@ def extractPackagePair(updatedApkList, reposPath):
             },
             packagePairEntry,
             upsert=True)
+
+        cnt += 1
+        if cnt % constants.RESULT_CHUNK == 0:
+            logger.info("extractApp - {}/{} done".format(cnt, len(updatedApkList)))
 
 
 if __name__ == "__main__":

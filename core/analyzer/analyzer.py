@@ -212,10 +212,12 @@ def analyzer(apkList, process_no=constants.PROCESS_NO,
             if restart:
                 continue
 
+            """
             logger.info("stopping log threader")
             log_stop_e.set()
             log_thread.join()
             logger.handlers = logger_original_handlers
+            """
             logger.info("APK static analysis complete")
             break
 
@@ -223,7 +225,7 @@ def analyzer(apkList, process_no=constants.PROCESS_NO,
     updatedApkList = db_helper.get_all_apps_to_grade()
     updatedApkList = list(set(updatedApkList))
     updatedApkList = [list(u) for u in updatedApkList]
-    logger.info(len(updatedApkList))
+    logger.info("running PrivacyGrade steps for {} apps".format(len(updatedApkList)))
 
     extractApp.extractPackagePair(updatedApkList,
         os.path.dirname(os.path.realpath(__file__)))
