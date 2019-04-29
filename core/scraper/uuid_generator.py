@@ -1,6 +1,5 @@
 import uuid
 
-
 def generate_uuids(count):
     uuids = []
     for i in range(count):
