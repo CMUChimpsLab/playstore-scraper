@@ -108,8 +108,8 @@ class Intents:
         analyses = dx.vms
         for full in x:
             s,_ = full
-            string = s.get_info()
-            if self.is_possible_endpoint(string, []):
+            link = s.get_info()
+            if self.is_possible_endpoint(link, []):
                 paths = s.get_paths()
                 for path in paths:
                     m_idx = path[1]
@@ -136,7 +136,6 @@ class Intents:
                         dst = method[0]
 
                     if pkg_name_re.search(method[0]) != None:
-                        _, link = full
                         if ('.png' in link)  or ('127.0.0.1' in link) or ('www.w3.org' in link):
                             continue
                         if len(link) > 250 :

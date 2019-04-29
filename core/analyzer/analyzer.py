@@ -227,8 +227,9 @@ def analyzer(apkList, process_no=constants.PROCESS_NO,
     updatedApkList = [list(u) for u in updatedApkList]
     logger.info("running PrivacyGrade steps for {} apps".format(len(updatedApkList)))
 
-    extractApp.extractPackagePair(updatedApkList,
-        os.path.dirname(os.path.realpath(__file__)))
+    extractApp.extract_package_pair(updatedApkList,
+        os.path.dirname(os.path.realpath(__file__)),
+        process_no=process_no)
     logger.info("extractApp.extractPackagePair done")
     rateApp.transRateToLevel()
     logger.info("rateApp.transRateToLevel done")
