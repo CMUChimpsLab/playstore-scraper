@@ -50,14 +50,18 @@ class Intents:
         return "NA"
 
     def is_possible_endpoint(self, test_str, class_names):
-        if test_str.startswith("http://") or test_str.startswith("https://"):
-            return True
-        else:
-            for ext in extensions:
-                if test_str.endswith(ext) and test_str != ext:
-                    return True
-
+        if (test_str.startswith("http://") and
+                (test_str == "http://" or not test_str[len("http://")].isalnum())):
             return False
+        elif (test_str.startswith("https://") and
+                (test_str == "https://" or not test_str[len("https://")].isalnum())):
+            return False
+
+        for ext in extensions:
+            if test_str.endswith(ext) and test_str != ext:
+                return True
+
+        return False
 
     def make_db_doc(self, packageName, versioncode, filename, link_url,
                         is_external, triggered_by_code, externalPackageName):
