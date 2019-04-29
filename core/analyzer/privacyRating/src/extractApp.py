@@ -14,24 +14,19 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     level=logging.INFO)
 
-client = MongoClient(host=constants.DB_HOST,
-            port=constants.DB_PORT,
-            username=constants.DB_ROOT_USER,
-            password=constants.DB_ROOT_PASS)
-dbAndroidApp = client["androidAppDB"]
-dbPrivacyGrading = client["privacyGradingDB"]
-dbStaticAnalysis = client["staticAnalysisDB"]
+def extract_worker(labeledPackageDict, reposPath, apkInfoEntry):
+    client = MongoClient(host=constants.DB_HOST,
+                port=constants.DB_PORT,
+                username=constants.DB_ROOT_USER,
+                password=constants.DB_ROOT_PASS)
+    dbAndroidApp = client["androidAppDB"]
+    dbPrivacyGrading = client["privacyGradingDB"]
+    dbStaticAnalysis = client["staticAnalysisDB"]
 
-def extract_worker(labeledPackageDict, entry):
-    package_name, version_code, uuid = entry
+    package_name = apkInfoEntry["packageName"]
+    version_code = apkInfoEntry["versionCode"]
+    uuid = apkInfoEntry["uuid"]
     # make sure permission in apkInfo is the version analyzed
-    apkInfoEntry = dbAndroidApp.apkInfo.find_one(
-            {"uuid": uuid},
-            {
-                "permissions": 1,
-                "updatedTimestamp": 1,
-                "dateLastScraped": 1
-            })
     if apkInfoEntry is None:
         logger.error("COULDN'T FIND {},{} in apkInfo".format(package_name, version_code))
         return None
@@ -103,17 +98,41 @@ def extract_worker(labeledPackageDict, entry):
 
 #this is used to build packagePair table
 def extract_package_pair(updatedApkList, reposPath, process_no=constants.PROCESS_NO):
+    client = MongoClient(host=constants.DB_HOST,
+                port=constants.DB_PORT,
+                username=constants.DB_ROOT_USER,
+                password=constants.DB_ROOT_PASS)
+    dbAndroidApp = client["androidAppDB"]
+    dbPrivacyGrading = client["privacyGradingDB"]
+    dbStaticAnalysis = client["staticAnalysisDB"]
+
     labeledPackageDict = {}
     for entry in dbPrivacyGrading.labeled3rdParty.find({}, {'externalPack':1, 'apiType':1}):
-        labeledPackageDict[entry['externalPack']] = entry['apiType'] 
+        labeledPackageDict[entry['externalPack']] = entry['apiType']
+    logger.info("built labeledPackageDict from labeled3rdParty entries from apkInfo")
+
+    # get all apkInfo entries first
+    uuids = [tup[2] for tup in updatedApkList]
+    apk_info_entries = list(dbAndroidApp.apkInfo.find(
+            {"uuid": {"$in": uuids}},
+            {
+                "packageName": 1,
+                "versionCode": 1,
+                "uuid": 1,
+                "permissions": 1,
+                "updatedTimestamp": 1,
+                "dateLastScraped": 1
+            }))
+    logger.info("got {} entries from apkInfo".format(len(apk_info_entries)))
 
     cnt = 0
     with Pool(process_no) as pool:
-        res_iter = pool.imap_unordered(partial(extract_worker, labeledPackageDict), updatedApkList)
+        res_iter = pool.imap_unordered(partial(extract_worker, labeledPackageDict, reposPath),
+                apk_info_entries)
         for e in res_iter:
             if e is None:
                 continue
-                
+
             dbPrivacyGrading.packagePair.update(
                 {
                     "packageName": e["packageName"],
@@ -124,7 +143,7 @@ def extract_package_pair(updatedApkList, reposPath, process_no=constants.PROCESS
                 upsert=True)
 
             cnt += 1
-            if cnt % constants.RESULT_CHUNK == 0:
+            if cnt % constants.BULK_CHUNK == 0:
                 logger.info("extractApp - {}/{} done".format(cnt, len(updatedApkList)))
 
 if __name__ == "__main__":
