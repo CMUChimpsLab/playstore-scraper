@@ -30,8 +30,8 @@ the plugins picked up would be `a` and `b`.
 ### `analyzer` directory
 Because of the expensive nature of the analysis done for each APK, plugins in 
 the `analyzer` directory can also export another function 
-`analyze(uuid, a, d_s, dx, db_helper)`, which takes an app uuid, an Androguard 
-`APK` instance, a list of Androguard `DalivkVMFormat` instances, an 
+`analyze(apk_entry, a, d_s, dx, db_helper)`, which takes an app entry, an 
+Androguard `APK` instance, a list of Androguard `DalivkVMFormat` instances, an 
 Androguard `Analysis` instance, and a `DbHelper` instance
 
 ## development

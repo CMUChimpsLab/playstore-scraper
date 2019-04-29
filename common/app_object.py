@@ -10,7 +10,7 @@ class App:
                  title=None, developerName=None, installationSize=None,
                  containsAds=None, category=None, contentRating=None,
                  userRating=None, permissions=None, dateDownloaded=None,
-                 dateLastScraped=None, analysesCompleted=None,
+                 dateLastScraped=None, analysesCompleted=False,
                  descriptionHtml=None, appType=None, developerEmail=None,
                  fileObj=None, uploadDate=None, recentChangesHtml=None,
                  majorVersionNumber=None, developerWebsite=None,

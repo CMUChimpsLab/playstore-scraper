@@ -194,10 +194,7 @@ class DbHelper:
             app_infos = self.__apk_info.find(
                 {
                     "$and": [
-                        {"$or": [
-                            {"analysesCompleted": None},
-                            {"analysesCompleted": False}
-                        ]},
+                        {"analysesCompleted": False},
                         {"dateDownloaded": {"$ne": None}},
                     ],
                 },
@@ -254,10 +251,7 @@ class DbHelper:
             app_infos = self.__apk_info.find(
                 {
                     "$and": [
-                        {"$or": [
-                            {"analysesCompleted": None},
-                            {"analysesCompleted": False}
-                        ]},
+                        {"analysesCompleted": False},
                         {"dateDownloaded": {"$ne": None}},
                     ],
                 },
@@ -331,9 +325,7 @@ class DbHelper:
         # Still needs sorting
         cursor = self.__apk_info \
             .find(
-                {
-                    "$or": [{"removed": False}, {"removed": {"$exists": False}}],
-                },
+                {"removed": False},
                 {
                     "packageName": 1,
                     '_id': 0,
