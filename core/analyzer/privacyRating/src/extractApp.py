@@ -3,7 +3,9 @@ import sys
 import os
 import datetime
 from functools import partial
-from multiprocessing import Pool
+from multiprocessing import Pool, Manager
+import threading
+import queue
 
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 from rateApp import calculateRateforOneApp, transRateToLevel, generateHistData, getLevel
@@ -14,7 +16,15 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     level=logging.INFO)
 
-def extract_worker(labeledPackageDict, reposPath, apkInfoEntry):
+def extract_worker(labeledPackageDict, reposPath, log_q, entry):
+    logger = logging.getLogger(__name__)
+    logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                        level=logging.INFO)
+    qh = logging.handlers.QueueHandler(log_q)
+    logger_original_handlers = logger.handlers
+    logger.handlers = []
+    logger.addHandler(qh)
+
     client = MongoClient(host=constants.DB_HOST,
                 port=constants.DB_PORT,
                 username=constants.DB_ROOT_USER,
@@ -23,6 +33,8 @@ def extract_worker(labeledPackageDict, reposPath, apkInfoEntry):
     dbPrivacyGrading = client["privacyGradingDB"]
     dbStaticAnalysis = client["staticAnalysisDB"]
 
+    apkInfoEntry = entry[0]
+    perm_list_entries = entry[1]
     package_name = apkInfoEntry["packageName"]
     version_code = apkInfoEntry["versionCode"]
     uuid = apkInfoEntry["uuid"]
@@ -48,7 +60,6 @@ def extract_worker(labeledPackageDict, reposPath, apkInfoEntry):
     # list of permission analyzed by androguard, stored in packagePair table
     # externalPackage may not in labeledPackageDict and can be "NA"
     permissionExternalPackageDict = {}
-    perm_list_entries = dbStaticAnalysis.permissionList.find({"uuid": uuid})
     for entry in perm_list_entries:
         #if permission analyzed is not in manifest, do not add to permissionlist in packagePair
         #Note: this can be removed if all permission in permissionList are from manifest
@@ -113,7 +124,7 @@ def extract_package_pair(updatedApkList, reposPath, process_no=constants.PROCESS
 
     # get all apkInfo entries first
     uuids = [tup[2] for tup in updatedApkList]
-    apk_info_entries = list(dbAndroidApp.apkInfo.find(
+    apk_info_entries = dbAndroidApp.apkInfo.find(
             {"uuid": {"$in": uuids}},
             {
                 "packageName": 1,
@@ -122,29 +133,56 @@ def extract_package_pair(updatedApkList, reposPath, process_no=constants.PROCESS
                 "permissions": 1,
                 "updatedTimestamp": 1,
                 "dateLastScraped": 1
-            }))
-    logger.info("got {} entries from apkInfo".format(len(apk_info_entries)))
+            })
+    logger.info("got {} entries from apkInfo".format(apk_info_entries.count()))
+    info_perm_dict = dict([(e["uuid"], [e, []]) for e in apk_info_entries])
 
+    # join with permissions from permissionList
+    perm_list_entries = dbStaticAnalysis.permissionList.find({"uuid": {"$in": uuids}})
+    logger.info("got {} entries from permissionList".format(perm_list_entries.count()))
+    for p in perm_list_entries:
+        info_perm_dict[p["uuid"]][1].append(p)
+    logger.info("joined entries from apkInfo with permissionList")
+
+    mgr = Manager()
+    log_q = mgr.Queue()
+    log_stop_e = mgr.Event()
+    log_thread = threading.Thread(target=logger_thread, args=(log_q, log_stop_e))
+    log_thread.start()
     cnt = 0
     with Pool(process_no) as pool:
-        res_iter = pool.imap_unordered(partial(extract_worker, labeledPackageDict, reposPath),
-                apk_info_entries)
+        partial_fn = partial(extract_worker, labeledPackageDict, reposPath, log_q)
+        res_iter = pool.imap_unordered(partial_fn,
+            list(info_perm_dict.values()),
+            chunksize=constants.BULK_CHUNK)
+        package_pairs = []
         for e in res_iter:
             if e is None:
                 continue
-
-            dbPrivacyGrading.packagePair.update(
-                {
-                    "packageName": e["packageName"],
-                    "versionCode": e["versionCode"],
-                    "uuid": e["uuid"],
-                },
-                e,
-                upsert=True)
-
+            package_pairs.append(e)
             cnt += 1
             if cnt % constants.BULK_CHUNK == 0:
                 logger.info("extractApp - {}/{} done".format(cnt, len(updatedApkList)))
+
+    logger.info("inserting package pairs...")
+    dbPrivacyGrading.packagePair.insert_many(package_pairs)
+    logger.info("stopping log threader")
+    log_stop_e.set()
+    log_thread.join()
+
+# **************************************************************************** #
+# helpers
+# **************************************************************************** #
+def logger_thread(q, stop_e):
+    logger = logging.getLogger(__name__)
+    logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                        level=logging.INFO)
+    while not stop_e.is_set():
+        try:
+            record = q.get(block=True, timeout=60)
+            logger.handle(record)
+        except queue.Empty:
+            continue
 
 if __name__ == "__main__":
     print("MAIN MODULE ACCESS DEPRECATED FOR NOW, use through analyzer.py")
