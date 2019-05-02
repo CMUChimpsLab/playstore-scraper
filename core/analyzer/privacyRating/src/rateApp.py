@@ -4,9 +4,12 @@ import random
 import pandas as pd
 from pymongo import MongoClient
 
-from common.constants import DB_HOST, DB_ROOT_USER, DB_ROOT_PASS
+import common.constants as constants
 
-client = MongoClient(DB_HOST, 27017)
+client = MongoClient(host=constants.DB_HOST,
+    port=constants.DB_PORT,
+    username=constants.DB_ROOT_USER,
+    password=constants.DB_ROOT_PASS)
 db = client["privacyGradingDB"]
 
 #calculate Rate for one entry each time; also return negativePermissioniPurposeDict

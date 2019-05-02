@@ -39,6 +39,9 @@ class DbHelper:
         self.__third_party_packages = self.__static_analysis_db.thirdPartyPackages
         self.__apk_analyses = self.__static_analysis_db.apkAnalyses
 
+        self.__privacy_grading_db = self.__client[constants.PRIVACY_GRADING_DB]
+        self.__package_pair = self.__privacy_grading_db.packagePair
+
         # queues of inserts for insert functions used in analysis
         self.third_party_queue = []
         self.perm_info_queue = []
@@ -509,9 +512,9 @@ class DbHelper:
         names = [{'_id': i} for i in names if len(i) > 0]
         self.__package_names.insert(names)
 
-    def delete_entries(self, uuids):
+    def delete_static_entries(self, uuids):
         """
-        Deletes a database entry for anything related to static analysis
+        Deletes database entries for anything related to static analysis
         """
         res = self.__static_analysis_db.linkUrl.delete_many({"uuid": {"$in": uuids}})
         logger.info("linkUrl - removed {}".format(res.deleted_count))
@@ -521,6 +524,13 @@ class DbHelper:
         logger.info("thirdPartyPackages - removed {}".format(res.deleted_count))
         self.__apk_info.update_many({"uuid": {"$in": uuids}},
             {"$set": {"analysesCompleted": False}})
+
+    def delete_package_pair_entries(self, uuids):
+        """
+        Deletes database entries for entries in packagePair
+        """
+        res = self.__package_pair.delete_many({"uuid": {"$in": uuids}})
+        logger.info("packagePair - removed {}".format(res.deleted_count))
 
     def delete_metadata_entry(self, package_name):
         """

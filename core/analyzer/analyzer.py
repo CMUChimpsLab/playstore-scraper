@@ -49,11 +49,17 @@ logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
 counter = Value("i", 0)
 plugins = []
 
-def static_analysis(total_size, cache_all, dry_run, plugins_only, apk_entry):
+def static_analysis(total_size, cache_all, dry_run, plugins_only, log_q, apk_entry):
     global counter
     global plugins
-    global logger
     sys.setrecursionlimit(60000) # number found to not cause segfault
+    logger = logging.getLogger(__name__)
+    logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                        level=logging.INFO)
+    qh = logging.handlers.QueueHandler(log_q)
+    logger_original_handlers = logger.handlers
+    logger.handlers = []
+    logger.addHandler(qh)
 
     db_helper = DbHelper()
     result_tups = []
@@ -154,20 +160,14 @@ def analyzer(apkList, process_no=constants.PROCESS_NO,
                         cache_all, no_static, dry_run, plugins_only)
         logger.warning("BE WARY OF PROCESS_NO, READING CACHED FILES IS MEMORY INTENSIVE")
         if not plugins_only:
-            db_helper.delete_entries([a["uuid"] for a in apkList])
+            db_helper.delete_static_entries([a["uuid"] for a in apkList])
             logger.info("deleted old entries")
 
-        """
         mgr = Manager()
         log_q = mgr.Queue()
-        qh = logging.handlers.QueueHandler(log_q)
-        logger_original_handlers = logger.handlers
-        logger.handlers = []
-        logger.addHandler(qh)
         log_stop_e = mgr.Event()
         log_thread = threading.Thread(target=logger_thread, args=(log_q, log_stop_e))
         log_thread.start()
-        """
         restart_timeout_only = False
         while True:
             logger.info("analyzing {} apps in {} size chunks, with options:\n{}"
@@ -176,7 +176,7 @@ def analyzer(apkList, process_no=constants.PROCESS_NO,
             with Pool(process_no) as pool:
                 analyzed = set()
                 partial_static_analysis = partial(static_analysis, len(apkList),
-                        cache_all, dry_run, plugins_only)
+                        cache_all, dry_run, plugins_only, log_q)
                 res_iter = pool.imap_unordered(partial_static_analysis, apkList)
                 while True:
                     try:
@@ -212,12 +212,9 @@ def analyzer(apkList, process_no=constants.PROCESS_NO,
             if restart:
                 continue
 
-            """
             logger.info("stopping log threader")
             log_stop_e.set()
             log_thread.join()
-            logger.handlers = logger_original_handlers
-            """
             logger.info("APK static analysis complete")
             break
 
@@ -225,12 +222,14 @@ def analyzer(apkList, process_no=constants.PROCESS_NO,
     updatedApkList = db_helper.get_all_apps_to_grade()
     updatedApkList = list(set(updatedApkList))
     updatedApkList = [list(u) for u in updatedApkList]
+    db_helper.delete_package_pair_entries([t[2] for t in updatedApkList])
     logger.info("running PrivacyGrade steps for {} apps".format(len(updatedApkList)))
 
     extractApp.extract_package_pair(updatedApkList,
         os.path.dirname(os.path.realpath(__file__)),
         process_no=process_no)
     logger.info("extractApp.extractPackagePair done")
+
     rateApp.transRateToLevel()
     logger.info("rateApp.transRateToLevel done")
 
@@ -243,12 +242,13 @@ def analyzer(apkList, process_no=constants.PROCESS_NO,
     logger.info("rateApp.generateHistData done")
     outputHistogramFile.close()
 
+    logger.warning("skipping playstore analysis statList, TODO")
+    """
     # run playstore analysis part
-    analyze.main(app_tups=updatedApkList)
+    analyze.main(outputPath, app_tups=updatedApkList)
     logger.info("playstoreAnalysis analyze done")
 
     # TODO run crowd analysis part for top apps
-    """
     getSensitivePairs.main(now,
       os.path.dirname(getSensitivePairs.__file__) + "/",
       os.getcwd() + "/")

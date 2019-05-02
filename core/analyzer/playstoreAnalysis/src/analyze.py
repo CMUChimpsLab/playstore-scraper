@@ -1,10 +1,16 @@
+import logging
 from pymongo import MongoClient
 from collections import Counter
 import copy
 import sys
 import re
 import os
+
 from common.constants import DB_HOST, DB_ROOT_USER, DB_ROOT_PASS
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                    level=logging.INFO)
 
 def updateStatTable(client, listName, topKList, itemKey):
     copyTopKList = copy.deepcopy(topKList)
@@ -76,29 +82,36 @@ def getTopKAppWithLib(client, appList, libTypeList, appCategoryList, listName, k
         # query in sublists of appList of size at most 5000
         subAppList = appList[i : min(i + 5000, len(appList))]
         subAppNames = [app[0] for app in subAppList]
-        subAppVersionMap = dict(subAppList)
+        subAppVersionMap = set([tuple(a) for a in subAppList])
+        results = []
         if appCategoryList != []:
-            results = [(entry['packageName'], entry['versionCode']) for entry in appTable.find(
-                    {
-                        'packageName': {'$in': subAppNames},
-                        'category': {'$in': appCategoryList}
-                    },
-                    {
-                        'packageName': 1,
-                        'versionCode': 1
-                    })]
-        else:
-            results = [(entry['packageName'], entry['versionCode']) for entry in appTable.find(
-                    {
+            entries =  appTable.find(
+                {
                     'packageName': {'$in': subAppNames},
-                    },
-                    {
+                    'category': {'$in': appCategoryList}
+                },
+                {
                     'packageName': 1,
-                    'versionCode': 1
-                    })]
+                    'versionCode': 1,
+                    "uuid": 1,
+                })
+            for entry in entries:
+                results.append((entry['packageName'], entry['versionCode'], entry["uuid"]))
+        else:
+            entries =  appTable.find(
+                {
+                    'packageName': {'$in': subAppNames},
+                },
+                {
+                    'packageName': 1,
+                    'versionCode': 1,
+                    "uuid": 1,
+                })
+            for entry in entries:
+                results.append((entry['packageName'], entry['versionCode'], entry["uuid"]))
 
         for r in results:
-            if subAppVersionMap[r[0]] == r[1]:
+            if  r in subAppVersionMap:
                 categoryAppList.append(r)
 
     libTable = client['privacyGradingDB']['labeled3rdParty']
@@ -114,7 +127,7 @@ def getTopKAppWithLib(client, appList, libTypeList, appCategoryList, listName, k
                 libList.append(entry['externalPack'])
 
     #ensure app is from appList given
-    appList = list(set(appList) & set(categoryAppList))
+    appList = list(set([tuple(a) for a in appList]) & set(categoryAppList))
     appLibTable = client['staticAnalysisDB']['thirdPartyPackages']
     appLibDict = {}
     for app in appList:
@@ -247,10 +260,9 @@ def getTopPermissions(client, appList, outputDir):
                 topKList.append({'permission':pair[0].encode("utf-8"), 'number of apps': pair[1]})
         updateStatTable(client, 'Most Popular Permissions', topKList, 'permission')
 
-def main(appListFile=None, app_tups=None):
+def main(outputDir, appListFile=None, app_tups=None):
     client = MongoClient(DB_HOST, 27017)
     client["admin"].authenticate(DB_ROOT_USER, DB_ROOT_PASS)
-    outputDir = os.path.dirname(os.path.realpath(appListFile))
     os.makedirs(outputDir + "/permission/")
     if app_tups is not None:
         appList = app_tups
@@ -272,6 +284,7 @@ def main(appListFile=None, app_tups=None):
         print(','.join([str(key) for key in topKEntry[0].keys()]))
         for entry in topKEntry:
             print(','.join([str(value) for value in entry.values()]))
+    logger.info("calculated apps with lowest privacy grades")
 
     topKEntry = getTopKAppWithLib(client,
         appList,
@@ -283,6 +296,7 @@ def main(appListFile=None, app_tups=None):
         print(','.join([str(key) for key in topKEntry[0].keys()]))
         for entry in topKEntry:
             print(','.join([str(value) for value in entry.values()]))
+    logger.info("calculated apps with most targeted ads libs")
 
     topKEntry = getTopKAppWithLib(client,
         appList,
@@ -294,6 +308,7 @@ def main(appListFile=None, app_tups=None):
         print(','.join([str(key) for key in topKEntry[0].keys()]))
         for entry in topKEntry:
             print(','.join([str(value) for value in entry.values()]))
+    logger.info("calculated apps with most 3rd party libs")
 
     getTopPermissions(client, appList, outputDir)
     getInstallSizeList(client, appList, outputDir)
@@ -314,4 +329,4 @@ if __name__ == "__main__":
         print("usage: python analyze.py < app list file >")
         sys.exit(1)
 
-    main(sys.argv[1])
+    main(os.path.dirname(os.path.realpath(sys.argv[1])), appListFile=sys.argv[1])
