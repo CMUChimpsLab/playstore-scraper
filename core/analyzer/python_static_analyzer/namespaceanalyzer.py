@@ -58,6 +58,8 @@ class NameSpaceMgr:
 
     def make_db_doc(self, packageName, versioncode, filename, externalPackageName):
         uuid = filename[:-4] if filename.endswith(".apk") else filename
+        if externalPackageName.startswith("L"):
+            externalPackageName = externalPackageName[1:]
         return {
             "packageName": packageName,
             "uuid": uuid,

@@ -9,8 +9,8 @@ from androguard.core.bytecodes import apk
 from androguard.core.bytecodes import dvm
 from androguard.core.analysis.analysis import *
 
-extensions = [".com", ".net", ".org", ".edu", ".af",
-        ".ax",".al",".dz",".as",".ad",".ao",".ai",".aq",".ag",".ar",".am",".aw",
+extensions = [".com", ".net", ".org", ".edu", ".gov", ".mil",
+        ".af", ".ax",".al",".dz",".as",".ad",".ao",".ai",".aq",".ag",".ar",".am",".aw",
         ".ac",".au",".at",".az",".bs",".bh",".bd",".bb",".eus",".by",".be",".bz",".bj",
         ".bm",".bt",".bo",".nl",".ba",".bw",".bv",".br",".io",".vg",".bn",".bg",".bf",
         ".mm",".bi",".kh",".cm",".ca",".cv",".cat",".ky",".cf",".td",".cl",".cn",".cx",
