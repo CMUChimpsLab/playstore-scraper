@@ -50,17 +50,20 @@ class Updater:
                     range(0, total_apps_no), apps)
 
             app_names = []
+            app_data = []
             counter = 0
             for future in res:
                 if future is not None:
-                    app_names.append(future)
-
+                    app_names.append(future[0])
+                    app_data.append((future[1], future[2]))
                 counter += 1
                 if counter % BULK_CHUNK == 0:
                     logger.info("updated {} to {} out of {}".format(
                         counter - BULK_CHUNK, counter, total_apps_no))
             logger.info("completed all out of {}".format(total_apps_no))
 
+        logger.info("Inserting {} updated apps to db...".format(total_apps_no))
+        self.__db_helper.insert_apps_into_db(app_data)
         self.__db_helper.update_apps_as_not_removed(app_names)
         self.__db_helper.update_date_last_scraped(app_names,
             datetime.datetime.utcnow().strftime("%Y%m%dT%H%M"))
@@ -106,10 +109,7 @@ class Updater:
                     updated = True
 
                 if updated:
-                    # scrape and insert new data
-                    self.__db_helper.insert_app_into_db(new_info, new_detail)
-                    num_updated = num_updated + 1
-                    return app_name
+                    return (app_name, new_info, new_detail)
                 else:
                     return None
         except Exception as e:
