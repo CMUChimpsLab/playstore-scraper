@@ -55,16 +55,21 @@ class Scraper:
                 logger.error("An input file or a list of package names must be provided to scraper.")
                 return
 
+        app_data = []
         with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
             res = executor.map(self.efficient_scrape_thread_worker,
                     range(0, len(package_names)), package_names)
             counter = 0
             for future in res:
+                app_data.append(future)
                 counter += 1
                 if counter % RESULT_CHUNK == 0:
                     logger.info("completed results {} to {} out of {}".format(
                         counter - RESULT_CHUNK, counter, len(package_names)))
             logger.info("completed all out of {}".format(len(package_names)))
+        
+        logger.info("inserting {} results to db...".format(len(package_names)))
+        self.__db_helper.insert_apps_into_db(app_data)
 
     def efficient_scrape_thread_worker(self, index, package_name):
         """
@@ -76,7 +81,7 @@ class Scraper:
 
         res = self.get_metadata_for_apps(packages=[package_name], bulk=True)
         if res is not None and res[0] is not None:
-            self.scrape_thread_worker(index, package_name)
+            return self.scrape_thread_worker(index, package_name)
 
     # ***************** #
     # bulk scraping related functions
@@ -121,7 +126,7 @@ class Scraper:
             app = data[0]
             if app is None:
                 return
-            self.__db_helper.insert_app_into_db(app)
+            self.__db_helper.insert_apps_into_db([(app, None)])
 
             logger.info("Apps {} bulk scraped".format(index))
         """
@@ -145,16 +150,21 @@ class Scraper:
                 return
 
         logger.info("Scraping {} apps...".format(len(package_names)))
+        app_data = []
         with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
             res = executor.map(self.scrape_thread_worker,
                     range(0, len(package_names)), package_names)
             counter = 0
             for future in res:
+                app_data.append(res)
                 counter += 1
                 if counter % RESULT_CHUNK == 0:
                     logger.info("completed results {} to {} out of {}".format(
                         counter - RESULT_CHUNK, counter, len(package_names)))
             logger.info("completed all out of {}".format(len(package_names)))
+
+        logger.info("inserting {} results to db...".format(len(package_names)))
+        self.__db_helper.insert_apps_into_db(app_data)
 
     def scrape_thread_worker(self, index, package_name):
         """
@@ -164,10 +174,7 @@ class Scraper:
             logger.info("%s already in database, skipping scrape" % package_name)
             # return
 
-        app_metadata = self.get_metadata_for_apps([package_name])
-        if app_metadata is not None:
-            for (app_info_obj, app_detail) in app_metadata:
-                self.__db_helper.insert_app_into_db(app_info_obj, app_detail)
+        return self.get_metadata_for_apps([package_name])
 
     def get_metadata_for_apps(self, packages, bulk=False):
         """
