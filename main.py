@@ -119,8 +119,11 @@ def scrape_pipeline(args):
         apps = None
 
     # start by updating top apps
+    logger.info("getting top apps...")
     new_top_list = c.get_top_apps_list()
+    logger.info("scraping top apps not in DB...")
     s.scrape_missing(new_top_list, compare_top=True)
+    logger.info("updating top apps...")
     d.update_top_apps(new_top_list)
 
     if kickoff == True:
@@ -146,7 +149,7 @@ def scrape_pipeline(args):
             u = Updater(input_file=fname)
         u.update_apps()
         logger.info("...update done")
-        
+
     # crawl privacy policies
     c.crawl_app_privacy_policies(app_list=apps)
 
@@ -253,7 +256,7 @@ u_parser.set_defaults(func=update)
 
 # ***************************** PIPELINE COMMAND ***************************** #
 # entire app data scrape pipeline
-sp_parser = subparsers.add_parser("scrape-pipeline", aliases=["fp"],
+sp_parser = subparsers.add_parser("scrape-pipeline", aliases=["sp"],
     help="entire app data crawling pipeline",
     description="Entire pipeline from scraping data about apps to analysis of them")
 sp_parser.add_argument("-k", "--kickoff",

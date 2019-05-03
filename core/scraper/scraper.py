@@ -144,6 +144,7 @@ class Scraper:
                 logger.error("An input file or a list of package names must be provided to scraper.")
                 return
 
+        logger.info("Scraping {} apps...".format(len(package_names)))
         with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
             res = executor.map(self.scrape_thread_worker,
                     range(0, len(package_names)), package_names)
@@ -167,7 +168,6 @@ class Scraper:
         if app_metadata is not None:
             for (app_info_obj, app_detail) in app_metadata:
                 self.__db_helper.insert_app_into_db(app_info_obj, app_detail)
-                logger.info("App {}, {} scraped".format(index, package_name))
 
     def get_metadata_for_apps(self, packages, bulk=False):
         """
@@ -184,7 +184,9 @@ class Scraper:
             try:
                 detail_data = self.api.get_doc_apk_details(packages, bulk=bulk)
             except RequestError as e:
-                if "Server busy" in e.value or "Being throttled" in e.value:
+                if ("Server busy" in e.value or
+                        "Being throttled" in e.value or
+                        "DF-DFERH-01" in e.value):
                     logger.error("Request error for {} - {}, getting new token".format(
                         packages[0], e.value))
 
@@ -249,6 +251,7 @@ class Scraper:
                     # detail_data is just info if bulk is False
                     return info_data
             else:
+                logger.warning("NULL detail_data for {}".format(packages[0]))
                 return None
 
     # ***************** #
@@ -293,7 +296,9 @@ class Scraper:
             try:
                 detail_data = self.api.get_doc_apk_details(package_names, bulk=True)
             except RequestError as e:
-                if "Server busy" in e.value or "Being throttled" in e.value:
+                if ("Server busy" in e.value or
+                        "Being throttled" in e.value or
+                        "DF-DFERH-01" in e.value):
                     logger.error("Request error for {}, getting new token".format(e.value))
 
                     # check if thread should refresh

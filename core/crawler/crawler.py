@@ -5,25 +5,20 @@ import sys
 from functools import partial
 import re
 import threading
-
-# fix import errors from using python2 for analysis pipeline
-try:
-    import eventlet
-    from concurrent.futures import ThreadPoolExecutor, as_completed
-    from bs4 import BeautifulSoup, SoupStrainer
-    import pprint
-
-    requests = eventlet.import_patched("requests")
-    urllib = eventlet.import_patched("urllib")
-    socket = eventlet.import_patched("socket")
-    pp = pprint.PrettyPrinter(indent=4)
-except ImportError as e:
-    pass
+import urllib
+import eventlet
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from bs4 import BeautifulSoup, SoupStrainer
+import pprint
+import requests
+import socket
 
 from core.db.db_helper import DbHelper
 from common.constants import CATEGORIES, THREAD_NO, PRIVACY_POLICY_FOLDER, BULK_CHUNK
 from common.gplaycli import gplaycli
 from common import GPLAYCLI_CONFIG_FILE_PATH
+
+pp = pprint.PrettyPrinter(indent=4)
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
@@ -241,9 +236,9 @@ class Crawler():
         try:
             page_contents = crawl_url(url)
         except HttpError as e:
-            if e.code == 404:
+            if e.response.status_code == 404:
                 helper.update_apps_as_removed([package_name])
-            elif e.code == 408:
+            elif e.response.status_code == 408:
                 helper.update_policy_crawl_failure(uuid, "policy url timed out")
             return
 
@@ -266,10 +261,10 @@ class Crawler():
                     f.write(requests.get(policy_url, allow_redirects=True, timeout=10).content)
                 helper.update_policy_crawled([uuid])
                 logger.info("got {},{} policy".format(package_name, uuid))
-            except urllib.error.HTTPError as e:
-                logger.error("{},{} - {} error".format(package_name, uuid, e.code))
+            except requests.exceptions.HTTPError as e:
+                logger.error("{},{} - {} error".format(package_name, uuid, e.response.status_code))
                 helper.update_policy_crawl_failure(uuid, str(e.reason))
-            except urllib.error.URLError as e:
+            except requests.exceptions.URLError as e:
                 logger.error("{},{} - {}".format(package_name, uuid, str(e.reason)))
                 helper.update_policy_crawl_failure(uuid, str(e.reason))
             except requests.exceptions.Timeout:
@@ -336,26 +331,29 @@ def crawl_url(url, timeout=10):
                 resp.raise_for_status()
 
             return resp.content.decode('utf-8')
-        except urllib.error.HTTPError as e:
-            if e.code == 404:
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 404:
                 # not valid
                 logger.error("URL {} got 404 error, not valid".format(url))
-                e_code = e.code
+                e_code = e.response.status_code
                 break
-            elif e.code == 500:
+            elif e.response.status_code == 500:
                 # no more items that match
                 logger.error("URL {} got 500 error".format(url))
-                e_code = e.code
+                e_code = e.response.status_code
                 break
-            elif e.code == 429:
+            elif e.response.status_code == 429:
                 # hit rate limit so sleep
                 logger.error("hit rate limit, sleeping")
                 time.sleep(60)
                 continue
+        except Exception as e:
+            print(e)
+            sys.exit(1)
         except socket.timeout as e:
             logger.error("URL {} timed out".format(url))
             e_code = 408
-        except urllib.error.URLError as e:
+        except requests.exceptions.URLError as e:
             if isinstance(e.reason, socket.timeout):
                 logger.error("URL {} timed out".format(url))
                 e_code = 408

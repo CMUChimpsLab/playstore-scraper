@@ -467,10 +467,10 @@ class DbHelper:
             # Remove old files
             app_path = "/" + old_uuid[0] + "/" + old_uuid[1] + "/" + old_uuid + ".apk"
             if os.path.isfile(constants.DOWNLOAD_FOLDER + app_path):
-                os.delete_many(constants.DOWNLOAD_FOLDER + app_path)
+                os.remove(constants.DOWNLOAD_FOLDER + app_path)
             zip_path = "/" + old_uuid[0] + "/" + old_uuid + ".zip"
             if os.path.isfile(constants.DECOMPILE_FOLDER + zip_path):
-                os.delete_many(constants.DECOMPILE_FOLDER + zip_path)
+                os.remove(constants.DECOMPILE_FOLDER + zip_path)
             logger.info("Replaced {} in db".format(app_info["packageName"]))
 
     def update_top_apps(self, new_top_list):
