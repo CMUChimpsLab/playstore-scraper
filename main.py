@@ -1,6 +1,5 @@
 import eventlet
-#eventlet.monkey_patch(thread=False, time=False)
-
+eventlet.monkey_patch()
 import os, sys
 import logging.config
 import pandas as pd
@@ -38,10 +37,8 @@ def crawl(args):
 
 def decompile_apks(args):
     dec = Decompiler(use_database=True, compress=True)
-
     with open(args.fname) as f:
         apk_names = f.read().split()
-
     dec.decompile(apk_names)
 
 def download_all(args):
@@ -217,13 +214,16 @@ ap_parser.set_defaults(func=pipelines.analysis_pipeline)
 
 # entire app data and analysis pipeline
 fp_parser = subparsers.add_parser("full-pipeline", aliases=["fp"],
-    help="entire app data and analysis pipeline",
+    help="entire app data crawling pipeline",
     description="Entire pipeline from scraping data about apps to analysis of them")
 fp_parser.add_argument("-k", "--kickoff",
     action="store_true",
     help="true if is first run, false otherwise")
+fp_parser.add_argument("--fast",
+    action="store_true",
+    help="quick way to get more data so only scrapes/downloads necessary")
 fp_parser.add_argument("-f", "--fname",
-    help="file name to scrape from, otherwise use crawler to get package names")
+    help="file name with package names, otherwise use crawler to get package names")
 fp_parser.set_defaults(func=pipelines.full_pipeline)
 
 if __name__ == '__main__':
@@ -266,6 +266,6 @@ if __name__ == '__main__':
         "disable_existing_loggers": False,
     })
     logger = logging.getLogger(__name__)
-    multiprocessing_logging.install_mp_handler(logger)
 
     args.func(args)
+

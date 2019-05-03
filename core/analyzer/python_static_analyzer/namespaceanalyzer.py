@@ -15,6 +15,9 @@ from python_static_analyzer.androguard.androguard.core.analysis.analysis import 
 import python_static_analyzer.DirStructHandler as DirStructHandler
 import python_static_analyzer.PackageRules as PackageRules
 
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
+
 class NameSpaceMgr:
     '''
     1. This class creates a n-tree of the directories present in apk
@@ -31,7 +34,7 @@ class NameSpaceMgr:
         '''
         2. Contains alreadyprinted. To take of the noise produced by decompilation
         '''
-        self.alreadyPrinted = []
+        self.alreadyPrinted = set()
         '''
         3. Tokenized items of the main package name
         '''
@@ -60,24 +63,23 @@ class NameSpaceMgr:
         uuid = filename[:-4] if filename.endswith(".apk") else filename
         if externalPackageName.startswith("L"):
             externalPackageName = externalPackageName[1:]
-        return {
-            "packageName": packageName,
-            "uuid": uuid,
-            "versionCode": int(versioncode),
-            "filename": filename,
-            "externalPackageName": externalPackageName,
-        }
+        if (externalPackageName in self.alreadyPrinted or
+                "L{}".format(externalPackageName) in self.alreadyPrinted):
+            return None
+        else:
+            return {
+                "packageName": packageName,
+                "uuid": uuid,
+                "versionCode": int(versioncode),
+                "filename": filename,
+                "externalPackageName": externalPackageName,
+            }
 
     '''
     Song
     Special Handling for Google SDK
     '''
     def specialHandlingForGoogleSDK(self, package_name):
-        if (("googleAnalytics" not in self.alreadyPrinted) and
-                (package_name.startswith('Lcom/google/analytics/') or
-                    package_name.startswith('Lcom/google/android/apps/analytics/'))):
-            #should do something or not for tracking
-            pass
         if "admob" not in self.alreadyPrinted and package_name.startswith('Lcom/google/ads'):
             if self.q is None:
                 self.dbMgr.insert_third_party_package_info(self.main_package_name,
@@ -85,13 +87,75 @@ class NameSpaceMgr:
                         self.fileName,
                         "admob")
             else:
-                self.q.append(self.make_db_doc(self.main_package_name,
+                db_doc = self.make_db_doc(self.main_package_name,
+                    self.version_code,
+                    self.fileName,
+                    "admob")
+                if db_doc is not None:
+                    self.q.append(db_doc)
+            self.alreadyPrinted.add ("admob")
+            self.packages.append ("admob")
+        elif (("GoogleAnalytics" not in self.alreadyPrinted and
+                    package_name.startswith('Lcom/google/android/gms/analytics')) or
+                (("googleAnalytics" not in self.alreadyPrinted) and
+                    (package_name.startswith('Lcom/google/analytics/') or
+                    package_name.startswith('Lcom/google/android/apps/analytics/')))):
+            if self.q is None:
+                self.dbMgr.insert_third_party_package_info(self.main_package_name,
                         self.version_code,
                         self.fileName,
-                        "admob"))
-            self.alreadyPrinted.append ("admob")
-            self.packages.append ("admob")
+                        "GoogleAnalytics")
+            else:
+                db_doc = self.make_db_doc(self.main_package_name,
+                    self.version_code,
+                    self.fileName,
+                    "GoogleAnalytics")
+                if db_doc is not None:
+                    self.q.append(db_doc)
+            self.alreadyPrinted.add ("GoogleAnalytics")
+            self.packages.append ("GoogleAnalytics")
+        elif ("firebase" not in self.alreadyPrinted and
+                package_name.startswith('Lcom/google/firebase/analytics')):
+            if self.q is None:
+                self.dbMgr.insert_third_party_package_info(self.main_package_name,
+                        self.version_code,
+                        self.fileName,
+                        "firebase")
+            else:
+                db_doc = self.make_db_doc(self.main_package_name,
+                    self.version_code,
+                    self.fileName,
+                    "firebase")
+                if db_doc is not None:
+                    self.q.append(db_doc)
+            self.alreadyPrinted.add ("firebase")
+            self.packages.append ("firebase")
 
+    def special_facebook_handling(self, package_name):
+        if package_name.startswith("Lcom/facebook/ads"):
+            # facebook ads
+            name = "FacebookAudienceNetwork"
+        elif package_name.startswith("Lcom/facebook/react"):
+            # react native
+            name = "ReactNative"
+        else:
+            # social
+            name = "facebook"
+
+        if self.q is None:
+            self.dbMgr.insert_third_party_package_info(self.main_package_name,
+                    self.version_code,
+                    self.fileName,
+                    name)
+        else:
+            db_doc = self.make_db_doc(self.main_package_name,
+                self.version_code,
+                self.fileName,
+                name)
+            if db_doc is not None:
+                self.q.append(db_doc)
+        self.alreadyPrinted.add(name)
+        self.packages.append(name)
 
     def execute(self, fileName, vc, dbMgr, noprefixfilename, a, dx):
         '''
@@ -120,29 +184,28 @@ class NameSpaceMgr:
         else:
             self.fileName = noprefixfilename
 
-        #print self.main_package_name
-
-        self.main_package_tokens = self.GetTokens(self.main_package_name)
-
-
-        packages = dx.get_tainted_packages()
-
         #Filtering out internal packages used for app creation
         ex1 = re.compile ("Ljava/*")
         ex2 = re.compile ("Landroid/*")
         ex3 = re.compile (self.GetDecompiledPackageName (self.main_package_name))
         ex4 = re.compile("/google/")
 
-
+        #print self.main_package_name
+        self.main_package_tokens = self.GetTokens(self.main_package_name)
+        classes = dx.get_classes()
         package_names = []
+        for c in classes:
+            if len(c.get_xref_from()) == 0:
+                continue
 
-
-
-        for _, package_name in packages.get_packages():
+            package_name = c.orig_class.get_name()
             self.specialHandlingForGoogleSDK(package_name)
-            if ex3.search (package_name) == None and ex1.search (package_name) == None and ex2.search (package_name) == None and ex4.search (package_name) == None:
+            self.special_facebook_handling(package_name)
+            if (ex3.search (package_name) == None and
+                    ex1.search (package_name) == None and
+                    ex2.search (package_name) == None and
+                    ex4.search (package_name) == None):
                 package_names.append (self.GetDirectoryName (package_name))
-                #print package_name
 
         self.PopulateDirEntries(package_names)
         self.GetPackages ()
@@ -288,11 +351,13 @@ class NameSpaceMgr:
                     self.fileName,
                     name)
             else:
-                self.q.append(self.make_db_doc(self.main_package_name,
+                db_doc = self.make_db_doc(self.main_package_name,
                     self.version_code,
                     self.fileName,
-                    name))
-            self.alreadyPrinted.append (rootEntry.DirName)
+                    name)
+                if db_doc is not None:
+                    self.q.append(db_doc)
+            self.alreadyPrinted.add (rootEntry.DirName)
             return
 
         packageLevel = packageLevel - 1
@@ -317,11 +382,13 @@ class NameSpaceMgr:
                     self.fileName,
                     "titanium")
             else:
-                self.q.append(self.make_db_doc(self.main_package_name,
+                db_doc = self.make_db_doc(self.main_package_name,
                     self.version_code,
                     self.fileName,
-                    "titanium"))
-            self.alreadyPrinted.append ("titanium")
+                    "titanium")
+                if db_doc is not None:
+                    self.q.append(db_doc)
+            self.alreadyPrinted.add ("titanium")
         elif ancestorLevel == 1:
             self.packages.append (rootEntry.DirName)
             '''Rule added to PackageRules'''
@@ -335,11 +402,13 @@ class NameSpaceMgr:
                     self.fileName,
                     name)
             else:
-                self.q.append(self.make_db_doc(self.main_package_name,
+                db_doc = self.make_db_doc(self.main_package_name,
                     self.version_code,
                     self.fileName,
-                    name))
-            self.alreadyPrinted.append (rootEntry.DirName)
+                    name)
+                if db_doc is not None:
+                    self.q.append(db_doc)
+            self.alreadyPrinted.add (rootEntry.DirName)
         else:
             #google package
             self.packages.append (self.main_package_name)

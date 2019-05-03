@@ -513,16 +513,19 @@ class GPlaycli:
 
     def refresh_token(self):
         """
-		Get a new token from token-dispenser instance
-		and re-connect to the play-store.
-		"""
-        self.retrieve_token(force_new=True)
+        Get a new token from token-dispenser instance
+        and re-connect to the play-store.
+        """
+        while True:
+            token, gsfid = self.retrieve_token(force_new=True)
+            if token != "" and gsfid != "":
+                break
         self.api.login(authSubToken=self.token, gsfId=int(self.gsfid, 16))
 
     def prepare_analyse_apks(self):
         """
-		Gather apks to further check for update
-		"""
+        Gather apks to further check for update
+        """
         download_folder = self.download_folder
         list_of_apks = util.list_folder_apks(download_folder)
         if list_of_apks:

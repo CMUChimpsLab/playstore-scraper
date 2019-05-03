@@ -225,7 +225,6 @@ class Crawler():
         if app_list is None:
             app_list = helper.get_package_names_policy_crawl()
 
-        helper = None
         with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
             res = executor.map(partial(self.privacy_policy_thread_worker, helper), app_list)
             counter = 0
@@ -237,7 +236,7 @@ class Crawler():
 
 
     def privacy_policy_thread_worker(self, helper, package_name):
-        uuid = helper.app_name_to_uuids(package_name)[0]
+        uuid = helper.app_names_to_uuids([package_name])[0]
         url = "https://play.google.com/store/apps/details?id={}".format(package_name)
         try:
             page_contents = crawl_url(url)

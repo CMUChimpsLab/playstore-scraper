@@ -155,13 +155,24 @@ def add_name_vc_uuid_filename(static_analysis_colls):
 
 def flip_third_party():
     for p in static_db.thirdPartyPackages.find({}):
-        if len(p["externalPackageName"]) > 1:
+        if len(p["externalPackageName"]) == 1 and len(p["category"]) > 1:
             static_db.thirdPartyPackages.update(
                     {"_id": p["_id"]},
                     {
                         "$set": {
                             "externalPackageName": p["category"],
                             "category": p["externalPackageName"],
+                        },
+                    })
+
+def strip_third_party():
+    for p in static_db.thirdPartyPackages.find({}, {"externalPackageName": 1}):
+        if p["externalPackageName"].startswith("L"):
+            static_db.thirdPartyPackages.update(
+                    {"_id": p["_id"]},
+                    {
+                        "$set": {
+                            "externalPackageName": p["externalPackageName"][1:],
                         },
                     })
 
@@ -223,5 +234,5 @@ if __name__ == "__main__":
 
     static_analysis_colls = ["thirdPartyPackages", "permissionList", "linkUrl", "apkAnalyses"]
     static_analysis_colls = ["linkUrl"]
-    scan_app_name()
+    strip_third_party()
 

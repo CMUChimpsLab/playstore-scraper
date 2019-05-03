@@ -1,8 +1,4 @@
 from pymongo import MongoClient
-import common.constants as constants
-from core.db.db_helper import DbHelper
-from core.scraper.scraper import Scraper
-from collections import defaultdict
 from bson.objectid import ObjectId
 from core.scraper.uuid_generator import generate_uuids
 from datetime import datetime
@@ -15,6 +11,12 @@ sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)) +
         "/core/analyzer/python_static_analyzer/")
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)) +
         "/core/analyzer/python_static_analyzer/androguard/")
+
+import common.constants as constants
+from core.db.db_helper import DbHelper
+from core.scraper.scraper import Scraper
+from collections import defaultdict
+from core.analyzer.python_static_analyzer.androguard.androguard.core.bytecodes import apk
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -586,8 +588,11 @@ def old_apk_db_check():
         found = []
         not_found = []
         for (p, vers) in mult_vc.items():
-            apk_loc = "aws_apks/{}.apk".format(p)
-            a = apk.APK(apk_loc)
+            apk_loc = "apks/{}.apk".format(p)
+            try:
+                a = apk.APK(apk_loc)
+            except:
+                continue
             vc = int(a.androidversion["Code"])
             is_in_db = False
             uuid = None
@@ -600,34 +605,30 @@ def old_apk_db_check():
                 found.append((p, uuid))
             else:
                 not_found.append((p, uuid))
-            print(p, is_in_db)
-        print(len(found), len(not_found))
+        print(len(no_mult_vc), len(found), len(not_found))
 
         for (p, u) in not_found:
             subprocess.call(["cp",
-                "aws_apks/{}.apk".format(p),
-                "not_found_apks/{}.apk".format(p)])
-        """
+                "apks/{}.apk".format(p),
+                "../not_found_apks/{}.apk".format(p)])
+
         uuids = []
         for p in no_mult_vc:
             u = str(grouped[p][0]["uuid"])
-            print(p, u)
             subprocess.call(["cp",
-                "aws_apks_2/{}.apk".format(p),
+                "apks/{}.apk".format(p),
                 "{}/{}/{}/{}.apk".format(constants.DOWNLOAD_FOLDER, u[0], u[1], u)])
             uuids.append(u)
         for (p, u) in found:
             u = str(u)
-            print(p, u)
             subprocess.call(["cp",
-                "aws_apks_2/{}.apk".format(p),
+                "apks/{}.apk".format(p),
                 "{}/{}/{}/{}.apk".format(constants.DOWNLOAD_FOLDER, u[0], u[1], u)])
             uuids.append(u)
 
         android_app_db.apkInfo.update_many(
                 {"uuid": {"$in": uuids}},
                 {"$set": {"dateDownloaded": datetime.now().strftime("%Y%m%dT%H%M")}})
-        """
 
 if __name__ == "__main__":
     dh = MongoClient(host=constants.DB_HOST,

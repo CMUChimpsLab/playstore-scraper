@@ -15,6 +15,7 @@ import bz2
 import traceback
 from lxml import etree
 import psutil
+import pprint
 try:
     import cPickle as pickle
 except:
@@ -45,6 +46,8 @@ import common.helpers as helpers
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     level=logging.INFO)
+
+pp = pprint.PrettyPrinter(indent=4)
 
 counter = Value("i", 0)
 plugins = []
@@ -343,6 +346,7 @@ def load_androguard_objs(apk_entry):
         return ((a, None, dx), True)
     except Exception as e:
         # default to androguard_analyze_apk
+        print(e)
         logger.error("{},{} - cache loading failed, falling back to androguard"\
                 .format(package_name, uuid))
         return (None, False)
@@ -359,7 +363,7 @@ def getUuidsFromFile(uuidListFile):
             apkList.append(
                 {
                     "packageName": pair[0],
-                    "uuid": pair[1][:-4],
+                    "uuid": pair[1][:-4] if pair[1].endswith(".apk") else pair[1],
                     "versionCode": pair[2],
                     "fileDir": pair[3],
                 })
@@ -393,38 +397,39 @@ def getUuidsFromDb():
 # BENCHMARK FUNCTIONS - NOT FOR ACTUAL USE
 # **************************************************************************** #
 def benchmark_static_analysis(total_size, apk_entry):
+    #sys.setrecursionlimit(60000) # number found to not cause segfault
+
     package_name = apk_entry["packageName"]
     fileName = apk_entry["uuid"] + '.apk'
     appVersion = apk_entry["versionCode"]
     path = apk_entry['fileDir']
     filename = path + '/' + fileName
 
-    print("{} - analyzing {}".format(os.getpid(), filename))
-    start = time.time()
-    a, d_s, dx = androguard_analyze_apk(apk_entry)
-    print("androguard analysis took {}".format(time.time() - start))
-
     db_helper = DbHelper()
     start = time.time()
-    dump_androguard_objs(apk_entry, db_helper, a, d_s, dx)
-    print("androguard object dumping took {}".format(time.time() - start))
-
-    start = time.time()
-    a, d_s, dx = load_androguard_objs(apk_entry)
+    load_res, success = load_androguard_objs(apk_entry)
     print("androguard object loading took {}".format(time.time() - start))
+    if load_res is not None:
+        a, d_s, dx = load_res
+    if load_res is None or not success:
+        print("{} - analyzing {}".format(os.getpid(), filename))
+        start = time.time()
+        a, d_s, dx = androguard_analyze_apk(apk_entry)
+        print("androguard analysis took {}".format(time.time() - start))
+        start = time.time()
+        dump_androguard_objs(apk_entry, db_helper, a, d_s, dx)
+        print("androguard object dumping took {}".format(time.time() - start))
 
     # do static analyses
-    tokens = namespaceanalyzer.NameSpaceMgr.GetTokensStatic (path, '/')
-    category =  tokens[len (tokens) - 1]
-    instance = namespaceanalyzer.NameSpaceMgr(queue=third_party_q)
-    packages = instance.execute(filename, appVersion, db_helper, fileName, a, dx)
-    permission.StaticAnalyzer(filename, appVersion, packages, db_helper,
-            fileName, a, dx, q=perm_info_q)
-    SearchIntents.Intents(filename, appVersion, packages, db_helper, fileName,
-            a, dx, q=link_info_q)
-
-    print("third_party q - {}, perm q - {}, link q - {}"\
-        .format(third_party_q.qsize(), perm_info_q.qsize(), link_info_q.qsize()))
+    packages_q = []
+    instance = namespaceanalyzer.NameSpaceMgr(queue=packages_q)
+    packages = instance.execute(filename, appVersion, None, fileName, a, dx)
+    pp.pprint(packages_q)
+    pp.pprint(packages)
+    links = []
+    SearchIntents.Intents(filename, appVersion, packages, None, fileName,
+        a, dx, q=links)
+    pp.pprint(links)
 
     return package_name
 
@@ -468,6 +473,8 @@ if __name__ == "__main__":
         uuidList = getUuidsFromDb()
 
     if benchmark:
+        benchmark_static_analysis(1, uuidList[0])
+        sys.exit(1)
         benchmark_analyzer(uuidList, process_no=1)
     else:
         analyzer(uuidList)

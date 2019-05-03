@@ -1,6 +1,8 @@
 import pandas as pd
 import pprint
 
+pp = pprint.PrettyPrinter(indent=4)
+
 class App:
     """
     Represents a single app and metadata we want to store, with conversion
@@ -80,19 +82,25 @@ class App:
         else:
             isFree = None
 
+        category = None
+        if "categoryInfo" in info_dict["relatedLinks"]:
+            if "appCategory" in info_dict["relatedLinks"]["categoryInfo"]:
+                category = info_dict["relatedLinks"]["categoryInfo"]["appCategory"]
+
+        #pp.pprint(info_dict)
         app = App(uuid,
                   app_details["packageName"],
                   app_details.get("versionCode", None),
                   title=info_dict['title'],
                   developerName=app_details['developerName'],
                   installationSize=app_details.get('installationSize', None),
-                  category=info_dict["relatedLinks"]["categoryInfo"]["appCategory"],
+                  category=category,
                   userRating=info_dict['aggregateRating'],
                   permissions=app_details.get('permission', []),
                   dateLastScraped=info_dict['dateLastScraped'],
                   descriptionHtml=info_dict['descriptionHtml'],
                   contentRating=app_details.get("contentRating", None),
-                  appType=app_details["appType"],
+                  appType=app_details.get("appType", None),
                   developerEmail=app_details.get("developerEmail", None),
                   fileObj=a_file,
                   uploadDate=app_details.get("uploadDate", None),

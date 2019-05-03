@@ -20,7 +20,7 @@ pp = pprint.PrettyPrinter(indent=4)
 
 class Updater:
     """
-    Keeps iterating over the database till the script is interrupted and 
+    Keeps iterating over the database till the script is interrupted and
     collecting meta-data for apps that have previously been scraped.
     """
 
@@ -31,7 +31,7 @@ class Updater:
     # ***************** #
     # updating all related functions
     # ***************** #
-    def update_apps_all(self):
+    def update_apps(self):
         """
         Uses bulk scraping to update apps much faster than before
         """
@@ -40,7 +40,7 @@ class Updater:
             to_update = self.__db_helper.get_package_names_to_update(0)
             apps = [app["packageName"] for app in to_update]
         else:
-            apps = pd.read_csv(self.input_file, names=['packageName'])['packageName'].tolist()
+            apps = pd.read_csv(self.input_file)["packageName"].tolist()
 
         logger.info("Starting bulk update...")
         self.s = Scraper()

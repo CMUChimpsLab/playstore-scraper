@@ -50,6 +50,16 @@ class Downloader:
         haven't been downloaded, and downloads them.
         """
         apps = self.__db_helper.get_all_apps_to_download()
+        return download(apps)
+
+    def download(self, apps, force_download=False):
+        """
+        Downloads the apps passed in as parameters
+        :param apps_list: A list of package names for the apps, or a list of [package names, file names]
+        :param force_download: Overwrite an existing file with the same name. By default this is set to False.
+        :return: A list of timestamps indicating the when the download was completed. If the download fails,
+                 a None value is inserted instead.
+        """
         with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
             res = executor.map(partial(self.download_thread_worker, False), apps)
             downloaded_uuids = []
@@ -65,20 +75,6 @@ class Downloader:
 
             return downloaded_uuids
 
-    def download(self, apps_list, force_download=False):
-        """
-        Downloads the apps passed in as parameters
-        :param apps_list: A list of package names for the apps, or a list of [package names, file names]
-        :param force_download: Overwrite an existing file with the same name. By default this is set to False.
-        :return: A list of timestamps indicating the when the download was completed. If the download fails,
-                 a None value is inserted instead.
-        """
-        downloaded_uuids = []
-        for app in apps_list:
-            downloaded_uuids.append(partial(self.download_thread_worker, force_download)(app))
-
-        return downloaded_uuids
-
     def download_thread_worker(self, force_download, app):
         """
         thread worker for downloading app
@@ -87,7 +83,7 @@ class Downloader:
         global lock
 
         if not isinstance(app, list):
-            logger.error("App should be a list of (packageName, uuid)")
+            logger.error("App should be a list of [packageName, uuid]")
             return
 
         # Quick fix for adding file extensions to downloaded apps

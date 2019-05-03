@@ -98,7 +98,7 @@ class DbHelper:
             uuid = sorted(uuid_vc_tup, key=lambda tup: tup[1], reverse=True)[0][0]
             app_uuid_dict[d["_id"]] = uuid
 
-        return app_uuid_dict
+        return list(app_uuid_dict.values())
 
     def get_details_id_for_uuid(self, uuid):
         info_cursor = self.__apk_info.find_one(

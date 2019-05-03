@@ -8,13 +8,10 @@ NOTE: make sure to add a corresponding subcommand/subrpaser for a new pipeline
 in main.py
 """
 
-import os, sys
 import logging.config
 import pandas as pd
-import subprocess
 import argparse
 from datetime import datetime
-import multiprocessing_logging
 import pprint
 from collections import defaultdict
 
@@ -117,21 +114,20 @@ def full_pipeline(args):
     """
     kickoff = args.kickoff
     fname = args.fname
-    if not kickoff and args.fname is not None:
-        logger.error("Can't use updater with -f option")
-        return
     d = DbHelper()
     s = Scraper()
     c = Crawler(20)
 
+    """
     # start by updating top apps
     new_top_list = c.get_top_apps_list()
     s.scrape_missing(new_top_list, compare_top=True)
     d.update_top_apps(new_top_list)
+    """
 
     if kickoff == True:
         s = None
-        if fname == None:
+        if fname is None:
             # use crawler to get list of package names
             logger.error("Crawler for package names not implemented yet")
             return
@@ -146,23 +142,32 @@ def full_pipeline(args):
     else:
         # use updater
         logger.info("Starting updater...")
-        u = Updater()
-        u.update_apps_all()
+        if fname is None:
+            u = Updater()
+        else:
+            u = Updater(input_file=fname)
+        u.update_apps()
         logger.info("...update done")
 
     # crawl privacy policies
-    c.crawl_app_privacy_policies()
+    if args.fast:
+        apps = pd.read_csv(fname)['packageName'].tolist()
+        c.crawl_app_privacy_policies(app_list=apps)
 
-    # download/decompile
-    logger.info("Starting download and decompile...")
-    helpers.download_decompile_all()
-    logger.info("...download and decompile done")
+        # download/decompile
+        logger.info("Starting download with {} apps...".format(len(apps)))
+        downloader = Downloader()
+        app_uuids = [list(a) for a in zip(apps, d.app_names_to_uuids(apps))]
+        downloader.download(app_uuids)
+        logger.info("...done")
+    else:
+        c.crawl_app_privacy_policies()
 
-    # static analysis
-    logger.info("Starting analysis...")
-    os.environ["PIPENV_IGNORE_VIRTUALENVS"] = "1" # allow analysis pipeline to have own env
-    analysis_pipeline(None)
-    logger.info("...analysis done")
+        # download/decompile
+        logger.info("Starting download and decompile...")
+        helpers.download_decompile_all()
+        logger.info("...download and decompile done")
+        logger.info("run analysis pipeline now")
 
 
 # **************************************************************************** #

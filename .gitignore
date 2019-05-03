@@ -21,7 +21,10 @@ apps/
 logs/
 tmp/
 staticAnalysisRuns/
+debug/
 
 **/dbConfig.py
 secrets\.py
+passwords/*
+!passwords/.gitkeep
 

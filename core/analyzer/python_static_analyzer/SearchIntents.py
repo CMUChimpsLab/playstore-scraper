@@ -58,7 +58,7 @@ class Intents:
             return False
 
         for ext in extensions:
-            if test_str.endswith(ext) and test_str != ext:
+            if test_str.endswith(ext) and test_str != ext and " " not in test_str:
                 return True
 
         return False

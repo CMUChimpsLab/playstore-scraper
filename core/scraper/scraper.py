@@ -14,6 +14,7 @@ from common.gplaycli import gplaycli
 from common import GPLAYCLI_CONFIG_FILE_PATH
 from common.constants import THREAD_NO, RESULT_CHUNK, BULK_CHUNK
 from common.protobuf_to_dict.protobuf_to_dict.convertor import protobuf_to_dict
+from google.protobuf.json_format import MessageToDict
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
@@ -88,7 +89,7 @@ class Scraper:
         database.
 
         NOTE: DEPRECATED FOR NOW
-        
+
         if package_names is None:
             if self.input_file is not None:
                 package_names = pd.read_csv(self.input_file, names=['package_name'])['package_name'].tolist()
@@ -222,7 +223,7 @@ class Scraper:
                 info_data = []
                 if not bulk:
                     for app_details in detail_data:
-                        app_dict = protobuf_to_dict(app_details)
+                        app_dict = MessageToDict(app_details)
                         if "installationSize" not in app_dict["details"]["appDetails"]:
                             # pass bc indicates pre-register
                             continue
