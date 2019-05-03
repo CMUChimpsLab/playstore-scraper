@@ -50,7 +50,7 @@ class Downloader:
         haven't been downloaded, and downloads them.
         """
         apps = self.__db_helper.get_all_apps_to_download()
-        return download(apps)
+        return self.download(apps)
 
     def download(self, apps, force_download=False):
         """

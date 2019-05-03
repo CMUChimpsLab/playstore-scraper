@@ -68,129 +68,27 @@ def analysis_pipeline(args):
     """
     Pipeline that only contains the static analysis portion
     """
-    # static analysis
-    helper = DbHelper()
-    app_list = helper.get_all_apps_for_full_analysis()
-    #app_list = [("com.android.chrome", "5e5f7394701145fc92676714539f7041", 353808052)]
-    #app_list = [("com.google.android.tts", "9f49501d34a14bcdaf57c657bc937c91", 210315244)]
-    app_list_with_locs = []
-    for (name, uuid, top, vc) in app_list:
-        if uuid.endswith('apk'):
-            uuid = uuid[:-4]
-        app_list_with_locs.append(
-            {
-                "packageName": name,
-                "uuid": uuid,
-                "versionCode": vc,
-                "hasBeenTop": top,
-                "fileDir": "{}/{}/{}".format(DOWNLOAD_FOLDER, uuid[0], uuid[1]),
-            })
-
-    analyzer(app_list_with_locs)
-    return
-
-    # load plugins and run
-    analysis_plugins = helpers.get_plugins("plugins/core/analyzer")
-    for p in analysis_plugins:
-        try:
-            p.run(app_list)
-        except:
-            logger.error("plugin {} has no properly defined/scoped function run()"\
-                .format(p.__name__))
-
-def full_pipeline(args):
-    """
-    Full pipeline for entire process of getting and analyzing new data
-
-    Each step in the pipeline has corresponding directory of plugins. Plugins
-    are dynamically loaded based on files in the corresponding dir.
-
-    Steps are:
-     - crawl
-     - scrape
-     - download
-     - decompile
-     - analyze (same as analysis_pipeline)
-    """
-    kickoff = args.kickoff
-    fname = args.fname
-    d = DbHelper()
-    s = Scraper()
-    c = Crawler(20)
-
-    """
-    # start by updating top apps
-    new_top_list = c.get_top_apps_list()
-    s.scrape_missing(new_top_list, compare_top=True)
-    d.update_top_apps(new_top_list)
-    """
-
-    if kickoff == True:
-        s = None
-        if fname is None:
-            # use crawler to get list of package names
-            logger.error("Crawler for package names not implemented yet")
-            return
-        else:
-            # use specified file of package names
-            s = Scraper(input_file=fname)
-
-        # use scraper
-        logger.info("Starting efficient scrape...")
-        s.efficient_scrape()
-        logger.info("...efficient scrape done")
-    else:
-        # use updater
-        logger.info("Starting updater...")
-        if fname is None:
-            u = Updater()
-        else:
-            u = Updater(input_file=fname)
-        u.update_apps()
-        logger.info("...update done")
-
-    # crawl privacy policies
-    if args.fast:
-        apps = pd.read_csv(fname)['packageName'].tolist()
-        c.crawl_app_privacy_policies(app_list=apps)
-
-        # download/decompile
-        logger.info("Starting download with {} apps...".format(len(apps)))
-        downloader = Downloader()
-        app_uuids = [list(a) for a in zip(apps, d.app_names_to_uuids(apps))]
-        downloader.download(app_uuids)
-        logger.info("...done")
-    else:
-        c.crawl_app_privacy_policies()
-
-        # download/decompile
-        logger.info("Starting download and decompile...")
-        helpers.download_decompile_all()
-        logger.info("...download and decompile done")
-        logger.info("run analysis pipeline now")
-
-
-# **************************************************************************** #
-# PAPER SPECIFIC PIPELINES
-# **************************************************************************** #
-def paper_analysis_pipeline(args):
-    """
-    Pipeline that only contains the static analysis portion
-    """
     if args.no_static:
         analyzer([], process_no=(PROCESS_NO + 4),
                 cache_all=True, no_static=True, dry_run=args.dry_run)
     else:
         # static analysis
         helper = DbHelper()
-        fields = ["packageName", "uuid", "uploadDate", "category", "hasBeenTop",
-                "versionCode", "cacheFail"]
+        fields = 
         app_list = helper.get_app_info_fields(
             query={
                 "dateDownloaded": {"$ne": None},
                 "$or": [{"analysisFail": False}, {"analysisFail": {"$exists": False}}],
             },
-            fields=dict([(f, 1) for f in fields]))
+            fields={
+                "packageName": 1, 
+                "uuid": 1, 
+                "uploadDate": 1, 
+                "category": 1, 
+                "hasBeenTop": 1,
+                "versionCode": 1, 
+                "cacheFail": 1,
+            })
         if args.skip_complete:
             defaults = ["", "", None, "", False, 0, False]
             app_list = helper.get_all_apps_for_plugin_analysis(
@@ -198,35 +96,54 @@ def paper_analysis_pipeline(args):
             logger.info("filtered out done apps")
             print(len(app_list))
 
-        app_versions = defaultdict(list)
-        for app in app_list:
-            app_versions[app["packageName"]].append(app)
-        logger.info("versioned apps")
+        if args.paper:
+            # filter to only get oldest and newest versions
+            app_versions = defaultdict(list)
+            for app in app_list:
+                app_versions[app["packageName"]].append(app)
+            logger.info("versioned apps")
 
-        app_oldest_newest = {}
-        for name, apps in app_versions.items():
-            if len(apps) <= 1:
-                continue
+            app_oldest_newest = {}
+            for name, apps in app_versions.items():
+                if len(apps) <= 1:
+                    continue
 
-            oldest = None
-            oldest_a = None
-            newest = None
-            newest_a = None
-            for a in apps:
-                if a.get("uploadDate", None) is not None:
-                    d = datetime.strptime(a["uploadDate"], "%d %b %Y")
-                    if oldest is None or d < oldest:
-                        oldest = d
-                        oldest_a = a
-                    if newest is None or d > newest:
-                        newest = d
-                        newest_a = a
-            app_oldest_newest[name] = (oldest_a, newest_a)
-        logger.info("got oldest and newest")
+                oldest = None
+                oldest_a = None
+                newest = None
+                newest_a = None
+                for a in apps:
+                    if a.get("uploadDate", None) is not None:
+                        d = datetime.strptime(a["uploadDate"], "%d %b %Y")
+                        if oldest is None or d < oldest:
+                            oldest = d
+                            oldest_a = a
+                        if newest is None or d > newest:
+                            newest = d
+                            newest_a = a
+                app_oldest_newest[name] = (oldest_a, newest_a)
+            logger.info("got oldest and newest")
 
-        app_list_with_locs = []
-        for _, app_versions in app_oldest_newest.items():
-            for a in app_versions:
+            # package with other information
+            app_list_with_locs = []
+            for _, app_versions in app_oldest_newest.items():
+                for a in app_versions:
+                    uuid = a["uuid"]
+                    if uuid.endswith('apk'):
+                        uuid = uuid[:-4]
+                    app_list_with_locs.append(
+                        {
+                            "packageName": a["packageName"],
+                            "uuid": uuid,
+                            "versionCode": a["versionCode"],
+                            "hasBeenTop": a.get("hasBeenTop", False),
+                            "cacheFail": a.get("cacheFail", False),
+                            "fileDir": "{}/{}/{}".format(DOWNLOAD_FOLDER, uuid[0], uuid[1]),
+                        })
+        else:
+            # package with other information
+            app_list_with_locs = []
+            for a in app_list:
                 uuid = a["uuid"]
                 if uuid.endswith('apk'):
                     uuid = uuid[:-4]
@@ -240,6 +157,7 @@ def paper_analysis_pipeline(args):
                         "fileDir": "{}/{}/{}".format(DOWNLOAD_FOLDER, uuid[0], uuid[1]),
                     })
 
+        # run
         analyzer(app_list_with_locs, process_no=(PROCESS_NO * 2 - 2),
                 cache_all=True, dry_run=args.dry_run, plugins_only=args.plugins_only)
 

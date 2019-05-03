@@ -345,7 +345,7 @@ class DbHelper:
         Returns info for newest version
         """
         apk_infos = self.__apk_info.find({"removed": False},
-                {"packageName": 1, "versionCode": 1, "privacyPolicyStatus": 1})
+                {"packageName": 1, "versionCode": 1, "privacyPolicyStatus": 1, "uuid": 1})
 
         app_versions = {}
         for a in apk_infos:
@@ -353,9 +353,9 @@ class DbHelper:
             if a["packageName"] not in app_versions or vc > app_versions[a["packageName"]][0]:
                 to_crawl = (not a["privacyPolicyStatus"]["crawled"] and
                         a["privacyPolicyStatus"]["failureReason"] is None)
-                app_versions[a["packageName"]] = [vc, a["packageName"], to_crawl]
+                app_versions[a["packageName"]] = [vc, a["packageName"], a["uuid"], to_crawl]
 
-        return [a[1] for a in app_versions.values() if a[2]]
+        return [(a[1], a[2]) for a in app_versions.values() if a[2]]
 
     def get_metadata_in_json(self, OUTPUT_FILE):
         """

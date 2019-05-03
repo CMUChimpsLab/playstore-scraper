@@ -42,9 +42,9 @@ class Updater:
         else:
             apps = pd.read_csv(self.input_file)["packageName"].tolist()
 
-        logger.info("Starting bulk update...")
         self.s = Scraper()
         total_apps_no = len(apps)
+        logger.info("Starting bulk update with {} apps...".format(total_apps_no))
         with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
             res = executor.map(self.update_all_thread_worker,
                     range(0, total_apps_no), apps)
@@ -120,7 +120,7 @@ if __name__ == '__main__':
     while True:
         try:
             up = Updater()
-            up.update_all_apps()
+            up.update_apps()
         except KeyboardInterrupt:
             logger.warning("Updater interrupted by user")
 """

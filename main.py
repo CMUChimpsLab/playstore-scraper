@@ -1,3 +1,9 @@
+"""
+main.py:
+
+Contains CLI commands for any functionality that doesn't involve analysis
+"""
+
 import eventlet
 eventlet.monkey_patch()
 import os, sys
@@ -16,7 +22,6 @@ from core.downloader.downloader import Downloader
 from core.scraper.scraper import Scraper
 from core.scraper.updater import Updater
 
-import core.pipelines as pipelines
 from common.helpers import download_decompile_all
 from common.constants import DOWNLOAD_FOLDER, THREAD_NO, LOG_FOLDER
 
@@ -26,7 +31,7 @@ pp = pprint.PrettyPrinter(indent=4)
 # CLI COMMAND FUNCTIONS
 # **************************************************************************** #
 def crawl(args):
-    crawler = Crawler(20)
+    crawler = Crawler(THREAD_NO)
     if args.all:
         crawler.crawl_all_apps()
     elif args.policies:
@@ -75,12 +80,12 @@ def scrape(args):
 def update(args):
     if args.all:
         u = Updater()
-        u.update_apps_all()
+        u.update_apps()
     elif args.top:
         d = DbHelper()
         s = Scraper()
 
-        crawler = Crawler(20)
+        crawler = Crawler(THREAD_NO)
         new_top_list = crawler.get_top_apps_list()
         s.scrape_missing(new_top_list, compare_top=True)
         d.update_top_apps(new_top_list)
@@ -88,12 +93,85 @@ def update(args):
         print("must specify either -a (all) or -t (top)")
         sys.exit(1)
 
+def scrape_pipeline(args):
+    """
+    Pipeline for process of scraping new data
+
+    Each step in the pipeline has corresponding directory of plugins. Plugins
+    are dynamically loaded based on files in the corresponding dir.
+
+    Steps are:
+     - crawl
+     - scrape
+     - download
+     - decompile
+     - analyze (same as analysis_pipeline)
+    """
+    kickoff = args.kickoff
+    fname = args.fname
+    d = DbHelper()
+    s = Scraper()
+    c = Crawler(20)
+    if fname is not None:
+        app_names = pd.read_csv(fname)['packageName'].tolist()
+        apps = [list(a) for a in zip(app_names, d.app_names_to_uuids(app_names))]
+    else:
+        apps = None
+
+    # start by updating top apps
+    new_top_list = c.get_top_apps_list()
+    s.scrape_missing(new_top_list, compare_top=True)
+    d.update_top_apps(new_top_list)
+
+    if kickoff == True:
+        s = None
+        if fname is None:
+            # use crawler to get list of package names
+            logger.error("Crawler for package names not implemented yet")
+            return
+        else:
+            # use specified file of package names
+            s = Scraper(input_file=fname)
+
+        # use scraper
+        logger.info("Starting efficient scrape...")
+        s.efficient_scrape()
+        logger.info("...efficient scrape done")
+    else:
+        # use updater
+        logger.info("Starting updater...")
+        if fname is None:
+            u = Updater()
+        else:
+            u = Updater(input_file=fname)
+        u.update_apps()
+        logger.info("...update done")
+        
+    # crawl privacy policies
+    c.crawl_app_privacy_policies(app_list=apps)
+
+    if args.no_decompile:
+        # download only
+        logger.info("Starting download with {} apps...".format(len(apps)))
+        downloader = Downloader()
+        if apps is None:
+            downloader.download_all_from_db()
+        else:
+            downloader.download(apps)
+        logger.info("...done")
+    else:
+        # download/decompile
+        logger.info("Starting download and decompile...")
+        download_decompile_all()
+        logger.info("...download and decompile done")
+        logger.info("run analysis pipeline now")
+
 # **************************************************************************** #
 # CLI ARGPARSE DEFINITION
 # **************************************************************************** #
 formatter = lambda prog: argparse.HelpFormatter(prog, max_help_position=30)
 parser = argparse.ArgumentParser(prog="PROG",
-    description="App Analysis",
+    description="App Crawl/Scrape",
     usage="python main.py",
     formatter_class=formatter)
 subparsers = parser.add_subparsers(
@@ -174,57 +252,19 @@ update_type.add_argument("-t", "--top",
 u_parser.set_defaults(func=update)
 
 # ***************************** PIPELINE COMMAND ***************************** #
-# short analyses done with plugins for testing/experimenting
-aae_parser = subparsers.add_parser("apk-analysis-experiment", aliases=["aae"],
-    help="experimenting with apk analyses",
-    description="Experimenting/testing APK analyses")
-aae_parser.set_defaults(func=pipelines.apk_analysis_experiment)
-input_opts = aae_parser.add_mutually_exclusive_group(required=True)
-input_opts.add_argument("-f", "--file",
-    help="file containing APKs to test ((packageName,uuid) tuple per line)")
-input_opts.add_argument("-i", "--inputs",
-    nargs='+',
-    help="input of APKs to test (space delimited strings of \"packageName uuid\")")
-aae_parser.add_argument("-t", "--target",
-    help="target plugin")
-
-# static analysis of sample of apps for paper
-pap_parser = subparsers.add_parser("paper-analysis-pipeline", aliases=["pap"],
-    help="static analysis of apps",
-    description="Static analysis of apps for paper")
-pap_parser.add_argument("-s", "--skip-complete",
-    action="store_true",
-    help="true if want to skip any apps with cached or existing results")
-pap_parser.add_argument("-p", "--plugins-only",
-    action="store_true",
-    help="true if want to only run plugins portion")
-pap_parser.add_argument("--no-static",
-    action="store_true",
-    help="true if want to skip static analysis and just do rating portion")
-pap_parser.add_argument("-d", "--dry-run",
-    action="store_true",
-    help="true if want to just do dry run and not modify db")
-pap_parser.set_defaults(func=pipelines.paper_analysis_pipeline)
-
-# static analysis of apps not yet analyzed
-ap_parser = subparsers.add_parser("analysis-pipeline", aliases=["ap"],
-    help="static analysis of apps",
-    description="Static analysis of apps not yet analyzed")
-ap_parser.set_defaults(func=pipelines.analysis_pipeline)
-
-# entire app data and analysis pipeline
-fp_parser = subparsers.add_parser("full-pipeline", aliases=["fp"],
+# entire app data scrape pipeline
+sp_parser = subparsers.add_parser("scrape-pipeline", aliases=["fp"],
     help="entire app data crawling pipeline",
     description="Entire pipeline from scraping data about apps to analysis of them")
-fp_parser.add_argument("-k", "--kickoff",
+sp_parser.add_argument("-k", "--kickoff",
     action="store_true",
     help="true if is first run, false otherwise")
-fp_parser.add_argument("--fast",
+sp_parser.add_argument("--no-decompile",
     action="store_true",
-    help="quick way to get more data so only scrapes/downloads necessary")
-fp_parser.add_argument("-f", "--fname",
+    help="skip decompile")
+sp_parser.add_argument("-f", "--fname",
     help="file name with package names, otherwise use crawler to get package names")
-fp_parser.set_defaults(func=pipelines.full_pipeline)
+sp_parser.set_defaults(func=scrape_pipeline)
 
 if __name__ == '__main__':
     args = parser.parse_args()

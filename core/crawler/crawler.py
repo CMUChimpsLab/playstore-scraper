@@ -235,8 +235,8 @@ class Crawler():
                         counter - BULK_CHUNK, counter, len(app_list)))
 
 
-    def privacy_policy_thread_worker(self, helper, package_name):
-        uuid = helper.app_names_to_uuids([package_name])[0]
+    def privacy_policy_thread_worker(self, helper, app):
+        package_name, uuid = app
         url = "https://play.google.com/store/apps/details?id={}".format(package_name)
         try:
             page_contents = crawl_url(url)
