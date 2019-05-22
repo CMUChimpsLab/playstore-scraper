@@ -14,7 +14,7 @@ import requests
 import socket
 
 from core.db.db_helper import DbHelper
-from common.constants import CATEGORIES, THREAD_NO, PRIVACY_POLICY_FOLDER, BULK_CHUNK
+from common.constants import CATEGORIES, THREAD_NO, PRIVACY_POLICY_FOLDER, BULK_CHUNK, LARGE_CHUNK
 from common.gplaycli import gplaycli
 from common import GPLAYCLI_CONFIG_FILE_PATH
 
@@ -46,6 +46,7 @@ class Crawler():
     def init_eventlet_objs(self):
         # pool of greenthreads, executes tasks pushed to it
         self.pool = eventlet.GreenPool(self.concurrency)
+        self.pile = eventlet.GreenPile(self.pool)
 
         self.task_queue = eventlet.Queue()
         self.results = eventlet.Queue()
@@ -68,7 +69,6 @@ class Crawler():
     # ************************************************************************ #
     def crawl_all_apps(self, root_urls=None):
         self.init_eventlet_objs()
-        pile = eventlet.GreenPile(self.pool)
 
         if root_urls is None:
             # default root is at main apps page
@@ -94,7 +94,7 @@ class Crawler():
 
             # if we have a new URL, then we spawn another green thread for fetching the content
             if next_url:
-                pile.spawn(self.fetch_all_links_thread_worker, next_url, lock)
+                self.pile.spawn(self.fetch_all_links_thread_worker, next_url, lock)
 
             last_print_delta = time.time() - last_check
             if (apps_in_file + len(self.app_ids_seen)) >= prog:
@@ -172,7 +172,6 @@ class Crawler():
         > 320
         """
         self.init_eventlet_objs()
-        pile = eventlet.GreenPile(self.pool)
         logger.info("Starting top apps crawl")
 
         # have to get 0 -> 100 then 100 -> 199 then 199 -> 318 (google doesn't like
@@ -181,7 +180,7 @@ class Crawler():
             "/collection/topselling_{}?hl=en&gl=us&start={}&num={}")
         for c in CATEGORIES:
             next_url = (c, url_template.format(c, "{}", "{}", "{}"))
-            pile.spawn(self.top_app_crawl_thread_worker, next_url)
+            self.pile.spawn(self.top_app_crawl_thread_worker, next_url)
 
         pkg_list = []
         while (not self.results.empty()) or (self.pool.running() != 0):
@@ -220,15 +219,44 @@ class Crawler():
         if app_list is None:
             app_list = helper.get_package_names_policy_crawl()
 
+        success = []
+        fail = []
+        removed = []
         with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
             res = executor.map(partial(self.privacy_policy_thread_worker, helper), app_list)
             counter = 0
             for future in res:
                 counter += 1
-                if counter % BULK_CHUNK == 0:
+                if future[1] is None:
+                    success.append(future[0])
+                elif future[1] == "removed":
+                    removed.append(future[0])
+                else:
+                    fail.append(future)
+                if counter % LARGE_CHUNK == 0:
                     logger.info("crawled {} to {} out of {}".format(
-                        counter - BULK_CHUNK, counter, len(app_list)))
+                        counter - LARGE_CHUNK, counter, len(app_list)))
+                if counter % (BULK_CHUNK * 10) == 0:
+                    try:
+                        logger.info("marking {} as removed".format(len(removed)))
+                        helper.update_apps_as_removed(removed)
+                        logger.info("marking {} with policy crawl fail".format(len(fail)))
+                        helper.update_policy_crawl_failures(fail)
+                        logger.info("marking {} with policy crawl success".format(len(success)))
+                        helper.update_policy_crawled(success)
+                        success = []
+                        fail = []
+                        removed = []
+                    except Exception as e:
+                        print(e)
+                        sys.exit(1)
 
+        logger.info("marking {} as removed".format(len(removed)))
+        helper.update_apps_as_removed(removed)
+        logger.info("marking {} with policy crawl fail".format(len(fail)))
+        helper.update_policy_crawl_failures(fail)
+        logger.info("marking {} with policy crawl success".format(len(success)))
+        helper.update_policy_crawled(success)
 
     def privacy_policy_thread_worker(self, helper, app):
         package_name, uuid = app
@@ -236,10 +264,10 @@ class Crawler():
         try:
             page_contents = crawl_url(url)
         except HttpError as e:
-            if e.response.status_code == 404:
-                helper.update_apps_as_removed([package_name])
-            elif e.response.status_code == 408:
-                helper.update_policy_crawl_failure(uuid, "policy url timed out")
+            if e.code == 404:
+                return (package_name, "removed")
+            elif e.code == 408:
+                return (uuid, "policy url timed out")
             return
 
         policy_url = None
@@ -259,29 +287,27 @@ class Crawler():
                     PRIVACY_POLICY_FOLDER, uuid[0], uuid[1], uuid)
                 with open(dest, "wb") as f:
                     f.write(requests.get(policy_url, allow_redirects=True, timeout=10).content)
-                helper.update_policy_crawled([uuid])
-                logger.info("got {},{} policy".format(package_name, uuid))
+                return (uuid, None)
             except requests.exceptions.HTTPError as e:
                 logger.error("{},{} - {} error".format(package_name, uuid, e.response.status_code))
-                helper.update_policy_crawl_failure(uuid, str(e.reason))
-            except requests.exceptions.URLError as e:
-                logger.error("{},{} - {}".format(package_name, uuid, str(e.reason)))
-                helper.update_policy_crawl_failure(uuid, str(e.reason))
+                return (uuid, str(e))
+            except requests.exceptions.ConnectionError as e:
+                logger.error("{},{} - {}".format(package_name, uuid, str(e)))
+                return (uuid, str(e))
             except requests.exceptions.Timeout:
                 logger.error("{},{} timed out".format(package_name, uuid))
-                helper.update_policy_crawl_failure(uuid, "policy page timed out")
+                return (uuid, "policy page timed out")
             except Exception as e:
                 logger.error("{},{} - {}".format(package_name, uuid, str(e)))
-                helper.update_policy_crawl_failure(uuid, str(e))
+                return (uuid, str(e))
         else:
-            helper.update_policy_crawl_failure(uuid, "policy not found on store page")
+            return (uuid, "policy not found on store page")
 
     # ************************************************************************ #
     # crawling app reviews
     # ************************************************************************ #
     def crawl_reviews(self, app_list, max_reviews=20):
         self.init_eventlet_objs()
-        pile = eventlet.GreenPile(self.pool)
         api = gplaycli.GPlaycli(config_file=GPLAYCLI_CONFIG_FILE_PATH)
 
         for a in app_list:
@@ -294,7 +320,7 @@ class Crawler():
                 break
 
             if a:
-                pile.spawn(partial(self.review_thread_worker, api, max_reviews), a)
+                self.pile.spawn(partial(self.review_thread_worker, api, max_reviews), a)
 
         all_reviews = {}
         while (not self.results.empty()) or (self.pool.running() != 0):
@@ -353,8 +379,8 @@ def crawl_url(url, timeout=10):
         except socket.timeout as e:
             logger.error("URL {} timed out".format(url))
             e_code = 408
-        except requests.exceptions.URLError as e:
-            if isinstance(e.reason, socket.timeout):
+        except requests.exceptions.ConnectionError as e:
+            if isinstance(e, socket.timeout):
                 logger.error("URL {} timed out".format(url))
                 e_code = 408
             else:

@@ -1,9 +1,13 @@
+import eventlet
 import pandas as pd
 import logging
 import datetime
 import time
 from concurrent.futures import ThreadPoolExecutor
 import threading
+import requests
+import pprint
+import traceback
 
 from common.app_object import App
 from .uuid_generator import generate_uuids
@@ -15,6 +19,8 @@ from common import GPLAYCLI_CONFIG_FILE_PATH
 from common.constants import THREAD_NO, RESULT_CHUNK, BULK_CHUNK
 from common.protobuf_to_dict.protobuf_to_dict.convertor import protobuf_to_dict
 from google.protobuf.json_format import MessageToDict
+
+pp = pprint.PrettyPrinter(indent=4)
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
@@ -36,6 +42,34 @@ class Scraper:
         self.input_file = input_file
         self.__config_file = GPLAYCLI_CONFIG_FILE_PATH
         self.api = gplaycli.GPlaycli(config_file=self.__config_file)
+
+    def refresh_token(self):
+        global token_refreshing
+        global lock
+
+        # check if thread should refresh
+        should_refresh = lock.acquire(False)
+        if should_refresh:
+            # acquired lock so refresh token
+            logger.info("token lock acquired, refreshing")
+            token_refreshing = True
+            try:
+                time.sleep(5)
+                self.api.refresh_token()
+            except Exception as e:
+                logger.error("token gen failed!!!!!!!!!!")
+                print(traceback.format_exc())
+                logger.error(traceback.format_exc())
+            token_refreshing = False
+            logger.info("token lock released")
+            lock.release()
+        else:
+            # wait until token is done being refreshed
+            lock.acquire()
+            while token_refreshing:
+                print(token_refreshing)
+                time.sleep(0.5)
+            lock.release()
 
     # ***************** #
     # efficient scraping related functions
@@ -61,14 +95,19 @@ class Scraper:
                     range(0, len(package_names)), package_names)
             counter = 0
             for future in res:
-                app_data.append(future)
+                if future is not None:
+                    app_data.extend(future)
                 counter += 1
                 if counter % RESULT_CHUNK == 0:
                     logger.info("completed results {} to {} out of {}".format(
                         counter - RESULT_CHUNK, counter, len(package_names)))
+                if counter % (BULK_CHUNK * 10) == 0:
+                    logger.info("inserting {} results to db...".format(len(app_data)))
+                    self.__db_helper.insert_apps_into_db(app_data)
+                    app_data = []
             logger.info("completed all out of {}".format(len(package_names)))
-        
-        logger.info("inserting {} results to db...".format(len(package_names)))
+
+        logger.info("inserting {} results to db...".format(len(app_data)))
         self.__db_helper.insert_apps_into_db(app_data)
 
     def efficient_scrape_thread_worker(self, index, package_name):
@@ -156,24 +195,25 @@ class Scraper:
                     range(0, len(package_names)), package_names)
             counter = 0
             for future in res:
-                app_data.append(res)
+                if future is not None:
+                    app_data.extend(future)
                 counter += 1
                 if counter % RESULT_CHUNK == 0:
                     logger.info("completed results {} to {} out of {}".format(
                         counter - RESULT_CHUNK, counter, len(package_names)))
+                if counter % (BULK_CHUNK * 10) == 0:
+                    logger.info("inserting {} results to db...".format(len(app_data)))
+                    self.__db_helper.insert_apps_into_db(app_data)
+                    app_data = []
             logger.info("completed all out of {}".format(len(package_names)))
 
-        logger.info("inserting {} results to db...".format(len(package_names)))
+        logger.info("inserting {} results to db...".format(len(app_data)))
         self.__db_helper.insert_apps_into_db(app_data)
 
     def scrape_thread_worker(self, index, package_name):
         """
         thread worker for regular scrape function
         """
-        if self.__db_helper.is_app_in_db(package_name):
-            logger.info("%s already in database, skipping scrape" % package_name)
-            # return
-
         return self.get_metadata_for_apps([package_name])
 
     def get_metadata_for_apps(self, packages, bulk=False):
@@ -181,11 +221,9 @@ class Scraper:
         Returns list of App objects corresponding to package names in packages
         NOTE: should not be used with too many packages, or should be used as part of thread
         """
-        global token_refreshing
-        global lock
-
         detail_data = None
         if packages[0] is None:
+            logger.error("null package name ")
             return
         while True:
             try:
@@ -196,70 +234,65 @@ class Scraper:
                         "DF-DFERH-01" in e.value):
                     logger.error("Request error for {} - {}, getting new token".format(
                         packages[0], e.value))
-
-                    # check if thread should refresh
-                    should_refresh = lock.acquire(False)
-                    if should_refresh:
-                        # acquired lock so refresh token
-                        token_refreshing = True
-                        time.sleep(5)
-                        self.api.refresh_token()
-                        token_refreshing = False
-                        lock.release()
-                    else:
-                        # wait until token is done being refreshed
-                        lock.acquire()
-                        while token_refreshing:
-                                time.sleep(0.5)
-                        lock.release()
-
+                    self.refresh_token()
                     continue
+                elif "not found" in e.value:
+                    logger.warning("{} - not found, marking as removed".format(
+                        packages[0], e.value))
+                    return
                 else:
                     logger.error("Request error for {} - {}".format(packages[0], e.value))
                     return
+            except requests.exceptions.Timeout:
+                    logger.error("Timeout error for {}, getting new token".format(packages[0]))
+                    self.refresh_token()
+                    continue
+            """
             except Exception as e:
                 logger.error("Non-request error for {} - {}".format(packages[0], e))
                 return
+            """
 
             # if empty details, retry after sleep
             if len(detail_data) == 0:
                 logger.error("Empty details for {}, sleep and retry".format(packages[0]))
                 time.sleep(5)
                 continue
+            break
 
-            # convert data array into arrays of apk info and apk details
-            if detail_data is not None:
-                info_data = []
-                if not bulk:
-                    for app_details in detail_data:
-                        app_dict = MessageToDict(app_details)
-                        if "installationSize" not in app_dict["details"]["appDetails"]:
-                            # pass bc indicates pre-register
-                            continue
+        # convert data array into arrays of apk info and apk details
+        if detail_data is not None:
+            info_data = []
+            if not bulk:
+                for app_details in detail_data:
+                    app_dict = MessageToDict(app_details)
+                    if "installationSize" not in app_dict["details"]["appDetails"]:
+                        # pass bc indicates pre-register
+                        continue
 
-                        info_data.append(app_dict)
+                    info_data.append(app_dict)
 
-                    # Zips uuids with dictionaries in data array then makes them Apps
-                    # and returns that list of them
-                    for app in info_data:
-                        if app is not None:
-                            app['dateLastScraped'] = datetime.datetime.utcnow()\
-                                .strftime("%Y%m%dT%H%M")
-                            app["updatedTimestamp"] = datetime.datetime.utcnow()\
-                                .strftime("%Y%m%dT%H%M")
-                    uuids = generate_uuids(len(info_data))
+                # Zips uuids with dictionaries in data array then makes them Apps
+                # and returns that list of them
+                for app in info_data:
+                    if app is not None:
+                        app['dateLastScraped'] = datetime.datetime.utcnow()\
+                            .strftime("%Y%m%dT%H%M")
+                        app["updatedTimestamp"] = datetime.datetime.utcnow()\
+                            .strftime("%Y%m%dT%H%M")
+                uuids = generate_uuids(len(info_data))
 
-                    app_list = []
-                    for (d, uuid) in zip(info_data, uuids):
-                        app_list.append(App.convert_to_App_Object(d, uuid))
+                app_list = []
+                for (d, uuid) in zip(info_data, uuids):
+                    app_list.append(App.convert_to_App_Object(d, uuid))
 
-                    return zip(app_list, detail_data)
-                else:
-                    # detail_data is just info if bulk is False
-                    return info_data
+                return list(zip(app_list, detail_data))
             else:
-                logger.warning("NULL detail_data for {}".format(packages[0]))
-                return None
+                # detail_data is just info if bulk
+                return list(zip(detail_data, [None] * len(detail_data)))
+        else:
+            logger.warning("NULL detail_data for {}".format(packages[0]))
+            return None
 
     # ***************** #
     # other useful functions
@@ -294,9 +327,6 @@ class Scraper:
         Figures out which apps have been removed, returns which apps have been removed
         NOTE: should not be used with too many packages, or should be used as part of thread
         """
-        global token_refreshing
-        global lock
-
         detail_data = None
         removed_app_names = []
         while True:
@@ -307,30 +337,21 @@ class Scraper:
                         "Being throttled" in e.value or
                         "DF-DFERH-01" in e.value):
                     logger.error("Request error for {}, getting new token".format(e.value))
-
-                    # check if thread should refresh
-                    should_refresh = lock.acquire(False)
-                    if should_refresh:
-                        # acquired lock so refresh token
-                        token_refreshing = True
-                        time.sleep(5)
-                        self.api.refresh_token()
-                        token_refreshing = False
-                        lock.release()
-                    else:
-                        # wait until token is done being refreshed
-                        lock.acquire()
-                        while token_refreshing:
-                                time.sleep(0.5)
-                        lock.release()
-
+                    self.refresh_token()
                     continue
                 else:
                     logger.error("Request error for {}".format(e.value))
                     return
+            except requests.exceptions.Timeout:
+                    logger.error("Timeout error for {} - {}, getting new token".format(
+                        packages[0], e.value))
+                    self.refresh_token()
+                    continue
+            """
             except Exception as e:
                 logger.error("Non-request error for {}".format(e))
                 return
+            """
 
             # look for apps that are missing
             if detail_data is not None and len(detail_data) > 0:

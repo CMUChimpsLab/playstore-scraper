@@ -24,7 +24,7 @@ class App:
         # These values should not be changed
         self.__dict__['uuid'] = uuid
         self.__dict__['packageName'] = packageName
-        self.__dict__['versionCode'] = versionCode
+        self.__dict__['versionCode'] = int(versionCode)
         self.__dict__['constants'] = ['uuid', 'packageName', 'versionCode', 'constants']
 
         self.title = title
@@ -52,9 +52,14 @@ class App:
         self.isDownloaded = False
         self.isSizeExceed = False
         self.privacyPolicyCrawled = False
+        self.privacyPolicyStatus = {
+            "crawled" : True,
+            "failureReason" : None,
+        }
         self.removed = False
         self.cacheFail = False
         self.analysisFail = False
+        self.downloadFailReason = None
 
     def __setattr__(self, name, value):
         if name in self.__dict__['constants']:
@@ -90,12 +95,12 @@ class App:
         #pp.pprint(info_dict)
         app = App(uuid,
                   app_details["packageName"],
-                  app_details.get("versionCode", None),
+                  app_details.get("versionCode", 0),
                   title=info_dict['title'],
                   developerName=app_details['developerName'],
                   installationSize=app_details.get('installationSize', None),
                   category=category,
-                  userRating=info_dict['aggregateRating'],
+                  userRating=info_dict.get('aggregateRating', None),
                   permissions=app_details.get('permission', []),
                   dateLastScraped=info_dict['dateLastScraped'],
                   descriptionHtml=info_dict['descriptionHtml'],

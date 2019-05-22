@@ -208,10 +208,7 @@ class GooglePlayAPI(object):
             self.setAuthSubToken(authSubToken)
 
             # check if token is valid with a simple search
-            try:
-                self.search('firefox', 1, None)
-            except RequestError as e:
-                pass
+            self.search('firefox', 1, None)
         else:
             raise LoginError('Either (email,pass) or (gsfId, authSubToken) is needed')
 
@@ -504,7 +501,6 @@ class GooglePlayAPI(object):
         if(filterByDevice):
             path += "&dfil=1"
 
-        print(path)
         data = self.executeRequestApi2(path)
         output = []
         for rev in data.payload.reviewResponse.getResponse.review:

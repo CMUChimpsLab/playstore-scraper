@@ -6,9 +6,10 @@ import pandas as pd
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 import threading
+import traceback
 
 import common.gplaycli.gplaycli as gplaycli
-from common.constants import DOWNLOAD_FOLDER, THREAD_NO, RESULT_CHUNK
+from common.constants import DOWNLOAD_FOLDER, THREAD_NO, RESULT_CHUNK, BULK_CHUNK
 from common.app_object import App
 import core.scraper.uuid_generator as uuid_generator
 from core.db.db_helper import DbHelper
@@ -44,12 +45,17 @@ class Downloader:
         self.__config_file = GPLAYCLI_CONFIG_FILE_PATH
         self.__api = gplaycli.GPlaycli(config_file=self.__config_file)
 
-    def download_all_from_db(self):
+    def download_all_from_db(self, top=False):
         """
         Simple function that grabs all of the apps from the database that
         haven't been downloaded, and downloads them.
+        :param top: only do top apps
         """
-        apps = self.__db_helper.get_all_apps_to_download()
+        if top:
+            top_apps = self.__db_helper.get_top_apps()
+            apps = self.__db_helper.get_all_apps_to_download(app_names=top_apps)
+        else:
+            apps = self.__db_helper.get_all_apps_to_download()
         return self.download(apps)
 
     def download(self, apps, force_download=False):
@@ -60,17 +66,34 @@ class Downloader:
         :return: A list of timestamps indicating the when the download was completed. If the download fails,
                  a None value is inserted instead.
         """
+        downloaded_uuids = []
+        failed_uuids = []
         with ThreadPoolExecutor(max_workers=THREAD_NO) as executor:
             res = executor.map(partial(self.download_thread_worker, False), apps)
-            downloaded_uuids = []
             counter = 0
             for future in res:
+                if future is not None:
+                    if type(future) != tuple:
+                        downloaded_uuids.append(future)
+                    else:
+                        failed_uuids.append(future)
                 counter += 1
                 if counter % RESULT_CHUNK == 0:
                     logger.info("downloaded {} to {} out of {}".format(
                         counter - RESULT_CHUNK, counter, len(apps)))
-                if future is not None:
-                    downloaded_uuids.append(future)
+                if counter % BULK_CHUNK == 0:
+                    if self.__use_database:
+                        logger.info("marking {} with download time".format(
+                            len(downloaded_uuids)))
+                        self.__db_helper.set_download_date(downloaded_uuids,
+                                datetime.datetime.utcnow().strftime("%Y%m%dT%H%M"))
+                        logger.info("marking {} with download failure".format(
+                            len(failed_uuids)))
+                        for failed_uuid, fail_reason in failed_uuids:
+                            self.__db_helper.update_apk_info_field_uuid(failed_uuid,
+                                "downloadFailReason", fail_reason)
+                        downloaded_uuids = []
+                        failed_uuids = []
             logger.info("downloaded all out of {}".format(len(apps)))
 
             return downloaded_uuids
@@ -97,15 +120,12 @@ class Downloader:
         if not force_download and app[1] in downloaded_apps:
             logger.info("App already downloaded - {}".format(app[0]))
             download_time = os.path.getmtime(self.__download_folder + "/" + app_dir + "/" + app[1])
-            self.__db_helper.set_download_date(uuid,
-                datetime.datetime.fromtimestamp(download_time).strftime("%Y%m%dT%H%M"))
             return uuid
 
         download_folder = self.__download_folder + "/" + app_dir
         downloaded_uuids = set()
         while True:
             try:
-                logger.info("Downloading app - {} as {}".format(app[0], app[1]))
                 downloaded_uuids, fails = self.__api.download_with_errors([app],
                         download_folder)
 
@@ -120,11 +140,17 @@ class Downloader:
                         # check if thread should refresh token
                         should_refresh = lock.acquire(False)
                         if should_refresh:
-                            # acquired lock so refresh token
+                            logger.info("token lock acquired, refreshing")
                             token_refreshing = True
-                            time.sleep(5)
-                            self.__api.refresh_token()
+                            try:
+                                time.sleep(5)
+                                self.__api.refresh_token()
+                            except Exception as e:
+                                logger.error("token gen failed!!!!!!!!!!")
+                                print(traceback.format_exc())
+                                logger.error(traceback.format_exc())
                             token_refreshing = False
+                            logger.info("token lock released")
                             lock.release()
                         else:
                             # wait until token is done being refreshed
@@ -137,17 +163,13 @@ class Downloader:
                             fail_reason = str(e)
                         else:
                             fail_reason = str(e.value).split(".")[0]
-                        self.__db_helper.update_apk_info_field_uuid(failed_uuid,
-                            "downloadFailReason", fail_reason)
+                        return (failed_uuid, fail_reason)
 
                 if retry:
                     continue
 
                 if len(downloaded_uuids) > 0:
                     download_completion_time = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M")
-                    if self.__use_database:
-                        self.__db_helper.set_download_date(uuid, download_completion_time)
-                    # TODO mark it as not downloadable in db
 
             except Exception as e:
                 logger.error("Download failed for {} - {}".format(app[0], e))

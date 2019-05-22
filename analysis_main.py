@@ -61,6 +61,9 @@ ap_parser.add_argument("--no-static",
 ap_parser.add_argument("-d", "--dry-run",
     action="store_true",
     help="true if want to just do dry run and not modify db")
+ap_parser.add_argument("--cache-all",
+    action="store_true",
+    help="cache Androguard analysis object for all apps, not just top")
 ap_parser.add_argument("--paper",
     action="store_true",
     help="true if only use apps for paper")

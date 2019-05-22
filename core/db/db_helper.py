@@ -1,3 +1,4 @@
+import sys
 import time
 from pymongo import MongoClient
 import pymongo
@@ -137,7 +138,7 @@ class DbHelper:
         Retrieve the names of all the apps from the database
         """
         cursor = self.__apk_info.find()
-        return [entry["packageName"] for entry in cursor if entry["removed"]]
+        return list(set([entry["packageName"] for entry in cursor if entry["removed"]]))
 
     def get_all_apps_from_database(self):
         """
@@ -156,19 +157,20 @@ class DbHelper:
             {'_id': 0, "packageName": 1})
         return [a['uuid'] for a in app]
 
-    def get_all_apps_to_download(self):
+    def get_all_apps_to_download(self, app_names=None):
         """
         Returns a list of package_names for all of the apps that need to be
         downloaded + decompiled + analyzed
 
         Only return document with info of newest version of app
         """
-        apk_infos = self.__apk_info.find({
-                "$and": [
-                    {"removed": False},
-                    {"isFree": True},
-                ],
-            },
+        query = {"$and": [
+            {"removed": False},
+            {"isFree": True},
+        ]}
+        if app_names is not None:
+            query["$and"].append({"packageName": {"$in": app_names}})
+        apk_infos = self.__apk_info.find(query,
             {
                 "packageName": 1,
                 "versionCode": 1,
@@ -335,7 +337,7 @@ class DbHelper:
                 }) \
             .limit(count)
 
-        return list(cursor)
+        return list(set([e["packageName"] for e in cursor]))
 
     def get_package_names_policy_crawl(self):
         """
@@ -415,7 +417,7 @@ class DbHelper:
     def insert_apps_into_db(self, apps):
         """
         Inserts the metadata for appliations into the database
-        :param apps_info_objs: list of tuples, which should be 
+        :param apps_info_objs: list of tuples, which should be
             (<instance of App object>, <details protobuf>)
         """
         parsed_apps = {}
@@ -425,7 +427,10 @@ class DbHelper:
             a_obj, a_proto = a
             a_dict = a_obj.__dict__
             a_dict["removed"] = False
-            a_dict.pop('constants')
+            if "constants" in a_dict:
+                a_dict.pop('constants')
+            else:
+                logger.error("{} has no constants????".format(a_dict))
 
             if a_proto is not None:
                 a_proto = protobuf_to_dict(a_proto)
@@ -442,101 +447,123 @@ class DbHelper:
 
         # mark as not removed if was marked as removed in topApps
         self.__top_apps.update_many(
-            {"_id": {"$in": apps_names}}, 
+            {"_id": {"$in": apps_names}},
             {"$set": {"removed": False}})
 
         # split apps into top, new, and everything else
         top_names = self.__top_apps.find({"_id": {"$in": apps_names}, "currentlyTop": True})
         top_names_set = set([e["_id"] for e in top_names])
-        new_names = self.__package_names.find({"_id": {"$in": apps_names}})
-        new_names_set = set([e["_id"] for e in new_names])
-        other_names_set = set(apps_names) - top_names_set - new_names_set
+        other_names = self.__package_names.find({"_id": {"$in": apps_names}})
+        other_names_set = set([e["_id"] for e in other_names]) - top_names_set
+        new_names_set = set(apps_names) - top_names_set - other_names_set
 
         # insert new apps, and also populate packageNames
-        self.__apk_info.insert_many([parsed_apps[name][0] for name in new_names_set])
-        new_details = []
-        for name in new_names_set:
-            if parsed_apps[name][1] is not None:
-                new_details.append(parsed_apps[name][1])
-        self.__apk_details.insert_many(new_details)
-        self.__package_names.insert_many([{"_id": name} for name in new_names_set])
-        logger.info("Inserted {} new apps into db".format(len(top_names_set)))
-        
+        if len(new_names_set) > 0:
+            self.__apk_info.insert_many([parsed_apps[name][0] for name in new_names_set])
+            new_details = []
+            for name in new_names_set:
+                if parsed_apps[name][1] is not None:
+                    new_details.append(parsed_apps[name][1])
+            if len(new_details) > 0:
+                self.__apk_details.insert_many(new_details)
+            self.__package_names.insert_many([{"_id": name} for name in new_names_set])
+        logger.info("Inserted {} new apps into db".format(len(new_names_set)))
+
         # only want to maintain multiple versions for top apps
-        self.__apk_info.insert_many([parsed_apps[name][0] for name in top_names_set])
-        top_details = []
-        for name in top_names_set:
-            if parsed_apps[name][1] is not None:
-                top_details.append(parsed_apps[name][1])
-        self.__apk_details.insert_many(top_details)
+        if len(top_names_set) > 0:
+            self.__apk_info.insert_many([parsed_apps[name][0] for name in top_names_set])
+            top_details = []
+            for name in top_names_set:
+                if parsed_apps[name][1] is not None:
+                    top_details.append(parsed_apps[name][1])
+            if len(top_details) > 0:
+                self.__apk_details.insert_many(top_details)
         logger.info("Inserted {} new versions of top apps into db".format(len(top_names_set)))
 
         # update and replace entry for other apps
-        # find old entries
-        other_entries = self.__apk_info.aggregate([
-                {"$match": {"packageName": {"$in": list(other_names_set)}}},
-                {"$group":
-                    {
-                        "_id": "$packageName",
-                        "uuids": {"$push": "$uuid"},
-                        "vcs": {"$push": {
-                            "$cond": [
-                                {"$ne": ["$uploadDate", None]},
-                                "$uploadDate",
-                                0,
-                            ],
-                        }},
-                        "uploadDates": {"$push": {
-                            "$cond": [
-                                {"$ne": ["$versionCode", None]},
-                                "$versionCode",
-                                0,
-                            ],
-                        }},
-                    }
-                },
-            ])
-        
-        # find newest version to replace in case there is more than one
-        old_info_uuids = []
-        old_detail_ids = []
-        for old_entries in other_entries:
-            old_uuid = None
-            newest_upload = None
-            for i in range(0, len(old_entries["uploadDates"])):
-                upload_date = old_entries["uploadDates"][i]
-                uuid = old_entries["uuids"][i]
-                try:
-                    time_obj = datetime.strptime(upload_date, "%d %b %Y")
-                except ValueError:
-                    time_obj = datetime.strptime(upload_date, "%b %d, %Y")
-                if newest_upload is None or time_obj > newest_upload:
-                    newest_upload = time_obj
-                    old_uuid = uuid
+        if len(other_names_set) > 0:
+            # find old entries
+            other_entries = self.__apk_info.aggregate([
+                    {"$match": {"packageName": {"$in": list(other_names_set)}}},
+                    {"$group":
+                        {
+                            "_id": "$packageName",
+                            "uuids": {"$push": "$uuid"},
+                            "uploadDates": {"$push": {
+                                "$cond": [
+                                    {"$ne": ["$uploadDate", None]},
+                                    "$uploadDate",
+                                    None,
+                                ],
+                            }},
+                            "vcs": {"$push": {
+                                "$cond": [
+                                    {"$ne": ["$versionCode", None]},
+                                    "$versionCode",
+                                    0,
+                                ],
+                            }},
+                        }
+                    },
+                ])
 
-            # Remove old files
-            app_path = "/" + old_uuid[0] + "/" + old_uuid[1] + "/" + old_uuid + ".apk"
-            if os.path.isfile(constants.DOWNLOAD_FOLDER + app_path):
-                os.remove(constants.DOWNLOAD_FOLDER + app_path)
-            zip_path = "/" + old_uuid[0] + "/" + old_uuid + ".zip"
-            if os.path.isfile(constants.DECOMPILE_FOLDER + zip_path):
-                os.remove(constants.DECOMPILE_FOLDER + zip_path)
-            logger.info("Replaced {} in db".format(old_entries["_id"]))
+            # find newest version to replace in case there is more than one
+            old_info_uuids = []
+            old_detail_ids = []
+            old_names = []
+            for old_entries in other_entries:
+                old_uuid = None
+                newest_vc = None
+                newest_upload = None
+                for i in range(0, len(old_entries["uploadDates"])):
+                    uuid = old_entries["uuids"][i]
+                    upload_date = old_entries["uploadDates"][i]
+                    if upload_date is None and old_uuid is None:
+                        newest_vc = old_entries["vcs"][i]
+                        newest_upload = None
+                        old_uuid = uuid
+                    elif upload_date is None:
+                        continue
+                    else:
+                        try:
+                            time_obj = datetime.strptime(upload_date, "%d %b %Y")
+                        except ValueError:
+                            time_obj = datetime.strptime(upload_date, "%b %d, %Y")
+                        if time_obj > newest_upload:
+                            newest_vc = old_entries["vcs"][i]
+                            newest_upload = time_obj
+                            old_uuid = uuid
 
-            details_id = self.get_details_id_for_uuid(old_uuid)
-            old_info_uuids.append(old_uuid)
-            old_detail_ids.append(details_id)
-            
-        # remove old version entries
-        self.__apk_info.remove({"uuid": {"$in": old_info_uuids}})
-        self.__apk_details.remove({"_id": {"$in": old_detail_ids}})
-        self.__apk_info.insert_many([parsed_apps[name][0] for name in other_names_set])
-        other_details = []
-        for name in other_names_set:
-            if parsed_apps[name][1] is not None:
-                other_details.append(parsed_apps[name][1])
-        self.__apk_details.insert_many(other_details)
-        logger.info("Replaced {} old versions of apps into db".format(len(other_names_set)))
+                # if matches, skip
+                if newest_vc == parsed_apps[name][0].get("versionCode", 0):
+                    continue
+
+                # Remove old files
+                app_path = "/" + old_uuid[0] + "/" + old_uuid[1] + "/" + old_uuid + ".apk"
+                if os.path.isfile(constants.DOWNLOAD_FOLDER + app_path):
+                    os.remove(constants.DOWNLOAD_FOLDER + app_path)
+                zip_path = "/" + old_uuid[0] + "/" + old_uuid + ".zip"
+                if os.path.isfile(constants.DECOMPILE_FOLDER + zip_path):
+                    os.remove(constants.DECOMPILE_FOLDER + zip_path)
+
+                details_id = self.get_details_id_for_uuid(old_uuid)
+                old_info_uuids.append(old_uuid)
+                old_detail_ids.append(details_id)
+                old_names.append(old_entries["_id"])
+
+            # remove old version entries
+            self.__apk_info.remove({"uuid": {"$in": old_info_uuids}})
+            self.__apk_details.remove({"_id": {"$in": old_detail_ids}})
+            self.__apk_info.insert_many([parsed_apps[name][0] for name in old_names])
+            other_details = []
+            for name in old_names:
+                if parsed_apps[name][1] is not None:
+                    other_details.append(parsed_apps[name][1])
+            if len(other_details) > 0:
+                self.__apk_details.insert_many(other_details)
+            logger.info("Replaced {} old versions of apps into db".format(len(old_names)))
+        else:
+            logger.info("Replaced 0 old versions of apps into db")
 
     def update_top_apps(self, new_top_list):
         """
@@ -587,6 +614,8 @@ class DbHelper:
         logger.info("permissionList - removed {}".format(res.deleted_count))
         res = self.__static_analysis_db.thirdPartyPackages.delete_many({"uuid": {"$in": uuids}})
         logger.info("thirdPartyPackages - removed {}".format(res.deleted_count))
+        res = self.__static_analysis_db.apkAnalyses.delete_many({"uuid": {"$in": uuids}})
+        logger.info("apkAnalyses - removed {}".format(res.deleted_count))
         self.__apk_info.update_many({"uuid": {"$in": uuids}},
             {"$set": {"analysesCompleted": False}})
 
@@ -663,16 +692,17 @@ class DbHelper:
             {"uuid": {"$in": uuids}},
             {'$set': {"privacyPolicyStatus.crawled": True}})
 
-    def update_policy_crawl_failure(self, uuid, reason):
+    def update_policy_crawl_failures(self, fails):
         """
         Update the privacyPolicyStatus.failureReason field in the database for an
         application
         :param uuid: uuid to update date for
         :param reason: reason why crawling policy for uuid failed
         """
-        res = self.__apk_info.update_one(
-            {"uuid": uuid},
-            {'$set': {"privacyPolicyStatus.failureReason": reason}})
+        for uuid, reason in fails:
+            res = self.__apk_info.update_one(
+                {"uuid": uuid},
+                {'$set': {"privacyPolicyStatus.failureReason": reason}})
 
     def update_date_last_scraped(self, app_names, date_last_scraped):
         """
@@ -705,22 +735,21 @@ class DbHelper:
                 {"packageName": {"$in": app_names}},
                 {"$set": {"removed": False}})
 
-    def set_download_date(self, uuid, download_completion_time):
+    def set_download_date(self, uuids, download_completion_time):
         """
         When the downloader downloads an app, this sets the download time for
         that app in seconds from epoch form
         """
-        if uuid.endswith(".apk"):
-            uuid = uuid[:-4]
-        res = self.__apk_info.update_one(
-            {'uuid': uuid},
+        parsed_uuids = []
+        for uuid in uuids:
+            if uuid.endswith(".apk"):
+                parsed_uuids.append(uuid[:-4])
+            else:
+                parsed_uuids.append(uuid)
+        res = self.__apk_info.update_many(
+            {'uuid': {"$in": uuids}},
             {'$set': {"dateDownloaded": download_completion_time}}
         )
-        if res.modified_count > 0:
-            logger.info("Updated download time for {}".format(uuid))
-        else:
-            logger.warning("Failed to update download time for {}".format(uuid))
-
 
     # ************************************************************************ #
     # STATIC ANALYSIS FUNCTIONS THAT USE QUEUES (ALWAYS UPDATE FLUSH)

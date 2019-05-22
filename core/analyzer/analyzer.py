@@ -56,7 +56,7 @@ def static_analysis(total_size, cache_all, dry_run, plugins_only, log_q, apk_ent
     global counter
     global plugins
     sys.setrecursionlimit(60000) # number found to not cause segfault
-    logger = logging.getLogger(__name__)
+    logger = logging.getLogger()
     logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                         level=logging.INFO)
     qh = logging.handlers.QueueHandler(log_q)
@@ -102,19 +102,26 @@ def static_analysis(total_size, cache_all, dry_run, plugins_only, log_q, apk_ent
             db_helper.bulk_insert_third_party_package_info(third_parties, log=False)
             db_helper.bulk_insert_permission_info(perm_infos, log=False)
             db_helper.bulk_insert_link_info(link_urls, log=False)
+    except Exception as e:
+        logger.error("static_analysis: {},{} - {}".format(package_name, uuid,
+            traceback.format_exc()))
+        db_helper.update_apk_info_field_uuid(apk_entry["uuid"], "analysisFail", True)
+        return (package_name, uuid)
 
+    try:
         # load and run plugins
+        sys.setrecursionlimit(1000) # reset for plugins
         for p in plugins:
             if hasattr(p, "analyze"):
                 plugin_res = p.analyze(apk_entry, a, None, dx, db_helper)
 
         if load_success:
             logger.info("{},{} analyzed from cached dx_obj - {} third party, {} perm, {} links"\
-                    .format(os.getpid(), package_name, uuid,
+                    .format(package_name, uuid,
                         len(third_parties), len(perm_infos), len(link_urls)))
         else:
             logger.info("{},{} analyzed from APK - {} third party, {} perm, {} links"\
-                    .format(os.getpid(), package_name, uuid,
+                    .format(package_name, uuid,
                         len(third_parties), len(perm_infos), len(link_urls)))
         with counter.get_lock():
             counter.value += 1
@@ -124,12 +131,11 @@ def static_analysis(total_size, cache_all, dry_run, plugins_only, log_q, apk_ent
         # if specified or failed load, serialize a and d_s and store in NAS
         if ((apk_entry.get("hasBeenTop", False) or cache_all) and
                 not load_success and not apk_entry.get("cacheFail", False)):
+            sys.setrecursionlimit(60000) # number found to not cause segfault
             dump_androguard_objs(apk_entry, db_helper, a, d_s, dx)
-
     except Exception as e:
-        logger.error("static_analysis: {},{} - {}".format(package_name, uuid,
+        logger.error("plugins/dump: {},{} - {}".format(package_name, uuid,
             traceback.format_exc()))
-        db_helper.update_apk_info_field_uuid(apk_entry["uuid"], "analysisFail", True)
         return (package_name, uuid)
 
     return (package_name, uuid)
@@ -416,20 +422,27 @@ def benchmark_static_analysis(total_size, apk_entry):
         start = time.time()
         a, d_s, dx = androguard_analyze_apk(apk_entry)
         print("androguard analysis took {}".format(time.time() - start))
+        """
         start = time.time()
         dump_androguard_objs(apk_entry, db_helper, a, d_s, dx)
         print("androguard object dumping took {}".format(time.time() - start))
+        """
 
     # do static analyses
     packages_q = []
     instance = namespaceanalyzer.NameSpaceMgr(queue=packages_q)
     packages = instance.execute(filename, appVersion, None, fileName, a, dx)
-    pp.pprint(packages_q)
-    pp.pprint(packages)
+    # pp.pprint(packages_q)
+    # pp.pprint(packages)
     links = []
     SearchIntents.Intents(filename, appVersion, packages, None, fileName,
         a, dx, q=links)
-    pp.pprint(links)
+    # pp.pprint(links)
+
+    plugins = helpers.get_plugins("plugins/core/analyzer", load=True)
+    for p in plugins:
+        if hasattr(p, "analyze"):
+            plugin_res = p.analyze(apk_entry, a, None, dx, db_helper)
 
     return package_name
 

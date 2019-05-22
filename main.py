@@ -5,7 +5,7 @@ Contains CLI commands for any functionality that doesn't involve analysis
 """
 
 import eventlet
-eventlet.monkey_patch()
+eventlet.monkey_patch(thread=False, time=False)
 import os, sys
 import logging.config
 import pandas as pd
@@ -118,13 +118,15 @@ def scrape_pipeline(args):
     else:
         apps = None
 
+    """
     # start by updating top apps
-    logger.info("getting top apps...")
-    new_top_list = c.get_top_apps_list()
-    logger.info("scraping top apps not in DB...")
-    s.scrape_missing(new_top_list, compare_top=True)
-    logger.info("updating top apps...")
-    d.update_top_apps(new_top_list)
+    if not args.skip_top:
+        logger.info("getting top apps...")
+        new_top_list = c.get_top_apps_list()
+        logger.info("scraping top apps not in DB...")
+        s.scrape_missing(new_top_list, compare_top=True)
+        logger.info("updating top apps...")
+        d.update_top_apps(new_top_list)
 
     if kickoff == True:
         s = None
@@ -152,13 +154,14 @@ def scrape_pipeline(args):
 
     # crawl privacy policies
     c.crawl_app_privacy_policies(app_list=apps)
+    """
 
     if args.no_decompile:
         # download only
-        logger.info("Starting download with {} apps...".format(len(apps)))
+        logger.info("Starting download...")
         downloader = Downloader()
         if apps is None:
-            downloader.download_all_from_db()
+            downloader.download_all_from_db(top=True)
         else:
             downloader.download(apps)
         logger.info("...done")
@@ -265,6 +268,9 @@ sp_parser.add_argument("-k", "--kickoff",
 sp_parser.add_argument("--no-decompile",
     action="store_true",
     help="skip decompile")
+sp_parser.add_argument("--skip-top",
+    action="store_true",
+    help="skip top app crawl")
 sp_parser.add_argument("-f", "--fname",
     help="file name with package names, otherwise use crawler to get package names")
 sp_parser.set_defaults(func=scrape_pipeline)

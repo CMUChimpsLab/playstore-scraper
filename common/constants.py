@@ -84,6 +84,7 @@ DB_ROOT_PASS = DB_PASS
 THREAD_NO = multiprocessing.cpu_count() * 2
 PROCESS_NO = int(multiprocessing.cpu_count() / 2)
 RESULT_CHUNK = 10
+LARGE_CHUNK = 100
 BULK_CHUNK = 1000
 QUEUE_LIM = 100000
 

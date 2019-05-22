@@ -21,6 +21,7 @@ apps/
 logs/
 tmp/
 staticAnalysisRuns/
+static_analysis_runs/
 debug/
 
 **/dbConfig.py

@@ -441,6 +441,9 @@ def check_app_detail_dups():
     print("got details")
 
     print("versions check")
+    print("all - {}, unique tup - {}".format(
+        len(apk_details_names), len(set(apk_details_ids.keys()))))
+    return
     to_break = False
     for (tup, ids) in apk_details_ids.items():
         """
@@ -495,12 +498,15 @@ def check_app_info_dups():
     print("got info")
 
     print("versions check")
+    print("all - {}, unique tup - {}".format(
+        len(apk_info_names), len(set(apk_info_ids.keys()))))
+    return
     to_break = False
     to_get_details = []
-    del_info_id_prefs = {}
+    del_info_ids = {}
     for (tup, id_dw) in apk_info_ids.items():
         if len(id_dw) > 1:
-            print(tup)
+            print(id_dw)
             to_get_details.append(tup[0])
             ids = set([t[0] for t in id_dw])
             for t in id_dw:
@@ -510,16 +516,20 @@ def check_app_info_dups():
             ids = list(ids)
             if len(ids) == len(id_dw):
                 ids = ids[1:]
-            for i in ids:
-                del_info_id_prefs[str(i)[0:18]] = i
+            del_info_ids[tup[0]] = dict([(str(i)[0:21], i) for i in ids])
 
     details = android_app_db.apkDetails.find(
-            {"details.appDetails.packageName": {"$in": to_get_details}})
+            {"details.appDetails.packageName": {"$in": to_get_details}},
+            {"details.appDetails.packageName": 1})
     for d in details:
-        id_pref = str(d["_id"])[0:18]
-        if id_pref in del_info_id_prefs:
-            print(del_info_id_prefs[id_pref], d["_id"])
-            break
+        id_pref = str(d["_id"])[0:21]
+        name = d["details"]["appDetails"]["packageName"]
+        if name in del_info_ids:
+            if id_pref in del_info_ids[name]:
+                print("deleting", del_info_ids[name][id_pref], d["_id"])
+                android_app_db.apkInfo.remove({"_id": del_info_ids[name][id_pref]})
+                android_app_db.apkDetails.remove({"_id": d["_id"]})
+
 
 def check_download_dups():
     cursor = android_app_db.apkInfo.find(
@@ -640,6 +650,6 @@ if __name__ == "__main__":
     static_db = dh[constants.STATIC_ANALYSIS_DB]
     dbhelper = DbHelper()
 
-    old_apk_db_check()
-    # check_app_info_dups()
+    check_app_info_dups()
+    #check_app_detail_dups()
 
