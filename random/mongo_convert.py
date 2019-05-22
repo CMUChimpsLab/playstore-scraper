@@ -409,10 +409,26 @@ def policy_crawl_to_status():
             {"$unset": {"privacyPolicyCrawled": ""}})
 
 if __name__ == "__main__":
-    dh = MongoClient(host=constants.DB_HOST,
-        port=constants.DB_PORT,
-        username=constants.DB_ROOT_USER,
-        password=constants.DB_ROOT_PASS)
+    if len(sys.argv) < 2:
+        print("provide `dev` or `prod` db_mode arg")
+        sys.exit(1)
+
+    # setup client based on env var
+    db_mode = os.environ.get("DB", "DEV")
+    if db_mode == "DEV":
+        dh = MongoClient(host=constants.DEV_DB_HOST,
+            port=constants.DEV_DB_PORT,
+            username=constants.DEV_DB_USER,
+            password=constants.DEV_DB_PASS)
+    elif db_mode == "PROD":
+        dh = MongoClient(host=constants.PROD_DB_HOST,
+            port=constants.PROD_DB_PORT,
+            username=constants.PROD_DB_USER,
+            password=constants.PROD_DB_PASS)
+    else:
+        print("{} should be either `dev` or `prod`".format(db_mode))
+        sys.exit(1)
+        
     android_app_db = dh[constants.APP_METADATA_DB]
     privacy_grading_db = dh[constants.PRIVACY_GRADING_DB]
     dbhelper = DbHelper()

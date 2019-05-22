@@ -135,7 +135,9 @@ class Intents:
                     else:
                         dst = method[0]
 
-                    if pkg_name_re.search(method[0]) != None:
+                    if (pkg_name_re.search(method[0]) != None and
+                            not dst.startswith("Lcom.android.") and
+                            not dst.startswith("Lcom.androidx.")):
                         if ('.png' in link)  or ('127.0.0.1' in link) or ('www.w3.org' in link):
                             continue
                         if len(link) > 250 :

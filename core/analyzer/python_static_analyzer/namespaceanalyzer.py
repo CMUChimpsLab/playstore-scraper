@@ -138,24 +138,27 @@ class NameSpaceMgr:
         elif package_name.startswith("Lcom/facebook/react"):
             # react native
             name = "ReactNative"
-        else:
+        elif package_name.startswith("Lcom/facebook"):
             # social
             name = "facebook"
+        else:
+            name = None
 
-        if self.q is None:
-            self.dbMgr.insert_third_party_package_info(self.main_package_name,
+        if name is not None:
+            if self.q is None:
+                self.dbMgr.insert_third_party_package_info(self.main_package_name,
+                        self.version_code,
+                        self.fileName,
+                        name)
+            else:
+                db_doc = self.make_db_doc(self.main_package_name,
                     self.version_code,
                     self.fileName,
                     name)
-        else:
-            db_doc = self.make_db_doc(self.main_package_name,
-                self.version_code,
-                self.fileName,
-                name)
-            if db_doc is not None:
-                self.q.append(db_doc)
-        self.alreadyPrinted.add(name)
-        self.packages.append(name)
+                if db_doc is not None:
+                    self.q.append(db_doc)
+            self.alreadyPrinted.add(name)
+            self.packages.append(name)
 
     def execute(self, fileName, vc, dbMgr, noprefixfilename, a, dx):
         '''

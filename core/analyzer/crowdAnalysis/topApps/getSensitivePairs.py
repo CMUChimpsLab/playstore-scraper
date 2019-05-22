@@ -1,11 +1,13 @@
 from pymongo import MongoClient
 import pandas as pd
 import sys
-from common.constants import DB_HOST, DB_ROOT_USER, DB_ROOT_PASS
+import common.constants as constants
 
-client = MongoClient(DB_HOST, 27017)
-client["admin"].authenticate(DB_ROOT_USER, DB_ROOT_PASS)
-dbPermission = client["privacygrading"]
+logger = logging.getLogger(__name__)
+logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                    level=logging.INFO)
+                    
+dbPermission = None
 
 def getSensitivePairs(packageName):
   sensitivePermissionPatterns = ["FINE_LOC", "COARSE_LOC", "PHONE_STATE", "CONTACT", "SMS",
@@ -44,6 +46,26 @@ def getRateTable(rateTablePath = "data/avgCrowdSourceResult.csv"):
 
 
 def main(DATE, path = "", modules_dir = ""):
+    global dbPermission
+
+    # setup client based on env var
+    db_mode = os.environ.get("DB", "DEV")
+    if db_mode == "DEV":
+        client = MongoClient(host=constants.DEV_DB_HOST,
+            port=constants.DEV_DB_PORT,
+            username=constants.DEV_DB_USER,
+            password=constants.DEV_DB_PASS)
+        dbPermission = client["privacygrading"]
+    elif db_mode == "PROD":
+        client = MongoClient(host=constants.PROD_DB_HOST,
+            port=constants.PROD_DB_PORT,
+            username=constants.PROD_DB_USER,
+            password=constants.PROD_DB_PASS)
+        dbPermission = client["privacygrading"]
+    else:
+        logger.error("{} should be either `dev` or `prod`".format(db_mode))
+        sys.exit(1)
+
     #use this dict to map permission and purpose to descriptive text for new pairs
     externalPurposeTextMapping = eval(open(path + "data/mapping/purposeEXTERNALMapping").read())
     permissionTextMapping = eval(open(path + "data/mapping/permissionTxtMapping").read())

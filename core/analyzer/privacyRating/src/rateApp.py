@@ -6,11 +6,7 @@ from pymongo import MongoClient
 
 import common.constants as constants
 
-client = MongoClient(host=constants.DB_HOST,
-    port=constants.DB_PORT,
-    username=constants.DB_ROOT_USER,
-    password=constants.DB_ROOT_PASS)
-db = client["privacyGradingDB"]
+db = None
 
 #calculate Rate for one entry each time; also return negativePermissioniPurposeDict
 def calculateRateforOneApp(labeledPermissionPurposesDict, repoPath):
@@ -32,6 +28,26 @@ def calculateRateforOneApp(labeledPermissionPurposesDict, repoPath):
 
 #a utility function for generating histogram
 def generateHistData(slotSize, outputFile, originalData = []):
+    global db
+
+    # setup client based on env var
+    db_mode = os.environ.get("DB", "DEV")
+    if db_mode == "DEV":
+        client = MongoClient(host=constants.DEV_DB_HOST,
+            port=constants.DEV_DB_PORT,
+            username=constants.DEV_DB_USER,
+            password=constants.DEV_DB_PASS)
+        db = client["privacyGradingDB"]
+    elif db_mode == "PROD":
+        client = MongoClient(host=constants.PROD_DB_HOST,
+            port=constants.PROD_DB_PORT,
+            username=constants.PROD_DB_USER,
+            password=constants.PROD_DB_PASS)
+        db = client["privacyGradingDB"]
+    else:
+        logger.error("{} should be either `dev` or `prod`".format(db_mode))
+        sys.exit(1)
+
     if originalData == []:
         for entry in db.packagePair.find():
             originalData.append(entry['rate'])
@@ -159,6 +175,26 @@ slots = [-0.7752027885, -0.1033603718, -0.02584009295, 0.02584009295] #20140218
 #using new grading scheme, evenly split apps with negative scores
 levels = ['D', 'C', 'B', 'A']
 def transRateToLevel(slots = slots, levels = levels):
+    global db
+
+    # setup client based on env var
+    db_mode = os.environ.get("DB", "DEV")
+    if db_mode == "DEV":
+        client = MongoClient(host=constants.DEV_DB_HOST,
+            port=constants.DEV_DB_PORT,
+            username=constants.DEV_DB_USER,
+            password=constants.DEV_DB_PASS)
+        db = client["privacyGradingDB"]
+    elif db_mode == "PROD":
+        client = MongoClient(host=constants.PROD_DB_HOST,
+            port=constants.PROD_DB_PORT,
+            username=constants.PROD_DB_USER,
+            password=constants.PROD_DB_PASS)
+        db = client["privacyGradingDB"]
+    else:
+        logger.error("{} should be either `dev` or `prod`".format(db_mode))
+        sys.exit(1)
+        
     lower = min(slots) - 1
     upper = slots[0]
     for index in range(len(slots)):

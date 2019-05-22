@@ -267,9 +267,8 @@ def analyzer(apkList, process_no=constants.PROCESS_NO,
     """
 
     # mark apps as analyzed
-    uuids = [a["uuid"] for a in apkList]
     db_helper.update_apk_info_field_many_uuids(
-            uuids, "analysesCompleted", True)
+            [t[2] for t in updatedApkList], "analysesCompleted", True)
 
 # **************************************************************************** #
 # helpers

@@ -26,6 +26,9 @@ parser = argparse.ArgumentParser(prog="PROG",
     description="App Analysis",
     usage="python main.py",
     formatter_class=formatter)
+parser.add_argument("--db",
+    default=os.environ.get("DB", None),
+    help="mode to run DB in (`dev`, `prod`)")
 subparsers = parser.add_subparsers(
     title="Commands",
     metavar="python main.py <command>",
@@ -35,7 +38,6 @@ subparsers = parser.add_subparsers(
 aae_parser = subparsers.add_parser("apk-analysis-experiment", aliases=["aae"],
     help="experimenting with apk analyses",
     description="Experimenting/testing APK analyses")
-aae_parser.set_defaults(func=pipelines.apk_analysis_experiment)
 input_opts = aae_parser.add_mutually_exclusive_group(required=True)
 input_opts.add_argument("-f", "--file",
     help="file containing APKs to test ((packageName,uuid) tuple per line)")
@@ -44,6 +46,7 @@ input_opts.add_argument("-i", "--inputs",
     help="input of APKs to test (space delimited strings of \"packageName uuid\")")
 aae_parser.add_argument("-t", "--target",
     help="target plugin")
+aae_parser.set_defaults(func=pipelines.apk_analysis_experiment)
 
 # static analysis of sample of apps for paper
 ap_parser = subparsers.add_parser("analysis-pipeline", aliases=["ap"],

@@ -24,10 +24,23 @@ class DbHelper:
         # Use username and password when running with mongod --auth,
         # prevents unwanted changes to the database
         # (also works if just running mongod normally no auth)
-        self.__client = MongoClient(host=constants.DB_HOST,
-            port=constants.DB_PORT,
-            username=constants.DB_ROOT_USER,
-            password=constants.DB_ROOT_PASS)
+
+        # setup client based on env var
+        db_mode = os.environ.get("DB", "DEV")
+        if db_mode == "DEV":
+            self.__client = MongoClient(host=constants.DEV_DB_HOST,
+                port=constants.DEV_DB_PORT,
+                username=constants.DEV_DB_USER,
+                password=constants.DEV_DB_PASS)
+        elif db_mode == "PROD":
+            self.__client = MongoClient(host=constants.PROD_DB_HOST,
+                port=constants.PROD_DB_PORT,
+                username=constants.PROD_DB_USER,
+                password=constants.PROD_DB_PASS)
+        else:
+            logger.error("{} should be either `dev` or `prod`".format(db_mode))
+            sys.exit(1)
+
         self.__android_app_db = self.__client[constants.APP_METADATA_DB]
         self.__apk_info = self.__android_app_db.apkInfo
         self.__apk_details = self.__android_app_db.apkDetails

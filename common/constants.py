@@ -1,6 +1,6 @@
 import multiprocessing
 
-from secrets import DB_USER, DB_PASS
+from secrets import DEV_DB_USER, DEV_DB_PASS, PROD_DB_USER, PROD_DB_PASS
 
 # app categories
 CATEGORIES= [
@@ -71,14 +71,13 @@ ANDROGUARD_OBJS_FOLDER = "/home/privacy/nas/apps_androguard_objs"
 PRIVACY_POLICY_FOLDER = "/home/privacy/nas/policy_htmls"
 LOG_FOLDER = "/home/privacy/logs"
 
-DB_HOST = "app-analysis.andrew.cmu.edu"
-DB_PORT = 27017
+PROD_DB_HOST = "app-analysis.andrew.cmu.edu"
+PROD_DB_PORT = 27017
+DEV_DB_HOST = "app-analysis-small.andrew.cmu.edu"
+DEV_DB_PORT = 27017
 APP_METADATA_DB = "androidAppDB"
 PRIVACY_GRADING_DB = "privacyGradingDB"
 STATIC_ANALYSIS_DB = "staticAnalysisDB"
-
-DB_ROOT_USER = DB_USER
-DB_ROOT_PASS = DB_PASS
 
 # parallelism related constants
 THREAD_NO = multiprocessing.cpu_count() * 2

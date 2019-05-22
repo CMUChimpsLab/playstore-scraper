@@ -180,6 +180,9 @@ parser = argparse.ArgumentParser(prog="PROG",
     description="App Crawl/Scrape",
     usage="python main.py",
     formatter_class=formatter)
+parser.add_argument("--db",
+    default=os.environ.get("DB", None),
+    help="mode to run DB in (`dev`, `prod`)")
 subparsers = parser.add_subparsers(
     title="Commands",
     metavar="python main.py <command>",

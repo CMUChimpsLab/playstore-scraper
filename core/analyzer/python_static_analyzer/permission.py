@@ -19,17 +19,40 @@ class StaticAnalyzer:
     def specialHandlingForGoogleSDK(self, class_name):
         #src has "/" as seperator, dst has "."
         class_name = class_name.replace('/', '.')
-        if (class_name.startswith('Lcom.google.analytics.') or class_name.startswith('Lcom.google.android.apps.analytics.')):
+        if (class_name.startswith('Lcom.google.android.gms.analytics') or
+                class_name.startswith('Lcom.google.analytics') or
+                class_name.startswith('Lcom.google.android.apps.analytics')):
             #should do something or not for tracking
-            pass
-        if class_name.startswith('Lcom.google.ads'):
-            return 'admob'
+            return "GoogleAnalytics"
+        elif class_name.startswith('Lcom.google.ads'):
+            return "admob"
+        elif class_name.startswith('Lcom.google.firebase.analytics'):
+            return "firebase"
+
+        return None
+
+    def special_facebook_handling(self, class_name):
+        class_name = class_name.replace('/', '.')
+        if class_name.startswith("Lcom.facebook.ads"):
+            # facebook ads
+            return "FacebookAudienceNetwork"
+        elif class_name.startswith("Lcom.facebook.react"):
+            # react native
+            return "ReactNative"
+        elif class_name.startswith("Lcom.facebook"):
+            # social
+            return "facebook"
+        
         return None
 
     def findandprint (self, packages, class_name):
         googleLib = self.specialHandlingForGoogleSDK(class_name)
         if googleLib is not None:
             return googleLib
+        fb_lib = self.special_facebook_handling(class_name)
+        if fb_lib is not None:
+            return fb_lib
+
         for package in packages:
             if package in class_name:
                 if len(package) > 250 :
@@ -37,8 +60,8 @@ class StaticAnalyzer:
                 else:
                     pck = package
                 return pck
-        else:
-            return "NA"
+            else:
+                return "NA"
 
     def make_db_doc(self, packageName, versioncode, filename, permission,
                               is_external, dest, externalPackageName, src):
@@ -159,12 +182,15 @@ class StaticAnalyzer:
                             dst_class_name, package, "NA"))
                 else:
                     src, src_method_name, src_descriptor = path.get_src(cm)
+                    src = src.replace('/', '.')
                     package = self.findandprint(packages, src)
                     if len(src) > 250 :
                         src_class_name = (src[:200] + '..')
                     else:
                         src_class_name = src
-                    is_external = (ex3.search(src_class_name) == None)
+                    is_external = ((ex3.search(src_class_name) == None) and
+                         not src_class_name.startswith("Lcom.android.") and
+                         not src_class_name.startswith("Lcom.androidx."))
                     if q is None:
                         dbMgr.insert_permission_info(self.main_package_name,
                             self.version_code, self.fileName, i, is_external,
