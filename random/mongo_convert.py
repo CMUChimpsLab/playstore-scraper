@@ -408,6 +408,7 @@ def policy_crawl_to_status():
             {"_id": a["_id"]},
             {"$unset": {"privacyPolicyCrawled": ""}})
 
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("provide `dev` or `prod` db_mode arg")
@@ -428,9 +429,9 @@ if __name__ == "__main__":
     else:
         print("{} should be either `dev` or `prod`".format(db_mode))
         sys.exit(1)
-        
+
     android_app_db = dh[constants.APP_METADATA_DB]
+    static_db = dh[constants.STATIC_ANALYSIS_DB]
     privacy_grading_db = dh[constants.PRIVACY_GRADING_DB]
     dbhelper = DbHelper()
 
-    policy_crawl_to_status()

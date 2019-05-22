@@ -336,11 +336,35 @@ def apk_info_fields():
             print("{} - {} has {}".format(a["packageName"], a["versionCode"], len(details_obj)))
 
 def check_downloaded_files():
-    with open("downloaded_uuids", "r") as f:
+    with open("downloaded_uuids.txt", "r") as f:
         downloaded_uuids = set([name[:-4] for name in f.read().strip("\n").split("\n")])
         app_infos = android_app_db.apkInfo.find({"dateDownloaded": {"$ne": None}}, {"uuid": 1})
         app_dw_uuids = set([a["uuid"] for a in app_infos])
 
+        print(len(downloaded_uuids - app_dw_uuids))
+        for uuid in (downloaded_uuids - app_dw_uuids):
+            subprocess.call(["rm",
+                "/home/privacy/nas/apps/{}/{}/{}.apk".format(uuid[0], uuid[1], uuid)])
+            continue
+
+            a = apk.APK("/home/privacy/nas/apps/{}/{}/{}.apk".format(uuid[0], uuid[1], uuid))
+            vc = int(a.androidversion["Code"])
+            name = a.package
+            print(vc, name, uuid)
+            a = android_app_db.apkInfo.find_one({"uuid": uuid})
+            if a is not None:
+                print("updae", a["uuid"])
+                android_app_db.apkInfo.update_one({"uuid": uuid},
+                    {"$set": {"dateDownloaded": datetime.now().strftime("%Y%m%dT%H%M")}})
+            else:
+                a = android_app_db.apkInfo.find_one({"packageName": name, "versionCode": vc})
+                if a is not None:
+                    print("mv", a["uuid"])
+
+        print(len(app_dw_uuids - downloaded_uuids))
+        android_app_db.apkInfo.update_many({"uuid": {"$in": list(app_dw_uuids - downloaded_uuids)}},
+                {"$set": {"dateDownloaded": None}})
+        return
         for uuid in app_dw_uuids.difference(downloaded_uuids):
             print(uuid)
             continue
@@ -640,6 +664,18 @@ def old_apk_db_check():
                 {"uuid": {"$in": uuids}},
                 {"$set": {"dateDownloaded": datetime.now().strftime("%Y%m%dT%H%M")}})
 
+def clean_dead():
+    uuids = android_app_db.apkInfo.find(
+        {"dateDownloaded": {"$ne": None}},
+        {"uuid": 1})
+    uuids = [u["uuid"] for u in uuids]
+    print(len(uuids))
+
+    static_db.linkUrl.remove({"uuid": {"$nin": uuids}})
+    static_db.permissionList.remove({"uuid": {"$nin": uuids}})
+    static_db.thirdPartyPackages.remove({"uuid": {"$nin": uuids}})
+    static_db.apkAnalyses.remove({"uuid": {"$nin": uuids}})
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("provide `dev` or `prod` db_mode arg")
@@ -660,12 +696,11 @@ if __name__ == "__main__":
     else:
         print("{} should be either `dev` or `prod`".format(db_mode))
         sys.exit(1)
-        
+
     s = Scraper()
     android_app_db = dh[constants.APP_METADATA_DB]
     static_db = dh[constants.STATIC_ANALYSIS_DB]
     dbhelper = DbHelper()
 
-    check_app_info_dups()
-    #check_app_detail_dups()
+    clean_dead()
 
