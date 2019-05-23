@@ -1,4 +1,4 @@
 [submodule "core/analyzer/python_static_analyzer/androguard"]
 	path = core/analyzer/python_static_analyzer/androguard
 	url = git@github.com:CMUChimpsLab/androguard.git
-	branch = deploy
+	branch = alex-beta
