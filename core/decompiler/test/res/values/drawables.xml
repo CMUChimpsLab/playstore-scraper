@@ -1,23 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <item type="drawable" name="$avd_hide_password__0">   .xml</item>
-    <item type="drawable" name="$avd_hide_password__1">   .xml</item>
-    <item type="drawable" name="$avd_hide_password__2"> 　 .xml</item>
-    <item type="drawable" name="$avd_show_password__0">   .xml</item>
-    <item type="drawable" name="$avd_show_password__1">   .xml</item>
-    <item type="drawable" name="$avd_show_password__2">   .xml</item>
-    <item type="drawable" name="abc_action_bar_item_background_material">   .xml</item>
-    <item type="drawable" name="abc_btn_colored_material">   .xml</item>
-    <item type="drawable" name="abc_dialog_material_background"> 　 .xml</item>
-    <item type="drawable" name="abc_edit_text_material">   .xml</item>
-    <item type="drawable" name="abc_list_divider_material">   .xml</item>
-    <item type="drawable" name="avd_hide_password">"   .xml"</item>
-    <item type="drawable" name="avd_show_password">   .xml</item>
-    <item type="drawable" name="design_bottom_navigation_item_background">   .xml</item>
-    <item type="drawable" name="design_password_eye">   .xml</item>
-    <item type="drawable" name="ic_arrow_down_24dp">   .xml</item>
-    <item type="drawable" name="notification_action_background">   .xml</item>
-    <item type="drawable" name="notification_template_icon_bg">#3333b5e5</item>
-    <item type="drawable" name="notification_template_icon_low_bg">#0cffffff</item>
-    <item type="drawable" name="preference_list_divider_material">   .xml</item>
-</resources>

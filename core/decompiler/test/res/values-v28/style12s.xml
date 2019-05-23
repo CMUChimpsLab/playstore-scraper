@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <style name="APKTOOL_DUMMYVAL_0x7f2c0000" parent="@style11/APKTOOL_DUMMYVAL_0x7f2b0000">
-        <item name="APKTOOL_DUMMYVAL_0x7f0400e8">?android:dialogCornerRadius</item>
-    </style>
-    <style name="APKTOOL_DUMMYVAL_0x7f2c0001" parent="@style11/APKTOOL_DUMMYVAL_0x7f2b0001">
-        <item name="APKTOOL_DUMMYVAL_0x7f0400e8">?android:dialogCornerRadius</item>
-    </style>
-</resources>

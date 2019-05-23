@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <style name="APKTOOL_DUMMYVAL_0x7f120000" parent="@style9/APKTOOL_DUMMYVAL_0x7f290000" />
-    <style name="APKTOOL_DUMMYVAL_0x7f120002" parent="@style9/APKTOOL_DUMMYVAL_0x7f290001" />
-    <style name="APKTOOL_DUMMYVAL_0x7f120006" parent="@android:style/Widget.Material.Spinner.Underlined" />
-</resources>

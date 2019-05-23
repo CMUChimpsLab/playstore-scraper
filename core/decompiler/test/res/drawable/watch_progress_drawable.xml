@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<layer-list
-  xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@color2/APKTOOL_DUMMYVAL_0x7f160085" />
-    <item>
-        <clip android:gravity="left" android:drawable="@drawable/accent_color_rectangle" android:clipOrientation="horizontal" />
-    </item>
-</layer-list>

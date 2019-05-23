@@ -1,136 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <item type="drawable" name="ic_arrow_down_24dp">   </item>
-    <item type="drawable" name="abc_ab_share_pack_mtrl_alpha">   </item>
-    <item type="drawable" name="abc_btn_check_to_on_mtrl_000">   </item>
-    <item type="drawable" name="abc_btn_check_to_on_mtrl_015">   </item>
-    <item type="drawable" name="abc_btn_radio_to_on_mtrl_000">   </item>
-    <item type="drawable" name="abc_btn_radio_to_on_mtrl_015">   </item>
-    <item type="drawable" name="abc_btn_switch_to_on_mtrl_00001">   </item>
-    <item type="drawable" name="abc_btn_switch_to_on_mtrl_00012">   </item>
-    <item type="drawable" name="abc_cab_background_top_mtrl_alpha">  </item>
-    <item type="drawable" name="abc_ic_commit_search_api_mtrl_alpha">   </item>
-    <item type="drawable" name="abc_ic_menu_copy_mtrl_am_alpha">  </item>
-    <item type="drawable" name="abc_ic_menu_cut_mtrl_alpha">   </item>
-    <item type="drawable" name="abc_ic_menu_paste_mtrl_am_alpha"> 　 </item>
-    <item type="drawable" name="abc_ic_menu_selectall_mtrl_alpha">   </item>
-    <item type="drawable" name="abc_ic_menu_share_mtrl_alpha">   </item>
-    <item type="drawable" name="abc_ic_star_black_16dp">   </item>
-    <item type="drawable" name="abc_ic_star_black_36dp">   </item>
-    <item type="drawable" name="abc_ic_star_black_48dp">"   "</item>
-    <item type="drawable" name="abc_ic_star_half_black_16dp">   </item>
-    <item type="drawable" name="abc_ic_star_half_black_36dp"> 　 </item>
-    <item type="drawable" name="abc_ic_star_half_black_48dp">   </item>
-    <item type="drawable" name="abc_list_divider_mtrl_alpha">"   "</item>
-    <item type="drawable" name="abc_list_focused_holo">   </item>
-    <item type="drawable" name="abc_list_longpressed_holo">   </item>
-    <item type="drawable" name="abc_list_pressed_holo_dark">   </item>
-    <item type="drawable" name="abc_list_pressed_holo_light">   </item>
-    <item type="drawable" name="abc_list_selector_disabled_holo_dark">   </item>
-    <item type="drawable" name="abc_list_selector_disabled_holo_light">　  </item>
-    <item type="drawable" name="abc_menu_hardkey_panel_mtrl_mult">  </item>
-    <item type="drawable" name="abc_popup_background_mtrl_mult">   </item>
-    <item type="drawable" name="abc_scrubber_control_off_mtrl_alpha">   </item>
-    <item type="drawable" name="abc_scrubber_control_to_pressed_mtrl_000">"   "</item>
-    <item type="drawable" name="abc_scrubber_control_to_pressed_mtrl_005">   </item>
-    <item type="drawable" name="abc_scrubber_primary_mtrl_alpha">   </item>
-    <item type="drawable" name="abc_scrubber_track_mtrl_alpha">   </item>
-    <item type="drawable" name="abc_spinner_mtrl_am_alpha">   </item>
-    <item type="drawable" name="abc_switch_track_mtrl_alpha">   </item>
-    <item type="drawable" name="abc_tab_indicator_mtrl_alpha">   </item>
-    <item type="drawable" name="abc_text_select_handle_left_mtrl_dark">   </item>
-    <item type="drawable" name="abc_text_select_handle_left_mtrl_light">   </item>
-    <item type="drawable" name="abc_text_select_handle_middle_mtrl_dark">"   "</item>
-    <item type="drawable" name="abc_text_select_handle_middle_mtrl_light">   </item>
-    <item type="drawable" name="abc_text_select_handle_right_mtrl_dark">   </item>
-    <item type="drawable" name="abc_text_select_handle_right_mtrl_light">"  　"</item>
-    <item type="drawable" name="abc_textfield_activated_mtrl_alpha">   </item>
-    <item type="drawable" name="abc_textfield_default_mtrl_alpha">   </item>
-    <item type="drawable" name="abc_textfield_search_activated_mtrl_alpha">   </item>
-    <item type="drawable" name="abc_textfield_search_default_mtrl_alpha">   </item>
-    <item type="drawable" name="cast_abc_scrubber_control_off_mtrl_alpha">   </item>
-    <item type="drawable" name="cast_abc_scrubber_control_to_pressed_mtrl_000">"   "</item>
-    <item type="drawable" name="cast_abc_scrubber_control_to_pressed_mtrl_005">   </item>
-    <item type="drawable" name="cast_abc_scrubber_primary_mtrl_alpha">   </item>
-    <item type="drawable" name="cast_ic_notification_0">   </item>
-    <item type="drawable" name="cast_ic_notification_1">   </item>
-    <item type="drawable" name="cast_ic_notification_2">   </item>
-    <item type="drawable" name="cast_ic_notification_on">   </item>
-    <item type="drawable" name="cast_ic_stop_circle_filled_grey600">"   "</item>
-    <item type="drawable" name="cast_ic_stop_circle_filled_white">   </item>
-    <item type="drawable" name="common_google_signin_btn_icon_dark_normal_background">   </item>
-    <item type="drawable" name="common_google_signin_btn_icon_light_normal_background">   </item>
-    <item type="drawable" name="common_google_signin_btn_text_dark_normal_background"> 　 </item>
-    <item type="drawable" name="common_google_signin_btn_text_light_normal_background">　  </item>
-    <item type="drawable" name="design_ic_visibility"> 　 </item>
-    <item type="drawable" name="design_ic_visibility_off">"   "</item>
-    <item type="drawable" name="googleg_disabled_color_18">"   "</item>
-    <item type="drawable" name="googleg_standard_color_18">  </item>
-    <item type="drawable" name="ic_audiotrack_dark">"　  "</item>
-    <item type="drawable" name="ic_audiotrack_light">   </item>
-    <item type="drawable" name="ic_dialog_close_dark">   </item>
-    <item type="drawable" name="ic_dialog_close_light">   </item>
-    <item type="drawable" name="ic_media_pause_dark">   </item>
-    <item type="drawable" name="ic_media_pause_light">  </item>
-    <item type="drawable" name="ic_media_play_dark">"   "</item>
-    <item type="drawable" name="ic_media_play_light">   </item>
-    <item type="drawable" name="ic_media_stop_dark">   </item>
-    <item type="drawable" name="ic_media_stop_light">"   "</item>
-    <item type="drawable" name="ic_mr_button_disabled_dark">   </item>
-    <item type="drawable" name="ic_mr_button_disabled_light">   </item>
-    <item type="drawable" name="ic_mr_button_disconnected_dark">"   "</item>
-    <item type="drawable" name="ic_mr_button_disconnected_light">   </item>
-    <item type="drawable" name="ic_mr_button_grey">   </item>
-    <item type="drawable" name="ic_vol_type_speaker_dark">　  </item>
-    <item type="drawable" name="ic_vol_type_speaker_group_dark">"   "</item>
-    <item type="drawable" name="ic_vol_type_speaker_group_light">   </item>
-    <item type="drawable" name="ic_vol_type_speaker_light">   </item>
-    <item type="drawable" name="ic_vol_type_tv_dark"> 　 </item>
-    <item type="drawable" name="ic_vol_type_tv_light">   </item>
-    <item type="drawable" name="notification_bg_low_normal">"   "</item>
-    <item type="drawable" name="notification_bg_low_pressed">   </item>
-    <item type="drawable" name="notification_bg_normal">   </item>
-    <item type="drawable" name="notification_bg_normal_pressed">   </item>
-    <item type="drawable" name="notify_panel_notification_icon_bg">"   "</item>
-    <item type="drawable" name="quantum_ic_art_track_grey600_48">  </item>
-    <item type="drawable" name="quantum_ic_bigtop_updates_white_24">　  </item>
-    <item type="drawable" name="quantum_ic_cast_connected_white_24"> 　 </item>
-    <item type="drawable" name="quantum_ic_cast_white_36">　 </item>
-    <item type="drawable" name="quantum_ic_clear_white_24">   </item>
-    <item type="drawable" name="quantum_ic_closed_caption_grey600_36">   </item>
-    <item type="drawable" name="quantum_ic_closed_caption_white_36">" 　 "</item>
-    <item type="drawable" name="quantum_ic_forward_10_white_24">   </item>
-    <item type="drawable" name="quantum_ic_forward_30_grey600_36">"   "</item>
-    <item type="drawable" name="quantum_ic_forward_30_white_24">　  </item>
-    <item type="drawable" name="quantum_ic_forward_30_white_36"> 　</item>
-    <item type="drawable" name="quantum_ic_keyboard_arrow_down_white_36">   </item>
-    <item type="drawable" name="quantum_ic_pause_circle_filled_grey600_36">   </item>
-    <item type="drawable" name="quantum_ic_pause_circle_filled_white_36">  </item>
-    <item type="drawable" name="quantum_ic_pause_grey600_36">   </item>
-    <item type="drawable" name="quantum_ic_pause_grey600_48">   </item>
-    <item type="drawable" name="quantum_ic_pause_white_24">   </item>
-    <item type="drawable" name="quantum_ic_play_arrow_grey600_36">"   "</item>
-    <item type="drawable" name="quantum_ic_play_arrow_grey600_48">   </item>
-    <item type="drawable" name="quantum_ic_play_arrow_white_24">   </item>
-    <item type="drawable" name="quantum_ic_play_circle_filled_grey600_36">   </item>
-    <item type="drawable" name="quantum_ic_play_circle_filled_white_36">   </item>
-    <item type="drawable" name="quantum_ic_refresh_white_24">   </item>
-    <item type="drawable" name="quantum_ic_replay_10_white_24">"   "</item>
-    <item type="drawable" name="quantum_ic_replay_30_grey600_36">"   "</item>
-    <item type="drawable" name="quantum_ic_replay_30_white_24">   </item>
-    <item type="drawable" name="quantum_ic_replay_30_white_36">   </item>
-    <item type="drawable" name="quantum_ic_replay_white_24">   </item>
-    <item type="drawable" name="quantum_ic_skip_next_grey600_36">   </item>
-    <item type="drawable" name="quantum_ic_skip_next_white_24">"   "</item>
-    <item type="drawable" name="quantum_ic_skip_next_white_36">"   "</item>
-    <item type="drawable" name="quantum_ic_skip_previous_grey600_36">" 　 "</item>
-    <item type="drawable" name="quantum_ic_skip_previous_white_24">   </item>
-    <item type="drawable" name="quantum_ic_skip_previous_white_36">   </item>
-    <item type="drawable" name="quantum_ic_stop_grey600_36">   </item>
-    <item type="drawable" name="quantum_ic_stop_grey600_48">   </item>
-    <item type="drawable" name="quantum_ic_stop_white_24">  </item>
-    <item type="drawable" name="quantum_ic_volume_off_grey600_36">   </item>
-    <item type="drawable" name="quantum_ic_volume_off_white_36">"   "</item>
-    <item type="drawable" name="quantum_ic_volume_up_grey600_36"> 　</item>
-    <item type="drawable" name="quantum_ic_volume_up_white_36">   </item>
-</resources>

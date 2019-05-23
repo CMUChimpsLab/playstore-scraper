@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <item type="drawable" name="ic_close_larger_on_tablet">   .xml</item>
-    <item type="drawable" name="ic_onboarding_v2_button_selected">   .xml</item>
-    <item type="drawable" name="ic_onboarding_v2_button_unselected">"   .xml"</item>
-    <item type="drawable" name="ic_tour_point1_home">  .xml</item>
-    <item type="drawable" name="ic_tour_point2_save">   .xml</item>
-    <item type="drawable" name="ic_tour_point3_library">"   .xml"</item>
-</resources>
