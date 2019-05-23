@@ -5,6 +5,7 @@ Created on Sep 21, 2012
 '''
 import os
 import sys
+import pprint
 import re
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), "androguard"))
@@ -14,8 +15,8 @@ from python_static_analyzer.androguard.androguard.core.bytecodes import dvm
 from python_static_analyzer.androguard.androguard.core.analysis.analysis import *
 import python_static_analyzer.DirStructHandler as DirStructHandler
 import python_static_analyzer.PackageRules as PackageRules
+import common.helpers as helpers
 
-import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
 class NameSpaceMgr:
@@ -80,70 +81,25 @@ class NameSpaceMgr:
     Special Handling for Google SDK
     '''
     def specialHandlingForGoogleSDK(self, package_name):
-        if "admob" not in self.alreadyPrinted and package_name.startswith('Lcom/google/ads'):
+        google_lib = helpers.special_google_handling(package_name)
+        if google_lib is not None and google_lib not in self.alreadyPrinted:
             if self.q is None:
                 self.dbMgr.insert_third_party_package_info(self.main_package_name,
                         self.version_code,
                         self.fileName,
-                        "admob")
+                        google_lib)
             else:
                 db_doc = self.make_db_doc(self.main_package_name,
                     self.version_code,
                     self.fileName,
-                    "admob")
+                    google_lib)
                 if db_doc is not None:
                     self.q.append(db_doc)
-            self.alreadyPrinted.add ("admob")
-            self.packages.append ("admob")
-        elif (("GoogleAnalytics" not in self.alreadyPrinted and
-                    package_name.startswith('Lcom/google/android/gms/analytics')) or
-                (("googleAnalytics" not in self.alreadyPrinted) and
-                    (package_name.startswith('Lcom/google/analytics/') or
-                    package_name.startswith('Lcom/google/android/apps/analytics/')))):
-            if self.q is None:
-                self.dbMgr.insert_third_party_package_info(self.main_package_name,
-                        self.version_code,
-                        self.fileName,
-                        "GoogleAnalytics")
-            else:
-                db_doc = self.make_db_doc(self.main_package_name,
-                    self.version_code,
-                    self.fileName,
-                    "GoogleAnalytics")
-                if db_doc is not None:
-                    self.q.append(db_doc)
-            self.alreadyPrinted.add ("GoogleAnalytics")
-            self.packages.append ("GoogleAnalytics")
-        elif ("firebase" not in self.alreadyPrinted and
-                package_name.startswith('Lcom/google/firebase/analytics')):
-            if self.q is None:
-                self.dbMgr.insert_third_party_package_info(self.main_package_name,
-                        self.version_code,
-                        self.fileName,
-                        "firebase")
-            else:
-                db_doc = self.make_db_doc(self.main_package_name,
-                    self.version_code,
-                    self.fileName,
-                    "firebase")
-                if db_doc is not None:
-                    self.q.append(db_doc)
-            self.alreadyPrinted.add ("firebase")
-            self.packages.append ("firebase")
+            self.alreadyPrinted.add (google_lib)
+            self.packages.append (google_lib)
 
     def special_facebook_handling(self, package_name):
-        if package_name.startswith("Lcom/facebook/ads"):
-            # facebook ads
-            name = "FacebookAudienceNetwork"
-        elif package_name.startswith("Lcom/facebook/react"):
-            # react native
-            name = "ReactNative"
-        elif package_name.startswith("Lcom/facebook"):
-            # social
-            name = "facebook"
-        else:
-            name = None
-
+        name = helpers.special_facebook_handling(package_name)
         if name is not None:
             if self.q is None:
                 self.dbMgr.insert_third_party_package_info(self.main_package_name,
@@ -188,10 +144,8 @@ class NameSpaceMgr:
             self.fileName = noprefixfilename
 
         #Filtering out internal packages used for app creation
-        ex1 = re.compile ("Ljava/*")
-        ex2 = re.compile ("Landroid/*")
-        ex3 = re.compile (self.GetDecompiledPackageName (self.main_package_name))
-        ex4 = re.compile("/google/")
+        re_google = re.compile("/google/")
+        re_fb = re.compile("Lcom/facebook/*")
 
         #print self.main_package_name
         self.main_package_tokens = self.GetTokens(self.main_package_name)
@@ -201,13 +155,13 @@ class NameSpaceMgr:
             if len(c.get_xref_from()) == 0:
                 continue
 
-            package_name = c.orig_class.get_name()
+            #package_name = c.orig_class.get_name()
+            package_name = c.name.string
             self.specialHandlingForGoogleSDK(package_name)
             self.special_facebook_handling(package_name)
-            if (ex3.search (package_name) == None and
-                    ex1.search (package_name) == None and
-                    ex2.search (package_name) == None and
-                    ex4.search (package_name) == None):
+            if (helpers.is_class_external(self.main_package_name, package_name) and
+                    re_google.search (package_name) == None and
+                    re_fb.search (package_name) == None):
                 package_names.append (self.GetDirectoryName (package_name))
 
         self.PopulateDirEntries(package_names)

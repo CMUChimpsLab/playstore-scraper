@@ -8,6 +8,7 @@ import sys
 from androguard.core.bytecodes import apk
 from androguard.core.bytecodes import dvm
 from androguard.core.analysis.analysis import *
+import common.helpers as helpers
 
 extensions = [".com", ".net", ".org", ".edu", ".gov", ".mil",
         ".af", ".ax",".al",".dz",".as",".ad",".ao",".ai",".aq",".ag",".ar",".am",".aw",
@@ -43,13 +44,7 @@ class Intents:
        and then see under which package that class name belongs
     '''
 
-    def findandprint (self, packages, dst_class_name):
-        for package in packages:
-            if package in dst_class_name:
-                return package
-        return "NA"
-
-    def is_possible_endpoint(self, test_str, class_names):
+    def is_possible_endpoint(self, test_str):
         if (test_str.startswith("http://") and
                 (test_str == "http://" or not test_str[len("http://")].isalnum())):
             return False
@@ -57,8 +52,16 @@ class Intents:
                 (test_str == "https://" or not test_str[len("https://")].isalnum())):
             return False
 
+        if test_str.startswith("http://"):
+            test_str = test_str[len("http://"):]
+        elif test_str.startswith("https://"):
+            test_str = test_str[len("https://"):]
+
+        test_str_domain = test_str.split("/")[0]
         for ext in extensions:
-            if test_str.endswith(ext) and test_str != ext and " " not in test_str:
+            if (test_str_domain.endswith(ext) and
+                    test_str_domain != ext and
+                    " " not in test_str):
                 return True
 
         return False
@@ -101,43 +104,33 @@ class Intents:
         else:
             self.fileName = noprefixfilename
 
-        pkg_name_re = re.compile (self.main_package_name)
-
         self.dbMgr = dbMgr
-        x = dx.get_tainted_variables().get_strings()
+        strings = dx.get_strings()
         analyses = dx.vms
-        for full in x:
-            s,_ = full
-            link = s.get_info()
-            if self.is_possible_endpoint(link, []):
-                paths = s.get_paths()
-                for path in paths:
-                    m_idx = path[1]
-                    for analysis in analyses:
-                        try:
-                            method = analysis.get_cm_method(m_idx)
-                            break
-                        except:
-                            continue
+        for s in strings:
+            link = s.get_orig_value().string
+            if self.is_possible_endpoint(link):
+                xrefs = s.get_xref_from()
+                for c, r in xrefs:
+                    c_name = c.name.string
 
                     # Keeping external package within range of mysql datatype
-                    xpackage = self.findandprint(packages, method[0])
+                    xpackage, is_ext = helpers.get_external_info(self.main_package_name,
+                            packages, c_name)
                     if len(xpackage) > 250 :
                         xpck = (xpackage[:200] + '..')
                     else:
                         xpck = xpackage
 
                     # Keeping destination class within range of mysql datatype
-                    if len(method[0]) > 250 :
-                        dst = (method[0][:200] + '..')
-                    elif method[0].find('$')!=-1 :
+                    if len(c_name) > 250 :
+                        dst = (c_name[:200] + '..')
+                    elif c_name.find('$')!=-1 :
                         dst = "NA"
                     else:
-                        dst = method[0]
+                        dst = c_name
 
-                    if (pkg_name_re.search(method[0]) != None and
-                            not dst.startswith("Lcom.android.") and
-                            not dst.startswith("Lcom.androidx.")):
+                    if not is_ext:
                         if ('.png' in link)  or ('127.0.0.1' in link) or ('www.w3.org' in link):
                             continue
                         if len(link) > 250 :
@@ -154,7 +147,6 @@ class Intents:
                                 self.version_code, self.fileName, strlink,
                                 False, dst, xpck))
                     else:
-                        _, link = full
                         if ('.png' in link)  or ('127.0.0.1' in link) or ('www.w3.org' in link):
                             continue
                         if len(link) > 250 :

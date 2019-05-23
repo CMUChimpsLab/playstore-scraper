@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="APKTOOL_DUMMYVAL_0x7f12000a">
+        <item name="android:orientation">horizontal</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f12000c" parent="@style2/APKTOOL_DUMMYVAL_0x7f220099">
+        <item name="APKTOOL_DUMMYVAL_0x7f04024f">center</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04025b">fixed</item>
+    </style>
+</resources>

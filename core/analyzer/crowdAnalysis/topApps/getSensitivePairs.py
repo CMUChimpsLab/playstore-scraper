@@ -1,12 +1,14 @@
 from pymongo import MongoClient
 import pandas as pd
 import sys
+import logging
+
 import common.constants as constants
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     level=logging.INFO)
-                    
+
 dbPermission = None
 
 def getSensitivePairs(packageName):

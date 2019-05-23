@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="APKTOOL_DUMMYVAL_0x7f290000" parent="@style8/APKTOOL_DUMMYVAL_0x7f280000">
+        <item name="APKTOOL_DUMMYVAL_0x7f040001">?android:actionBarItemBackground</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04000e">?android:actionMenuTextAppearance</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04000f">?android:actionMenuTextColor</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400dc">@drawable/abc_control_background_material</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040207">?android:ratingBarStyleIndicator</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040208">?android:ratingBarStyleSmall</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f290001" parent="@style8/APKTOOL_DUMMYVAL_0x7f280001">
+        <item name="APKTOOL_DUMMYVAL_0x7f040001">?android:actionBarItemBackground</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04000e">?android:actionMenuTextAppearance</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04000f">?android:actionMenuTextColor</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400dc">@drawable/abc_control_background_material</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040207">?android:ratingBarStyleIndicator</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040208">?android:ratingBarStyleSmall</item>
+    </style>
+</resources>

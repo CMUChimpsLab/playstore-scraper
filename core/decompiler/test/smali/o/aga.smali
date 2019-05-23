@@ -1,0 +1,22 @@
+.class public Lo/aga;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+
+# instance fields
+.field ˊ:Ljava/lang/String;
+    .annotation runtime Lo/QB;
+        ॱ = "sauron_token"
+    .end annotation
+.end field
+
+
+# direct methods
+.method public constructor <init>()V
+    .locals 0
+
+    .line 9
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    return-void
+.end method

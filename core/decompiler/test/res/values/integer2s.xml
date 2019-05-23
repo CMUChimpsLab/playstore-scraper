@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="integer2" name="APKTOOL_DUMMYVAL_0x7f1b0000">220</item>
+    <item type="integer2" name="APKTOOL_DUMMYVAL_0x7f1b0001">150</item>
+    <item type="integer2" name="APKTOOL_DUMMYVAL_0x7f1b0002">127</item>
+    <item type="integer2" name="APKTOOL_DUMMYVAL_0x7f1b0003">300</item>
+    <item type="integer2" name="APKTOOL_DUMMYVAL_0x7f1b0004">2</item>
+    <item type="integer2" name="APKTOOL_DUMMYVAL_0x7f1b0005">250</item>
+    <item type="integer2" name="APKTOOL_DUMMYVAL_0x7f1b0006">12451000</item>
+    <item type="integer2" name="APKTOOL_DUMMYVAL_0x7f1b0007">320</item>
+    <item type="integer2" name="APKTOOL_DUMMYVAL_0x7f1b0008">400</item>
+    <item type="integer2" name="APKTOOL_DUMMYVAL_0x7f1b0009">200</item>
+    <item type="integer2" name="APKTOOL_DUMMYVAL_0x7f1b000a">100</item>
+    <item type="integer2" name="APKTOOL_DUMMYVAL_0x7f1b000b">999</item>
+</resources>

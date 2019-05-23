@@ -13,6 +13,7 @@ import argparse
 import datetime
 import multiprocessing_logging
 import pprint
+import re
 
 from core.downloader.downloader import Downloader
 from core.db.db_helper import DbHelper
@@ -117,3 +118,81 @@ def download_decompile_all():
     # dec.decompile(downloaded_uuids)
     dec.decompile()
     logger.info("...done\n")
+
+
+# **************************************************************************** #
+# static analysis helpers
+# **************************************************************************** #
+def special_google_handling(class_name):
+    #src has "/" as seperator, dst has "."
+    class_name = class_name.replace('/', '.')
+    if (class_name.startswith('Lcom.google.android.gms.analytics') or
+            class_name.startswith('Lcom.google.analytics') or
+            class_name.startswith('Lcom.google.android.apps.analytics')):
+        #should do something or not for tracking
+        return "GoogleAnalytics"
+    elif class_name.startswith('Lcom.google.ads'):
+        return "admob"
+    elif class_name.startswith('Lcom.google.firebase.analytics'):
+        return "firebase"
+
+    return None
+
+def special_facebook_handling(class_name):
+    class_name = class_name.replace('/', '.')
+    if class_name.startswith("Lcom.facebook.ads"):
+        # facebook ads
+        return "FacebookAudienceNetwork"
+    elif class_name.startswith("Lcom.facebook.react"):
+        # react native
+        return "ReactNative"
+    elif class_name.startswith("Lcom.facebook"):
+        # social
+        return "facebook"
+
+    return None
+
+def get_external_info(main_package_name, packages, class_name):
+    is_ext = is_class_external(main_package_name, class_name)
+    external_pkg = print_external_pkg(packages, class_name)
+    return (external_pkg, is_ext and external_pkg != "NA")
+
+def is_class_external(main_package_name, class_name):
+    """
+    Checks if the given class_name is external for given app_name
+    """
+    ex1 = re.compile("Ljava\.*")
+    ex2 = re.compile("Landroid\.*")
+    ex3 = re.compile("Landroidx\.*")
+    ex4 = re.compile(main_package_name)
+
+    class_name.replace("/", ".")
+    """
+    print(main_package_name, class_name,
+        ex1.search (class_name) == None,
+        ex2.search (class_name) == None,
+        ex3.search (class_name) == None,
+        ex4.search (class_name) == None)
+    """
+    if (ex1.search (class_name) == None and
+            ex2.search (class_name) == None and
+            ex3.search (class_name) == None and
+            ex4.search (class_name) == None):
+        return True
+    else:
+        return False
+
+def print_external_pkg(packages, dst_class_name):
+    googleLib = special_google_handling(dst_class_name)
+    if googleLib is not None:
+        return googleLib
+    fb_lib = special_facebook_handling(dst_class_name)
+    if fb_lib is not None:
+        return fb_lib
+
+    for package in packages:
+        if package in dst_class_name:
+            return package
+
+    return "NA"
+

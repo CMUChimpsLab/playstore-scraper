@@ -1,0 +1,2500 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="APKTOOL_DUMMYVAL_0x7f220000" parent="@style2/APKTOOL_DUMMYVAL_0x7f2201a6">
+        <item name="android:tint">@color2/APKTOOL_DUMMYVAL_0x7f16001e</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220001" parent="@style2/APKTOOL_DUMMYVAL_0x7f22006d">
+        <item name="android:paddingStart">14.0dip</item>
+        <item name="android:paddingEnd">14.0dip</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220002" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220003" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220004" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220005" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220006" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220007" />
+    <style name="APKTOOL_DUMMYVAL_0x7f220008" parent="@style2/APKTOOL_DUMMYVAL_0x7f220005">
+        <item name="android:windowEnterAnimation">@anim/APKTOOL_DUMMYVAL_0x7f01000c</item>
+        <item name="android:windowExitAnimation">@anim/APKTOOL_DUMMYVAL_0x7f01000d</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220009" parent="@style2/APKTOOL_DUMMYVAL_0x7f220153">
+        <item name="android:textColorPrimary">@color2/APKTOOL_DUMMYVAL_0x7f16001e</item>
+        <item name="android:windowBackground">@color2/APKTOOL_DUMMYVAL_0x7f160015</item>
+        <item name="android:actionButtonStyle">@style2/APKTOOL_DUMMYVAL_0x7f220001</item>
+        <item name="android:actionModeBackground">@color2/APKTOOL_DUMMYVAL_0x7f16006f</item>
+        <item name="android:actionModeCloseDrawable">@drawable/ic_close</item>
+        <item name="android:actionOverflowButtonStyle">@style2/APKTOOL_DUMMYVAL_0x7f220000</item>
+        <item name="android:dialogTheme">@style2/APKTOOL_DUMMYVAL_0x7f220004</item>
+        <item name="android:alertDialogTheme">@style2/APKTOOL_DUMMYVAL_0x7f220004</item>
+        <item name="android:homeAsUpIndicator">@drawable/ic_back</item>
+        <item name="android:windowActivityTransitions">true</item>
+        <item name="android:colorEdgeEffect">@color2/APKTOOL_DUMMYVAL_0x7f16001e</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040084">@style2/APKTOOL_DUMMYVAL_0x7f2200ad</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400bd">@color2/APKTOOL_DUMMYVAL_0x7f16001e</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c4">@color2/APKTOOL_DUMMYVAL_0x7f160024</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c5">@color2/APKTOOL_DUMMYVAL_0x7f160018</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401d0">@style2/APKTOOL_DUMMYVAL_0x7f2200ae</item>
+        <item name="@attr/APKTOOL_DUMMY_1fe">@style2/APKTOOL_DUMMYVAL_0x7f2200d8</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402ac">true</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22000a" parent="@android:style/Widget">
+        <item name="android:layout">@layout2/APKTOOL_DUMMYVAL_0x7f1c0008</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04005d">@dimen4/APKTOOL_DUMMYVAL_0x7f190004</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401b2">@layout2/APKTOOL_DUMMYVAL_0x7f1c00c6</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401b3">@layout2/APKTOOL_DUMMYVAL_0x7f1c0017</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401d4">@layout2/APKTOOL_DUMMYVAL_0x7f1c00c7</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040225">@layout2/APKTOOL_DUMMYVAL_0x7f1c00c8</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22000b" parent="@android:style/Animation">
+        <item name="android:windowEnterAnimation">@anim/APKTOOL_DUMMYVAL_0x7f010003</item>
+        <item name="android:windowExitAnimation">@anim/APKTOOL_DUMMYVAL_0x7f010004</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22000c" parent="@android:style/Animation">
+        <item name="android:windowEnterAnimation">@anim/APKTOOL_DUMMYVAL_0x7f010002</item>
+        <item name="android:windowExitAnimation">@anim/APKTOOL_DUMMYVAL_0x7f010005</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22000d" parent="@android:style/Animation">
+        <item name="android:windowEnterAnimation">@anim/APKTOOL_DUMMYVAL_0x7f01000a</item>
+        <item name="android:windowExitAnimation">@anim/APKTOOL_DUMMYVAL_0x7f01000b</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22000e" parent="@android:style/Widget">
+        <item name="APKTOOL_DUMMYVAL_0x7f040065">@dimen4/APKTOOL_DUMMYVAL_0x7f19000b</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040066">@dimen4/APKTOOL_DUMMYVAL_0x7f19000b</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040067">@dimen4/APKTOOL_DUMMYVAL_0x7f19000b</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040068">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040069">false</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22000f" parent="@android:style/Widget">
+        <item name="android:textAppearance">@style2/APKTOOL_DUMMYVAL_0x7f220110</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:scrollHorizontally">true</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220010" parent="@android:style/Widget">
+        <item name="android:background">@null</item>
+        <item name="android:paddingLeft">?APKTOOL_DUMMYVAL_0x7f0400ed</item>
+        <item name="android:paddingTop">@dimen4/APKTOOL_DUMMYVAL_0x7f19000d</item>
+        <item name="android:paddingRight">?APKTOOL_DUMMYVAL_0x7f0400ed</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220011" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220012" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220013" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220014" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220015" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220016" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220017" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220018" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220019" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22001a" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22001b" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22001c" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22001d" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22001e" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22001f" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220020" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220021" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220022" />
+    <style name="APKTOOL_DUMMYVAL_0x7f220023">
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">?android:textColorPrimary</item>
+        <item name="android:textColorHint">?android:textColorHint</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220024" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220025" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220026" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220027" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220028" />
+    <style name="APKTOOL_DUMMYVAL_0x7f220029" parent="@style2/APKTOOL_DUMMYVAL_0x7f220028">
+        <item name="android:textColor">?android:textColorPrimaryInverse</item>
+        <item name="android:textColorHighlight">?android:textColorHighlightInverse</item>
+        <item name="android:textColorHint">?android:textColorHintInverse</item>
+        <item name="android:textColorLink">?android:textColorLinkInverse</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22002a" />
+    <style name="APKTOOL_DUMMYVAL_0x7f22002b" parent="@style2/APKTOOL_DUMMYVAL_0x7f22002a">
+        <item name="android:textColor">?android:textColorPrimaryInverse</item>
+        <item name="android:textColorHighlight">?android:textColorHighlightInverse</item>
+        <item name="android:textColorHint">?android:textColorHintInverse</item>
+        <item name="android:textColorLink">?android:textColorLinkInverse</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22002c" parent="@style2/APKTOOL_DUMMYVAL_0x7f220011">
+        <item name="android:textSize">14.0sp</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22002d" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22002e" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22002f" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220030" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220031" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220032" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220033" />
+    <style name="APKTOOL_DUMMYVAL_0x7f220034" parent="@android:style/TextAppearance.Small">
+        <item name="android:textColor">?android:textColorPrimaryDisableOnly</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220035" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200f6">
+        <item name="android:textSize">@dimen4/APKTOOL_DUMMYVAL_0x7f190017</item>
+        <item name="android:textColor">?android:textColorSecondary</item>
+        <item name="android:fontFamily">@string2/APKTOOL_DUMMYVAL_0x7f1e0001</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220036" />
+    <style name="APKTOOL_DUMMYVAL_0x7f220037" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textColor">?android:textColorPrimaryDisableOnly</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220038">
+        <item name="android:listViewStyle">@style2/APKTOOL_DUMMYVAL_0x7f2201b4</item>
+        <item name="android:windowAnimationStyle">@style2/APKTOOL_DUMMYVAL_0x7f220006</item>
+        <item name="android:itemTextAppearance">?android:textAppearanceMedium</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220039" parent="@style/APKTOOL_DUMMYVAL_0x7f120001">
+        <item name="android:windowMinWidthMajor">@dimen/APKTOOL_DUMMYVAL_0x7f070006</item>
+        <item name="android:windowMinWidthMinor">@dimen/APKTOOL_DUMMYVAL_0x7f070007</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22003a" parent="@style/APKTOOL_DUMMYVAL_0x7f120001">
+        <item name="APKTOOL_DUMMYVAL_0x7f0402ad">@dimen/APKTOOL_DUMMYVAL_0x7f070002</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402ae">@dimen/APKTOOL_DUMMYVAL_0x7f070003</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402af">@dimen/APKTOOL_DUMMYVAL_0x7f070004</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402b0">@dimen/APKTOOL_DUMMYVAL_0x7f070005</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22003b" parent="@style/APKTOOL_DUMMYVAL_0x7f120002">
+        <item name="APKTOOL_DUMMYVAL_0x7f040002">@style2/APKTOOL_DUMMYVAL_0x7f220175</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040009">@style2/APKTOOL_DUMMYVAL_0x7f220172</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04000a">@null</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c4">@color2/APKTOOL_DUMMYVAL_0x7f16004f</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c5">@color2/APKTOOL_DUMMYVAL_0x7f160004</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401b0">@drawable/abc_list_selector_holo_dark</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22003c" parent="@style/APKTOOL_DUMMYVAL_0x7f120003">
+        <item name="android:windowMinWidthMajor">@dimen/APKTOOL_DUMMYVAL_0x7f070006</item>
+        <item name="android:windowMinWidthMinor">@dimen/APKTOOL_DUMMYVAL_0x7f070007</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22003d" parent="@style/APKTOOL_DUMMYVAL_0x7f120003">
+        <item name="APKTOOL_DUMMYVAL_0x7f0402ad">@dimen/APKTOOL_DUMMYVAL_0x7f070002</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402ae">@dimen/APKTOOL_DUMMYVAL_0x7f070003</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402af">@dimen/APKTOOL_DUMMYVAL_0x7f070004</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402b0">@dimen/APKTOOL_DUMMYVAL_0x7f070005</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22003e" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22003f" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220040" />
+    <style name="APKTOOL_DUMMYVAL_0x7f220041" parent="@style2/APKTOOL_DUMMYVAL_0x7f220040">
+        <item name="APKTOOL_DUMMYVAL_0x7f0402b1">@dimen/APKTOOL_DUMMYVAL_0x7f070006</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402b2">@dimen/APKTOOL_DUMMYVAL_0x7f070007</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220042" parent="@style2/APKTOOL_DUMMYVAL_0x7f220040">
+        <item name="APKTOOL_DUMMYVAL_0x7f0402ad">@dimen/APKTOOL_DUMMYVAL_0x7f070002</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402ae">@dimen/APKTOOL_DUMMYVAL_0x7f070003</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402af">@dimen/APKTOOL_DUMMYVAL_0x7f070004</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402b0">@dimen/APKTOOL_DUMMYVAL_0x7f070005</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220043" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220044" />
+    <style name="APKTOOL_DUMMYVAL_0x7f220045" parent="@style2/APKTOOL_DUMMYVAL_0x7f220043">
+        <item name="APKTOOL_DUMMYVAL_0x7f040002">@style2/APKTOOL_DUMMYVAL_0x7f22017c</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040009">@style2/APKTOOL_DUMMYVAL_0x7f220179</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04000a">@null</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c4">@color2/APKTOOL_DUMMYVAL_0x7f16004f</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c5">@color2/APKTOOL_DUMMYVAL_0x7f160004</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401b0">@drawable/abc_list_selector_holo_dark</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220046" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220047" />
+    <style name="APKTOOL_DUMMYVAL_0x7f220048" parent="@style2/APKTOOL_DUMMYVAL_0x7f220047">
+        <item name="APKTOOL_DUMMYVAL_0x7f0402b1">@dimen/APKTOOL_DUMMYVAL_0x7f070006</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402b2">@dimen/APKTOOL_DUMMYVAL_0x7f070007</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220049" parent="@style2/APKTOOL_DUMMYVAL_0x7f220047">
+        <item name="APKTOOL_DUMMYVAL_0x7f0402ad">@dimen/APKTOOL_DUMMYVAL_0x7f070002</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402ae">@dimen/APKTOOL_DUMMYVAL_0x7f070003</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402af">@dimen/APKTOOL_DUMMYVAL_0x7f070004</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402b0">@dimen/APKTOOL_DUMMYVAL_0x7f070005</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22004a" />
+    <style name="APKTOOL_DUMMYVAL_0x7f22004b" parent="@style2/APKTOOL_DUMMYVAL_0x7f22004a">
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c2">?android:textColorPrimary</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040215">@style2/APKTOOL_DUMMYVAL_0x7f2201be</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22004c" parent="@style2/APKTOOL_DUMMYVAL_0x7f22004a">
+        <item name="android:colorForeground">@color2/APKTOOL_DUMMYVAL_0x7f160011</item>
+        <item name="android:colorBackground">@color2/APKTOOL_DUMMYVAL_0x7f160013</item>
+        <item name="android:textColorPrimary">@color2/APKTOOL_DUMMYVAL_0x7f160007</item>
+        <item name="android:textColorPrimaryDisableOnly">@color2/APKTOOL_DUMMYVAL_0x7f160005</item>
+        <item name="android:textColorSecondary">@color2/APKTOOL_DUMMYVAL_0x7f16000b</item>
+        <item name="android:textColorPrimaryInverse">@color2/APKTOOL_DUMMYVAL_0x7f160008</item>
+        <item name="android:textColorSecondaryInverse">@color2/APKTOOL_DUMMYVAL_0x7f16000c</item>
+        <item name="android:textColorHintInverse">@color2/APKTOOL_DUMMYVAL_0x7f160003</item>
+        <item name="android:windowBackground">@color2/APKTOOL_DUMMYVAL_0x7f160013</item>
+        <item name="android:textColorHighlight">@color2/APKTOOL_DUMMYVAL_0x7f160045</item>
+        <item name="android:textColorHint">@color2/APKTOOL_DUMMYVAL_0x7f160002</item>
+        <item name="android:colorForegroundInverse">@color2/APKTOOL_DUMMYVAL_0x7f160004</item>
+        <item name="android:textColorTertiary">@color2/APKTOOL_DUMMYVAL_0x7f16000b</item>
+        <item name="android:textColorTertiaryInverse">@color2/APKTOOL_DUMMYVAL_0x7f16000c</item>
+        <item name="android:colorBackgroundCacheHint">@color2/APKTOOL_DUMMYVAL_0x7f160000</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400be">@color2/APKTOOL_DUMMYVAL_0x7f160010</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400bf">@color2/APKTOOL_DUMMYVAL_0x7f16001b</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c1">@color2/APKTOOL_DUMMYVAL_0x7f16006f</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c2">?android:textColorSecondary</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c8">@color2/APKTOOL_DUMMYVAL_0x7f160078</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040154">false</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22004d" parent="@style2/APKTOOL_DUMMYVAL_0x7f22004c">
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c2">?android:textColorPrimary</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040215">@style2/APKTOOL_DUMMYVAL_0x7f2201be</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22004e" parent="@style/APKTOOL_DUMMYVAL_0x7f120004">
+        <item name="android:windowMinWidthMajor">@dimen/APKTOOL_DUMMYVAL_0x7f070006</item>
+        <item name="android:windowMinWidthMinor">@dimen/APKTOOL_DUMMYVAL_0x7f070007</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22004f" parent="@style2/APKTOOL_DUMMYVAL_0x7f22004a">
+        <item name="android:colorForeground">@color2/APKTOOL_DUMMYVAL_0x7f160004</item>
+        <item name="android:colorBackground">@color2/APKTOOL_DUMMYVAL_0x7f160014</item>
+        <item name="android:textColorPrimary">@color2/APKTOOL_DUMMYVAL_0x7f160008</item>
+        <item name="android:textColorPrimaryDisableOnly">@color2/APKTOOL_DUMMYVAL_0x7f160006</item>
+        <item name="android:textColorSecondary">@color2/APKTOOL_DUMMYVAL_0x7f16000c</item>
+        <item name="android:textColorPrimaryInverse">@color2/APKTOOL_DUMMYVAL_0x7f160007</item>
+        <item name="android:textColorSecondaryInverse">@color2/APKTOOL_DUMMYVAL_0x7f16000b</item>
+        <item name="android:textColorHintInverse">@color2/APKTOOL_DUMMYVAL_0x7f160002</item>
+        <item name="android:windowBackground">@color2/APKTOOL_DUMMYVAL_0x7f160014</item>
+        <item name="android:textColorHighlight">@color2/APKTOOL_DUMMYVAL_0x7f160046</item>
+        <item name="android:textColorHint">@color2/APKTOOL_DUMMYVAL_0x7f160003</item>
+        <item name="android:colorForegroundInverse">@color2/APKTOOL_DUMMYVAL_0x7f160011</item>
+        <item name="android:textColorTertiary">@color2/APKTOOL_DUMMYVAL_0x7f16000c</item>
+        <item name="android:textColorTertiaryInverse">@color2/APKTOOL_DUMMYVAL_0x7f16000b</item>
+        <item name="android:textColorPrimaryInverseDisableOnly">@color2/APKTOOL_DUMMYVAL_0x7f160005</item>
+        <item name="android:colorBackgroundCacheHint">@color2/APKTOOL_DUMMYVAL_0x7f160001</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400be">@color2/APKTOOL_DUMMYVAL_0x7f160011</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400bf">@color2/APKTOOL_DUMMYVAL_0x7f16001c</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c1">@color2/APKTOOL_DUMMYVAL_0x7f160026</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c2">?android:textColorSecondary</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c8">@color2/APKTOOL_DUMMYVAL_0x7f160079</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040154">true</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220050" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220051" />
+    <style name="APKTOOL_DUMMYVAL_0x7f220052" parent="@style2/APKTOOL_DUMMYVAL_0x7f220053">
+        <item name="android:timePickerDialogTheme">@style2/APKTOOL_DUMMYVAL_0x7f22017a</item>
+        <item name="android:datePickerDialogTheme">@style2/APKTOOL_DUMMYVAL_0x7f22017a</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040029">@style2/APKTOOL_DUMMYVAL_0x7f22017b</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040049">@style2/APKTOOL_DUMMYVAL_0x7f2201db</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04004a">@style2/APKTOOL_DUMMYVAL_0x7f2201d2</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04004b">@style2/APKTOOL_DUMMYVAL_0x7f2201d5</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04009e">@style2/APKTOOL_DUMMYVAL_0x7f2201e6</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400a8">@style2/APKTOOL_DUMMYVAL_0x7f2201e4</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400ac">@style2/APKTOOL_DUMMYVAL_0x7f2201e2</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400bd">?APKTOOL_DUMMYVAL_0x7f0400c7</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c4">@color2/APKTOOL_DUMMYVAL_0x7f160035</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c5">@color2/APKTOOL_DUMMYVAL_0x7f160036</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040122">@style2/APKTOOL_DUMMYVAL_0x7f2201e7</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401bd">@style2/APKTOOL_DUMMYVAL_0x7f2201d7</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401be">@style2/APKTOOL_DUMMYVAL_0x7f2201e1</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401d8">@style2/APKTOOL_DUMMYVAL_0x7f2201e8</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040229">?APKTOOL_DUMMYVAL_0x7f040049</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04022a">@style2/APKTOOL_DUMMYVAL_0x7f2201e9</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040263">@style2/APKTOOL_DUMMYVAL_0x7f2201ec</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040280">@style2/APKTOOL_DUMMYVAL_0x7f2201d1</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040299">@style2/APKTOOL_DUMMYVAL_0x7f2201f5</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a6">com.google.android.material.theme.MaterialComponentsViewInflater</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220053" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200b6">
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c7">?APKTOOL_DUMMYVAL_0x7f0400c4</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040211">@color2/APKTOOL_DUMMYVAL_0x7f16005e</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040268">@style2/APKTOOL_DUMMYVAL_0x7f220135</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040269">@style2/APKTOOL_DUMMYVAL_0x7f220136</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04026a">@style2/APKTOOL_DUMMYVAL_0x7f220137</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04026b">@style2/APKTOOL_DUMMYVAL_0x7f220138</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04026c">@style2/APKTOOL_DUMMYVAL_0x7f22013a</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04026d">@style2/APKTOOL_DUMMYVAL_0x7f22013b</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04026e">@style2/APKTOOL_DUMMYVAL_0x7f22013c</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04026f">@style2/APKTOOL_DUMMYVAL_0x7f22013d</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040270">@style2/APKTOOL_DUMMYVAL_0x7f22013e</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040271">@style2/APKTOOL_DUMMYVAL_0x7f22013f</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040276">@style2/APKTOOL_DUMMYVAL_0x7f220140</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04027b">@style2/APKTOOL_DUMMYVAL_0x7f220141</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04027c">@style2/APKTOOL_DUMMYVAL_0x7f220142</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220054" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200b7">
+        <item name="APKTOOL_DUMMYVAL_0x7f040049">@style2/APKTOOL_DUMMYVAL_0x7f2201db</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04004a">@style2/APKTOOL_DUMMYVAL_0x7f2201d2</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04004b">@style2/APKTOOL_DUMMYVAL_0x7f2201d5</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040057">@style2/APKTOOL_DUMMYVAL_0x7f2201dc</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04009e">@style2/APKTOOL_DUMMYVAL_0x7f2201e6</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400a8">@style2/APKTOOL_DUMMYVAL_0x7f2201e4</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400ac">@style2/APKTOOL_DUMMYVAL_0x7f2201e2</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400bd">?APKTOOL_DUMMYVAL_0x7f0400c7</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c4">@color2/APKTOOL_DUMMYVAL_0x7f160035</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c5">@color2/APKTOOL_DUMMYVAL_0x7f160036</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c7">?APKTOOL_DUMMYVAL_0x7f0400c4</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040122">@style2/APKTOOL_DUMMYVAL_0x7f2201e7</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401bd">@style2/APKTOOL_DUMMYVAL_0x7f2201d7</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401be">@style2/APKTOOL_DUMMYVAL_0x7f2201e1</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401d8">@style2/APKTOOL_DUMMYVAL_0x7f2201e8</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040211">@color2/APKTOOL_DUMMYVAL_0x7f16005e</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040229">?APKTOOL_DUMMYVAL_0x7f040049</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04022a">@style2/APKTOOL_DUMMYVAL_0x7f2201e9</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040263">@style2/APKTOOL_DUMMYVAL_0x7f2201ec</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040268">@style2/APKTOOL_DUMMYVAL_0x7f220135</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040269">@style2/APKTOOL_DUMMYVAL_0x7f220136</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04026a">@style2/APKTOOL_DUMMYVAL_0x7f220137</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04026b">@style2/APKTOOL_DUMMYVAL_0x7f220138</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04026c">@style2/APKTOOL_DUMMYVAL_0x7f22013a</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04026d">@style2/APKTOOL_DUMMYVAL_0x7f22013b</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04026e">@style2/APKTOOL_DUMMYVAL_0x7f22013c</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04026f">@style2/APKTOOL_DUMMYVAL_0x7f22013d</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040270">@style2/APKTOOL_DUMMYVAL_0x7f22013e</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040271">@style2/APKTOOL_DUMMYVAL_0x7f22013f</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040276">@style2/APKTOOL_DUMMYVAL_0x7f220140</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04027b">@style2/APKTOOL_DUMMYVAL_0x7f220141</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04027c">@style2/APKTOOL_DUMMYVAL_0x7f220142</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040280">@style2/APKTOOL_DUMMYVAL_0x7f2201d1</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040299">@style2/APKTOOL_DUMMYVAL_0x7f2201f5</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a6">com.google.android.material.theme.MaterialComponentsViewInflater</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220055" parent="@style2/APKTOOL_DUMMYVAL_0x7f220056">
+        <item name="android:timePickerDialogTheme">@style2/APKTOOL_DUMMYVAL_0x7f22017a</item>
+        <item name="android:datePickerDialogTheme">@style2/APKTOOL_DUMMYVAL_0x7f22017a</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040029">@style2/APKTOOL_DUMMYVAL_0x7f22017b</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040049">@style2/APKTOOL_DUMMYVAL_0x7f2201db</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04004a">@style2/APKTOOL_DUMMYVAL_0x7f2201d2</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04004b">@style2/APKTOOL_DUMMYVAL_0x7f2201d4</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04009e">@style2/APKTOOL_DUMMYVAL_0x7f2201e6</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400a8">@style2/APKTOOL_DUMMYVAL_0x7f2201e4</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400ac">@style2/APKTOOL_DUMMYVAL_0x7f2201e2</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400bd">?APKTOOL_DUMMYVAL_0x7f0400c7</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c4">@color2/APKTOOL_DUMMYVAL_0x7f160035</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c5">@color2/APKTOOL_DUMMYVAL_0x7f160036</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040122">@style2/APKTOOL_DUMMYVAL_0x7f2201e7</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401bd">@style2/APKTOOL_DUMMYVAL_0x7f2201d7</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401be">@style2/APKTOOL_DUMMYVAL_0x7f2201e1</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401d8">@style2/APKTOOL_DUMMYVAL_0x7f2201e8</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040229">?APKTOOL_DUMMYVAL_0x7f040049</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04022a">@style2/APKTOOL_DUMMYVAL_0x7f2201e9</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040263">@style2/APKTOOL_DUMMYVAL_0x7f2201eb</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040280">@style2/APKTOOL_DUMMYVAL_0x7f2201d1</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040299">@style2/APKTOOL_DUMMYVAL_0x7f2201f5</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a6">com.google.android.material.theme.MaterialComponentsViewInflater</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220056" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200b8">
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c7">?APKTOOL_DUMMYVAL_0x7f0400c4</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040211">@color2/APKTOOL_DUMMYVAL_0x7f16005e</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040268">@style2/APKTOOL_DUMMYVAL_0x7f220135</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040269">@style2/APKTOOL_DUMMYVAL_0x7f220136</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04026a">@style2/APKTOOL_DUMMYVAL_0x7f220137</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04026b">@style2/APKTOOL_DUMMYVAL_0x7f220138</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04026c">@style2/APKTOOL_DUMMYVAL_0x7f22013a</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04026d">@style2/APKTOOL_DUMMYVAL_0x7f22013b</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04026e">@style2/APKTOOL_DUMMYVAL_0x7f22013c</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04026f">@style2/APKTOOL_DUMMYVAL_0x7f22013d</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040270">@style2/APKTOOL_DUMMYVAL_0x7f22013e</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040271">@style2/APKTOOL_DUMMYVAL_0x7f22013f</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040276">@style2/APKTOOL_DUMMYVAL_0x7f220140</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04027b">@style2/APKTOOL_DUMMYVAL_0x7f220141</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04027c">@style2/APKTOOL_DUMMYVAL_0x7f220142</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220057" parent="@style2/APKTOOL_DUMMYVAL_0x7f22014e">
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c7">?APKTOOL_DUMMYVAL_0x7f0400c4</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040211">@color2/APKTOOL_DUMMYVAL_0x7f16005e</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040268">@style2/APKTOOL_DUMMYVAL_0x7f220135</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040269">@style2/APKTOOL_DUMMYVAL_0x7f220136</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04026a">@style2/APKTOOL_DUMMYVAL_0x7f220137</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04026b">@style2/APKTOOL_DUMMYVAL_0x7f220138</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04026c">@style2/APKTOOL_DUMMYVAL_0x7f22013a</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04026d">@style2/APKTOOL_DUMMYVAL_0x7f22013b</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04026e">@style2/APKTOOL_DUMMYVAL_0x7f22013c</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04026f">@style2/APKTOOL_DUMMYVAL_0x7f22013d</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040270">@style2/APKTOOL_DUMMYVAL_0x7f22013e</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040271">@style2/APKTOOL_DUMMYVAL_0x7f22013f</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040276">@style2/APKTOOL_DUMMYVAL_0x7f220140</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04027b">@style2/APKTOOL_DUMMYVAL_0x7f220141</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04027c">@style2/APKTOOL_DUMMYVAL_0x7f220142</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220058" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200b9">
+        <item name="APKTOOL_DUMMYVAL_0x7f040049">@style2/APKTOOL_DUMMYVAL_0x7f2201db</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04004a">@style2/APKTOOL_DUMMYVAL_0x7f2201d2</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04004b">@style2/APKTOOL_DUMMYVAL_0x7f2201d4</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040057">@style2/APKTOOL_DUMMYVAL_0x7f2201dc</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04009e">@style2/APKTOOL_DUMMYVAL_0x7f2201e6</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400a8">@style2/APKTOOL_DUMMYVAL_0x7f2201e4</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400ac">@style2/APKTOOL_DUMMYVAL_0x7f2201e2</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400bd">?APKTOOL_DUMMYVAL_0x7f0400c7</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c4">@color2/APKTOOL_DUMMYVAL_0x7f160035</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c5">@color2/APKTOOL_DUMMYVAL_0x7f160036</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c7">?APKTOOL_DUMMYVAL_0x7f0400c4</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040122">@style2/APKTOOL_DUMMYVAL_0x7f2201e7</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401bd">@style2/APKTOOL_DUMMYVAL_0x7f2201d7</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401be">@style2/APKTOOL_DUMMYVAL_0x7f2201e1</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401d8">@style2/APKTOOL_DUMMYVAL_0x7f2201e8</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040211">@color2/APKTOOL_DUMMYVAL_0x7f16005e</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040229">?APKTOOL_DUMMYVAL_0x7f040049</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04022a">@style2/APKTOOL_DUMMYVAL_0x7f2201e9</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040263">@style2/APKTOOL_DUMMYVAL_0x7f2201eb</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040268">@style2/APKTOOL_DUMMYVAL_0x7f220135</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040269">@style2/APKTOOL_DUMMYVAL_0x7f220136</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04026a">@style2/APKTOOL_DUMMYVAL_0x7f220137</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04026b">@style2/APKTOOL_DUMMYVAL_0x7f220138</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04026c">@style2/APKTOOL_DUMMYVAL_0x7f22013a</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04026d">@style2/APKTOOL_DUMMYVAL_0x7f22013b</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04026e">@style2/APKTOOL_DUMMYVAL_0x7f22013c</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04026f">@style2/APKTOOL_DUMMYVAL_0x7f22013d</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040270">@style2/APKTOOL_DUMMYVAL_0x7f22013e</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040271">@style2/APKTOOL_DUMMYVAL_0x7f22013f</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040276">@style2/APKTOOL_DUMMYVAL_0x7f220140</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04027b">@style2/APKTOOL_DUMMYVAL_0x7f220141</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04027c">@style2/APKTOOL_DUMMYVAL_0x7f220142</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040280">@style2/APKTOOL_DUMMYVAL_0x7f2201d1</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040299">@style2/APKTOOL_DUMMYVAL_0x7f2201f5</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a6">com.google.android.material.theme.MaterialComponentsViewInflater</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220059" parent="@style2/APKTOOL_DUMMYVAL_0x7f220173">
+        <item name="APKTOOL_DUMMYVAL_0x7f0401bd">@style2/APKTOOL_DUMMYVAL_0x7f2201dc</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22005a" parent="@style2/APKTOOL_DUMMYVAL_0x7f220174">
+        <item name="APKTOOL_DUMMYVAL_0x7f040057">@style2/APKTOOL_DUMMYVAL_0x7f2201dc</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22005b" parent="@style2/APKTOOL_DUMMYVAL_0x7f220060">
+        <item name="android:colorControlNormal">?APKTOOL_DUMMYVAL_0x7f0400c2</item>
+        <item name="android:colorControlActivated">?APKTOOL_DUMMYVAL_0x7f0400c0</item>
+        <item name="android:colorButtonNormal">?APKTOOL_DUMMYVAL_0x7f0400bf</item>
+        <item name="android:colorControlHighlight">?APKTOOL_DUMMYVAL_0x7f0400c1</item>
+        <item name="android:colorPrimary">?APKTOOL_DUMMYVAL_0x7f0400c4</item>
+        <item name="android:colorPrimaryDark">?APKTOOL_DUMMYVAL_0x7f0400c5</item>
+        <item name="android:colorAccent">?APKTOOL_DUMMYVAL_0x7f0400bd</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040000">?android:actionBarDivider</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040001">@drawable/abc_action_bar_item_background_material</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040003">?android:actionBarSize</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04000b">?android:actionButtonStyle</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040010">?android:actionModeBackground</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040012">?android:actionModeCloseDrawable</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04001d">?android:actionOverflowButtonStyle</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040049">?android:borderlessButtonStyle</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040060">?android:buttonStyle</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040061">?android:buttonStyleSmall</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040095">?android:checkboxStyle</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04009a">?android:checkedTextViewStyle</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400f3">?android:dividerHorizontal</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400f5">?android:dividerVertical</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400fe">@drawable/abc_edit_text_material</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400ff">?android:editTextColor</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04013f">?android:homeAsUpIndicator</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401b0">?android:listChoiceBackgroundIndicator</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401b8">?android:listPreferredItemHeightSmall</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040205">?android:radioButtonStyle</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040206">?android:ratingBarStyle</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04021c">?android:selectableItemBackground</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04021d">?android:selectableItemBackgroundBorderless</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04022e">?android:spinnerStyle</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040272">?android:textAppearanceLargePopupMenu</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04027a">?android:textAppearanceSmallPopupMenu</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22005c" parent="@style2/APKTOOL_DUMMYVAL_0x7f220061">
+        <item name="android:windowElevation">@dimen4/APKTOOL_DUMMYVAL_0x7f190001</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22005d" parent="@style2/APKTOOL_DUMMYVAL_0x7f220062">
+        <item name="android:colorControlNormal">?APKTOOL_DUMMYVAL_0x7f0400c2</item>
+        <item name="android:colorControlActivated">?APKTOOL_DUMMYVAL_0x7f0400c0</item>
+        <item name="android:colorButtonNormal">?APKTOOL_DUMMYVAL_0x7f0400bf</item>
+        <item name="android:colorControlHighlight">?APKTOOL_DUMMYVAL_0x7f0400c1</item>
+        <item name="android:colorPrimary">?APKTOOL_DUMMYVAL_0x7f0400c4</item>
+        <item name="android:colorPrimaryDark">?APKTOOL_DUMMYVAL_0x7f0400c5</item>
+        <item name="android:colorAccent">?APKTOOL_DUMMYVAL_0x7f0400bd</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040000">?android:actionBarDivider</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040001">@drawable/abc_action_bar_item_background_material</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040003">?android:actionBarSize</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04000b">?android:actionButtonStyle</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040010">?android:actionModeBackground</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040012">?android:actionModeCloseDrawable</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04001d">?android:actionOverflowButtonStyle</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040049">?android:borderlessButtonStyle</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040060">?android:buttonStyle</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040061">?android:buttonStyleSmall</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040095">?android:checkboxStyle</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04009a">?android:checkedTextViewStyle</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400f3">?android:dividerHorizontal</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400f5">?android:dividerVertical</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400fe">@drawable/abc_edit_text_material</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400ff">?android:editTextColor</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04013f">?android:homeAsUpIndicator</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401b0">?android:listChoiceBackgroundIndicator</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401b8">?android:listPreferredItemHeightSmall</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040205">?android:radioButtonStyle</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040206">?android:ratingBarStyle</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04021c">?android:selectableItemBackground</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04021d">?android:selectableItemBackgroundBorderless</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04022e">?android:spinnerStyle</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040272">?android:textAppearanceLargePopupMenu</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04027a">?android:textAppearanceSmallPopupMenu</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22005e" parent="@style2/APKTOOL_DUMMYVAL_0x7f220063">
+        <item name="android:windowElevation">@dimen4/APKTOOL_DUMMYVAL_0x7f190001</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22005f" parent="@style2/APKTOOL_DUMMYVAL_0x7f220064">
+        <item name="android:windowElevation">@dimen4/APKTOOL_DUMMYVAL_0x7f190001</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220060" parent="@style/APKTOOL_DUMMYVAL_0x7f120008">
+        <item name="android:panelBackground">@android:color/transparent</item>
+        <item name="android:dropDownListViewStyle">@style2/APKTOOL_DUMMYVAL_0x7f2201b3</item>
+        <item name="android:dropDownItemStyle">@style2/APKTOOL_DUMMYVAL_0x7f220199</item>
+        <item name="android:spinnerItemStyle">@style2/APKTOOL_DUMMYVAL_0x7f2201c5</item>
+        <item name="android:textAppearanceButton">@style2/APKTOOL_DUMMYVAL_0x7f22011c</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040000">?APKTOOL_DUMMYVAL_0x7f0400f5</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040001">?APKTOOL_DUMMYVAL_0x7f04021d</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040002">@null</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040003">@dimen3/APKTOOL_DUMMYVAL_0x7f180000</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040004">?APKTOOL_DUMMYVAL_0x7f040005</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040005">@style2/APKTOOL_DUMMYVAL_0x7f220185</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040006">@style2/APKTOOL_DUMMYVAL_0x7f220082</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040007">@style2/APKTOOL_DUMMYVAL_0x7f220187</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040008">@style2/APKTOOL_DUMMYVAL_0x7f220186</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040009">@style2/APKTOOL_DUMMYVAL_0x7f220170</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04000a">@null</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04000b">@style2/APKTOOL_DUMMYVAL_0x7f220188</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04000c">@style2/APKTOOL_DUMMYVAL_0x7f2201c3</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04000e">@style2/APKTOOL_DUMMYVAL_0x7f220113</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04000f">?android:textColorPrimaryDisableOnly</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040010">@drawable/abc_cab_background_top_material</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040011">@style2/APKTOOL_DUMMYVAL_0x7f220189</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040012">@drawable/abc_ic_ab_back_material</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040013">@drawable/abc_ic_menu_copy_mtrl_am_alpha</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040014">@drawable/abc_ic_menu_cut_mtrl_alpha</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040016">@drawable/abc_ic_menu_paste_mtrl_am_alpha</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040018">@drawable/abc_ic_menu_selectall_mtrl_alpha</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040019">@drawable/abc_ic_menu_share_mtrl_alpha</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04001a">?APKTOOL_DUMMYVAL_0x7f0400c5</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04001b">@style2/APKTOOL_DUMMYVAL_0x7f22018b</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04001d">@style2/APKTOOL_DUMMYVAL_0x7f22018a</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04001e">@style2/APKTOOL_DUMMYVAL_0x7f2201b6</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040021">@style2/APKTOOL_DUMMYVAL_0x7f22018c</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040027">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040028">@style2/APKTOOL_DUMMYVAL_0x7f220002</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040029">@style2/APKTOOL_DUMMYVAL_0x7f220174</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040034">@style2/APKTOOL_DUMMYVAL_0x7f22018d</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040049">@style2/APKTOOL_DUMMYVAL_0x7f22018f</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040057">@style2/APKTOOL_DUMMYVAL_0x7f220191</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040058">?APKTOOL_DUMMYVAL_0x7f040057</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040059">?APKTOOL_DUMMYVAL_0x7f040057</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04005a">?APKTOOL_DUMMYVAL_0x7f040057</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04005b">@style2/APKTOOL_DUMMYVAL_0x7f220078</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040060">@style2/APKTOOL_DUMMYVAL_0x7f22018e</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040061">@style2/APKTOOL_DUMMYVAL_0x7f220193</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040095">@style2/APKTOOL_DUMMYVAL_0x7f220195</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400bd">@color2/APKTOOL_DUMMYVAL_0x7f16000d</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400be">@color2/APKTOOL_DUMMYVAL_0x7f160010</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400bf">@color2/APKTOOL_DUMMYVAL_0x7f16001b</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c0">?APKTOOL_DUMMYVAL_0x7f0400bd</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c1">@color2/APKTOOL_DUMMYVAL_0x7f16006f</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c2">?android:textColorSecondary</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c3">@color2/APKTOOL_DUMMYVAL_0x7f160042</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c4">@color2/APKTOOL_DUMMYVAL_0x7f16004f</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c5">@color2/APKTOOL_DUMMYVAL_0x7f160004</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c8">@color2/APKTOOL_DUMMYVAL_0x7f160078</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400dc">?APKTOOL_DUMMYVAL_0x7f04021d</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400e8">@dimen4/APKTOOL_DUMMYVAL_0x7f19000b</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400ed">@dimen4/APKTOOL_DUMMYVAL_0x7f19000c</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400ee">@style2/APKTOOL_DUMMYVAL_0x7f220173</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400f3">@drawable/abc_list_divider_mtrl_alpha</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400f5">@drawable/abc_list_divider_mtrl_alpha</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400fa">@style2/APKTOOL_DUMMYVAL_0x7f220198</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400fb">?android:dropDownListViewStyle</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400fc">?APKTOOL_DUMMYVAL_0x7f0401b8</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400fe">@drawable/abc_edit_text_material</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400ff">?android:textColorPrimary</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040101">@style2/APKTOOL_DUMMYVAL_0x7f22019a</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04013f">@drawable/abc_ic_ab_back_material</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04014e">@style2/APKTOOL_DUMMYVAL_0x7f22019b</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040154">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401b0">@drawable/abc_list_selector_holo_dark</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401b1">@null</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401b4">@style2/APKTOOL_DUMMYVAL_0x7f2201b1</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401b5">@style2/APKTOOL_DUMMYVAL_0x7f2201b2</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401b6">64.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401b7">80.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401b8">48.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401b9">@dimen4/APKTOOL_DUMMYVAL_0x7f190012</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401ba">@dimen4/APKTOOL_DUMMYVAL_0x7f190012</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401e4">@drawable/abc_menu_hardkey_panel_mtrl_mult</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401e5">@style2/APKTOOL_DUMMYVAL_0x7f220149</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401e6">@dimen4/APKTOOL_DUMMYVAL_0x7f190013</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401ed">@style2/APKTOOL_DUMMYVAL_0x7f2201b5</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040205">@style2/APKTOOL_DUMMYVAL_0x7f220196</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040206">@style2/APKTOOL_DUMMYVAL_0x7f2201ba</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040207">@style2/APKTOOL_DUMMYVAL_0x7f2201bb</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040208">@style2/APKTOOL_DUMMYVAL_0x7f2201bc</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040215">@style2/APKTOOL_DUMMYVAL_0x7f2201bd</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04021a">@style2/APKTOOL_DUMMYVAL_0x7f2201bf</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04021c">@drawable/abc_item_background_holo_dark</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04021d">?APKTOOL_DUMMYVAL_0x7f04021c</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04022d">@style2/APKTOOL_DUMMYVAL_0x7f220199</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04022e">@style2/APKTOOL_DUMMYVAL_0x7f2201c1</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040249">@style2/APKTOOL_DUMMYVAL_0x7f220197</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040272">@style2/APKTOOL_DUMMYVAL_0x7f220122</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040273">@style2/APKTOOL_DUMMYVAL_0x7f22010e</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040274">@style2/APKTOOL_DUMMYVAL_0x7f2200f7</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040275">@style2/APKTOOL_DUMMYVAL_0x7f22010e</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040277">@style2/APKTOOL_DUMMYVAL_0x7f220121</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040278">@style2/APKTOOL_DUMMYVAL_0x7f22010a</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040279">@style2/APKTOOL_DUMMYVAL_0x7f22010b</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04027a">@style2/APKTOOL_DUMMYVAL_0x7f220123</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04027d">@color2/APKTOOL_DUMMYVAL_0x7f160007</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04027e">@color2/APKTOOL_DUMMYVAL_0x7f160009</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040298">@style2/APKTOOL_DUMMYVAL_0x7f2201c7</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040299">@style2/APKTOOL_DUMMYVAL_0x7f2201c6</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04029a">@color2/APKTOOL_DUMMYVAL_0x7f160004</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04029b">@drawable/tooltip_frame_light</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a6">androidx.appcompat.app.AppCompatViewInflater</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402aa">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402ab">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402ac">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402ad">@null</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402ae">@null</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402af">@null</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402b0">@null</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402b3">false</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220061" parent="@style/APKTOOL_DUMMYVAL_0x7f120000">
+        <item name="android:colorBackground">?APKTOOL_DUMMYVAL_0x7f0400be</item>
+        <item name="android:windowBackground">@drawable/abc_dialog_material_background</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowTitleStyle">@style2/APKTOOL_DUMMYVAL_0x7f2200dd</item>
+        <item name="android:windowTitleBackgroundStyle">@style2/APKTOOL_DUMMYVAL_0x7f220010</item>
+        <item name="android:windowAnimationStyle">@style2/APKTOOL_DUMMYVAL_0x7f220005</item>
+        <item name="android:listDivider">@null</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowSoftInputMode">adjustPan</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:borderlessButtonStyle">@style2/APKTOOL_DUMMYVAL_0x7f22018f</item>
+        <item name="android:buttonBarStyle">@style2/APKTOOL_DUMMYVAL_0x7f220194</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401b9">24.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401ba">24.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402aa">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402ac">true</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220062" parent="@style/APKTOOL_DUMMYVAL_0x7f120009">
+        <item name="android:panelBackground">@android:color/transparent</item>
+        <item name="android:dropDownListViewStyle">@style2/APKTOOL_DUMMYVAL_0x7f2201b3</item>
+        <item name="android:dropDownItemStyle">@style2/APKTOOL_DUMMYVAL_0x7f220199</item>
+        <item name="android:spinnerItemStyle">@style2/APKTOOL_DUMMYVAL_0x7f2201c5</item>
+        <item name="android:textAppearanceButton">@style2/APKTOOL_DUMMYVAL_0x7f22011c</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040000">?APKTOOL_DUMMYVAL_0x7f0400f5</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040001">?APKTOOL_DUMMYVAL_0x7f04021d</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040002">@null</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040003">@dimen3/APKTOOL_DUMMYVAL_0x7f180000</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040004">?APKTOOL_DUMMYVAL_0x7f040005</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040005">@style2/APKTOOL_DUMMYVAL_0x7f22019d</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040006">@style2/APKTOOL_DUMMYVAL_0x7f22019f</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040007">@style2/APKTOOL_DUMMYVAL_0x7f2201a2</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040008">@style2/APKTOOL_DUMMYVAL_0x7f2201a1</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040009">@style2/APKTOOL_DUMMYVAL_0x7f220170</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04000a">@null</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04000b">@style2/APKTOOL_DUMMYVAL_0x7f2201a4</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04000c">@style2/APKTOOL_DUMMYVAL_0x7f2201b0</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04000e">@style2/APKTOOL_DUMMYVAL_0x7f220113</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04000f">?android:textColorPrimaryDisableOnly</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040010">@drawable/abc_cab_background_top_material</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040011">@style2/APKTOOL_DUMMYVAL_0x7f220189</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040012">@drawable/abc_ic_ab_back_material</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040013">@drawable/abc_ic_menu_copy_mtrl_am_alpha</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040014">@drawable/abc_ic_menu_cut_mtrl_alpha</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040016">@drawable/abc_ic_menu_paste_mtrl_am_alpha</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040018">@drawable/abc_ic_menu_selectall_mtrl_alpha</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040019">@drawable/abc_ic_menu_share_mtrl_alpha</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04001a">?APKTOOL_DUMMYVAL_0x7f0400c5</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04001b">@style2/APKTOOL_DUMMYVAL_0x7f22018b</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04001d">@style2/APKTOOL_DUMMYVAL_0x7f2201a6</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04001e">@style2/APKTOOL_DUMMYVAL_0x7f2201ae</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040021">@style2/APKTOOL_DUMMYVAL_0x7f22018c</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040027">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040028">@style2/APKTOOL_DUMMYVAL_0x7f220003</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040029">@style2/APKTOOL_DUMMYVAL_0x7f220174</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040034">@style2/APKTOOL_DUMMYVAL_0x7f22018d</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040049">@style2/APKTOOL_DUMMYVAL_0x7f22018f</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040057">@style2/APKTOOL_DUMMYVAL_0x7f220191</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040058">?APKTOOL_DUMMYVAL_0x7f040057</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040059">?APKTOOL_DUMMYVAL_0x7f040057</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04005a">?APKTOOL_DUMMYVAL_0x7f040057</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04005b">@style2/APKTOOL_DUMMYVAL_0x7f220078</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040060">@style2/APKTOOL_DUMMYVAL_0x7f22018e</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040061">@style2/APKTOOL_DUMMYVAL_0x7f220193</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040095">@style2/APKTOOL_DUMMYVAL_0x7f220195</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400bd">@color2/APKTOOL_DUMMYVAL_0x7f16000e</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400be">@color2/APKTOOL_DUMMYVAL_0x7f160011</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400bf">@color2/APKTOOL_DUMMYVAL_0x7f16001c</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c0">?APKTOOL_DUMMYVAL_0x7f0400bd</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c1">@color2/APKTOOL_DUMMYVAL_0x7f160026</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c2">?android:textColorSecondary</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c3">@color2/APKTOOL_DUMMYVAL_0x7f160043</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c4">@color2/APKTOOL_DUMMYVAL_0x7f16004c</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c5">@color2/APKTOOL_DUMMYVAL_0x7f16004e</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400c8">@color2/APKTOOL_DUMMYVAL_0x7f160079</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400dc">?APKTOOL_DUMMYVAL_0x7f04021d</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400e8">@dimen4/APKTOOL_DUMMYVAL_0x7f19000b</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400ed">@dimen4/APKTOOL_DUMMYVAL_0x7f19000c</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400ee">@style2/APKTOOL_DUMMYVAL_0x7f220173</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400f3">@drawable/abc_list_divider_mtrl_alpha</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400f5">@drawable/abc_list_divider_mtrl_alpha</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400fa">@style2/APKTOOL_DUMMYVAL_0x7f220198</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400fb">?android:dropDownListViewStyle</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400fc">?APKTOOL_DUMMYVAL_0x7f0401b8</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400fe">@drawable/abc_edit_text_material</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400ff">?android:textColorPrimary</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040101">@style2/APKTOOL_DUMMYVAL_0x7f22019a</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04013f">@drawable/abc_ic_ab_back_material</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04014e">@style2/APKTOOL_DUMMYVAL_0x7f22019b</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040154">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401b0">@drawable/abc_list_selector_holo_light</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401b1">@null</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401b4">@style2/APKTOOL_DUMMYVAL_0x7f2201b1</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401b5">@style2/APKTOOL_DUMMYVAL_0x7f2201b2</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401b6">64.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401b7">80.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401b8">48.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401b9">@dimen4/APKTOOL_DUMMYVAL_0x7f190012</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401ba">@dimen4/APKTOOL_DUMMYVAL_0x7f190012</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401e4">@drawable/abc_menu_hardkey_panel_mtrl_mult</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401e5">@style2/APKTOOL_DUMMYVAL_0x7f220149</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401e6">@dimen4/APKTOOL_DUMMYVAL_0x7f190013</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401ed">@style2/APKTOOL_DUMMYVAL_0x7f2201ad</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040205">@style2/APKTOOL_DUMMYVAL_0x7f220196</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040206">@style2/APKTOOL_DUMMYVAL_0x7f2201ba</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040207">@style2/APKTOOL_DUMMYVAL_0x7f2201bb</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040208">@style2/APKTOOL_DUMMYVAL_0x7f2201bc</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040215">@style2/APKTOOL_DUMMYVAL_0x7f2201af</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04021a">@style2/APKTOOL_DUMMYVAL_0x7f2201bf</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04021c">@drawable/abc_item_background_holo_light</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04021d">?APKTOOL_DUMMYVAL_0x7f04021c</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04022d">@style2/APKTOOL_DUMMYVAL_0x7f220199</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04022e">@style2/APKTOOL_DUMMYVAL_0x7f2201c1</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040249">@style2/APKTOOL_DUMMYVAL_0x7f220197</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040272">@style2/APKTOOL_DUMMYVAL_0x7f220105</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040273">@style2/APKTOOL_DUMMYVAL_0x7f22010e</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040274">@style2/APKTOOL_DUMMYVAL_0x7f2200f7</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040275">@style2/APKTOOL_DUMMYVAL_0x7f22010e</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040277">@style2/APKTOOL_DUMMYVAL_0x7f220121</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040278">@style2/APKTOOL_DUMMYVAL_0x7f22010a</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040279">@style2/APKTOOL_DUMMYVAL_0x7f22010b</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04027a">@style2/APKTOOL_DUMMYVAL_0x7f220106</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04027d">@color2/APKTOOL_DUMMYVAL_0x7f160008</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04027e">@color2/APKTOOL_DUMMYVAL_0x7f160009</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040298">@style2/APKTOOL_DUMMYVAL_0x7f2201c7</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040299">@style2/APKTOOL_DUMMYVAL_0x7f2201c6</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04029a">@color2/APKTOOL_DUMMYVAL_0x7f160011</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04029b">@drawable/tooltip_frame_dark</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a6">androidx.appcompat.app.AppCompatViewInflater</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402aa">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402ab">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402ac">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402ad">@null</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402ae">@null</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402af">@null</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402b0">@null</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402b3">false</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220063" parent="@style/APKTOOL_DUMMYVAL_0x7f120002">
+        <item name="android:colorBackground">?APKTOOL_DUMMYVAL_0x7f0400be</item>
+        <item name="android:windowBackground">@drawable/abc_dialog_material_background</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowTitleStyle">@style2/APKTOOL_DUMMYVAL_0x7f2200dd</item>
+        <item name="android:windowTitleBackgroundStyle">@style2/APKTOOL_DUMMYVAL_0x7f220010</item>
+        <item name="android:windowAnimationStyle">@style2/APKTOOL_DUMMYVAL_0x7f220005</item>
+        <item name="android:listDivider">@null</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowSoftInputMode">adjustPan</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:borderlessButtonStyle">@style2/APKTOOL_DUMMYVAL_0x7f22018f</item>
+        <item name="android:buttonBarStyle">@style2/APKTOOL_DUMMYVAL_0x7f220194</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401b9">24.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401ba">24.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402aa">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402ac">true</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220064" parent="@style2/APKTOOL_DUMMYVAL_0x7f22004a">
+        <item name="android:colorBackground">?APKTOOL_DUMMYVAL_0x7f0400be</item>
+        <item name="android:windowBackground">@drawable/abc_dialog_material_background</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowTitleStyle">@style2/APKTOOL_DUMMYVAL_0x7f2200dd</item>
+        <item name="android:windowTitleBackgroundStyle">@style2/APKTOOL_DUMMYVAL_0x7f220010</item>
+        <item name="android:windowAnimationStyle">@style2/APKTOOL_DUMMYVAL_0x7f220005</item>
+        <item name="android:listDivider">@null</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowSoftInputMode">adjustPan</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:borderlessButtonStyle">@style2/APKTOOL_DUMMYVAL_0x7f22018f</item>
+        <item name="android:buttonBarStyle">@style2/APKTOOL_DUMMYVAL_0x7f220194</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401b9">24.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401ba">24.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402aa">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402ac">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402ad">@null</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402ae">@null</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402af">@null</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402b0">@null</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220065" parent="@android:style/Widget.AutoCompleteTextView">
+        <item name="android:textAppearance">?android:textAppearanceMediumInverse</item>
+        <item name="android:textColor">?APKTOOL_DUMMYVAL_0x7f0400ff</item>
+        <item name="android:background">?APKTOOL_DUMMYVAL_0x7f0400fe</item>
+        <item name="android:dropDownSelector">?APKTOOL_DUMMYVAL_0x7f0401b0</item>
+        <item name="android:popupBackground">@drawable/abc_popup_background_mtrl_mult</item>
+        <item name="android:textCursorDrawable">@drawable/abc_text_cursor_material</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220066" parent="@android:style/Widget.EditText">
+        <item name="android:textAppearance">?android:textAppearanceMediumInverse</item>
+        <item name="android:textColor">?APKTOOL_DUMMYVAL_0x7f0400ff</item>
+        <item name="android:background">?APKTOOL_DUMMYVAL_0x7f0400fe</item>
+        <item name="android:textCursorDrawable">@drawable/abc_text_cursor_material</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220067" parent="@android:style/Widget">
+        <item name="android:paddingLeft">@dimen2/APKTOOL_DUMMYVAL_0x7f170002</item>
+        <item name="android:paddingRight">@dimen2/APKTOOL_DUMMYVAL_0x7f170002</item>
+        <item name="android:minHeight">?APKTOOL_DUMMYVAL_0x7f040003</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04005c">top</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400b6">@string/APKTOOL_DUMMYVAL_0x7f11001a</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400b7">?APKTOOL_DUMMYVAL_0x7f04013f</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400d4">16.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400d5">@dimen2/APKTOOL_DUMMYVAL_0x7f170001</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401c0">@dimen3/APKTOOL_DUMMYVAL_0x7f180000</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04023e">@style2/APKTOOL_DUMMYVAL_0x7f220114</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04028e">4.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040294">@style2/APKTOOL_DUMMYVAL_0x7f220116</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220068">
+        <item name="android:gravity">center_vertical</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04000b">@style2/APKTOOL_DUMMYVAL_0x7f220188</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04001d">@style2/APKTOOL_DUMMYVAL_0x7f22018a</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04003a">@null</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04003b">@null</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04003c">@null</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400d0">@dimen2/APKTOOL_DUMMYVAL_0x7f170000</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400d4">@dimen2/APKTOOL_DUMMYVAL_0x7f170000</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400d5">@dimen2/APKTOOL_DUMMYVAL_0x7f170001</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400f1">showTitle</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400f2">?APKTOOL_DUMMYVAL_0x7f0400f5</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040102">@dimen4/APKTOOL_DUMMYVAL_0x7f190000</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040133">?APKTOOL_DUMMYVAL_0x7f040003</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401ee">?APKTOOL_DUMMYVAL_0x7f040002</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040240">@style2/APKTOOL_DUMMYVAL_0x7f220114</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040296">@style2/APKTOOL_DUMMYVAL_0x7f220116</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220069" parent="@style2/APKTOOL_DUMMYVAL_0x7f220068">
+        <item name="APKTOOL_DUMMYVAL_0x7f04003a">?APKTOOL_DUMMYVAL_0x7f0400c4</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04003b">?APKTOOL_DUMMYVAL_0x7f0400c4</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04003c">?APKTOOL_DUMMYVAL_0x7f0400c4</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22006a">
+        <item name="APKTOOL_DUMMYVAL_0x7f0400f2">?APKTOOL_DUMMYVAL_0x7f040000</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400f4">8.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040220">middle</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22006b" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22006c" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22006d" />
+    <style name="APKTOOL_DUMMYVAL_0x7f22006e" parent="@android:style/Widget.Material.ActionButton.CloseMode">
+        <item name="android:minWidth">56.0dip</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22006f" />
+    <style name="APKTOOL_DUMMYVAL_0x7f220070">
+        <item name="APKTOOL_DUMMYVAL_0x7f04003a">?APKTOOL_DUMMYVAL_0x7f040010</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04003b">?APKTOOL_DUMMYVAL_0x7f04001a</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400b5">@layout2/APKTOOL_DUMMYVAL_0x7f1c0005</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040133">?APKTOOL_DUMMYVAL_0x7f040003</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040240">@style2/APKTOOL_DUMMYVAL_0x7f220118</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040296">@style2/APKTOOL_DUMMYVAL_0x7f22011a</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220071">
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/abc_ab_share_pack_mtrl_alpha</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400f2">?APKTOOL_DUMMYVAL_0x7f0400f5</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400f4">6.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040220">middle</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220072" parent="@android:style/Widget.Material.AutoCompleteTextView">
+        <item name="android:background">?APKTOOL_DUMMYVAL_0x7f0400fe</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220073" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220074" />
+    <style name="APKTOOL_DUMMYVAL_0x7f220075" parent="@style2/APKTOOL_DUMMYVAL_0x7f220190">
+        <item name="android:minWidth">64.0dip</item>
+        <item name="android:minHeight">@dimen/APKTOOL_DUMMYVAL_0x7f070000</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220076" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220077" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220078" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220079" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22007a" />
+    <style name="APKTOOL_DUMMYVAL_0x7f22007b" parent="@android:style/Widget.CompoundButton">
+        <item name="android:background">?APKTOOL_DUMMYVAL_0x7f0400dc</item>
+        <item name="android:textOn">@string/APKTOOL_DUMMYVAL_0x7f110007</item>
+        <item name="android:textOff">@string/APKTOOL_DUMMYVAL_0x7f110006</item>
+        <item name="android:thumb">@drawable/abc_switch_thumb_material</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040223">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040246">@dimen4/APKTOOL_DUMMYVAL_0x7f190016</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04024a">@style2/APKTOOL_DUMMYVAL_0x7f2200f9</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04029d">@drawable/abc_switch_track_mtrl_alpha</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22007c">
+        <item name="APKTOOL_DUMMYVAL_0x7f040032">8.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040033">16.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400bc">?android:textColorSecondary</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04022c">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040283">2.0dip</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22007d" />
+    <style name="APKTOOL_DUMMYVAL_0x7f22007e" parent="@android:style/Widget.Material.EditText">
+        <item name="android:background">?APKTOOL_DUMMYVAL_0x7f0400fe</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22007f" />
+    <style name="APKTOOL_DUMMYVAL_0x7f220080" parent="@style2/APKTOOL_DUMMYVAL_0x7f220068">
+        <item name="APKTOOL_DUMMYVAL_0x7f04000b">@style2/APKTOOL_DUMMYVAL_0x7f2201a4</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04001d">@style2/APKTOOL_DUMMYVAL_0x7f2201a6</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220081" parent="@style2/APKTOOL_DUMMYVAL_0x7f220080">
+        <item name="APKTOOL_DUMMYVAL_0x7f04003a">?APKTOOL_DUMMYVAL_0x7f0400c4</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04003b">?APKTOOL_DUMMYVAL_0x7f0400c4</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04003c">?APKTOOL_DUMMYVAL_0x7f0400c4</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220082" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220083" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220084" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220085" />
+    <style name="APKTOOL_DUMMYVAL_0x7f220086" parent="@style2/APKTOOL_DUMMYVAL_0x7f220085">
+        <item name="android:dropDownHorizontalOffset">-4.0dip</item>
+        <item name="android:overlapAnchor">true</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220087" parent="@android:style/Widget">
+        <item name="APKTOOL_DUMMYVAL_0x7f04023b">@drawable/abc_ic_arrow_drop_right_black_24dp</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220088" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220089" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22008a" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22008b" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22008c" />
+    <style name="APKTOOL_DUMMYVAL_0x7f22008d" parent="@style2/APKTOOL_DUMMYVAL_0x7f22008c">
+        <item name="android:dropDownHorizontalOffset">-4.0dip</item>
+        <item name="android:overlapAnchor">true</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22008e" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22008f" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220090" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220091" />
+    <style name="APKTOOL_DUMMYVAL_0x7f220092" parent="@android:style/Widget">
+        <item name="APKTOOL_DUMMYVAL_0x7f0400ae">@drawable/abc_ic_clear_material</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400cb">@drawable/abc_ic_commit_search_api_mtrl_alpha</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040131">@drawable/abc_ic_go_search_api_material</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040167">@layout2/APKTOOL_DUMMYVAL_0x7f1c0016</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040203">@drawable/abc_textfield_search_material</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040213">@drawable/abc_ic_search_api_material</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040214">@drawable/abc_ic_search_api_material</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04023c">@drawable/abc_textfield_search_material</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040241">@layout2/APKTOOL_DUMMYVAL_0x7f1c0015</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a7">@drawable/abc_ic_voice_search_api_material</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220093" parent="@style2/APKTOOL_DUMMYVAL_0x7f220092">
+        <item name="APKTOOL_DUMMYVAL_0x7f0400e5">@string/APKTOOL_DUMMYVAL_0x7f110012</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040203">@null</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040213">@null</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04023c">@null</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220094" />
+    <style name="APKTOOL_DUMMYVAL_0x7f220095" parent="@style2/APKTOOL_DUMMYVAL_0x7f220094">
+        <item name="APKTOOL_DUMMYVAL_0x7f040287">@drawable/abc_seekbar_tick_mark_material</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220096" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220097" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220098" />
+    <style name="APKTOOL_DUMMYVAL_0x7f220099" parent="@android:style/Widget">
+        <item name="android:background">@null</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040250">@null</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040252">@drawable/mtrl_tabs_default_indicator</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040253">@integer2/APKTOOL_DUMMYVAL_0x7f1b0003</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040254">?APKTOOL_DUMMYVAL_0x7f0400bd</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040256">bottom</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040259">@dimen4/APKTOOL_DUMMYVAL_0x7f19003b</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04025e">12.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04025f">12.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040261">?APKTOOL_DUMMYVAL_0x7f0400c1</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040264">@style2/APKTOOL_DUMMYVAL_0x7f220134</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040266">false</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22009a" parent="@android:style/Widget">
+        <item name="android:textAppearance">?APKTOOL_DUMMYVAL_0x7f040269</item>
+        <item name="android:textColor">@color2/APKTOOL_DUMMYVAL_0x7f16005c</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:text">@null</item>
+        <item name="android:checkable">false</item>
+        <item name="android:stateListAnimator">@animator/APKTOOL_DUMMYVAL_0x7f020005</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040097">@drawable/ic_mtrl_chip_checked_circle</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040099">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04009b">@color2/APKTOOL_DUMMYVAL_0x7f160059</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04009c">16.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04009d">6.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04009f">@null</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400a1">24.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400a3">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400a4">32.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400a9">4.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400aa">#00000000</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400ab">0.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400ae">@drawable/ic_mtrl_chip_close_circle</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400b0">2.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400b1">18.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400b2">2.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400b3">@color2/APKTOOL_DUMMYVAL_0x7f16005a</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400b4">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040106">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040143">0.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040148">0.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04020c">@color2/APKTOOL_DUMMYVAL_0x7f16005b</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04027f">6.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040281">8.0dip</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22009b" parent="@style2/APKTOOL_DUMMYVAL_0x7f22019a">
+        <item name="android:paddingLeft">12.0dip</item>
+        <item name="android:paddingTop">16.0dip</item>
+        <item name="android:paddingRight">12.0dip</item>
+        <item name="android:paddingBottom">16.0dip</item>
+        <item name="android:paddingStart">12.0dip</item>
+        <item name="android:paddingEnd">12.0dip</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22009c" parent="@style2/APKTOOL_DUMMYVAL_0x7f2201d1">
+        <item name="APKTOOL_DUMMYVAL_0x7f04004e">@null</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04004f">outline</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040050">0.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040051">@dimen4/APKTOOL_DUMMYVAL_0x7f190000</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040052">@dimen4/APKTOOL_DUMMYVAL_0x7f190000</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040053">@dimen4/APKTOOL_DUMMYVAL_0x7f190000</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040054">@dimen4/APKTOOL_DUMMYVAL_0x7f190000</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040055">?APKTOOL_DUMMYVAL_0x7f0400c0</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22009d">
+        <item name="android:textSize">8.0sp</item>
+        <item name="android:textColor">@drawable/menu_text_color</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:background">?android:selectableItemBackgroundBorderless</item>
+        <item name="android:focusable">true</item>
+        <item name="android:layout_width">@dimen2/APKTOOL_DUMMYVAL_0x7f170007</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">@integer/APKTOOL_DUMMYVAL_0x7f0a0000</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.125</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Regular</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22009e" parent="@style2/APKTOOL_DUMMYVAL_0x7f220009">
+        <item name="android:windowBackground">@color2/APKTOOL_DUMMYVAL_0x7f160044</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22009f" parent="@style3/APKTOOL_DUMMYVAL_0x7f230006">
+        <item name="APKTOOL_DUMMYVAL_0x7f040064">@color2/APKTOOL_DUMMYVAL_0x7f160010</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200a0" parent="@style3/APKTOOL_DUMMYVAL_0x7f230006">
+        <item name="APKTOOL_DUMMYVAL_0x7f040064">@color2/APKTOOL_DUMMYVAL_0x7f16001e</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200a1">
+        <item name="APKTOOL_DUMMYVAL_0x7f040072">@color2/APKTOOL_DUMMYVAL_0x7f160017</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040073">@color2/APKTOOL_DUMMYVAL_0x7f160022</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040075">@string/APKTOOL_DUMMYVAL_0x7f110022</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040076">@style2/APKTOOL_DUMMYVAL_0x7f220125</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04007c">@dimen4/APKTOOL_DUMMYVAL_0x7f19002d</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040092">@style2/APKTOOL_DUMMYVAL_0x7f220126</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200a2">
+        <item name="APKTOOL_DUMMYVAL_0x7f040071">?android:colorBackground</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040074">@null</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040077">@drawable/cast_ic_mini_controller_closed_caption</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040078">@array/APKTOOL_DUMMYVAL_0x7f030000</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04007d">@drawable/cast_ic_mini_controller_forward30</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04007f">@drawable/cast_ic_mini_controller_pause_large</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040080">@drawable/cast_ic_mini_controller_play_large</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040081">@drawable/cast_ic_mini_controller_pause_large</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040083">@color2/APKTOOL_DUMMYVAL_0x7f160015</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040085">@drawable/cast_ic_mini_controller_mute</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040086">@drawable/cast_ic_mini_controller_pause</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040087">@drawable/cast_ic_mini_controller_play</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040088">@color2/APKTOOL_DUMMYVAL_0x7f160023</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040089">@drawable/cast_ic_mini_controller_rewind30</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04008d">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04008e">@drawable/cast_ic_mini_controller_skip_next</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04008f">@drawable/cast_ic_mini_controller_skip_prev</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040090">@drawable/cast_ic_mini_controller_pause</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040091">@style2/APKTOOL_DUMMYVAL_0x7f220127</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040092">@style2/APKTOOL_DUMMYVAL_0x7f220128</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200a3" parent="@style2/APKTOOL_DUMMYVAL_0x7f220108">
+        <item name="android:textColor">@color2/APKTOOL_DUMMYVAL_0x7f160015</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200a4" parent="@style2/APKTOOL_DUMMYVAL_0x7f220223">
+        <item name="android:textColor">@color2/APKTOOL_DUMMYVAL_0x7f16001e</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200a5">
+        <item name="android:textSize">@dimen4/APKTOOL_DUMMYVAL_0x7f190018</item>
+        <item name="android:textColor">@android:color/transparent</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:paddingStart">@dimen4/APKTOOL_DUMMYVAL_0x7f190015</item>
+        <item name="android:paddingEnd">@dimen4/APKTOOL_DUMMYVAL_0x7f190015</item>
+        <item name="android:letterSpacing">0.15</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Regular</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200a6" parent="@style2/APKTOOL_DUMMYVAL_0x7f22018e">
+        <item name="android:background">@drawable/white_solid_button</item>
+        <item name="android:foreground">?android:selectableItemBackground</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200a7" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200a5">
+        <item name="android:textColor">@color2/APKTOOL_DUMMYVAL_0x7f160087</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200a8" parent="@style2/APKTOOL_DUMMYVAL_0x7f22018e">
+        <item name="android:background">@drawable/white_bordered_button</item>
+        <item name="android:foreground">?android:selectableItemBackground</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200a9" parent="@style2/APKTOOL_DUMMYVAL_0x7f22020e">
+        <item name="android:textColor">@color2/APKTOOL_DUMMYVAL_0x7f16001d</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingTop">@dimen4/APKTOOL_DUMMYVAL_0x7f190027</item>
+        <item name="android:paddingBottom">@dimen4/APKTOOL_DUMMYVAL_0x7f190027</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:foreground">?android:selectableItemBackground</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200aa" parent="@style2/APKTOOL_DUMMYVAL_0x7f22020e">
+        <item name="android:textSize">@dimen4/APKTOOL_DUMMYVAL_0x7f190020</item>
+        <item name="android:textColor">@color2/APKTOOL_DUMMYVAL_0x7f160015</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:background">@drawable/gray_selectable_item_background_circle</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">48.0dip</item>
+        <item name="android:drawablePadding">14.0dip</item>
+        <item name="android:paddingStart">@dimen2/APKTOOL_DUMMYVAL_0x7f17003a</item>
+        <item name="android:paddingEnd">@dimen2/APKTOOL_DUMMYVAL_0x7f17003a</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200ab" parent="@style2/APKTOOL_DUMMYVAL_0x7f220223">
+        <item name="android:textSize">@dimen4/APKTOOL_DUMMYVAL_0x7f190018</item>
+        <item name="android:textColor">@color2/APKTOOL_DUMMYVAL_0x7f160015</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:alpha">0.4</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200ac" parent="@style2/APKTOOL_DUMMYVAL_0x7f220009">
+        <item name="android:homeAsUpIndicator">@drawable/ic_close_larger_on_tablet</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200ad" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200a2">
+        <item name="APKTOOL_DUMMYVAL_0x7f040071">@color2/APKTOOL_DUMMYVAL_0x7f16001e</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040074">@color2/APKTOOL_DUMMYVAL_0x7f160015</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040088">@color2/APKTOOL_DUMMYVAL_0x7f160021</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040091">@style2/APKTOOL_DUMMYVAL_0x7f22010d</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040092">@style2/APKTOOL_DUMMYVAL_0x7f2200a3</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200ae" parent="@style2/APKTOOL_DUMMYVAL_0x7f22016c">
+        <item name="APKTOOL_DUMMYVAL_0x7f0401c6">@style2/APKTOOL_DUMMYVAL_0x7f2201f7</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401c9">@style2/APKTOOL_DUMMYVAL_0x7f22016e</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200af" parent="@style2/APKTOOL_DUMMYVAL_0x7f22014f">
+        <item name="android:datePickerStyle">@style2/APKTOOL_DUMMYVAL_0x7f2200b0</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200b0">
+        <item name="android:calendarViewShown">false</item>
+        <item name="android:datePickerMode">spinner</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200b1">
+        <item name="android:textSize">12.0sp</item>
+        <item name="android:textColor">@color2/APKTOOL_DUMMYVAL_0x7f160015</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.15</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Medium</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200b2" parent="@style2/APKTOOL_DUMMYVAL_0x7f22021c">
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:minWidth">@dimen4/APKTOOL_DUMMYVAL_0x7f19003c</item>
+        <item name="android:drawablePadding">@dimen4/APKTOOL_DUMMYVAL_0x7f190002</item>
+        <item name="android:paddingStart">0.0dip</item>
+        <item name="android:paddingEnd">@dimen4/APKTOOL_DUMMYVAL_0x7f190009</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200b3" parent="@style2/APKTOOL_DUMMYVAL_0x7f22020e">
+        <item name="android:textSize">@dimen4/APKTOOL_DUMMYVAL_0x7f190020</item>
+        <item name="android:background">?android:selectableItemBackground</item>
+        <item name="android:drawablePadding">14.0dip</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200b4">
+        <item name="android:scrollbarStyle">outsideOverlay</item>
+        <item name="android:paddingTop">@dimen4/APKTOOL_DUMMYVAL_0x7f190001</item>
+        <item name="android:scrollbars">vertical</item>
+        <item name="android:clipToPadding">false</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:paddingStart">@dimen2/APKTOOL_DUMMYVAL_0x7f17003a</item>
+        <item name="android:paddingEnd">@dimen2/APKTOOL_DUMMYVAL_0x7f17003a</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200b5" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200a9">
+        <item name="android:background">@drawable/button_outline_background</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2200b6" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2200b7" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2200b8" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2200b9" />
+    <style name="APKTOOL_DUMMYVAL_0x7f2200ba">
+        <item name="android:colorControlNormal">?APKTOOL_DUMMYVAL_0x7f0400c2</item>
+        <item name="android:colorControlActivated">?APKTOOL_DUMMYVAL_0x7f0400c0</item>
+        <item name="android:colorButtonNormal">?APKTOOL_DUMMYVAL_0x7f0400bf</item>
+        <item name="android:colorControlHighlight">?APKTOOL_DUMMYVAL_0x7f0400c1</item>
+        <item name="android:colorPrimary">?APKTOOL_DUMMYVAL_0x7f0400c4</item>
+        <item name="android:colorPrimaryDark">?APKTOOL_DUMMYVAL_0x7f0400c5</item>
+        <item name="android:colorAccent">?APKTOOL_DUMMYVAL_0x7f0400bd</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200bb" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:textColorHintInverse">@color2/APKTOOL_DUMMYVAL_0x7f160003</item>
+        <item name="android:textColorHint">@color2/APKTOOL_DUMMYVAL_0x7f160002</item>
+        <item name="android:textColorLink">?android:colorAccent</item>
+        <item name="android:buttonBarStyle">?APKTOOL_DUMMYVAL_0x7f04005b</item>
+        <item name="android:buttonBarButtonStyle">?APKTOOL_DUMMYVAL_0x7f040057</item>
+        <item name="android:textColorLinkInverse">?android:colorAccent</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200bc" parent="@android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:textColorHintInverse">@color2/APKTOOL_DUMMYVAL_0x7f160002</item>
+        <item name="android:textColorHint">@color2/APKTOOL_DUMMYVAL_0x7f160003</item>
+        <item name="android:textColorLink">?android:colorAccent</item>
+        <item name="android:buttonBarStyle">?APKTOOL_DUMMYVAL_0x7f04005b</item>
+        <item name="android:buttonBarButtonStyle">?APKTOOL_DUMMYVAL_0x7f040057</item>
+        <item name="android:textColorLinkInverse">?android:colorAccent</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2200bd" />
+    <style name="APKTOOL_DUMMYVAL_0x7f2200be">
+        <item name="android:layout">@layout2/APKTOOL_DUMMYVAL_0x7f1c00b6</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200bf" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200be">
+        <item name="android:layout">@layout2/APKTOOL_DUMMYVAL_0x7f1c00b7</item>
+        <item name="android:selectable">false</item>
+        <item name="android:shouldDisableView">false</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200c0" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200bf">
+        <item name="android:layout">@layout2/APKTOOL_DUMMYVAL_0x7f1c00b8</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04002b">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04002d">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040147">@bool/APKTOOL_DUMMYVAL_0x7f050003</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200c1" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200be">
+        <item name="android:widgetLayout">@layout2/APKTOOL_DUMMYVAL_0x7f1c00bd</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200c2" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200c1">
+        <item name="android:layout">@layout2/APKTOOL_DUMMYVAL_0x7f1c00bc</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04002b">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04002d">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040147">@bool/APKTOOL_DUMMYVAL_0x7f050003</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200c3" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200be">
+        <item name="android:positiveButtonText">@android:string/ok</item>
+        <item name="android:negativeButtonText">@android:string/cancel</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200c4" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200c3">
+        <item name="android:dialogLayout">@layout2/APKTOOL_DUMMYVAL_0x7f1c00b9</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200c5" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200c4">
+        <item name="android:layout">@layout2/APKTOOL_DUMMYVAL_0x7f1c00bc</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04002b">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04002d">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040147">@bool/APKTOOL_DUMMYVAL_0x7f050003</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040227">false</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200c6" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200c3">
+        <item name="android:layout">@layout2/APKTOOL_DUMMYVAL_0x7f1c00bc</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04002b">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04002d">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040147">@bool/APKTOOL_DUMMYVAL_0x7f050003</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200c7" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200be">
+        <item name="android:layout">@layout2/APKTOOL_DUMMYVAL_0x7f1c00ba</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200c8" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200c7">
+        <item name="android:layout">@layout2/APKTOOL_DUMMYVAL_0x7f1c00bb</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04002b">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04002d">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040147">@bool/APKTOOL_DUMMYVAL_0x7f050003</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200c9" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200be">
+        <item name="android:layout">@layout2/APKTOOL_DUMMYVAL_0x7f1c00bc</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04002b">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04002d">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040147">@bool/APKTOOL_DUMMYVAL_0x7f050003</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040227">false</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2200ca" />
+    <style name="APKTOOL_DUMMYVAL_0x7f2200cb" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200ca">
+        <item name="android:layout">@layout2/APKTOOL_DUMMYVAL_0x7f1c00bc</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04002b">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04002d">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040147">@bool/APKTOOL_DUMMYVAL_0x7f050003</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200cc" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200be">
+        <item name="android:layout">@layout2/APKTOOL_DUMMYVAL_0x7f1c00be</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040025">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040222">true</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200cd" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200cc">
+        <item name="android:layout">@layout2/APKTOOL_DUMMYVAL_0x7f1c00bf</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040025">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04002b">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04002d">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040147">@bool/APKTOOL_DUMMYVAL_0x7f050003</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040222">true</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200ce" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200be">
+        <item name="android:widgetLayout">@layout2/APKTOOL_DUMMYVAL_0x7f1c00c0</item>
+        <item name="android:switchTextOn">@string/APKTOOL_DUMMYVAL_0x7f11006f</item>
+        <item name="android:switchTextOff">@string/APKTOOL_DUMMYVAL_0x7f11006e</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200cf" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200ce">
+        <item name="android:layout">@layout2/APKTOOL_DUMMYVAL_0x7f1c00bc</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04002b">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04002d">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040147">@bool/APKTOOL_DUMMYVAL_0x7f050003</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040227">false</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200d0" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200be">
+        <item name="android:widgetLayout">@layout2/APKTOOL_DUMMYVAL_0x7f1c00c1</item>
+        <item name="android:switchTextOn">@string/APKTOOL_DUMMYVAL_0x7f11006f</item>
+        <item name="android:switchTextOff">@string/APKTOOL_DUMMYVAL_0x7f11006e</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200d1" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200d0">
+        <item name="android:layout">@layout2/APKTOOL_DUMMYVAL_0x7f1c00bc</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04002b">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04002d">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040147">@bool/APKTOOL_DUMMYVAL_0x7f050003</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200d2">
+        <item name="android:divider">?android:listDivider</item>
+        <item name="android:paddingStart">0.0dip</item>
+        <item name="android:paddingEnd">0.0dip</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200d3" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200d2">
+        <item name="android:divider">@drawable/preference_list_divider_material</item>
+        <item name="@attr/APKTOOL_DUMMY_2c">false</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200d4">
+        <item name="android:paddingStart">16.0dip</item>
+        <item name="android:paddingEnd">16.0dip</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200d5" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200d4">
+        <item name="android:paddingStart">0.0dip</item>
+        <item name="android:paddingEnd">0.0dip</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200d6">
+        <item name="android:scrollbars">vertical</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040094">@style2/APKTOOL_DUMMYVAL_0x7f2200c2</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400ec">@style2/APKTOOL_DUMMYVAL_0x7f2200c6</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400fd">@style2/APKTOOL_DUMMYVAL_0x7f2200c8</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040100">@style2/APKTOOL_DUMMYVAL_0x7f2200c5</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401f2">@style2/APKTOOL_DUMMYVAL_0x7f2200c0</item>
+        <item name="@attr/APKTOOL_DUMMY_1f3">@style2/APKTOOL_DUMMYVAL_0x7f2200d3</item>
+        <item name="@attr/APKTOOL_DUMMY_1f4">@style2/APKTOOL_DUMMYVAL_0x7f2200d5</item>
+        <item name="@attr/APKTOOL_DUMMY_1f6">@style2/APKTOOL_DUMMYVAL_0x7f2200d3</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401fc">@style2/APKTOOL_DUMMYVAL_0x7f2200cb</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401fd">@style2/APKTOOL_DUMMYVAL_0x7f2200c9</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040219">@style2/APKTOOL_DUMMYVAL_0x7f2200cd</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040247">@style2/APKTOOL_DUMMYVAL_0x7f2200d1</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040248">@style2/APKTOOL_DUMMYVAL_0x7f2200cf</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2200d7" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2200d8" />
+    <style name="APKTOOL_DUMMYVAL_0x7f2200d9">
+        <item name="android:textSize">16.0sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">?android:textColorPrimary</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200da" parent="@style2/APKTOOL_DUMMYVAL_0x7f220150">
+        <item name="android:colorAccent">@color2/APKTOOL_DUMMYVAL_0x7f16006e</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200db" parent="@style2/APKTOOL_DUMMYVAL_0x7f22020b">
+        <item name="android:textColor">@drawable/record_options_color</item>
+        <item name="android:layout_gravity">start|center</item>
+        <item name="android:layout_marginTop">@dimen4/APKTOOL_DUMMYVAL_0x7f190032</item>
+        <item name="android:layout_marginBottom">@dimen4/APKTOOL_DUMMYVAL_0x7f190032</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200dc" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200db">
+        <item name="android:textSize">18.0sp</item>
+        <item name="android:layout_marginTop">0.0dip</item>
+        <item name="android:layout_marginBottom">@dimen4/APKTOOL_DUMMYVAL_0x7f190032</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200dd" parent="@style2/APKTOOL_DUMMYVAL_0x7f22000f">
+        <item name="android:textAlignment">viewStart</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200de" parent="@android:style/Widget">
+        <item name="android:layout_gravity">start|center</item>
+        <item name="android:paddingEnd">8.0dip</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200df" parent="@android:style/Widget">
+        <item name="android:layout_marginEnd">8.0dip</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200e0" parent="@android:style/Widget">
+        <item name="android:paddingEnd">16.0dip</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200e1" parent="@android:style/Widget">
+        <item name="android:layout_marginStart">16.0dip</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200e2" parent="@android:style/Widget">
+        <item name="android:textAlignment">viewEnd</item>
+        <item name="android:layout_marginStart">16.0dip</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200e3" parent="@android:style/Widget">
+        <item name="android:layout_marginStart">8.0dip</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200e4" parent="@android:style/Widget">
+        <item name="android:textAlignment">viewStart</item>
+        <item name="android:layout_alignParentStart">true</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200e5" parent="@android:style/Widget">
+        <item name="android:textAlignment">viewStart</item>
+        <item name="android:layout_marginStart">16.0dip</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200e6" parent="@android:style/Widget">
+        <item name="android:paddingStart">@dimen4/APKTOOL_DUMMYVAL_0x7f190009</item>
+        <item name="android:paddingEnd">4.0dip</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200e7" parent="@android:style/Widget">
+        <item name="android:layout_alignParentStart">true</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200e8" parent="@android:style/Widget">
+        <item name="android:layout_toStartOf">@id/edit_query</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200e9" parent="@android:style/Widget">
+        <item name="android:layout_alignParentEnd">true</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200ea" parent="@style2/APKTOOL_DUMMYVAL_0x7f22007d">
+        <item name="android:layout_toStartOf">@android:id/icon2</item>
+        <item name="android:layout_toEndOf">@android:id/icon1</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200eb" parent="@android:style/Widget">
+        <item name="android:layout_marginStart">@dimen4/APKTOOL_DUMMYVAL_0x7f190009</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200ec" parent="@android:style/Widget">
+        <item name="android:paddingStart">12.0dip</item>
+        <item name="android:paddingEnd">12.0dip</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200ed" parent="@style2/APKTOOL_DUMMYVAL_0x7f22006d">
+        <item name="android:paddingStart">@dimen4/APKTOOL_DUMMYVAL_0x7f190003</item>
+        <item name="android:paddingEnd">@dimen4/APKTOOL_DUMMYVAL_0x7f190002</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200ee" parent="@style2/APKTOOL_DUMMYVAL_0x7f220153">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200ef" parent="@style2/APKTOOL_DUMMYVAL_0x7f220009">
+        <item name="APKTOOL_DUMMYVAL_0x7f040034">@style2/APKTOOL_DUMMYVAL_0x7f22022a</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200f0" parent="@style2/APKTOOL_DUMMYVAL_0x7f220170">
+        <item name="android:textColorPrimary">@color2/APKTOOL_DUMMYVAL_0x7f16001e</item>
+        <item name="android:colorControlHighlight">@color2/APKTOOL_DUMMYVAL_0x7f16006f</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200f1" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200a9">
+        <item name="android:background">@null</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200f2" parent="@style2/APKTOOL_DUMMYVAL_0x7f220009">
+        <item name="android:windowBackground">@drawable/bg_splash</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200f3" parent="@style2/APKTOOL_DUMMYVAL_0x7f220219">
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Medium</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200f4" parent="@style/APKTOOL_DUMMYVAL_0x7f12000c">
+        <item name="android:clipToPadding">false</item>
+        <item name="android:paddingStart">@dimen2/APKTOOL_DUMMYVAL_0x7f17003a</item>
+        <item name="android:paddingEnd">@dimen2/APKTOOL_DUMMYVAL_0x7f17003a</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040254">@android:color/white</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04025b">scrollable</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2200f5" parent="@style2/APKTOOL_DUMMYVAL_0x7f22020c">
+        <item name="android:textColor">@drawable/tab_font_color</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2200f6" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2200f7" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2200f8" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2200f9" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2200fa" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2200fb" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2200fc" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2200fd" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2200fe" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2200ff" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220100" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220101" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220102" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220103" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220104" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220105" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220106" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220107" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220108" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220109" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22010a" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22010b" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22010c" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22010d" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22010e" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22010f" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220110" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220111" />
+    <style name="APKTOOL_DUMMYVAL_0x7f220112" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200f6">
+        <item name="android:textSize">14.0sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220113" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220114" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220115" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220116" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220117" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220118" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220119" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22011a" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22011b" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22011c" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22011d" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22011e" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22011f" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220120" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220121" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220122" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220123" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220124" />
+    <style name="APKTOOL_DUMMYVAL_0x7f220125" parent="@android:style/TextAppearance">
+        <item name="android:textColor">#ffffffff</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220126" parent="@android:style/TextAppearance.Large">
+        <item name="android:textColor">#ffffffff</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220127" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220128" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220129" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22012a" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22012b" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22012c" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22012d" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22012e" />
+    <style name="APKTOOL_DUMMYVAL_0x7f22012f" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200fb">
+        <item name="android:textColor">?android:textColorPrimary</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220130" />
+    <style name="APKTOOL_DUMMYVAL_0x7f220131" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200fa">
+        <item name="android:textColor">@color2/APKTOOL_DUMMYVAL_0x7f160037</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220132" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200fa">
+        <item name="android:textColor">?APKTOOL_DUMMYVAL_0x7f0400c0</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220133" parent="@android:style/TextAppearance">
+        <item name="android:textSize">@dimen4/APKTOOL_DUMMYVAL_0x7f190017</item>
+        <item name="android:textColor">@color2/APKTOOL_DUMMYVAL_0x7f160024</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220134" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200f9">
+        <item name="android:textSize">@dimen4/APKTOOL_DUMMYVAL_0x7f190017</item>
+        <item name="android:textColor">@color2/APKTOOL_DUMMYVAL_0x7f160062</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040267">true</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220135" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200f8">
+        <item name="android:textSize">16.0sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:letterSpacing">0.03125</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040124">sans-serif</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220136" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200f7">
+        <item name="android:textSize">14.0sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:letterSpacing">0.017857144</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040124">sans-serif</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220137" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200f9">
+        <item name="android:textSize">14.0sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">0.08928572</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040124">sans-serif-medium</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220138" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200fa">
+        <item name="android:textSize">12.0sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:letterSpacing">0.033333335</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040124">sans-serif</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220139" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200f6">
+        <item name="android:textSize">@dimen4/APKTOOL_DUMMYVAL_0x7f190017</item>
+        <item name="android:textColor">@color2/APKTOOL_DUMMYVAL_0x7f16005c</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22013a" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200fe">
+        <item name="android:textSize">96.0sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:letterSpacing">-0.015625</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040124">sans-serif-light</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22013b" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200fd">
+        <item name="android:textSize">60.0sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:letterSpacing">-0.008333334</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040124">sans-serif-light</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22013c" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200fc">
+        <item name="android:textSize">48.0sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:letterSpacing">0.0</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040124">sans-serif</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22013d" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200fb">
+        <item name="android:textSize">34.0sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:letterSpacing">0.007352941</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040124">sans-serif</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22013e" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200ff">
+        <item name="android:textSize">24.0sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:letterSpacing">0.0</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040124">sans-serif</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22013f" parent="@style2/APKTOOL_DUMMYVAL_0x7f220110">
+        <item name="android:textSize">20.0sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">0.0125</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040124">sans-serif-medium</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220140" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200f6">
+        <item name="android:textSize">12.0sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">0.16666667</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040124">sans-serif-medium</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220141" parent="@style2/APKTOOL_DUMMYVAL_0x7f22010e">
+        <item name="android:textSize">16.0sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:letterSpacing">0.009375</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040124">sans-serif</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220142" parent="@style2/APKTOOL_DUMMYVAL_0x7f22010e">
+        <item name="android:textSize">14.0sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">0.007142857</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040124">sans-serif-medium</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220143" parent="@style2/APKTOOL_DUMMYVAL_0x7f220134">
+        <item name="android:textColor">@color2/APKTOOL_DUMMYVAL_0x7f160060</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220144" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220145" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220146" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220147" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220148" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220149" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22014a" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22014b" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22014c" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22014d" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22014e" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22014f" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220150" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220151" />
+    <style name="APKTOOL_DUMMYVAL_0x7f220152" parent="@style2/APKTOOL_DUMMYVAL_0x7f22014d">
+        <item name="APKTOOL_DUMMYVAL_0x7f0402aa">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402b3">true</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220153" parent="@style2/APKTOOL_DUMMYVAL_0x7f220148">
+        <item name="APKTOOL_DUMMYVAL_0x7f0402aa">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402b3">true</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220154" parent="@style2/APKTOOL_DUMMYVAL_0x7f22014a">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowAnimationStyle">@style2/APKTOOL_DUMMYVAL_0x7f220008</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04004d">@style2/APKTOOL_DUMMYVAL_0x7f2201cb</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220155" parent="@style2/APKTOOL_DUMMYVAL_0x7f22014f">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowAnimationStyle">@style2/APKTOOL_DUMMYVAL_0x7f220008</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04004d">@style2/APKTOOL_DUMMYVAL_0x7f2201cb</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220156" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200b8">
+        <item name="APKTOOL_DUMMYVAL_0x7f0402aa">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402b3">true</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220157" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200b6">
+        <item name="APKTOOL_DUMMYVAL_0x7f0402aa">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402b3">true</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220158" parent="@android:style/Theme">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220159" />
+    <style name="APKTOOL_DUMMYVAL_0x7f22015a" parent="@style2/APKTOOL_DUMMYVAL_0x7f22015c">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowAnimationStyle">@style2/APKTOOL_DUMMYVAL_0x7f220008</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04004d">@style2/APKTOOL_DUMMYVAL_0x7f2201cb</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22015b" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22015c" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22015d" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22015e" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22015f" />
+    <style name="APKTOOL_DUMMYVAL_0x7f220160" parent="@style2/APKTOOL_DUMMYVAL_0x7f220164">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowAnimationStyle">@style2/APKTOOL_DUMMYVAL_0x7f220008</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04004d">@style2/APKTOOL_DUMMYVAL_0x7f2201cb</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220161" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220162" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220163" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220164" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220165" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220166" />
+    <style name="APKTOOL_DUMMYVAL_0x7f220167" parent="@style2/APKTOOL_DUMMYVAL_0x7f22015f">
+        <item name="APKTOOL_DUMMYVAL_0x7f0402aa">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402b3">true</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220168" parent="@style2/APKTOOL_DUMMYVAL_0x7f220161">
+        <item name="APKTOOL_DUMMYVAL_0x7f0402aa">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402b3">true</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220169" parent="@style2/APKTOOL_DUMMYVAL_0x7f220159">
+        <item name="APKTOOL_DUMMYVAL_0x7f0402aa">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402b3">true</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22016a" parent="@style2/APKTOOL_DUMMYVAL_0x7f22015b">
+        <item name="APKTOOL_DUMMYVAL_0x7f0402aa">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402b3">true</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22016b" parent="@style2/APKTOOL_DUMMYVAL_0x7f220171">
+        <item name="APKTOOL_DUMMYVAL_0x7f0401c5">@drawable/mr_vol_type_audiotrack_dark</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401c6">@style2/APKTOOL_DUMMYVAL_0x7f2201f7</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401c8">@drawable/mr_dialog_close_dark</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401c9">@null</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401ca">@drawable/ic_mr_button_disconnected_dark</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401cb">@drawable/mr_media_pause_dark</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401cc">@drawable/mr_media_play_dark</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401cd">@drawable/ic_vol_type_speaker_group_dark</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401ce">@drawable/ic_vol_type_speaker_dark</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401cf">@drawable/mr_media_stop_dark</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401d1">@drawable/ic_vol_type_tv_dark</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402b3">true</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22016c" parent="@style2/APKTOOL_DUMMYVAL_0x7f220175">
+        <item name="APKTOOL_DUMMYVAL_0x7f0401c5">@drawable/mr_vol_type_audiotrack_light</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401c6">@style2/APKTOOL_DUMMYVAL_0x7f2201f6</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401c8">@drawable/mr_dialog_close_light</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401c9">@null</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401ca">@drawable/ic_mr_button_grey</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401cb">@drawable/mr_media_pause_light</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401cc">@drawable/mr_media_play_light</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401cd">@drawable/ic_vol_type_speaker_group_light</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401ce">@drawable/ic_vol_type_speaker_light</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401cf">@drawable/mr_media_stop_light</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401d1">@drawable/ic_vol_type_tv_light</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402b3">true</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22016d" parent="@style2/APKTOOL_DUMMYVAL_0x7f22016c">
+        <item name="APKTOOL_DUMMYVAL_0x7f0401c9">@style2/APKTOOL_DUMMYVAL_0x7f220182</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22016e" parent="@style2/APKTOOL_DUMMYVAL_0x7f22016b">
+        <item name="APKTOOL_DUMMYVAL_0x7f0401c9">@style2/APKTOOL_DUMMYVAL_0x7f220183</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22016f" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220170" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220171" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220172" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220173" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220174" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220175" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220176" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220177" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220178" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220179" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22017a" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22017b" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22017c" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22017d" />
+    <style name="APKTOOL_DUMMYVAL_0x7f22017e" parent="@style2/APKTOOL_DUMMYVAL_0x7f22017d">
+        <item name="APKTOOL_DUMMYVAL_0x7f040101">@style2/APKTOOL_DUMMYVAL_0x7f2201ed</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22017f" parent="@style2/APKTOOL_DUMMYVAL_0x7f22017e">
+        <item name="APKTOOL_DUMMYVAL_0x7f040101">@style2/APKTOOL_DUMMYVAL_0x7f2201ee</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220180" parent="@style2/APKTOOL_DUMMYVAL_0x7f22017d">
+        <item name="APKTOOL_DUMMYVAL_0x7f040101">@style2/APKTOOL_DUMMYVAL_0x7f2201ef</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220181" parent="@style2/APKTOOL_DUMMYVAL_0x7f220180">
+        <item name="APKTOOL_DUMMYVAL_0x7f040101">@style2/APKTOOL_DUMMYVAL_0x7f2201f0</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220182" parent="@style2/APKTOOL_DUMMYVAL_0x7f220171">
+        <item name="APKTOOL_DUMMYVAL_0x7f0401c5">@drawable/mr_vol_type_audiotrack_dark</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401cb">@drawable/mr_media_pause_dark</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401cc">@drawable/mr_media_play_dark</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401cf">@drawable/mr_media_stop_dark</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220183" parent="@style2/APKTOOL_DUMMYVAL_0x7f220175">
+        <item name="APKTOOL_DUMMYVAL_0x7f0401c5">@drawable/mr_vol_type_audiotrack_light</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401cb">@drawable/mr_media_pause_light</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401cc">@drawable/mr_media_play_light</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401cf">@drawable/mr_media_stop_light</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220184" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220185" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220186" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220187" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220188" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220189" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22018a" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22018b" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22018c" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22018d" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22018e" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22018f" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220190" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220191" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220192" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220193" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220194" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220195" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220196" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220197" />
+    <style name="APKTOOL_DUMMYVAL_0x7f220198" parent="@style/APKTOOL_DUMMYVAL_0x7f120005">
+        <item name="APKTOOL_DUMMYVAL_0x7f0400bc">?APKTOOL_DUMMYVAL_0x7f0400c2</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f220199" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22019a" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22019b" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22019c" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22019d" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22019e" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f22019f" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201a0" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201a1" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201a2" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201a3" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201a4" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201a5" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201a6" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201a7" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201a8" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201a9" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201aa" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201ab" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201ac" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201ad" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201ae" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201af" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201b0" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201b1" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201b2" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201b3" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201b4" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201b5" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201b6" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201b7" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201b8" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201b9" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201ba" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201bb" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201bc" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201bd" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201be" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201bf" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201c0" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201c1" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201c2" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201c3" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201c4" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201c5" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201c6" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201c7" />
+    <style name="APKTOOL_DUMMYVAL_0x7f2201c8">
+        <item name="android:background">@drawable/notification_action_background</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201c9">
+        <item name="android:textAppearance">?android:textAppearanceButton</item>
+        <item name="android:textSize">@dimen4/APKTOOL_DUMMYVAL_0x7f19004c</item>
+        <item name="android:textColor">@color2/APKTOOL_DUMMYVAL_0x7f160066</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201ca">
+        <item name="APKTOOL_DUMMYVAL_0x7f040102">@dimen4/APKTOOL_DUMMYVAL_0x7f190009</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040157">?APKTOOL_DUMMYVAL_0x7f04021d</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040159">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04015b">@dimen4/APKTOOL_DUMMYVAL_0x7f19000c</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040165">auto</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201cb" parent="@android:style/Widget">
+        <item name="android:background">?android:colorBackground</item>
+        <item name="android:elevation">@dimen4/APKTOOL_DUMMYVAL_0x7f190001</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040044">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040046">auto</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040047">false</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201cc" parent="@android:style/Widget">
+        <item name="APKTOOL_DUMMYVAL_0x7f04010f">32.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040238">?APKTOOL_DUMMYVAL_0x7f0400c5</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201cd" parent="@android:style/Widget">
+        <item name="android:background">@drawable/design_fab_background</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04003d">?APKTOOL_DUMMYVAL_0x7f0400bd</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040048">@dimen4/APKTOOL_DUMMYVAL_0x7f190039</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040102">@dimen4/APKTOOL_DUMMYVAL_0x7f190003</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04011b">auto</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040138">@animator/APKTOOL_DUMMYVAL_0x7f020001</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040141">@dimen4/APKTOOL_DUMMYVAL_0x7f190003</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401c2">@dimen4/APKTOOL_DUMMYVAL_0x7f19000c</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040200">@dimen4/APKTOOL_DUMMYVAL_0x7f190003</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04020c">?APKTOOL_DUMMYVAL_0x7f0400c1</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040221">@animator/APKTOOL_DUMMYVAL_0x7f020002</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201ce">
+        <item name="android:background">?android:windowBackground</item>
+        <item name="android:fitsSystemWindows">true</item>
+        <item name="android:maxWidth">@dimen2/APKTOOL_DUMMYVAL_0x7f170016</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040102">@dimen4/APKTOOL_DUMMYVAL_0x7f190001</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040158">@dimen4/APKTOOL_DUMMYVAL_0x7f190001</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04015a">@dimen4/APKTOOL_DUMMYVAL_0x7f190010</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201cf">
+        <item name="APKTOOL_DUMMYVAL_0x7f040152">#44000000</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201d0" parent="@android:style/Widget">
+        <item name="android:background">@drawable/design_snackbar_background</item>
+        <item name="android:paddingLeft">@dimen4/APKTOOL_DUMMYVAL_0x7f190032</item>
+        <item name="android:paddingRight">@dimen4/APKTOOL_DUMMYVAL_0x7f190032</item>
+        <item name="android:maxWidth">@dimen2/APKTOOL_DUMMYVAL_0x7f17001a</item>
+        <item name="android:minWidth">@dimen2/APKTOOL_DUMMYVAL_0x7f17001b</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040102">@dimen4/APKTOOL_DUMMYVAL_0x7f190003</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401bf">@dimen2/APKTOOL_DUMMYVAL_0x7f170017</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201d1" parent="@android:style/Widget">
+        <item name="APKTOOL_DUMMYVAL_0x7f04004f">none</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400e1">@style2/APKTOOL_DUMMYVAL_0x7f220131</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400e2">@style2/APKTOOL_DUMMYVAL_0x7f220130</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04010a">@style2/APKTOOL_DUMMYVAL_0x7f220131</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040136">@style2/APKTOOL_DUMMYVAL_0x7f220130</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04013e">@style2/APKTOOL_DUMMYVAL_0x7f220132</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401e7">@string2/APKTOOL_DUMMYVAL_0x7f1e00d0</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401e8">@drawable/design_password_eye</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0401ea">@color/APKTOOL_DUMMYVAL_0x7f060008</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201d2" parent="@style2/APKTOOL_DUMMYVAL_0x7f2201c6">
+        <item name="APKTOOL_DUMMYVAL_0x7f04003d">@android:color/white</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040117">@dimen4/APKTOOL_DUMMYVAL_0x7f190006</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040118">@dimen4/APKTOOL_DUMMYVAL_0x7f190009</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040119">@dimen4/APKTOOL_DUMMYVAL_0x7f19003e</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201d3" parent="@style2/APKTOOL_DUMMYVAL_0x7f2201d2">
+        <item name="APKTOOL_DUMMYVAL_0x7f04003d">?APKTOOL_DUMMYVAL_0x7f0400c4</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201d4" parent="@style2/APKTOOL_DUMMYVAL_0x7f2201ca">
+        <item name="android:background">@android:color/white</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040106">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040159">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04015c">@color2/APKTOOL_DUMMYVAL_0x7f160051</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040160">?APKTOOL_DUMMYVAL_0x7f04026b</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040161">?APKTOOL_DUMMYVAL_0x7f04026b</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040162">@color2/APKTOOL_DUMMYVAL_0x7f160051</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201d5" parent="@style2/APKTOOL_DUMMYVAL_0x7f2201d4">
+        <item name="android:background">?APKTOOL_DUMMYVAL_0x7f0400c4</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04015c">@color2/APKTOOL_DUMMYVAL_0x7f160050</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040160">?APKTOOL_DUMMYVAL_0x7f04026b</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040161">?APKTOOL_DUMMYVAL_0x7f04026b</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040162">@color2/APKTOOL_DUMMYVAL_0x7f160050</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201d6" />
+    <style name="APKTOOL_DUMMYVAL_0x7f2201d7" parent="@style2/APKTOOL_DUMMYVAL_0x7f22018e">
+        <item name="android:textAppearance">?APKTOOL_DUMMYVAL_0x7f04026a</item>
+        <item name="android:textColor">@color2/APKTOOL_DUMMYVAL_0x7f160057</item>
+        <item name="android:paddingLeft">@dimen4/APKTOOL_DUMMYVAL_0x7f190001</item>
+        <item name="android:paddingTop">@dimen4/APKTOOL_DUMMYVAL_0x7f190000</item>
+        <item name="android:paddingRight">@dimen4/APKTOOL_DUMMYVAL_0x7f190001</item>
+        <item name="android:paddingBottom">@dimen4/APKTOOL_DUMMYVAL_0x7f190000</item>
+        <item name="android:insetLeft">0.0dip</item>
+        <item name="android:insetRight">0.0dip</item>
+        <item name="android:insetTop">@dimen4/APKTOOL_DUMMYVAL_0x7f190003</item>
+        <item name="android:insetBottom">@dimen4/APKTOOL_DUMMYVAL_0x7f190003</item>
+        <item name="android:stateListAnimator">@animator/APKTOOL_DUMMYVAL_0x7f020003</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04003d">@color2/APKTOOL_DUMMYVAL_0x7f160052</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400de">@dimen4/APKTOOL_DUMMYVAL_0x7f190000</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040106">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040145">@dimen4/APKTOOL_DUMMYVAL_0x7f190009</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040149">@color2/APKTOOL_DUMMYVAL_0x7f160057</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04020c">@color2/APKTOOL_DUMMYVAL_0x7f160053</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201d8" parent="@style2/APKTOOL_DUMMYVAL_0x7f2201d7">
+        <item name="android:paddingLeft">@dimen4/APKTOOL_DUMMYVAL_0x7f190032</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201d9" parent="@style2/APKTOOL_DUMMYVAL_0x7f2201db">
+        <item name="android:paddingLeft">@dimen4/APKTOOL_DUMMYVAL_0x7f190001</item>
+        <item name="android:paddingRight">@dimen4/APKTOOL_DUMMYVAL_0x7f190001</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040239">@color2/APKTOOL_DUMMYVAL_0x7f160054</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04023a">@dimen4/APKTOOL_DUMMYVAL_0x7f19002b</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201da" parent="@style2/APKTOOL_DUMMYVAL_0x7f2201d9">
+        <item name="android:paddingLeft">@dimen4/APKTOOL_DUMMYVAL_0x7f190032</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201db" parent="@style2/APKTOOL_DUMMYVAL_0x7f2201df">
+        <item name="android:textColor">@color2/APKTOOL_DUMMYVAL_0x7f160064</item>
+        <item name="android:paddingLeft">@dimen4/APKTOOL_DUMMYVAL_0x7f190009</item>
+        <item name="android:paddingRight">@dimen4/APKTOOL_DUMMYVAL_0x7f190009</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04003d">@color2/APKTOOL_DUMMYVAL_0x7f160058</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040145">@dimen4/APKTOOL_DUMMYVAL_0x7f190000</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040149">@color2/APKTOOL_DUMMYVAL_0x7f160064</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04020c">@color2/APKTOOL_DUMMYVAL_0x7f160055</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201dc" parent="@style2/APKTOOL_DUMMYVAL_0x7f2201db">
+        <item name="android:minWidth">@dimen4/APKTOOL_DUMMYVAL_0x7f19002f</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201dd" />
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201de" />
+    <style name="APKTOOL_DUMMYVAL_0x7f2201df" parent="@style2/APKTOOL_DUMMYVAL_0x7f2201d7">
+        <item name="android:stateListAnimator">@animator/APKTOOL_DUMMYVAL_0x7f020004</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201e0" parent="@style2/APKTOOL_DUMMYVAL_0x7f2201df">
+        <item name="android:paddingLeft">@dimen4/APKTOOL_DUMMYVAL_0x7f190032</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201e1" parent="@style3/APKTOOL_DUMMYVAL_0x7f230006">
+        <item name="APKTOOL_DUMMYVAL_0x7f040064">?APKTOOL_DUMMYVAL_0x7f0400be</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040066">@dimen4/APKTOOL_DUMMYVAL_0x7f19002b</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201e2" parent="@style2/APKTOOL_DUMMYVAL_0x7f22009a">
+        <item name="APKTOOL_DUMMYVAL_0x7f0400b4">false</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201e3" parent="@style2/APKTOOL_DUMMYVAL_0x7f22009a">
+        <item name="android:checkable">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040097">@drawable/ic_mtrl_chip_checked_black</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040099">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400a3">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400b4">false</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201e4" parent="@style2/APKTOOL_DUMMYVAL_0x7f22009a">
+        <item name="android:checkable">true</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201e5" parent="@style2/APKTOOL_DUMMYVAL_0x7f22009a">
+        <item name="android:checkable">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040097">@drawable/ic_mtrl_chip_checked_black</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400a3">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0400b4">false</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201e6" parent="@android:style/Widget">
+        <item name="APKTOOL_DUMMYVAL_0x7f0400a5">4.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040226">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040228">false</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201e7" parent="@style2/APKTOOL_DUMMYVAL_0x7f2201cd">
+        <item name="APKTOOL_DUMMYVAL_0x7f040102">@dimen4/APKTOOL_DUMMYVAL_0x7f190003</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040138">@animator/APKTOOL_DUMMYVAL_0x7f020006</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040141">@dimen4/APKTOOL_DUMMYVAL_0x7f19000b</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040200">@dimen4/APKTOOL_DUMMYVAL_0x7f190003</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04020c">@color2/APKTOOL_DUMMYVAL_0x7f16005d</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040221">@animator/APKTOOL_DUMMYVAL_0x7f020007</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201e8" parent="@style2/APKTOOL_DUMMYVAL_0x7f2201ce">
+        <item name="APKTOOL_DUMMYVAL_0x7f040102">@dimen4/APKTOOL_DUMMYVAL_0x7f19003e</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040158">@dimen4/APKTOOL_DUMMYVAL_0x7f19004b</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04015a">@dimen4/APKTOOL_DUMMYVAL_0x7f19003a</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201e9" parent="@style2/APKTOOL_DUMMYVAL_0x7f2201d0">
+        <item name="android:background">@drawable/mtrl_snackbar_background</item>
+        <item name="android:layout_margin">@dimen4/APKTOOL_DUMMYVAL_0x7f190009</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201ea" />
+    <style name="APKTOOL_DUMMYVAL_0x7f2201eb" parent="@style/APKTOOL_DUMMYVAL_0x7f12000c">
+        <item name="android:background">@android:color/white</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040106">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040250">@color2/APKTOOL_DUMMYVAL_0x7f160060</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040253">@integer2/APKTOOL_DUMMYVAL_0x7f1b0005</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040254">?APKTOOL_DUMMYVAL_0x7f0400bd</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040261">@color2/APKTOOL_DUMMYVAL_0x7f160063</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040264">?APKTOOL_DUMMYVAL_0x7f04026a</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040265">@color2/APKTOOL_DUMMYVAL_0x7f160060</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040266">true</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201ec" parent="@style2/APKTOOL_DUMMYVAL_0x7f2201eb">
+        <item name="android:background">?APKTOOL_DUMMYVAL_0x7f0400bd</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040250">@color2/APKTOOL_DUMMYVAL_0x7f160061</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040254">@android:color/white</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040261">@color2/APKTOOL_DUMMYVAL_0x7f16005f</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040265">@color2/APKTOOL_DUMMYVAL_0x7f160061</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201ed" parent="@style2/APKTOOL_DUMMYVAL_0x7f22009b">
+        <item name="android:paddingTop">20.0dip</item>
+        <item name="android:paddingBottom">16.0dip</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201ee" parent="@style2/APKTOOL_DUMMYVAL_0x7f2201ed">
+        <item name="android:paddingTop">16.0dip</item>
+        <item name="android:paddingBottom">16.0dip</item>
+    </style>
+    <item type="style2" name="APKTOOL_DUMMYVAL_0x7f2201ef" />
+    <style name="APKTOOL_DUMMYVAL_0x7f2201f0" parent="@style2/APKTOOL_DUMMYVAL_0x7f2201ef">
+        <item name="android:paddingTop">12.0dip</item>
+        <item name="android:paddingBottom">12.0dip</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201f1" parent="@style2/APKTOOL_DUMMYVAL_0x7f22009c">
+        <item name="android:theme">@style2/APKTOOL_DUMMYVAL_0x7f22017e</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04004e">@color2/APKTOOL_DUMMYVAL_0x7f16003a</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04004f">filled</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040050">12.0dip</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040051">@dimen4/APKTOOL_DUMMYVAL_0x7f19003e</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040052">@dimen4/APKTOOL_DUMMYVAL_0x7f19003e</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201f2" parent="@style2/APKTOOL_DUMMYVAL_0x7f2201f1">
+        <item name="android:theme">@style2/APKTOOL_DUMMYVAL_0x7f22017f</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040050">8.0dip</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201f3" parent="@style2/APKTOOL_DUMMYVAL_0x7f22009c">
+        <item name="android:theme">@style2/APKTOOL_DUMMYVAL_0x7f220180</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040050">0.0dip</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201f4" parent="@style2/APKTOOL_DUMMYVAL_0x7f2201f3">
+        <item name="android:theme">@style2/APKTOOL_DUMMYVAL_0x7f220181</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201f5" parent="@style2/APKTOOL_DUMMYVAL_0x7f2201c6">
+        <item name="android:minHeight">@dimen4/APKTOOL_DUMMYVAL_0x7f190038</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04023e">?APKTOOL_DUMMYVAL_0x7f04027b</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f04023f">?android:textColorSecondary</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040294">?APKTOOL_DUMMYVAL_0x7f040271</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040295">?android:textColorPrimary</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201f6" parent="@style2/APKTOOL_DUMMYVAL_0x7f2201a4">
+        <item name="APKTOOL_DUMMYVAL_0x7f040115">@drawable/mr_button_light</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201f7" parent="@style2/APKTOOL_DUMMYVAL_0x7f220188">
+        <item name="APKTOOL_DUMMYVAL_0x7f040115">@drawable/mr_button_dark</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201f8" parent="@android:style/Widget">
+        <item name="APKTOOL_DUMMYVAL_0x7f040237">#ff000000</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201f9" parent="@style2/APKTOOL_DUMMYVAL_0x7f220217">
+        <item name="android:textSize">@dimen4/APKTOOL_DUMMYVAL_0x7f190025</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">@dimen4/APKTOOL_DUMMYVAL_0x7f190023</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201fa" parent="@style2/APKTOOL_DUMMYVAL_0x7f22022b">
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:background">?android:selectableItemBackground</item>
+        <item name="android:paddingTop">@dimen4/APKTOOL_DUMMYVAL_0x7f190032</item>
+        <item name="android:paddingBottom">@dimen4/APKTOOL_DUMMYVAL_0x7f190032</item>
+        <item name="android:layout_marginBottom">@dimen4/APKTOOL_DUMMYVAL_0x7f19000b</item>
+        <item name="android:minWidth">@dimen2/APKTOOL_DUMMYVAL_0x7f17001e</item>
+        <item name="android:drawablePadding">@dimen4/APKTOOL_DUMMYVAL_0x7f190002</item>
+        <item name="android:paddingStart">0.0dip</item>
+        <item name="android:paddingEnd">@dimen4/APKTOOL_DUMMYVAL_0x7f190032</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201fb" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200aa">
+        <item name="android:textSize">@dimen4/APKTOOL_DUMMYVAL_0x7f190020</item>
+        <item name="android:textColor">@color2/APKTOOL_DUMMYVAL_0x7f16001e</item>
+        <item name="android:background">@drawable/gray_selectable_item_background_circle</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">48.0dip</item>
+        <item name="android:drawablePadding">14.0dip</item>
+        <item name="android:paddingStart">@dimen4/APKTOOL_DUMMYVAL_0x7f190010</item>
+        <item name="android:paddingEnd">0.0dip</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201fc" parent="@style2/APKTOOL_DUMMYVAL_0x7f220212">
+        <item name="android:textSize">@dimen4/APKTOOL_DUMMYVAL_0x7f190017</item>
+        <item name="android:textColor">@color2/APKTOOL_DUMMYVAL_0x7f16001e</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201fd" parent="@style2/APKTOOL_DUMMYVAL_0x7f220213">
+        <item name="android:textColor">@color2/APKTOOL_DUMMYVAL_0x7f16001e</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201fe" parent="@style2/APKTOOL_DUMMYVAL_0x7f2201f9">
+        <item name="android:background">@color2/APKTOOL_DUMMYVAL_0x7f160047</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f2201ff" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200ab">
+        <item name="android:textSize">@dimen4/APKTOOL_DUMMYVAL_0x7f190018</item>
+        <item name="android:textColor">@color2/APKTOOL_DUMMYVAL_0x7f16001e</item>
+        <item name="android:alpha">0.4</item>
+        <item name="android:paddingStart">0.0dip</item>
+        <item name="android:layout_marginStart">0.0dip</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220200">
+        <item name="android:scaleType">fitEnd</item>
+        <item name="android:adjustViewBounds">true</item>
+        <item name="android:alpha">0.6</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220201" parent="@style2/APKTOOL_DUMMYVAL_0x7f2201f9">
+        <item name="android:textColor">@color2/APKTOOL_DUMMYVAL_0x7f160075</item>
+        <item name="android:background">@color2/APKTOOL_DUMMYVAL_0x7f160074</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220202" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200f1">
+        <item name="android:textSize">@dimen2/APKTOOL_DUMMYVAL_0x7f170053</item>
+        <item name="android:textStyle">italic</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220203" parent="@android:style/Widget.Material.CompoundButton.RadioButton">
+        <item name="android:textSize">12.0sp</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Regular</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220204">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">1.0dip</item>
+        <item name="android:layout_marginStart">@dimen2/APKTOOL_DUMMYVAL_0x7f17003a</item>
+        <item name="android:layout_marginEnd">@dimen2/APKTOOL_DUMMYVAL_0x7f17003a</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220205" parent="@style2/APKTOOL_DUMMYVAL_0x7f22021d">
+        <item name="android:visibility">gone</item>
+        <item name="android:layout_width">0.0dip</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:drawablePadding">@dimen4/APKTOOL_DUMMYVAL_0x7f190006</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:layout_marginStart">@dimen4/APKTOOL_DUMMYVAL_0x7f190009</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220206" parent="@style2/APKTOOL_DUMMYVAL_0x7f220221">
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:paddingLeft">@dimen2/APKTOOL_DUMMYVAL_0x7f17003a</item>
+        <item name="android:paddingTop">@dimen4/APKTOOL_DUMMYVAL_0x7f19000c</item>
+        <item name="android:paddingRight">@dimen2/APKTOOL_DUMMYVAL_0x7f17003a</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220207" parent="@style2/APKTOOL_DUMMYVAL_0x7f220206">
+        <item name="android:background">?android:selectableItemBackground</item>
+        <item name="android:paddingBottom">@dimen4/APKTOOL_DUMMYVAL_0x7f19000c</item>
+        <item name="android:focusable">true</item>
+        <item name="android:drawableRight">@drawable/ic_icon_select_arrow</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220208" parent="@style2/APKTOOL_DUMMYVAL_0x7f220229">
+        <item name="android:layout_gravity">start</item>
+        <item name="android:paddingLeft">@dimen2/APKTOOL_DUMMYVAL_0x7f17003a</item>
+        <item name="android:paddingRight">@dimen2/APKTOOL_DUMMYVAL_0x7f17003a</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">@dimen4/APKTOOL_DUMMYVAL_0x7f19000c</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220209">
+        <item name="android:textSize">12.0sp</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Light</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22020a">
+        <item name="android:textSize">@dimen2/APKTOOL_DUMMYVAL_0x7f17004d</item>
+        <item name="android:lineSpacingExtra">@dimen2/APKTOOL_DUMMYVAL_0x7f17004f</item>
+        <item name="android:letterSpacing">@dimen2/APKTOOL_DUMMYVAL_0x7f17004e</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Regular</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22020b">
+        <item name="android:textSize">16.0sp</item>
+        <item name="android:lineSpacingExtra">8.0sp</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Light</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22020c">
+        <item name="android:textSize">16.0sp</item>
+        <item name="android:lineSpacingExtra">4.0sp</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Regular</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22020d">
+        <item name="android:textSize">@dimen4/APKTOOL_DUMMYVAL_0x7f190017</item>
+        <item name="android:textColor">#ff022933</item>
+        <item name="android:letterSpacing">@dimen2/APKTOOL_DUMMYVAL_0x7f170057</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Medium</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22020e">
+        <item name="android:textSize">16.0sp</item>
+        <item name="android:focusable">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Regular</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22020f" parent="@style2/APKTOOL_DUMMYVAL_0x7f22020e">
+        <item name="android:textAllCaps">true</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220210" parent="@style2/APKTOOL_DUMMYVAL_0x7f220217">
+        <item name="android:textAllCaps">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Regular</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220211" parent="@style2/APKTOOL_DUMMYVAL_0x7f22022b">
+        <item name="android:textAllCaps">false</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Medium</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220212" parent="@style2/APKTOOL_DUMMYVAL_0x7f220229">
+        <item name="android:textSize">@dimen4/APKTOOL_DUMMYVAL_0x7f190017</item>
+        <item name="android:textColor">@color2/APKTOOL_DUMMYVAL_0x7f160015</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220213">
+        <item name="android:textSize">@dimen4/APKTOOL_DUMMYVAL_0x7f190017</item>
+        <item name="android:textColor">@color2/APKTOOL_DUMMYVAL_0x7f160015</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Regular</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220214">
+        <item name="android:textSize">@dimen4/APKTOOL_DUMMYVAL_0x7f190020</item>
+        <item name="android:textColor">@color2/APKTOOL_DUMMYVAL_0x7f160015</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Medium</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220215">
+        <item name="android:textSize">12.0sp</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Regular</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220216">
+        <item name="android:textSize">@dimen2/APKTOOL_DUMMYVAL_0x7f170050</item>
+        <item name="android:lineSpacingExtra">@dimen2/APKTOOL_DUMMYVAL_0x7f170052</item>
+        <item name="android:letterSpacing">@dimen2/APKTOOL_DUMMYVAL_0x7f170051</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Medium</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220217">
+        <item name="android:textSize">11.0sp</item>
+        <item name="android:textColorHint">@color2/APKTOOL_DUMMYVAL_0x7f16001e</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Medium</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220218">
+        <item name="android:ellipsize">end</item>
+        <item name="android:gravity">start|center</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:background">?android:selectableItemBackground</item>
+        <item name="android:paddingTop">@dimen4/APKTOOL_DUMMYVAL_0x7f190000</item>
+        <item name="android:paddingBottom">@dimen4/APKTOOL_DUMMYVAL_0x7f190000</item>
+        <item name="android:focusable">true</item>
+        <item name="android:drawablePadding">@dimen4/APKTOOL_DUMMYVAL_0x7f190009</item>
+        <item name="android:lineSpacingExtra">2.0sp</item>
+        <item name="android:paddingEnd">@dimen4/APKTOOL_DUMMYVAL_0x7f190000</item>
+        <item name="android:layout_marginEnd">@dimen4/APKTOOL_DUMMYVAL_0x7f190001</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Light</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220219">
+        <item name="android:textSize">@dimen2/APKTOOL_DUMMYVAL_0x7f170053</item>
+        <item name="android:lineSpacingExtra">@dimen2/APKTOOL_DUMMYVAL_0x7f170055</item>
+        <item name="android:letterSpacing">@dimen2/APKTOOL_DUMMYVAL_0x7f170054</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">LightItalic</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22021a">
+        <item name="android:textSize">@dimen2/APKTOOL_DUMMYVAL_0x7f170056</item>
+        <item name="android:lineSpacingExtra">@dimen4/APKTOOL_DUMMYVAL_0x7f190057</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Light</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22021b" parent="@style2/APKTOOL_DUMMYVAL_0x7f22021c">
+        <item name="android:lineSpacingExtra">3.0sp</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22021c">
+        <item name="android:textSize">10.0sp</item>
+        <item name="android:lineSpacingExtra">10.0sp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">@dimen2/APKTOOL_DUMMYVAL_0x7f170057</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Medium</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22021d">
+        <item name="android:textSize">@dimen2/APKTOOL_DUMMYVAL_0x7f170050</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.09</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Light</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22021e">
+        <item name="android:textSize">@dimen2/APKTOOL_DUMMYVAL_0x7f170058</item>
+        <item name="android:maxWidth">@dimen4/APKTOOL_DUMMYVAL_0x7f190031</item>
+        <item name="android:lineSpacingExtra">@dimen2/APKTOOL_DUMMYVAL_0x7f170059</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Light</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22021f">
+        <item name="android:textSize">@dimen2/APKTOOL_DUMMYVAL_0x7f17005a</item>
+        <item name="android:maxWidth">@dimen4/APKTOOL_DUMMYVAL_0x7f190031</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Light</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220220">
+        <item name="android:textSize">@dimen2/APKTOOL_DUMMYVAL_0x7f17005b</item>
+        <item name="android:maxWidth">@dimen4/APKTOOL_DUMMYVAL_0x7f190031</item>
+        <item name="android:lineSpacingExtra">@dimen2/APKTOOL_DUMMYVAL_0x7f17005c</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Light</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220221">
+        <item name="android:textSize">@dimen2/APKTOOL_DUMMYVAL_0x7f17005d</item>
+        <item name="android:maxWidth">@dimen4/APKTOOL_DUMMYVAL_0x7f190031</item>
+        <item name="android:lineSpacingExtra">@dimen2/APKTOOL_DUMMYVAL_0x7f17005c</item>
+        <item name="android:letterSpacing">@dimen2/APKTOOL_DUMMYVAL_0x7f17005e</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Light</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220222">
+        <item name="android:textSize">24.0sp</item>
+        <item name="android:lineSpacingExtra">4.0sp</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Light</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220223">
+        <item name="android:textSize">@dimen4/APKTOOL_DUMMYVAL_0x7f190018</item>
+        <item name="android:lineSpacingExtra">8.0sp</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Regular</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220224">
+        <item name="android:textSize">10.0sp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.15</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Regular</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220225">
+        <item name="android:textSize">@dimen2/APKTOOL_DUMMYVAL_0x7f17004c</item>
+        <item name="android:maxWidth">@dimen2/APKTOOL_DUMMYVAL_0x7f170025</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Medium</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220226">
+        <item name="android:textSize">10.0sp</item>
+        <item name="android:lineSpacingExtra">10.0sp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">@dimen2/APKTOOL_DUMMYVAL_0x7f170057</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Light</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220227">
+        <item name="android:textSize">@dimen4/APKTOOL_DUMMYVAL_0x7f190048</item>
+        <item name="android:textStyle">italic</item>
+        <item name="android:lineSpacingExtra">@dimen2/APKTOOL_DUMMYVAL_0x7f170055</item>
+        <item name="android:letterSpacing">@dimen2/APKTOOL_DUMMYVAL_0x7f170054</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">LightItalic</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220228">
+        <item name="android:textSize">@dimen4/APKTOOL_DUMMYVAL_0x7f190001</item>
+        <item name="android:lineSpacingExtra">@dimen2/APKTOOL_DUMMYVAL_0x7f17004f</item>
+        <item name="android:letterSpacing">@dimen2/APKTOOL_DUMMYVAL_0x7f17004e</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Regular</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f220229">
+        <item name="android:textSize">@dimen4/APKTOOL_DUMMYVAL_0x7f190017</item>
+        <item name="android:maxWidth">@dimen4/APKTOOL_DUMMYVAL_0x7f190031</item>
+        <item name="android:lineSpacingExtra">@dimen4/APKTOOL_DUMMYVAL_0x7f190058</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Light</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22022a" parent="@style2/APKTOOL_DUMMYVAL_0x7f2201a9">
+        <item name="android:textSize">@dimen2/APKTOOL_DUMMYVAL_0x7f17003e</item>
+        <item name="android:textColorHint">@color2/APKTOOL_DUMMYVAL_0x7f160085</item>
+        <item name="android:lineSpacingExtra">@dimen2/APKTOOL_DUMMYVAL_0x7f17003f</item>
+        <item name="android:textCursorDrawable">@null</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22022b">
+        <item name="android:textSize">14.0sp</item>
+        <item name="android:lineSpacingExtra">6.0sp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">@dimen2/APKTOOL_DUMMYVAL_0x7f17005f</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f0402a2">Regular</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f22022c" parent="@style2/APKTOOL_DUMMYVAL_0x7f2201f9">
+        <item name="android:textColor">@color2/APKTOOL_DUMMYVAL_0x7f16001e</item>
+        <item name="android:background">@color2/APKTOOL_DUMMYVAL_0x7f160082</item>
+    </style>
+</resources>

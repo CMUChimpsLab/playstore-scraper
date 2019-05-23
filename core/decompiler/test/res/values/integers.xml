@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="APKTOOL_DUMMYVAL_0x7f0a0000">1</integer>
+    <integer name="APKTOOL_DUMMYVAL_0x7f0a0001">4</integer>
+    <integer name="APKTOOL_DUMMYVAL_0x7f0a0002">0</integer>
+    <integer name="APKTOOL_DUMMYVAL_0x7f0a0003">1</integer>
+    <integer name="APKTOOL_DUMMYVAL_0x7f0a0004">8</integer>
+    <integer name="APKTOOL_DUMMYVAL_0x7f0a0005">3</integer>
+    <integer name="APKTOOL_DUMMYVAL_0x7f0a0006">2</integer>
+    <integer name="APKTOOL_DUMMYVAL_0x7f0a0007">0</integer>
+    <integer name="APKTOOL_DUMMYVAL_0x7f0a0008">2</integer>
+    <integer name="APKTOOL_DUMMYVAL_0x7f0a0009">2</integer>
+    <integer name="APKTOOL_DUMMYVAL_0x7f0a000a">1</integer>
+    <integer name="APKTOOL_DUMMYVAL_0x7f0a000b">1</integer>
+    <integer name="APKTOOL_DUMMYVAL_0x7f0a000c">1</integer>
+    <integer name="APKTOOL_DUMMYVAL_0x7f0a000d">0</integer>
+    <integer name="APKTOOL_DUMMYVAL_0x7f0a000e">0</integer>
+    <integer name="APKTOOL_DUMMYVAL_0x7f0a000f">0</integer>
+    <integer name="APKTOOL_DUMMYVAL_0x7f0a0010">1</integer>
+    <integer name="APKTOOL_DUMMYVAL_0x7f0a0011">1</integer>
+    <integer name="APKTOOL_DUMMYVAL_0x7f0a0012">1</integer>
+    <integer name="APKTOOL_DUMMYVAL_0x7f0a0013">1</integer>
+    <integer name="APKTOOL_DUMMYVAL_0x7f0a0014">1</integer>
+</resources>

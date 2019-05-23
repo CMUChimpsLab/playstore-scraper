@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="drawable" name="ic_arrow_down_24dp">   .xml</item>
+    <item type="drawable" name="design_ic_visibility">   .xml</item>
+    <item type="drawable" name="design_ic_visibility_off">   .xml</item>
+</resources>

@@ -69,8 +69,12 @@ def analysis_pipeline(args):
     Pipeline that only contains the static analysis portion
     """
     if args.no_static:
-        analyzer([], process_no=(PROCESS_NO + 4),
-                cache_all=True, no_static=True, dry_run=args.dry_run)
+        analyzer([],
+                process_no=max((PROCESS_NO * 2 - 2), 1),
+                cache_all=args.cache_all,
+                overwrite_cache=args.overwrite_cache,
+                dry_run=args.dry_run,
+                plugins_only=args.plugins_only)
     else:
         # static analysis
         helper = DbHelper()
@@ -123,8 +127,9 @@ def analysis_pipeline(args):
 
         # run
         analyzer(app_list_with_locs,
-                process_no=(PROCESS_NO * 2 - 2),
+                process_no=max((PROCESS_NO * 2 - 2), 1),
                 cache_all=args.cache_all,
+                overwrite_cache=args.overwrite_cache,
                 dry_run=args.dry_run,
                 plugins_only=args.plugins_only)
 

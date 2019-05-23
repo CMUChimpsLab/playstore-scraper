@@ -27,9 +27,12 @@ sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), "androguard"))
 sys.path.insert(0, "/home/privacy/playstore-scraper") # TODO remove
 
+os.environ["ANDROGUARD_LOGS"] = "0"
+
 import python_static_analyzer.namespaceanalyzer as namespaceanalyzer
 import python_static_analyzer.permission as permission
 import python_static_analyzer.SearchIntents as SearchIntents
+import python_static_analyzer.androguard.androguard as androguard
 from python_static_analyzer.androguard.androguard.core.bytecodes import apk
 from python_static_analyzer.androguard.androguard.core.bytecodes import dvm
 from python_static_analyzer.androguard.androguard.core.analysis.analysis import *
@@ -52,7 +55,9 @@ pp = pprint.PrettyPrinter(indent=4)
 counter = Value("i", 0)
 plugins = []
 
-def static_analysis(total_size, cache_all, dry_run, plugins_only, log_q, apk_entry):
+def static_analysis(total_size,
+        cache_all, overwrite_cache, dry_run, plugins_only,
+        log_q, apk_entry):
     global counter
     global plugins
     sys.setrecursionlimit(60000) # number found to not cause segfault
@@ -74,7 +79,8 @@ def static_analysis(total_size, cache_all, dry_run, plugins_only, log_q, apk_ent
         fileName = uuid + '.apk'
         filename = path + '/' + fileName
         androguard_files_exist = (check_androguard_files(apk_entry) and
-                not apk_entry.get("cacheFail", False))
+                not apk_entry.get("cacheFail", False) and
+                not overwrite_cache)
         load_success = False
         if androguard_files_exist:
             (androguard_objs, load_success) = load_androguard_objs(apk_entry)
@@ -87,10 +93,9 @@ def static_analysis(total_size, cache_all, dry_run, plugins_only, log_q, apk_ent
         third_parties = []
         perm_infos = []
         link_urls = []
+        instance = namespaceanalyzer.NameSpaceMgr(queue=third_parties)
+        packages = instance.execute(filename, app_version, db_helper, fileName, a, dx)
         if not plugins_only:
-            tokens = namespaceanalyzer.NameSpaceMgr.GetTokensStatic(path, '/')
-            instance = namespaceanalyzer.NameSpaceMgr(queue=third_parties)
-            packages = instance.execute(filename, app_version, db_helper, fileName, a, dx)
             permission.StaticAnalyzer(filename, app_version, packages, db_helper,
                     fileName, a, dx, q=perm_infos)
             SearchIntents.Intents(filename, app_version, packages, db_helper, fileName,
@@ -98,7 +103,7 @@ def static_analysis(total_size, cache_all, dry_run, plugins_only, log_q, apk_ent
             if dry_run:
                 return (package_name, uuid)
 
-            # remove any old db entries and insert new
+            # insert new
             db_helper.bulk_insert_third_party_package_info(third_parties, log=False)
             db_helper.bulk_insert_permission_info(perm_infos, log=False)
             db_helper.bulk_insert_link_info(link_urls, log=False)
@@ -113,7 +118,7 @@ def static_analysis(total_size, cache_all, dry_run, plugins_only, log_q, apk_ent
         sys.setrecursionlimit(1000) # reset for plugins
         for p in plugins:
             if hasattr(p, "analyze"):
-                plugin_res = p.analyze(apk_entry, a, None, dx, db_helper)
+                plugin_res = p.analyze(apk_entry, a, dx, packages, db_helper)
 
         if load_success:
             logger.info("{},{} analyzed from cached dx_obj - {} third party, {} perm, {} links"\
@@ -129,10 +134,15 @@ def static_analysis(total_size, cache_all, dry_run, plugins_only, log_q, apk_ent
                 logger.info("{} out of {} analyzed".format(counter.value, total_size))
 
         # if specified or failed load, serialize a and d_s and store in NAS
-        if ((apk_entry.get("hasBeenTop", False) or cache_all) and
-                not load_success and not apk_entry.get("cacheFail", False)):
-            sys.setrecursionlimit(60000) # number found to not cause segfault
-            dump_androguard_objs(apk_entry, db_helper, a, d_s, dx)
+        if apk_entry.get("hasBeenTop", True) or cache_all:
+            if overwrite_cache:
+                sys.setrecursionlimit(60000) # number found to not cause segfault
+                dump_androguard_objs(apk_entry, db_helper, a, d_s, dx)
+            elif not load_success and not apk_entry.get("cacheFail", False):
+                sys.setrecursionlimit(60000) # number found to not cause segfault
+                dump_androguard_objs(apk_entry, db_helper, a, d_s, dx)
+            else:
+                logger.info("not caching {},{}".format(package_name, uuid))
     except Exception as e:
         logger.error("plugins/dump: {},{} - {}".format(package_name, uuid,
             traceback.format_exc()))
@@ -141,7 +151,8 @@ def static_analysis(total_size, cache_all, dry_run, plugins_only, log_q, apk_ent
     return (package_name, uuid)
 
 def analyzer(apkList, process_no=constants.PROCESS_NO,
-        cache_all=False, no_static=False, dry_run=False, plugins_only=False):
+        cache_all=False, overwrite_cache=False,
+        no_static=False, dry_run=False, plugins_only=False):
     """
     Runs the pipeline static analyses on uuid_list and uses dbhelper to insert
     results in the database
@@ -155,6 +166,8 @@ def analyzer(apkList, process_no=constants.PROCESS_NO,
     os.makedirs(outputPath)
 
     db_helper = DbHelper()
+    apkList = apkList[0:1]
+    pp.pprint(apkList[0])
 
     # run static analysis part
     if not no_static:
@@ -168,9 +181,8 @@ def analyzer(apkList, process_no=constants.PROCESS_NO,
                 "    - plugins_only: {}").format(
                         cache_all, no_static, dry_run, plugins_only)
         logger.warning("BE WARY OF PROCESS_NO, READING CACHED FILES IS MEMORY INTENSIVE")
-        if not plugins_only:
-            db_helper.delete_static_entries([a["uuid"] for a in apkList])
-            logger.info("deleted old entries")
+        db_helper.delete_static_entries([a["uuid"] for a in apkList], plugins_only=plugins_only)
+        logger.info("deleted old entries")
 
         mgr = Manager()
         log_q = mgr.Queue()
@@ -185,7 +197,7 @@ def analyzer(apkList, process_no=constants.PROCESS_NO,
             with Pool(process_no) as pool:
                 analyzed = set()
                 partial_static_analysis = partial(static_analysis, len(apkList),
-                        cache_all, dry_run, plugins_only, log_q)
+                        cache_all, overwrite_cache, dry_run, plugins_only, log_q)
                 res_iter = pool.imap_unordered(partial_static_analysis, apkList)
                 while True:
                     try:
@@ -197,6 +209,8 @@ def analyzer(apkList, process_no=constants.PROCESS_NO,
                                 alive += 1
                         if not restart_timeout_only and alive <= int(process_no/4):
                             apkList = [a for a in apkList if a["uuid"] not in analyzed]
+                            if len(apkList) == 0:
+                                break
                             if process_no >= len(apkList):
                                 process_no = min(process_no, len(apkList))
                                 restart_timeout_only = True
@@ -227,6 +241,7 @@ def analyzer(apkList, process_no=constants.PROCESS_NO,
             logger.info("APK static analysis complete")
             break
 
+    return
     # run rating part
     updatedApkList = db_helper.get_all_apps_to_grade()
     updatedApkList = list(set(updatedApkList))
@@ -279,7 +294,7 @@ def logger_thread(q, stop_e):
                         level=logging.INFO)
     while not stop_e.is_set():
         try:
-            record = q.get(block=True, timeout=60)
+            record = q.get(block=True, timeout=10)
             logger.handle(record)
         except queue.Empty:
             continue
@@ -290,7 +305,7 @@ def androguard_analyze_apk(apk_entry, apk_path=None):
     if apk_path is None:
         apk_path = "{}/{}/{}/{}.apk".format(constants.DOWNLOAD_FOLDER, uuid[0], uuid[1], uuid)
 
-    return AnalyzeAPK(apk_path, suppress_parse_warning=True)
+    return AnalyzeAPK(apk_path)
 
 def check_androguard_files(apk_entry):
     """
@@ -311,7 +326,6 @@ def dump_androguard_objs(apk_entry, helper, a, d_s, dx):
     """
     package_name = apk_entry["packageName"]
     uuid = apk_entry["uuid"]
-    logger.info("in dump for {},{}".format(package_name, uuid))
     andro_path = os.path.join(constants.ANDROGUARD_OBJS_FOLDER, uuid[0], uuid)
     if not os.path.exists(andro_path):
         os.makedirs(andro_path)
@@ -321,6 +335,7 @@ def dump_androguard_objs(apk_entry, helper, a, d_s, dx):
         with lzma.open(os.path.join(andro_path, "dx_obj"), "wb") as f:
             pickle.dump(dx, f)
         logger.info("{},{} analysis obj stored in file".format(package_name, uuid))
+        helper.update_apk_info_field_uuid(apk_entry["uuid"], "cacheFail", False)
     except Exception as e:
         # clean up after failed attempt
         logger.error("{},{} storage attempt cleaned - {}".format(package_name, uuid, e))
@@ -441,7 +456,7 @@ def benchmark_static_analysis(total_size, apk_entry):
     plugins = helpers.get_plugins("plugins/core/analyzer", load=True)
     for p in plugins:
         if hasattr(p, "analyze"):
-            plugin_res = p.analyze(apk_entry, a, None, dx, db_helper)
+            plugin_res = p.analyze(apk_entry, a, dx, packages, db_helper)
 
     return package_name
 

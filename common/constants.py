@@ -73,7 +73,7 @@ LOG_FOLDER = "/home/privacy/logs"
 
 PROD_DB_HOST = "app-analysis.andrew.cmu.edu"
 PROD_DB_PORT = 27017
-DEV_DB_HOST = "app-analysis-small.andrew.cmu.edu"
+DEV_DB_HOST = "128.237.158.109"
 DEV_DB_PORT = 27017
 APP_METADATA_DB = "androidAppDB"
 PRIVACY_GRADING_DB = "privacyGradingDB"

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="APKTOOL_DUMMYVAL_0x7f120000" parent="@style11/APKTOOL_DUMMYVAL_0x7f2b0000" />
+    <style name="APKTOOL_DUMMYVAL_0x7f120002" parent="@style11/APKTOOL_DUMMYVAL_0x7f2b0001" />
+    <style name="APKTOOL_DUMMYVAL_0x7f120007" parent="@style11/APKTOOL_DUMMYVAL_0x7f2b0002" />
+    <style name="APKTOOL_DUMMYVAL_0x7f12000b" parent="@android:style/Widget">
+        <item name="android:background">?APKTOOL_DUMMYVAL_0x7f0400c4</item>
+        <item name="android:stateListAnimator">@animator/APKTOOL_DUMMYVAL_0x7f020000</item>
+        <item name="android:touchscreenBlocksFocus">true</item>
+        <item name="android:keyboardNavigationCluster">true</item>
+    </style>
+</resources>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="APKTOOL_DUMMYVAL_0x7f230000" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200f9">
+        <item name="android:textColor">?APKTOOL_DUMMYVAL_0x7f04000f</item>
+        <item name="APKTOOL_DUMMYVAL_0x7f040267">@bool/APKTOOL_DUMMYVAL_0x7f050002</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f230001" parent="@style2/APKTOOL_DUMMYVAL_0x7f2200f9">
+        <item name="android:textColor">?android:textColorPrimaryInverse</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f230002" parent="@android:style/Widget.Material.Button.Borderless.Colored">
+        <item name="android:textColor">@color/APKTOOL_DUMMYVAL_0x7f060000</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f230003" parent="@style2/APKTOOL_DUMMYVAL_0x7f220073">
+        <item name="android:textAppearance">@style2/APKTOOL_DUMMYVAL_0x7f22011e</item>
+        <item name="android:background">@drawable/abc_btn_colored_material</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f230004" parent="@android:style/Widget.RatingBar">
+        <item name="android:maxHeight">36.0dip</item>
+        <item name="android:indeterminateDrawable">@drawable/abc_ratingbar_indicator_material</item>
+        <item name="android:progressDrawable">@drawable/abc_ratingbar_indicator_material</item>
+        <item name="android:minHeight">36.0dip</item>
+        <item name="android:thumb">@null</item>
+        <item name="android:isIndicator">true</item>
+    </style>
+    <style name="APKTOOL_DUMMYVAL_0x7f230005" parent="@android:style/Widget.RatingBar">
+        <item name="android:maxHeight">16.0dip</item>
+        <item name="android:indeterminateDrawable">@drawable/abc_ratingbar_small_material</item>
+        <item name="android:progressDrawable">@drawable/abc_ratingbar_small_material</item>
+        <item name="android:minHeight">16.0dip</item>
+        <item name="android:thumb">@null</item>
+        <item name="android:isIndicator">true</item>
+    </style>
+    <item type="style3" name="APKTOOL_DUMMYVAL_0x7f230006" />
+</resources>

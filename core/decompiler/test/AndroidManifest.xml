@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?><manifest xmlns:android="http://schemas.android.com/apk/res/android" android:compileSdkVersion="28" android:compileSdkVersionCodename="9" package="com.hulu.plus" platformBuildVersionCode="250650" platformBuildVersionName="3.43.0.250650">
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-feature android:name="android.hardware.location" android:required="false"/>
+    <uses-feature android:name="android.hardware.location.gps" android:required="false"/>
+    <uses-feature android:name="android.hardware.touchscreen" android:required="true"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE"/>
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
+    <application android:allowBackup="false" android:appCategory="video" android:appComponentFactory="androidx.core.app.CoreComponentFactory" android:icon="@mipmap/ic_launcher" android:label="@string2/APKTOOL_DUMMYVAL_0x7f1e0021" android:name="com.hulu.Application" android:networkSecurityConfig="@xml/APKTOOL_DUMMYVAL_0x7f150000" android:roundIcon="@mipmap/ic_launcher_circle" android:supportsRtl="true" android:theme="@style2/APKTOOL_DUMMYVAL_0x7f220009">
+        <receiver android:exported="true" android:name="com.appsflyer.MultipleInstallBroadcastReceiver">
+            <intent-filter>
+                <action android:name="com.android.vending.INSTALL_REFERRER"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:exported="true" android:name="com.mparticle.ReferrerReceiver">
+            <intent-filter>
+                <action android:name="com.android.vending.INSTALL_REFERRER"/>
+            </intent-filter>
+        </receiver>
+        <activity android:name="com.hulu.features.splash.SplashActivity" android:theme="@style2/APKTOOL_DUMMYVAL_0x7f2200f2">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:pathPrefix="/videos/" android:scheme="hulu"/>
+                <data android:pathPrefix="/shows/" android:scheme="hulu"/>
+                <data android:pathPrefix="/open/" android:scheme="hulu"/>
+                <data android:pathPrefix="/genre/" android:scheme="hulu"/>
+                <data android:pathPrefix="/network/" android:scheme="hulu"/>
+                <data android:host="hulu.com" android:pathPrefix="/shows/" android:scheme="http"/>
+                <data android:host="www.hulu.com" android:pathPrefix="/shows/" android:scheme="http"/>
+                <data android:host="dl.hulu.com" android:pathPrefix="/shows/" android:scheme="http"/>
+                <data android:host="hulu.com" android:pathPrefix="/shows/" android:scheme="https"/>
+                <data android:host="www.hulu.com" android:pathPrefix="/shows/" android:scheme="https"/>
+                <data android:host="dl.hulu.com" android:pathPrefix="/shows/" android:scheme="https"/>
+                <data android:host="hulu.com" android:pathPrefix="/videos/" android:scheme="http"/>
+                <data android:host="www.hulu.com" android:pathPrefix="/videos/" android:scheme="http"/>
+                <data android:host="dl.hulu.com" android:pathPrefix="/videos/" android:scheme="http"/>
+                <data android:host="hulu.com" android:pathPrefix="/videos/" android:scheme="https"/>
+                <data android:host="www.hulu.com" android:pathPrefix="/videos/" android:scheme="https"/>
+                <data android:host="dl.hulu.com" android:pathPrefix="/videos/" android:scheme="https"/>
+            </intent-filter>
+        </activity>
+        <activity android:label="@string2/APKTOOL_DUMMYVAL_0x7f1e009c" android:name="o.aec" android:theme="@style2/APKTOOL_DUMMYVAL_0x7f2200ee"/>
+        <activity android:label="@string2/APKTOOL_DUMMYVAL_0x7f1e009c" android:name="o.aiU"/>
+        <activity android:label="@string2/APKTOOL_DUMMYVAL_0x7f1e0099" android:name="o.WW" android:windowSoftInputMode="adjustPan"/>
+        <activity android:label="@string2/APKTOOL_DUMMYVAL_0x7f1e009b" android:name="o.Xu"/>
+        <activity android:label="@string2/APKTOOL_DUMMYVAL_0x7f1e009c" android:name="o.adY"/>
+        <activity android:label="@string2/APKTOOL_DUMMYVAL_0x7f1e0092" android:name="o.WB" android:windowSoftInputMode="adjustPan|stateHidden"/>
+        <activity android:configChanges="keyboardHidden|orientation|screenSize" android:label="@string2/APKTOOL_DUMMYVAL_0x7f1e0099" android:name="o.aio" android:screenOrientation="portrait"/>
+        <activity android:configChanges="orientation|screenSize" android:name="o.aiQ"/>
+        <activity android:label="@string2/APKTOOL_DUMMYVAL_0x7f1e0097" android:name="o.adS"/>
+        <activity android:label="@string2/APKTOOL_DUMMYVAL_0x7f1e0035" android:name="o.adD" android:windowSoftInputMode="adjustPan"/>
+        <activity android:label="@string2/APKTOOL_DUMMYVAL_0x7f1e008f" android:name="o.YZ"/>
+        <activity android:label="@string2/APKTOOL_DUMMYVAL_0x7f1e0096" android:name="o.YB"/>
+        <activity android:label="@string2/APKTOOL_DUMMYVAL_0x7f1e0090" android:name="o.YF"/>
+        <activity android:label="@string2/APKTOOL_DUMMYVAL_0x7f1e0093" android:name="o.Yj"/>
+        <activity android:label="@string2/APKTOOL_DUMMYVAL_0x7f1e0091" android:name="o.Yc"/>
+        <activity android:label="@string2/APKTOOL_DUMMYVAL_0x7f1e008e" android:name="o.Yq"/>
+        <activity android:label="@string2/APKTOOL_DUMMYVAL_0x7f1e009a" android:name="o.YQ"/>
+        <activity android:label="@string2/APKTOOL_DUMMYVAL_0x7f1e0094" android:name="o.XZ"/>
+        <activity android:name="o.aiR"/>
+        <activity android:name="o.Rk" android:theme="@style2/APKTOOL_DUMMYVAL_0x7f22009e" android:windowSoftInputMode="adjustPan"/>
+        <activity android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode" android:label="@string2/APKTOOL_DUMMYVAL_0x7f1e0122" android:name="o.aat" android:parentActivityName="o.Rk" android:screenOrientation="unspecified"/>
+        <activity android:label="@string2/APKTOOL_DUMMYVAL_0x7f1e0095" android:launchMode="singleTop" android:name="o.abv"/>
+        <activity android:name="o.aep" android:theme="@style2/APKTOOL_DUMMYVAL_0x7f2200ac"/>
+        <activity android:label="@string2/APKTOOL_DUMMYVAL_0x7f1e003a" android:name="o.Ue"/>
+        <activity android:label="@string2/APKTOOL_DUMMYVAL_0x7f1e003a" android:name="o.UO"/>
+        <activity android:label="@string2/APKTOOL_DUMMYVAL_0x7f1e0098" android:name="o.UC" android:theme="@style2/APKTOOL_DUMMYVAL_0x7f2200ac"/>
+        <activity android:label="@string2/APKTOOL_DUMMYVAL_0x7f1e00f6" android:launchMode="singleTop" android:name="com.hulu.features.search.SearchActivity" android:theme="@style2/APKTOOL_DUMMYVAL_0x7f2200ef">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH"/>
+            </intent-filter>
+            <meta-data android:name="android.app.searchable" android:resource="@xml/APKTOOL_DUMMYVAL_0x7f150001"/>
+        </activity>
+        <activity android:name="o.TO"/>
+        <activity android:name="o.SY"/>
+        <meta-data android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME" android:value="com.hulu.features.cast.CastOptionsProvider"/>
+        <activity android:name="o.aiL"/>
+        <activity android:name="o.TM"/>
+        <activity android:name="o.Zg"/>
+        <service android:exported="false" android:name="o.XC" android:permission="android.permission.BIND_JOB_SERVICE"/>
+        <meta-data android:name="io.fabric.ApiKey" android:value="0f91549007669d694e96997738e370749dbf3ae1"/>
+        <meta-data android:name="com.google.android.gms.version" android:value="12451000"/>
+        <service android:name="com.hulu.features.notifications.HuluFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+        <service android:exported="false" android:name="o.XE" android:permission="android.permission.BIND_JOB_SERVICE"/>
+        <service android:exported="false" android:name="com.hulu.retry.RetryJobService" android:permission="android.permission.BIND_JOB_SERVICE"/>
+        <service android:exported="false" android:name="com.hulu.features.homecheckin.HomeCheckInJobService" android:permission="android.permission.BIND_JOB_SERVICE"/>
+        <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/ic_notification_icon"/>
+        <meta-data android:name="com.google.firebase.messaging.default_notification_color" android:resource="@color2/APKTOOL_DUMMYVAL_0x7f160048"/>
+        <receiver android:exported="false" android:name="o.ぃ"/>
+        <service android:exported="false" android:name="o.宀"/>
+        <service android:exported="false" android:name="o.ᖽ"/>
+        <service android:exported="true" android:name="com.google.firebase.messaging.FirebaseMessagingService">
+            <intent-filter android:priority="-500">
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+        <service android:exported="false" android:name="com.google.firebase.components.ComponentDiscoveryService">
+            <meta-data android:name="com.google.firebase.components:com.google.firebase.analytics.connector.internal.AnalyticsConnectorRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+            <meta-data android:name="com.google.firebase.components:com.google.firebase.iid.Registrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+        </service>
+        <receiver android:enabled="true" android:exported="false" android:name="com.google.android.gms.measurement.AppMeasurementReceiver"/>
+        <receiver android:enabled="true" android:exported="true" android:name="com.google.android.gms.measurement.AppMeasurementInstallReferrerReceiver" android:permission="android.permission.INSTALL_PACKAGES">
+            <intent-filter>
+                <action android:name="com.android.vending.INSTALL_REFERRER"/>
+            </intent-filter>
+        </receiver>
+        <service android:enabled="true" android:exported="false" android:name="com.google.android.gms.measurement.AppMeasurementService"/>
+        <service android:enabled="true" android:exported="false" android:name="com.google.android.gms.measurement.AppMeasurementJobService" android:permission="android.permission.BIND_JOB_SERVICE"/>
+        <receiver android:exported="true" android:name="com.google.firebase.iid.FirebaseInstanceIdReceiver" android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+            </intent-filter>
+        </receiver>
+        <service android:exported="true" android:name="com.google.firebase.iid.FirebaseInstanceIdService">
+            <intent-filter android:priority="-500">
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            </intent-filter>
+        </service>
+        <activity android:exported="false" android:name="com.google.android.gms.common.api.GoogleApiActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+        <activity android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode" android:exported="false" android:name="com.google.android.gms.ads.AdActivity" android:theme="@android:style/Theme.Translucent"/>
+        <provider android:authorities="com.hulu.plus.firebaseinitprovider" android:exported="false" android:initOrder="100" android:name="com.google.firebase.provider.FirebaseInitProvider"/>
+        <provider android:authorities="com.hulu.plus.lifecycle-process" android:exported="false" android:multiprocess="true" android:name="o.ﭙ"/>
+    </application>
+</manifest>

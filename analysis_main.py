@@ -67,6 +67,9 @@ ap_parser.add_argument("-d", "--dry-run",
 ap_parser.add_argument("--cache-all",
     action="store_true",
     help="cache Androguard analysis object for all apps, not just top")
+ap_parser.add_argument("--overwrite-cache",
+    action="store_true",
+    help="overwrite cached Androguard analysis objects")
 ap_parser.add_argument("--paper",
     action="store_true",
     help="true if only use apps for paper")

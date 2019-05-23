@@ -1,0 +1,22 @@
+.class public interface abstract Lo/afm$ʻ;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingClass;
+    value = Lo/afm;
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x609
+    name = "\u02bb"
+.end annotation
+
+
+# virtual methods
+.method public abstract ˊ(Lo/YV;)V
+.end method
+
+.method public abstract ॱˋ()V
+.end method
