@@ -26,13 +26,13 @@ class DbHelper:
         # (also works if just running mongod normally no auth)
 
         # setup client based on env var
-        db_mode = os.environ.get("DB", "DEV")
-        if db_mode == "DEV":
+        db_mode = os.environ.get("DB", "dev")
+        if db_mode == "dev":
             self.__client = MongoClient(host=constants.DEV_DB_HOST,
                 port=constants.DEV_DB_PORT,
                 username=constants.DEV_DB_USER,
                 password=constants.DEV_DB_PASS)
-        elif db_mode == "PROD":
+        elif db_mode == "prod":
             self.__client = MongoClient(host=constants.PROD_DB_HOST,
                 port=constants.PROD_DB_PORT,
                 username=constants.PROD_DB_USER,

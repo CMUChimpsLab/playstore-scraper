@@ -85,11 +85,13 @@ def analyze(app_entry, a, dx, packages, db_helper):
                 use_results["hardwareID"]["serialNum"]["deprecated"].add(tuple(ext_usage.items()))
 
     for c in dx.get_classes():
-        package, is_ext = helpers.get_external_info(a.get_package(),
-            packages, c.name.string)
+        c_name = c.name
+        if type(c_name) != str:
+            c_name = c_name.string
+        package, is_ext = helpers.get_external_info(a.get_package(), packages, c_name)
         ext_usage = {
             "isExternal": is_ext,
-            "triggeredByCode": c.name.string,
+            "triggeredByCode": c_name,
             "externalPackageName": package,
         }
         ext_usage = tuple(ext_usage.items())
