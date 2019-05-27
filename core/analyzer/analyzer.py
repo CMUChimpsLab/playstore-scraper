@@ -166,8 +166,6 @@ def analyzer(apkList, process_no=constants.PROCESS_NO,
     os.makedirs(outputPath)
 
     db_helper = DbHelper()
-    apkList = apkList[0:1]
-    pp.pprint(apkList[0])
 
     # run static analysis part
     if not no_static:

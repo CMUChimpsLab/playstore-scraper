@@ -14,6 +14,7 @@ import argparse
 from datetime import datetime, timedelta
 import pprint
 from collections import defaultdict
+import os
 
 from core.downloader.downloader import Downloader
 from core.db.db_helper import DbHelper
@@ -68,6 +69,7 @@ def analysis_pipeline(args):
     """
     Pipeline that only contains the static analysis portion
     """
+    os.environ["DB"] = args.db
     if args.no_static:
         analyzer([],
                 process_no=max((PROCESS_NO * 2 - 2), 1),
@@ -186,8 +188,9 @@ def get_updated_apps(db_helper, app_list):
 def get_category_apps(db_helper, app_list):
     # classify old as 2 years from today
     old_lim = datetime.now() - timedelta(days=(365 * 2))
-    new_apps = {}
+    new_lim = datetime.now() - timedelta(days=int(365/2))
     old_apps = {}
+    new_apps = {}
     for a in app_list:
         if a.get("uploadDate", None) is None:
             continue
@@ -199,7 +202,7 @@ def get_category_apps(db_helper, app_list):
                 old_d = datetime.strptime(old_apps[a["packageName"]]["uploadDate"], "%d %b %Y")
                 if d < old_d:
                     old_apps[a["packageName"]] = a
-        else:
+        elif d >= new_lim:
             if a["packageName"] not in new_apps:
                 new_apps[a["packageName"]] = a
             else:
