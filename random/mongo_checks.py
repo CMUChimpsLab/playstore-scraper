@@ -1,6 +1,4 @@
-from pymongo import MongoClient
 from bson.objectid import ObjectId
-from core.scraper.uuid_generator import generate_uuids
 from datetime import datetime
 from collections import defaultdict
 import os
@@ -12,6 +10,7 @@ sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)) +
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)) +
         "/core/analyzer/python_static_analyzer/androguard/")
 
+from core.scraper.uuid_generator import generate_uuids
 import common.constants as constants
 from core.db.db_helper import DbHelper
 from core.scraper.scraper import Scraper
@@ -682,20 +681,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # setup client based on env var
-    db_mode = os.environ.get("DB", "DEV")
-    if db_mode == "DEV":
-        dh = MongoClient(host=constants.DEV_DB_HOST,
-            port=constants.DEV_DB_PORT,
-            username=constants.DEV_DB_USER,
-            password=constants.DEV_DB_PASS)
-    elif db_mode == "PROD":
-        dh = MongoClient(host=constants.PROD_DB_HOST,
-            port=constants.PROD_DB_PORT,
-            username=constants.PROD_DB_USER,
-            password=constants.PROD_DB_PASS)
-    else:
-        print("{} should be either `dev` or `prod`".format(db_mode))
-        sys.exit(1)
+    dh = DbHelper.create_mongo_client()
 
     s = Scraper()
     android_app_db = dh[constants.APP_METADATA_DB]

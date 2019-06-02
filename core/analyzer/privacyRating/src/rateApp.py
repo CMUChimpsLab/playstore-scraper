@@ -2,9 +2,9 @@ import numpy as np
 import json
 import random
 import pandas as pd
-from pymongo import MongoClient
 
 import common.constants as constants
+import core.db.db_helper as db_helper
 
 db = None
 
@@ -31,22 +31,7 @@ def generateHistData(slotSize, outputFile, originalData = []):
     global db
 
     # setup client based on env var
-    db_mode = os.environ.get("DB", "DEV")
-    if db_mode == "DEV":
-        client = MongoClient(host=constants.DEV_DB_HOST,
-            port=constants.DEV_DB_PORT,
-            username=constants.DEV_DB_USER,
-            password=constants.DEV_DB_PASS)
-        db = client["privacyGradingDB"]
-    elif db_mode == "PROD":
-        client = MongoClient(host=constants.PROD_DB_HOST,
-            port=constants.PROD_DB_PORT,
-            username=constants.PROD_DB_USER,
-            password=constants.PROD_DB_PASS)
-        db = client["privacyGradingDB"]
-    else:
-        logger.error("{} should be either `dev` or `prod`".format(db_mode))
-        sys.exit(1)
+    client = db_helper.create_mongo_client()
 
     if originalData == []:
         for entry in db.packagePair.find():
@@ -178,22 +163,7 @@ def transRateToLevel(slots = slots, levels = levels):
     global db
 
     # setup client based on env var
-    db_mode = os.environ.get("DB", "DEV")
-    if db_mode == "DEV":
-        client = MongoClient(host=constants.DEV_DB_HOST,
-            port=constants.DEV_DB_PORT,
-            username=constants.DEV_DB_USER,
-            password=constants.DEV_DB_PASS)
-        db = client["privacyGradingDB"]
-    elif db_mode == "PROD":
-        client = MongoClient(host=constants.PROD_DB_HOST,
-            port=constants.PROD_DB_PORT,
-            username=constants.PROD_DB_USER,
-            password=constants.PROD_DB_PASS)
-        db = client["privacyGradingDB"]
-    else:
-        logger.error("{} should be either `dev` or `prod`".format(db_mode))
-        sys.exit(1)
+    client = db_helper.create_mongo_client()
         
     lower = min(slots) - 1
     upper = slots[0]

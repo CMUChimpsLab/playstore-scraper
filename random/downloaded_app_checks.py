@@ -1,12 +1,13 @@
-from pymongo import MongoClient
-import common.constants as constants
-from core.db.db_helper import DbHelper
 from collections import defaultdict
 from bson.objectid import ObjectId
-from core.scraper.uuid_generator import generate_uuids
 from datetime import datetime
 import os
 import sys
+
+from core.scraper.uuid_generator import generate_uuids
+import core.db.db_helper as db_helper
+import common.constants as constants
+from core.db.db_helper import DbHelper
 
 def downloaded_app_checks():
     new_cursor = android_app_db.apkInfo.find(
@@ -47,20 +48,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # setup client based on env var
-    db_mode = os.environ.get("DB", "DEV")
-    if db_mode == "DEV":
-        dh = MongoClient(host=constants.DEV_DB_HOST,
-            port=constants.DEV_DB_PORT,
-            username=constants.DEV_DB_USER,
-            password=constants.DEV_DB_PASS)
-    elif db_mode == "PROD":
-        dh = MongoClient(host=constants.PROD_DB_HOST,
-            port=constants.PROD_DB_PORT,
-            username=constants.PROD_DB_USER,
-            password=constants.PROD_DB_PASS)
-    else:
-        print("{} should be either `dev` or `prod`".format(db_mode))
-        sys.exit(1)
+    dh = db_helper.create_mongo_client()
         
     android_app_db = dh[constants.APP_METADATA_DB]
     old_android_app_db = dh["old_androidApp"]

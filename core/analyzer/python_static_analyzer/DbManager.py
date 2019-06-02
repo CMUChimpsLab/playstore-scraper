@@ -1,9 +1,9 @@
-from pymongo import MongoClient
 import logging
 import sys
 import os
 
 import common.constants as constants
+import core.db.db_helper as db_helper
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
@@ -15,20 +15,7 @@ class DBManagerClass:
     """
     def __init__(self):
         # setup client based on env var
-        db_mode = os.environ.get("DB", "DEV")
-        if db_mode == "DEV":
-            self.client = MongoClient(host=constants.DEV_DB_HOST,
-                port=constants.DEV_DB_PORT,
-                username=constants.DEV_DB_USER,
-                password=constants.DEV_DB_PASS)
-        elif db_mode == "PROD":
-            self.client = MongoClient(host=constants.PROD_DB_HOST,
-                port=constants.PROD_DB_PORT,
-                username=constants.PROD_DB_USER,
-                password=constants.PROD_DB_PASS)
-        else:
-            logger.error("{} should be either `dev` or `prod`".format(db_mode))
-            sys.exit(1)
+        self.client = db_helper.create_mongo_client()
         self.staticAnalysisDB = self.client["staticAnalysis"]
         self.androidAppDB = self.client["androidApp"]
 

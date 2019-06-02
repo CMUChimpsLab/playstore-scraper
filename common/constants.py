@@ -1,6 +1,5 @@
 import multiprocessing
-
-from secrets import DEV_DB_USER, DEV_DB_PASS, PROD_DB_USER, PROD_DB_PASS
+import json
 
 # app categories
 CATEGORIES= [
@@ -64,26 +63,25 @@ CATEGORIES= [
     "FAMILY_PRETEND"
 ]
 
-# various import paths
-DOWNLOAD_FOLDER = "/home/privacy/nas/apps"
-DECOMPILE_FOLDER = "/home/privacy/nas/apps_decompiled"
-ANDROGUARD_OBJS_FOLDER = "/home/privacy/nas/apps_androguard_objs"
-PRIVACY_POLICY_FOLDER = "/home/privacy/nas/policy_htmls"
-LOG_FOLDER = "/home/privacy/logs"
-
-PROD_DB_HOST = "app-analysis.andrew.cmu.edu"
-PROD_DB_PORT = 27017
-DEV_DB_HOST = "128.237.158.109"
-DEV_DB_PORT = 27017
 APP_METADATA_DB = "androidAppDB"
 PRIVACY_GRADING_DB = "privacyGradingDB"
 STATIC_ANALYSIS_DB = "staticAnalysisDB"
 
-# parallelism related constants
-THREAD_NO = multiprocessing.cpu_count() * 2
-PROCESS_NO = int(multiprocessing.cpu_count() / 2)
-RESULT_CHUNK = 10
-LARGE_CHUNK = 100
-BULK_CHUNK = 1000
-QUEUE_LIM = 100000
+# load config.json
+with open("config.json", "r") as f:
+    config = json.load(f)
 
+# various folder paths
+DOWNLOAD_FOLDER = config["DOWNLOAD_FOLDER"]
+DECOMPILE_FOLDER = config["DECOMPILE_FOLDER"]
+ANDROGUARD_OBJS_FOLDER = config["ANDROGUARD_OBJS_FOLDER"]
+PRIVACY_POLICY_FOLDER = config["PRIVACY_POLICY_FOLDER"]
+LOG_FOLDER = config["LOG_FOLDER"]
+
+# parallelism related constants
+THREAD_NO = config["THREAD_NO"]
+PROCESS_NO = config["PROCESS_NO"]
+
+RESULT_CHUNK = config["RESULT_CHUNK"]
+LARGE_CHUNK = config["LARGE_CHUNK"]
+BULK_CHUNK = config["BULK_CHUNK"]
