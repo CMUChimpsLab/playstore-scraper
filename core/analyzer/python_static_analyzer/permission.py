@@ -76,12 +76,12 @@ class StaticAnalyzer:
                                 packages, c_name)
                         if q is None:
                             dbMgr.insert_permission_info(self.main_package_name,
-                                self.version_code, self.fileName, i, is_ext,
-                                c_name, package)
+                                self.version_code, self.fileName, perm,
+                                is_ext, c_name, package)
                         else:
                             q.append(self.make_db_doc(self.main_package_name,
-                                self.version_code, self.fileName, i, is_ext,
-                                c_name, package))
+                                self.version_code, self.fileName, perm,
+                                is_ext, c_name, package))
             except ValueError:
                 continue
 
