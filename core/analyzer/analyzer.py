@@ -56,7 +56,7 @@ counter = Value("i", 0)
 plugins = []
 
 def static_analysis(total_size,
-        cache_all, overwrite_cache, dry_run, plugins_only,
+        cache_all, overwrite_cache, dry_run, core_only, plugins_only,
         log_q, apk_entry):
     global counter
     global plugins
@@ -113,26 +113,33 @@ def static_analysis(total_size,
         db_helper.update_apk_info_field_uuid(apk_entry["uuid"], "analysisFail", True)
         return (package_name, uuid)
 
+    if not core_only:
+        try:
+            # load and run plugins
+            sys.setrecursionlimit(1000) # reset for plugins
+            for p in plugins:
+                if hasattr(p, "analyze"):
+                    plugin_res = p.analyze(apk_entry, a, dx, packages, db_helper)
+        except Exception as e:
+            logger.error("plugins: {},{} - {}".format(package_name, uuid,
+                traceback.format_exc()))
+            return (package_name, uuid)
+
+    if load_success:
+        logger.info("{},{} analyzed from cached dx_obj - "\
+            "{} third party, {} perm, {} links"\
+                .format(package_name, uuid,
+                    len(third_parties), len(perm_infos), len(link_urls)))
+    else:
+        logger.info("{},{} analyzed from APK - {} third party, {} perm, {} links"\
+                .format(package_name, uuid,
+                    len(third_parties), len(perm_infos), len(link_urls)))
+    with counter.get_lock():
+        counter.value += 1
+        if counter.value % constants.RESULT_CHUNK == 0:
+            logger.info("{} out of {} analyzed".format(counter.value, total_size))
+
     try:
-        # load and run plugins
-        sys.setrecursionlimit(1000) # reset for plugins
-        for p in plugins:
-            if hasattr(p, "analyze"):
-                plugin_res = p.analyze(apk_entry, a, dx, packages, db_helper)
-
-        if load_success:
-            logger.info("{},{} analyzed from cached dx_obj - {} third party, {} perm, {} links"\
-                    .format(package_name, uuid,
-                        len(third_parties), len(perm_infos), len(link_urls)))
-        else:
-            logger.info("{},{} analyzed from APK - {} third party, {} perm, {} links"\
-                    .format(package_name, uuid,
-                        len(third_parties), len(perm_infos), len(link_urls)))
-        with counter.get_lock():
-            counter.value += 1
-            if counter.value % constants.RESULT_CHUNK == 0:
-                logger.info("{} out of {} analyzed".format(counter.value, total_size))
-
         # if specified or failed load, serialize a and d_s and store in NAS
         if apk_entry.get("hasBeenTop", True) or cache_all:
             if overwrite_cache:
@@ -144,7 +151,7 @@ def static_analysis(total_size,
             else:
                 logger.info("not caching {},{}".format(package_name, uuid))
     except Exception as e:
-        logger.error("plugins/dump: {},{} - {}".format(package_name, uuid,
+        logger.error("dump: {},{} - {}".format(package_name, uuid,
             traceback.format_exc()))
         return (package_name, uuid)
 
@@ -152,7 +159,7 @@ def static_analysis(total_size,
 
 def analyzer(apkList, process_no=constants.PROCESS_NO,
         cache_all=False, overwrite_cache=False,
-        no_static=False, dry_run=False, plugins_only=False):
+        no_static=False, dry_run=False, core_only=False, plugins_only=False):
     """
     Runs the pipeline static analyses on uuid_list and uses dbhelper to insert
     results in the database
@@ -176,10 +183,13 @@ def analyzer(apkList, process_no=constants.PROCESS_NO,
         opts_str = ("    - cache_all: {}\n"
                 "    - no_static: {}\n"
                 "    - dry_run: {}\n"
+                "    - core_only: {}\n"
                 "    - plugins_only: {}").format(
-                        cache_all, no_static, dry_run, plugins_only)
+                        cache_all, no_static, dry_run, core_only, plugins_only)
         logger.warning("BE WARY OF PROCESS_NO, READING CACHED FILES IS MEMORY INTENSIVE")
-        db_helper.delete_static_entries([a["uuid"] for a in apkList], plugins_only=plugins_only)
+        db_helper.delete_static_entries([a["uuid"] for a in apkList],
+                plugins_only=plugins_only,
+                core_only=core_only)
         logger.info("deleted old entries")
 
         mgr = Manager()
@@ -195,7 +205,7 @@ def analyzer(apkList, process_no=constants.PROCESS_NO,
             with Pool(process_no) as pool:
                 analyzed = set()
                 partial_static_analysis = partial(static_analysis, len(apkList),
-                        cache_all, overwrite_cache, dry_run, plugins_only, log_q)
+                        cache_all, overwrite_cache, dry_run, core_only, plugins_only, log_q)
                 res_iter = pool.imap_unordered(partial_static_analysis, apkList)
                 while True:
                     try:
