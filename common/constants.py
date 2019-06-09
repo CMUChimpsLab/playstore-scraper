@@ -1,0 +1,87 @@
+import multiprocessing
+import json
+
+# app categories
+CATEGORIES= [
+    "ANDROID_WEAR",
+    "ART_AND_DESIGN",
+    "AUTO_AND_VEHICLES",
+    "BEAUTY",
+    "BOOKS_AND_REFERENCE",
+    "BUSINESS",
+    "COMICS",
+    "COMMUNICATION",
+    "DATING",
+    "EDUCATION",
+    "ENTERTAINMENT",
+    "EVENTS",
+    "FINANCE",
+    "FOOD_AND_DRINK",
+    "HEALTH_AND_FITNESS",
+    "HOUSE_AND_HOME",
+    "LIBRARIES_AND_DEMO",
+    "LIFESTYLE",
+    "MAPS_AND_NAVIGATION",
+    "MEDICAL",
+    "MUSIC_AND_AUDIO",
+    "NEWS_AND_MAGAZINES",
+    "PARENTING",
+    "PERSONALIZATION",
+    "PHOTOGRAPHY",
+    "PRODUCTIVITY",
+    "SHOPPING",
+    "SOCIAL",
+    "SPORTS",
+    "TOOLS",
+    "TRAVEL_AND_LOCAL",
+    "VIDEO_PLAYERS",
+    "WEATHER",
+    "GAME",
+    "GAME_ACTION",
+    "GAME_ADVENTURE",
+    "GAME_ARCADE",
+    "GAME_BOARD",
+    "GAME_CARD",
+    "GAME_CASINO",
+    "GAME_CASUAL",
+    "GAME_EDUCATIONAL",
+    "GAME_MUSIC",
+    "GAME_PUZZLE",
+    "GAME_RACING",
+    "GAME_ROLE_PLAYING",
+    "GAME_SIMULATION",
+    "GAME_SPORTS",
+    "GAME_STRATEGY",
+    "GAME_TRIVIA",
+    "GAME_WORD",
+    "FAMILY",
+    "FAMILY_ACTION",
+    "FAMILY_BRAINGAMES",
+    "FAMILY_CREATE",
+    "FAMILY_EDUCATION",
+    "FAMILY_MUSICVIDEO",
+    "FAMILY_PRETEND"
+]
+
+APP_METADATA_DB = "androidAppDB"
+PRIVACY_GRADING_DB = "privacyGradingDB"
+STATIC_ANALYSIS_DB = "staticAnalysisDB"
+
+# load config.json
+with open("config.json", "r") as f:
+    config = json.load(f)
+
+# various folder paths
+DOWNLOAD_FOLDER = config["DOWNLOAD_FOLDER"]
+DECOMPILE_FOLDER = config["DECOMPILE_FOLDER"]
+ANDROGUARD_OBJS_FOLDER = config["ANDROGUARD_OBJS_FOLDER"]
+PRIVACY_POLICY_FOLDER = config["PRIVACY_POLICY_FOLDER"]
+LOG_FOLDER = config["LOG_FOLDER"]
+
+# parallelism related constants
+THREAD_NO = config["THREAD_NO"]
+PROCESS_NO = config["PROCESS_NO"]
+
+RESULT_CHUNK = config["RESULT_CHUNK"]
+LARGE_CHUNK = config["LARGE_CHUNK"]
+BULK_CHUNK = config["BULK_CHUNK"]

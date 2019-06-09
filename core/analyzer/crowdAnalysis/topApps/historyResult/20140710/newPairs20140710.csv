@@ -1,0 +1,42 @@
+packageName	permission	purpose	permissionText	purposeText	rate	level
+com.facebook.katana	ACCESS_COARSE_LOCATION	INTERNAL	can use user's approximate location	for internal use within the app's functionality	1.158535714	N/A
+com.whatsapp	MANAGE_ACCOUNTS	INTERNAL	can manage user's accounts on the phone	for internal use within the app's functionality	0.144679297	N/A
+com.cleanmaster.mguard	CAMERA	INTERNAL	can use camera or flashlight on the phone	for internal use within the app's functionality	0.94165	N/A
+com.cleanmaster.mguard	GET_ACCOUNTS	INTERNAL	can use user's accounts information stored on the phone	for internal use within the app's functionality	0.144679297	N/A
+com.kiloo.subwaysurf	READ_PHONE_STATE	TARGETED_ADS	can read phone current state information like signal, carrier, device ID and phone number	to identify users for delivering targeted advertisement	-0.300123515	N/A
+com.facebook.orca	ACCESS_COARSE_LOCATION	INTERNAL	can use user's approximate location	for internal use within the app's functionality	1.158535714	N/A
+com.viber.voip	AUTHENTICATE_ACCOUNTS	INTERNAL	can use user's account authentication information (like password) or create new accounts	for internal use within the app's functionality	0.144679297	N/A
+com.gameloft.android.ANMP.GloftDMHM	READ_PHONE_STATE	MOBILE_ANALYTICS	can read phone current state information like signal, carrier, device ID and phone number	to identify users for market/customer analysis	-0.093980836	N/A
+com.gau.go.launcherex	ACCESS_FINE_LOCATION	INTERNAL	can use user's precise location	for internal use within the app's functionality	0.902622707	N/A
+com.gau.go.launcherex	READ_PHONE_STATE	SECONDARY_MARKET	can read phone current state information like signal, carrier, device ID and phone number	to identify users to connect with independent/secondary mobile app stores	0.0	N/A
+com.gau.go.launcherex	READ_PHONE_STATE	INTERNAL	can read phone current state information like signal, carrier, device ID and phone number	for internal use within the app's functionality	0.133753444	N/A
+com.gau.go.launcherex	GET_ACCOUNTS	SECONDARY_MARKET	can use user's accounts information stored on the phone	to connect with independent/secondary mobile app stores	0.0	N/A
+com.gau.go.launcherex	GET_ACCOUNTS	INTERNAL	can use user's accounts information stored on the phone	for internal use within the app's functionality	0.144679297	N/A
+com.picsart.studio	ACCESS_FINE_LOCATION	MOBILE_ANALYTICS	can use user's precise location	for market/customer analysis	0.031282	N/A
+com.kakao.talk	SEND_SMS	INTERNAL	can send out SMS messages	for internal use within the app's functionality	-0.0546875	N/A
+com.waze	MANAGE_ACCOUNTS	INTERNAL	can manage user's accounts on the phone	for internal use within the app's functionality	0.144679297	N/A
+com.waze	GET_ACCOUNTS	INTERNAL	can use user's accounts information stored on the phone	for internal use within the app's functionality	0.144679297	N/A
+com.waze	READ_PHONE_STATE	INTERNAL	can read phone current state information like signal, carrier, device ID and phone number	for internal use within the app's functionality	0.133753444	N/A
+com.waze	AUTHENTICATE_ACCOUNTS	INTERNAL	can use user's account authentication information (like password) or create new accounts	for internal use within the app's functionality	0.144679297	N/A
+com.creativemobile.DragRacing	ACCESS_FINE_LOCATION	MOBILE_ANALYTICS	can use user's precise location	for market/customer analysis	0.031282	N/A
+com.creativemobile.DragRacing	ACCESS_FINE_LOCATION	UTILITY	can use user's precise location	NaN	0.0	N/A
+com.jb.gosms	READ_PHONE_STATE	SECONDARY_MARKET	can read phone current state information like signal, carrier, device ID and phone number	to identify users to connect with independent/secondary mobile app stores	0.0	N/A
+com.jb.gosms	GET_ACCOUNTS	SECONDARY_MARKET	can use user's accounts information stored on the phone	to connect with independent/secondary mobile app stores	0.0	N/A
+com.antivirus	ACCESS_FINE_LOCATION	TARGETED_ADS	can use user's precise location	for delivering location targeted advertisement	-0.279115426	N/A
+com.google.android.gms	MANAGE_ACCOUNTS	INTERNAL	can manage user's accounts on the phone	for internal use within the app's functionality	0.144679297	N/A
+com.google.android.gms	BLUETOOTH	INTERNAL	can connect to user's Bluetooth devices	for internal use within the app's functionality	0.0	N/A
+com.google.android.gms	CAMERA	INTERNAL	can use camera or flashlight on the phone	for internal use within the app's functionality	0.94165	N/A
+com.dianxinos.dxbs	READ_PHONE_STATE	TARGETED_ADS	can read phone current state information like signal, carrier, device ID and phone number	to identify users for delivering targeted advertisement	-0.300123515	N/A
+com.qihoo.security	READ_SMS	INTERNAL	can read SMS messages	for internal use within the app's functionality	-0.0546875	N/A
+com.qihoo.security	GET_ACCOUNTS	INTERNAL	can use user's accounts information stored on the phone	for internal use within the app's functionality	0.144679297	N/A
+com.seventeenbullets.android.island	READ_PHONE_STATE	TARGETED_ADS	can read phone current state information like signal, carrier, device ID and phone number	to identify users for delivering targeted advertisement	-0.300123515	N/A
+com.google.android.apps.plus	CAMERA	INTERNAL	can use camera or flashlight on the phone	for internal use within the app's functionality	0.94165	N/A
+com.yahoo.mobile.client.android.mail	RECORD_AUDIO	UTILITY	can record audio through microphone on the phone	NaN	0.0	N/A
+com.yahoo.mobile.client.android.mail	ACCESS_FINE_LOCATION	INTERNAL	can use user's precise location	for internal use within the app's functionality	0.902622707	N/A
+com.bbm	BLUETOOTH	INTERNAL	can connect to user's Bluetooth devices	for internal use within the app's functionality	0.0	N/A
+com.bbm	ACCESS_COARSE_LOCATION	INTERNAL	can use user's approximate location	for internal use within the app's functionality	1.158535714	N/A
+com.bbm	READ_PHONE_STATE	INTERNAL	can read phone current state information like signal, carrier, device ID and phone number	for internal use within the app's functionality	0.133753444	N/A
+com.google.android.googlequicksearchbox	RECORD_AUDIO	INTERNAL	can record audio through microphone on the phone	for internal use within the app's functionality	1.119495376	N/A
+com.google.android.googlequicksearchbox	ACCESS_FINE_LOCATION	INTERNAL	can use user's precise location	for internal use within the app's functionality	0.902622707	N/A
+com.google.android.googlequicksearchbox	READ_PHONE_STATE	INTERNAL	can read phone current state information like signal, carrier, device ID and phone number	for internal use within the app's functionality	0.133753444	N/A
+com.google.android.talk	BLUETOOTH	INTERNAL	can connect to user's Bluetooth devices	for internal use within the app's functionality	0.0	N/A

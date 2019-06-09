@@ -1,0 +1,120 @@
+result for cluster size 1
+acc 0.464776890277
+pre 0.513304645649
+rec 0.634291915355
+f1 0.567420638773
+             precision    recall  f1-score   support
+
+      False       0.36      0.25      0.30      7436
+       True       0.51      0.63      0.57      9215
+
+avg / total       0.44      0.46      0.45     16651
+
+result for cluster size 2
+acc 0.48873941505
+pre 0.528615685635
+rec 0.703635377103
+f1 0.603696289744
+             precision    recall  f1-score   support
+
+      False       0.38      0.22      0.28      7436
+       True       0.53      0.70      0.60      9215
+
+avg / total       0.46      0.49      0.46     16651
+
+result for cluster size 3
+acc 0.528616899886
+pre 0.563170551239
+rec 0.660770482908
+f1 0.608079093224
+             precision    recall  f1-score   support
+
+      False       0.46      0.36      0.41      7436
+       True       0.56      0.66      0.61      9215
+
+avg / total       0.52      0.53      0.52     16651
+
+result for cluster size 4
+acc 0.5494564891
+pre 0.605779918488
+rec 0.532284319045
+f1 0.56665896488
+             precision    recall  f1-score   support
+
+      False       0.50      0.57      0.53      7436
+       True       0.61      0.53      0.57      9215
+
+avg / total       0.56      0.55      0.55     16651
+
+result for cluster size 5
+acc 0.545372650291
+pre 0.598632929608
+rec 0.54172544764
+f1 0.568759257149
+             precision    recall  f1-score   support
+
+      False       0.49      0.55      0.52      7436
+       True       0.60      0.54      0.57      9215
+
+avg / total       0.55      0.55      0.55     16651
+
+result for cluster size 6
+acc 0.562068344244
+pre 0.60912495744
+rec 0.582419967444
+f1 0.59547320537
+             precision    recall  f1-score   support
+
+      False       0.51      0.54      0.52      7436
+       True       0.61      0.58      0.60      9215
+
+avg / total       0.56      0.56      0.56     16651
+
+result for cluster size 7
+acc 0.532280343523
+pre 0.587235603374
+rec 0.521215409658
+f1 0.552259399793
+             precision    recall  f1-score   support
+
+      False       0.48      0.55      0.51      7436
+       True       0.59      0.52      0.55      9215
+
+avg / total       0.54      0.53      0.53     16651
+
+result for cluster size 8
+acc 0.539066722719
+pre 0.5875
+rec 0.561041779707
+f1 0.573966139328
+             precision    recall  f1-score   support
+
+      False       0.48      0.51      0.50      7436
+       True       0.59      0.56      0.57      9215
+
+avg / total       0.54      0.54      0.54     16651
+
+result for cluster size 9
+acc 0.533241246772
+pre 0.57517974367
+rec 0.599023331525
+f1 0.586859451414
+             precision    recall  f1-score   support
+
+      False       0.48      0.45      0.46      7436
+       True       0.58      0.60      0.59      9215
+
+avg / total       0.53      0.53      0.53     16651
+
+result for cluster size 10
+acc 0.530838988649
+pre 0.576059850374
+rec 0.576559956593
+f1 0.576309794989
+             precision    recall  f1-score   support
+
+      False       0.47      0.47      0.47      7436
+       True       0.58      0.58      0.58      9215
+
+avg / total       0.53      0.53      0.53     16651
+

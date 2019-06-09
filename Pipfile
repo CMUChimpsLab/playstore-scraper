@@ -4,10 +4,32 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+pylint = "*"
+pytest = "*"
 pandas = "*"
-requests = "*"
 gpapi = "*"
+requests = "*"
 pyaxmlparser = "*"
+pymongo = "*"
+pprint = "*"
+multiprocessing-logging = "*"
+docker = "*"
+pycrypto = "*"
+matplotlib = "*"
+"beautifulsoup4" = "*"
+lxml = "*"
+protobuf = "*"
+numpy = "*"
+pygments = "*"
+colorama = "*"
+click = "*"
+asn1crypto = ">=0.24.0"
+networkx = ">=1.11"
+pydot = ">=1.4.1"
+ipython = ">=5.0.0"
+eventlet = "*"
+psutil = "*"
+future = "*"
 
 [dev-packages]
 

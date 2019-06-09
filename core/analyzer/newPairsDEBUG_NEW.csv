@@ -1,0 +1,6 @@
+packageName	permission	purpose	permissionText	purposeText	rate	level
+com.google.android.gms	MANAGE_ACCOUNTS	INTERNAL	can manage user's accounts on the phone	for internal use within the app's functionality	1.032258064516129	N/A
+com.google.android.gms	RECORD_AUDIO	INTERNAL	can record audio through microphone on the phone	for internal use within the app's functionality	1.1443123938879456	N/A
+com.google.android.gms	SEND_SMS	INTERNAL	can send out SMS messages	for internal use within the app's functionality	0.2964824120603015	N/A
+com.google.android.gms	BLUETOOTH	INTERNAL	can connect to user's Bluetooth devices	for internal use within the app's functionality	0.9078341013824884	N/A
+com.google.android.gms	CAMERA	INTERNAL	can use camera or flashlight on the phone	for internal use within the app's functionality	1.1403249630723782	N/A

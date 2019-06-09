@@ -1,0 +1,57 @@
+['READ_PHONE_STATE', 'ACCESS_FINE_LOCATION', 'GET_ACCOUNTS', 'CAMERA', 'READ_CONTACTS', 'RECORD_AUDIO', 'SEND_SMS', 'ACCESS_COARSE_LOCATION', 'BLUETOOTH', 'MANAGE_ACCOUNTS', 'AUTHENTICATE_ACCOUNTS']
+
+READ_PHONE_STATE
+internal use only: 88773	0.319392
+3rd Party use only: 143350	0.515751
+both use: 45821	0.164857
+
+ACCESS_FINE_LOCATION
+internal use only: 110351	0.442115
+3rd Party use only: 75279	0.301601
+both use: 63968	0.256284
+
+GET_ACCOUNTS
+internal use only: 81294	0.915855
+3rd Party use only: 4499	0.050686
+both use: 2970	0.033460
+
+CAMERA
+internal use only: 55839	0.527889
+3rd Party use only: 25815	0.244049
+both use: 24124	0.228063
+
+READ_CONTACTS
+internal use only: 46673	0.853988
+3rd Party use only: 3505	0.064132
+both use: 4475	0.081880
+
+RECORD_AUDIO
+internal use only: 31133	0.410758
+3rd Party use only: 26874	0.354566
+both use: 17787	0.234676
+
+SEND_SMS
+internal use only: 16983	0.974690
+3rd Party use only: 387	0.022211
+both use: 54	0.003099
+
+ACCESS_COARSE_LOCATION
+internal use only: 8377	0.258773
+3rd Party use only: 20851	0.644106
+both use: 3144	0.097121
+
+BLUETOOTH
+internal use only: 14898	0.966712
+3rd Party use only: 348	0.022581
+both use: 165	0.010707
+
+MANAGE_ACCOUNTS
+internal use only: 1733	0.982426
+3rd Party use only: 26	0.014739
+both use: 5	0.002834
+
+AUTHENTICATE_ACCOUNTS
+internal use only: 3208	0.986470
+3rd Party use only: 37	0.011378
+both use: 7	0.002153
+

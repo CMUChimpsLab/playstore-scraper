@@ -1,0 +1,6 @@
+packageName	permission	purpose	permissionText	purposeText	rate	level
+com.google.android.gms	READ_CONTACTS	INTERNAL	can read user's contact list (phone book) and phone call history	to sync contacts with Google account	0.5263157894736842	
+com.google.android.gms	GET_ACCOUNTS	INTERNAL	can use user's accounts information stored on the phone	to login the app with Google accounts	1.5555555555555556	
+com.google.android.gms	ACCESS_FINE_LOCATION	INTERNAL	can use user's precise location	to provide location information to other apps	-0.21052631578947367	A
+com.google.android.gms	READ_PHONE_STATE	INTERNAL	can read phone current state information like signal, carrier, device ID and phone number	to log system information when app is running for analytics or development purpose	0.3684210526315789	
+com.google.android.gms	AUTHENTICATE_ACCOUNTS	INTERNAL	can use user's account authentication information (like password) or create new accounts	to manage app account informaiton on users' phone	1.1666666666666667	
