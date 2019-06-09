@@ -1,7 +1,5 @@
-from pymongo import MongoClient
 from collections import defaultdict
 from bson.objectid import ObjectId
-from core.scraper.uuid_generator import generate_uuids
 from datetime import datetime, timedelta
 from collections import defaultdict
 import os
@@ -14,6 +12,7 @@ sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)) +
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)) +
         "/core/analyzer/python_static_analyzer/androguard/")
 
+from core.scraper.uuid_generator import generate_uuids
 import common.constants as constants
 from core.db.db_helper import DbHelper
 from core.scraper.scraper import Scraper
@@ -223,10 +222,7 @@ def scan_app_name():
                 })
 
 if __name__ == "__main__":
-    dh = MongoClient(host=constants.DB_HOST,
-        port=constants.DB_PORT,
-        username=constants.DB_ROOT_USER,
-        password=constants.DB_ROOT_PASS)
+    dh = DbHelper.create_mongo_client()
     s = Scraper()
     android_app_db = dh[constants.APP_METADATA_DB]
     static_db = dh[constants.STATIC_ANALYSIS_DB]

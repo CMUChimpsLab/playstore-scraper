@@ -1,5 +1,4 @@
 import sys
-from pymongo import MongoClient
 from collections import defaultdict
 from bson.objectid import ObjectId
 from datetime import datetime
@@ -415,20 +414,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # setup client based on env var
-    db_mode = os.environ.get("DB", "DEV")
-    if db_mode == "DEV":
-        dh = MongoClient(host=constants.DEV_DB_HOST,
-            port=constants.DEV_DB_PORT,
-            username=constants.DEV_DB_USER,
-            password=constants.DEV_DB_PASS)
-    elif db_mode == "PROD":
-        dh = MongoClient(host=constants.PROD_DB_HOST,
-            port=constants.PROD_DB_PORT,
-            username=constants.PROD_DB_USER,
-            password=constants.PROD_DB_PASS)
-    else:
-        print("{} should be either `dev` or `prod`".format(db_mode))
-        sys.exit(1)
+    dh = DbHelper.create_mongo_client()
 
     android_app_db = dh[constants.APP_METADATA_DB]
     static_db = dh[constants.STATIC_ANALYSIS_DB]

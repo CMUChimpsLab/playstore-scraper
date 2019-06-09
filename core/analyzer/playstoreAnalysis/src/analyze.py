@@ -1,5 +1,4 @@
 import logging
-from pymongo import MongoClient
 from collections import Counter
 import copy
 import sys
@@ -7,6 +6,7 @@ import re
 import os
 
 import common.constants as constants
+import core.db.db_helper as db_helper
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
@@ -262,20 +262,7 @@ def getTopPermissions(client, appList, outputDir):
 
 def main(outputDir, appListFile=None, app_tups=None):
     # setup client based on env var
-    db_mode = os.environ.get("DB", "DEV")
-    if db_mode == "DEV":
-        client = MongoClient(host=constants.DEV_DB_HOST,
-            port=constants.DEV_DB_PORT,
-            username=constants.DEV_DB_USER,
-            password=constants.DEV_DB_PASS)
-    elif db_mode == "PROD":
-        client = MongoClient(host=constants.PROD_DB_HOST,
-            port=constants.PROD_DB_PORT,
-            username=constants.PROD_DB_USER,
-            password=constants.PROD_DB_PASS)
-    else:
-        logger.error("{} should be either `dev` or `prod`".format(db_mode))
-        sys.exit(1)
+    client = db_helper.create_mongo_client()
         
     os.makedirs(outputDir + "/permission/")
     if app_tups is not None:

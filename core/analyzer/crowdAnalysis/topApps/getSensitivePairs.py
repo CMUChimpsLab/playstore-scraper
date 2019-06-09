@@ -1,9 +1,9 @@
-from pymongo import MongoClient
 import pandas as pd
 import sys
 import logging
 
 import common.constants as constants
+import core.db.db_helper as db_helper
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
@@ -19,7 +19,7 @@ def getSensitivePairs(packageName):
   permissionEntries = dbPermission.packagePair.find({"packageName": packageName})
   if permissionEntries is not None and permissionEntries.count() > 0:
     for permEntry in permissionEntries:
-      pairs = permissionEntry["labeledPermissionPurposesPairs"]
+      pairs = permEntry["labeledPermissionPurposesPairs"]
       #since not all permissions are sensitive permissions so we only keep sensitive pairs here
       for pattern in sensitivePermissionPatterns:
         pairsPermissions = pairs.keys()
@@ -51,22 +51,7 @@ def main(DATE, path = "", modules_dir = ""):
     global dbPermission
 
     # setup client based on env var
-    db_mode = os.environ.get("DB", "DEV")
-    if db_mode == "DEV":
-        client = MongoClient(host=constants.DEV_DB_HOST,
-            port=constants.DEV_DB_PORT,
-            username=constants.DEV_DB_USER,
-            password=constants.DEV_DB_PASS)
-        dbPermission = client["privacygrading"]
-    elif db_mode == "PROD":
-        client = MongoClient(host=constants.PROD_DB_HOST,
-            port=constants.PROD_DB_PORT,
-            username=constants.PROD_DB_USER,
-            password=constants.PROD_DB_PASS)
-        dbPermission = client["privacygrading"]
-    else:
-        logger.error("{} should be either `dev` or `prod`".format(db_mode))
-        sys.exit(1)
+    client = db_helper.create_mongo_client()
 
     #use this dict to map permission and purpose to descriptive text for new pairs
     externalPurposeTextMapping = eval(open(path + "data/mapping/purposeEXTERNALMapping").read())

@@ -9,6 +9,7 @@ import os
 from datetime import datetime
 from collections import defaultdict
 import pprint
+import json
 
 from common.protobuf_to_dict.protobuf_to_dict.convertor import protobuf_to_dict
 from common.app_object import App
@@ -19,6 +20,24 @@ logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
                     level=logging.INFO)
 pp = pprint.PrettyPrinter(indent=4)
 
+def create_mongo_client():
+    # load config.json
+    with open("config.json", "r") as f:
+        config = json.load(f)
+    
+    db_mode = os.environ.get("DB", "dev")
+    if db_mode not in config["DB"]:
+        logger.error(
+            "DB value {} not valid, must match one specified in config.json".format(db_mode))
+        sys.exit(1)
+        
+    client = MongoClient(host=config["DB"][db_mode]["DB_HOST"],
+        port=config["DB"][db_mode]["DB_PORT"],
+        username=config["DB"][db_mode]["DB_USER"],
+        password=config["DB"][db_mode]["DB_PWD"])
+    
+    return client
+
 class DbHelper:
     def __init__(self):
         # Use username and password when running with mongod --auth,
@@ -26,20 +45,7 @@ class DbHelper:
         # (also works if just running mongod normally no auth)
 
         # setup client based on env var
-        db_mode = os.environ.get("DB", "dev")
-        if db_mode == "dev":
-            self.__client = MongoClient(host=constants.DEV_DB_HOST,
-                port=constants.DEV_DB_PORT,
-                username=constants.DEV_DB_USER,
-                password=constants.DEV_DB_PASS)
-        elif db_mode == "prod":
-            self.__client = MongoClient(host=constants.PROD_DB_HOST,
-                port=constants.PROD_DB_PORT,
-                username=constants.PROD_DB_USER,
-                password=constants.PROD_DB_PASS)
-        else:
-            logger.error("{} should be either `dev` or `prod`".format(db_mode))
-            sys.exit(1)
+        self.__client = create_mongo_client()
 
         self.__android_app_db = self.__client[constants.APP_METADATA_DB]
         self.__apk_info = self.__android_app_db.apkInfo

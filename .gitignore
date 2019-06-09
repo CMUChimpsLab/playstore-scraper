@@ -26,6 +26,7 @@ debug/
 
 **/dbConfig.py
 secrets\.py
+config.json
 passwords/*
 !passwords/.gitkeep
 

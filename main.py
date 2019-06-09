@@ -105,7 +105,6 @@ def scrape_pipeline(args):
      - scrape
      - download
      - decompile
-     - analyze (same as analysis_pipeline)
     """
     kickoff = args.kickoff
     fname = args.fname
@@ -118,7 +117,6 @@ def scrape_pipeline(args):
     else:
         apps = None
 
-    """
     # start by updating top apps
     if not args.skip_top:
         logger.info("getting top apps...")
@@ -154,7 +152,6 @@ def scrape_pipeline(args):
 
     # crawl privacy policies
     c.crawl_app_privacy_policies(app_list=apps)
-    """
 
     if args.no_decompile:
         # download only
