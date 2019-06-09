@@ -58,6 +58,9 @@ ap_parser.add_argument("-s", "--skip-complete",
 ap_parser.add_argument("-p", "--plugins-only",
     action="store_true",
     help="true if want to only run plugins portion")
+ap_parser.add_argument("-c", "--core-only",
+    action="store_true",
+    help="true if want to only run core static analysis portion")
 ap_parser.add_argument("--no-static",
     action="store_true",
     help="true if want to skip static analysis and just do rating portion")

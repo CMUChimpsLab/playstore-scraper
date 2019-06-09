@@ -76,6 +76,7 @@ def analysis_pipeline(args):
                 cache_all=args.cache_all,
                 overwrite_cache=args.overwrite_cache,
                 dry_run=args.dry_run,
+                core_only=args.core_only,
                 plugins_only=args.plugins_only)
     else:
         # static analysis
@@ -133,6 +134,7 @@ def analysis_pipeline(args):
                 cache_all=args.cache_all,
                 overwrite_cache=args.overwrite_cache,
                 dry_run=args.dry_run,
+                core_only=args.core_only,
                 plugins_only=args.plugins_only)
 
 

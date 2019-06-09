@@ -617,19 +617,20 @@ class DbHelper:
         names = [{'_id': i} for i in names if len(i) > 0]
         self.__package_names.insert(names)
 
-    def delete_static_entries(self, uuids, plugins_only=False):
+    def delete_static_entries(self, uuids, plugins_only=False, core_only=False):
         """
         Deletes database entries for anything related to static analysis
         """
         if not plugins_only:
-            res = self.__static_analysis_db.linkUrl.delete_many({"uuid": {"$in": uuids}})
-            logger.info("linkUrl - removed {}".format(res.deleted_count))
             res = self.__static_analysis_db.permissionList.delete_many({"uuid": {"$in": uuids}})
             logger.info("permissionList - removed {}".format(res.deleted_count))
+            res = self.__static_analysis_db.linkUrl.delete_many({"uuid": {"$in": uuids}})
+            logger.info("linkUrl - removed {}".format(res.deleted_count))
             res = self.__static_analysis_db.thirdPartyPackages.delete_many({"uuid": {"$in": uuids}})
             logger.info("thirdPartyPackages - removed {}".format(res.deleted_count))
-        res = self.__static_analysis_db.apkAnalyses.delete_many({"uuid": {"$in": uuids}})
-        logger.info("apkAnalyses - removed {}".format(res.deleted_count))
+        if not core_only:
+            res = self.__static_analysis_db.apkAnalyses.delete_many({"uuid": {"$in": uuids}})
+            logger.info("apkAnalyses - removed {}".format(res.deleted_count))
         self.__apk_info.update_many({"uuid": {"$in": uuids}},
             {"$set": {"analysesCompleted": False}})
 
